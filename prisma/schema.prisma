@@ -1,0 +1,467 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//////////////////////
+// ENUMS
+//////////////////////
+
+enum OrderType {
+  SALE
+  RENT
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum RentalStatus {
+  ACTIVE
+  RETURNED
+  LATE
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum ProductCondition {
+  GOOD
+  DAMAGED
+  LOST
+}
+
+//////////////////////
+// COMPANIES / STORES
+//////////////////////
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  stores Store[]
+  users  User[] // usuarios que pertenecen a esta empresa
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  address   String?
+  city      String?
+  country   String?
+  createdAt DateTime @default(now())
+
+  company   Company                   @relation(fields: [companyId], references: [id])
+  users     User[] // usuarios asignados a esta sucursal
+  orders    Order[]
+  inventory ProductVariantInventory[]
+}
+
+model ProductVariantInventory {
+  id               String @id @default(uuid())
+  storeId          String
+  productVariantId String
+  stockTotal       Int
+  stockAvailable   Int
+
+  store          Store          @relation(fields: [storeId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@unique([storeId, productVariantId])
+}
+
+//////////////////////
+// CLIENTS
+//////////////////////
+
+model Client {
+  id             String   @id @default(uuid())
+  name           String
+  phone          String   @unique
+  email          String?
+  documentNumber String?  @unique
+  createdAt      DateTime @default(now())
+
+  addresses AddressClient[]
+  orders    Order[]
+}
+
+model AddressClient {
+  id       String @id @default(uuid())
+  clientId String
+  address  String
+  city     String
+  country  String
+
+  client Client @relation(fields: [clientId], references: [id])
+}
+
+//////////////////////
+// PRODUCTS
+//////////////////////
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  basePrice   Decimal
+  isRentable  Boolean  @default(true)
+  isSellable  Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+
+  category  Category          @relation(fields: [categoryId], references: [id])
+  variants  ProductVariant[]
+  occasions ProductOccasion[]
+  styles    ProductStyle[]
+  dances    ProductDance[]
+}
+
+model Size {
+  id   String @id @default(uuid())
+  name String @unique
+
+  variants ProductVariant[]
+}
+
+model Color {
+  id   String  @id @default(uuid())
+  name String  @unique
+  hex  String?
+
+  variants ProductVariant[]
+}
+
+model Occasion {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products ProductOccasion[]
+}
+
+model ProductOccasion {
+  productId  String
+  occasionId String
+
+  product  Product  @relation(fields: [productId], references: [id])
+  occasion Occasion @relation(fields: [occasionId], references: [id])
+
+  @@id([productId, occasionId])
+}
+
+model Style {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products ProductStyle[]
+}
+
+model ProductStyle {
+  productId String
+  styleId   String
+
+  product Product @relation(fields: [productId], references: [id])
+  style   Style   @relation(fields: [styleId], references: [id])
+
+  @@id([productId, styleId])
+}
+
+model DanceType {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products ProductDance[]
+}
+
+model ProductDance {
+  productId   String
+  danceTypeId String
+
+  product   Product   @relation(fields: [productId], references: [id])
+  danceType DanceType @relation(fields: [danceTypeId], references: [id])
+
+  @@id([productId, danceTypeId])
+}
+
+model ProductVariant {
+  id             String @id @default(uuid())
+  productId      String
+  sizeId         String
+  colorId        String
+  sku            String @unique
+  stockTotal     Int
+  stockAvailable Int
+
+  product                 Product                   @relation(fields: [productId], references: [id])
+  size                    Size                      @relation(fields: [sizeId], references: [id])
+  color                   Color                     @relation(fields: [colorId], references: [id])
+  orderDetails            OrderDetail[]
+  inventoryLogs           InventoryLog[]
+  rentals                 RentalItem[]
+  productVariantInventory ProductVariantInventory[]
+
+  @@unique([productId, sizeId, colorId])
+}
+
+//////////////////////
+// INVENTORY
+//////////////////////
+
+model ProductStatus {
+  id   String @id @default(uuid())
+  name String @unique
+
+  logs InventoryLog[]
+}
+
+model InventoryLog {
+  id               String   @id @default(uuid())
+  productVariantId String
+  statusId         String
+  note             String?
+  createdAt        DateTime @default(now())
+
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+  status         ProductStatus  @relation(fields: [statusId], references: [id])
+}
+
+//////////////////////
+// ORDERS & RENTALS
+//////////////////////
+
+model Order {
+  id        String      @id @default(uuid())
+  clientId  String
+  userId    String
+  storeId   String
+  type      OrderType
+  status    OrderStatus @default(PENDING)
+  total     Decimal
+  createdAt DateTime    @default(now())
+
+  client   Client        @relation(fields: [clientId], references: [id])
+  store    Store         @relation(fields: [storeId], references: [id])
+  details  OrderDetail[]
+  payments Payment[]
+  rentals  Rental[]
+}
+
+model OrderDetail {
+  id               String  @id @default(uuid())
+  orderId          String
+  productVariantId String
+  quantity         Int
+  price            Decimal
+  subtotal         Decimal
+
+  order          Order          @relation(fields: [orderId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+}
+
+model Rental {
+  id          String       @id @default(uuid())
+  orderId     String
+  startDate   DateTime
+  endDate     DateTime
+  rentalPrice Decimal
+  deposit     Decimal
+  status      RentalStatus @default(ACTIVE)
+
+  order     Order        @relation(fields: [orderId], references: [id])
+  items     RentalItem[]
+  return    Return?
+  guarantee Guarantee?
+  penalties Penalty[]
+}
+
+model RentalItem {
+  id               String @id @default(uuid())
+  rentalId         String
+  productVariantId String
+  quantity         Int
+
+  rental         Rental         @relation(fields: [rentalId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+}
+
+model Return {
+  id          String           @id @default(uuid())
+  rentalId    String           @unique
+  returnDate  DateTime
+  condition   ProductCondition
+  extraCharge Decimal          @default(0)
+
+  rental Rental @relation(fields: [rentalId], references: [id])
+}
+
+model Guarantee {
+  id          String  @id @default(uuid())
+  rentalId    String  @unique
+  amount      Decimal
+  description String?
+
+  rental Rental @relation(fields: [rentalId], references: [id])
+}
+
+model Penalty {
+  id        String   @id @default(uuid())
+  rentalId  String
+  reason    String
+  amount    Decimal
+  createdAt DateTime @default(now())
+
+  rental Rental @relation(fields: [rentalId], references: [id])
+}
+
+//////////////////////
+// PAYMENTS
+//////////////////////
+
+model Payment {
+  id      String        @id @default(uuid())
+  orderId String
+  method  PaymentMethod
+  amount  Decimal
+  status  PaymentStatus @default(COMPLETED)
+  paidAt  DateTime      @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+//////////////////////
+// AUDIT
+//////////////////////
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  createdAt DateTime @default(now())
+}
+
+//////////////////////
+// AUTH (BETTER-AUTH)
+//////////////////////
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  lastname      String?
+  username      String?
+  email         String    @unique
+  emailVerified Boolean?
+  companyId     String?
+  storeId       String?
+  image         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime?
+  updatedAt     DateTime?
+
+  sessions Session[]
+  accounts Account[]
+  roles    UserRole[]
+
+  company Company? @relation(fields: [companyId], references: [id])
+  store   Store?   @relation(fields: [storeId], references: [id])
+
+  @@map("user")
+}
+
+model Role {
+  id   String @id @default(uuid())
+  name String @unique
+
+  users UserRole[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Jwks {
+  id         String   @id
+  publicKey  String   @unique
+  privateKey String
+  createdAt  DateTime @default(now())
+
+  @@map("jwks")
+}
