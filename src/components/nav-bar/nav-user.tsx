@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -24,6 +22,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/sidebar";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  CheckmarkBadge01Icon,
+  WorkoutRunIcon,
+} from "@hugeicons/core-free-icons";
 
 export function NavUser({
   user,
@@ -85,12 +88,12 @@ export function NavUser({
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
+                <HugeiconsIcon icon={CheckmarkBadge01Icon} />
+                Marcar asistencia
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconNotification />
-                Notifications
+                <HugeiconsIcon icon={WorkoutRunIcon} />
+                Marcar salida
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

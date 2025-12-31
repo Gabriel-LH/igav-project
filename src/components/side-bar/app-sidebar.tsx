@@ -2,20 +2,16 @@
 
 import * as React from "react";
 import {
-  IconCamera,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
+  IconCreditCard,
   IconHelp,
   IconInnerShadowTop,
-  IconReport,
   IconSearch,
   IconSettings,
 } from "@tabler/icons-react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { NavDocuments } from "@/src/components/nav-bar/nav-documents";
+
 import { NavMain } from "@/src/components/nav-bar/nav-main";
+import { NavInventory } from "@/src/components/nav-bar/nav-inventory";
 import { NavSecondary } from "@/src/components/nav-bar/nav-secondary";
 import { NavUser } from "@/src/components/nav-bar/nav-user";
 import {
@@ -29,15 +25,27 @@ import {
 } from "@/components/sidebar";
 
 import {
+  CalendarUserIcon,
+  CatalogueIcon,
   Chart02Icon,
+  Clock01Icon,
   DashboardSquare02Icon,
+  DeliveryReturn01Icon,
+  File02Icon,
   Home12Icon,
-  SaleTag01Icon,
+  SaleTag02Icon,
+  Settings01Icon,
+  ShieldUserIcon,
+  StoreLocation01Icon,
   Suit01Icon,
   UserGroupIcon,
   UserMultiple02Icon,
+  Wardrobe01Icon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
+import { NavOperation } from "../nav-bar/nav-operation";
+import { NavRRHH } from "../nav-bar/nav-rrhh";
+import { NavAdmin } from "../nav-bar/nav-admin";
 
 const data = {
   user: {
@@ -53,16 +61,6 @@ const data = {
       icon: <HugeiconsIcon icon={Home12Icon} strokeWidth={2.2} />,
     },
     {
-      title: "Alquilar",
-      url: "/alquilar",
-      icon: <HugeiconsIcon icon={Suit01Icon} strokeWidth={2.2} />,
-    },
-    {
-      title: "Vender",
-      url: "/projects",
-      icon: <HugeiconsIcon icon={SaleTag01Icon} strokeWidth={2.2} />,
-    },
-    {
       title: "Dashboard",
       url: "/dashboard",
       icon: <HugeiconsIcon icon={DashboardSquare02Icon} strokeWidth={2.2} />,
@@ -73,65 +71,96 @@ const data = {
       url: "/analytics",
       icon: <HugeiconsIcon icon={Chart02Icon} strokeWidth={2.2} />,
     },
-
-    {
-      title: "Equipo",
-      url: "/team",
-      icon: <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2.2} />,
-    },
-
     {
       title: "Clientes",
       url: "/clients",
       icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2.2} />,
     },
   ],
-  navClouds: [
+  navInventory: [
     {
-      title: "Capture",
-      icon: IconCamera,
+      title: "Catálogos",
+      icon: <HugeiconsIcon size={17} icon={CatalogueIcon} strokeWidth={2.2} />,
       isActive: true,
-      url: "/capture",
+      url: "/catalogo",
       items: [
-        {
-          title: "Active Proposals",
-          url: "/active-proposals",
-        },
-        {
-          title: "Archived",
-          url: "/archived",
-        },
+        { title: "Tallas", url: "/catalogos/tallas" },
+        { title: "Colores", url: "/catalogos/colores" },
+        { title: "Modelos", url: "/catalogos/modelos" },
+        { title: "Categorías", url: "/catalogos/categorias" },
       ],
     },
     {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "/proposal",
+      title: "Inventario",
+      icon: <HugeiconsIcon size={17} icon={Wardrobe01Icon} strokeWidth={2.2} />,
+      url: "/inventario",
       items: [
-        {
-          title: "Active Proposals",
-          url: "/active-proposals",
-        },
-        {
-          title: "Archived",
-          url: "/archived",
-        },
+        { title: "Prendas", url: "/inventario/prendas" },
+        { title: "Agregar prenda", url: "/inventario/nuevo" },
+        { title: "Stock", url: "/inventario/stock" },
       ],
     },
+  ],
+  navOperation: [
     {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "/prompts",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "/active-proposals",
-        },
-        {
-          title: "Archived",
-          url: "/archived",
-        },
-      ],
+      title: "Ventas",
+      url: "/ventas",
+      icon: <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Alquileres",
+      url: "/alquileres",
+      icon: <HugeiconsIcon icon={Suit01Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Devoluciones",
+      url: "/devoluciones",
+      icon: <HugeiconsIcon icon={DeliveryReturn01Icon} strokeWidth={2.2} />,
+    }, // cambia icono si quieres
+    { title: "Pagos", url: "/pagos", icon: <IconCreditCard /> },
+  ],
+  navRRHH: [
+    {
+      title: "Asistencia",
+      url: "/asistencia",
+      icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Turnos",
+      url: "/turnos",
+      icon: <HugeiconsIcon icon={Clock01Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Roles / Permisos",
+      url: "/roles",
+      icon: <HugeiconsIcon icon={ShieldUserIcon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Sucursales",
+      url: "/sucursales",
+      icon: <HugeiconsIcon icon={StoreLocation01Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Usuarios",
+      url: "/usuarios",
+      icon: <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2.2} />,
+    }, // lo que antes llamaste "Equipo"
+  ],
+  navAdmin: [
+    {
+      title: "Configuración",
+      url: "/settings",
+      icon: <HugeiconsIcon icon={Settings01Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Métodos de pago",
+      url: "/metodos-pago",
+      icon: <IconCreditCard />,
+    },
+    {
+      title: "Políticas",
+      url: "/politicas",
+      icon: <HugeiconsIcon icon={File02Icon} strokeWidth={2.2} />,
     },
   ],
   navSecondary: [
@@ -149,23 +178,6 @@ const data = {
       title: "Search",
       url: "/search",
       icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "/data-library",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "/reports",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "/word-assistant",
-      icon: IconFileWord,
     },
   ],
 };
@@ -190,8 +202,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavInventory items={data.navInventory} />
+        <NavOperation items={data.navOperation} />
+        <NavRRHH items={data.navRRHH} />
+        <NavAdmin items={data.navAdmin} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
