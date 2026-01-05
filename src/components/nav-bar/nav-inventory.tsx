@@ -42,7 +42,7 @@ export function NavInventory({
 }
 
 function NavInventoryItem({ item }: { item: any }) {
-  const [isOpen, setIsOpen] = React.useState(item.isActive ?? false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleToggle = (e: React.MouseEvent) => {
     // Only toggle if we have items.

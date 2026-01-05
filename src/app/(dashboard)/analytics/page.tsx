@@ -1,20 +1,19 @@
-import { AppSidebar } from "@/src/components/side-bar/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/sidebar";
+import { AnalyticsCharts } from "@/src/components/analytics/analytics-charts";
+import { AnalyticsFilters } from "@/src/components/analytics/analytics-filters";
+import { AnalyticsHeader } from "@/src/components/analytics/analytics-header";
+import { AnalyticsOverview } from "@/src/components/analytics/analytics-overview";
+import { AnalyticsInsights } from "@/src/components/analytics/insights";
+import { GarmentsPerformanceTable } from "@/src/components/analytics/tables/garments-performance-table";
 
 export default function AnalyticsPage() {
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <h1>Analytics</h1>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex flex-col gap-6 p-6">
+      <AnalyticsHeader />
+      <AnalyticsFilters />
+      <AnalyticsOverview />
+      <AnalyticsCharts />
+      <GarmentsPerformanceTable />
+      <AnalyticsInsights />
+    </div>
   );
 }

@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/toggle-group";
+import { SortedTooltipContent } from "./ui/sorted-tootip-content";
 
 export const description = "An interactive area chart";
 
@@ -121,6 +122,10 @@ const chartData = [
   { date: "2025-06-28", alquiler: 149, venta: 200 },
   { date: "2025-06-29", alquiler: 103, venta: 160 },
   { date: "2025-06-30", alquiler: 446, venta: 400 },
+  { date: "2025-06-30", alquiler: 400, venta: 34 },
+  { date: "2025-06-30", alquiler: 44, venta: 40 },
+  { date: "2025-06-30", alquiler: 64, venta: 39 },
+  { date: "2025-06-30", alquiler: 200, venta: 100 },
 ];
 
 const chartConfig = {
@@ -129,17 +134,17 @@ const chartConfig = {
   },
   alquiler: {
     label: "Alquiler",
-    color: "var(--primary)",
+    color: "#2563eb",
   },
   venta: {
     label: "Venta",
-    color: "var(--primary)",
+    color: "#10b981",
   },
 } satisfies ChartConfig;
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
-  const [timeRange, setTimeRange] = React.useState("90d");
+  const [timeRange, setTimeRange] = React.useState("now");
   const [timeRange2, setTimeRange2] = React.useState("últimos 3 meses");
 
   React.useEffect(() => {
@@ -151,14 +156,18 @@ export function ChartAreaInteractive() {
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date);
     const referenceDate = new Date(chartData[chartData.length - 1].date);
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
+
+    if (timeRange === "now") {
+      return date.getTime() === referenceDate.getTime();
     }
+
+    let daysToSubtract = 90;
+    if (timeRange === "30d") daysToSubtract = 30;
+    else if (timeRange === "7d") daysToSubtract = 7;
+
     const startDate = new Date(referenceDate);
     startDate.setDate(startDate.getDate() - daysToSubtract);
+
     return date >= startDate;
   });
 
@@ -180,11 +189,14 @@ export function ChartAreaInteractive() {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:px-4! @[767px]/card:flex"
           >
+            <ToggleGroupItem onClick={() => setTimeRange2("hoy")} value="now">
+              Hoy
+            </ToggleGroupItem>
             <ToggleGroupItem
-              onClick={() => setTimeRange2("últimos 3 meses")}
-              value="90d"
+              onClick={() => setTimeRange2("últimos 7 días")}
+              value="7d"
             >
-              Últimos 3 meses
+              Últimos 7 días
             </ToggleGroupItem>
             <ToggleGroupItem
               onClick={() => setTimeRange2("últimos 30 días")}
@@ -193,10 +205,10 @@ export function ChartAreaInteractive() {
               Últimos 30 días
             </ToggleGroupItem>
             <ToggleGroupItem
-              onClick={() => setTimeRange2("últimos 7 días")}
-              value="7d"
+              onClick={() => setTimeRange2("últimos 3 meses")}
+              value="90d"
             >
-              Últimos 7 días
+              Últimos 3 meses
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -208,14 +220,17 @@ export function ChartAreaInteractive() {
               <SelectValue placeholder="Últimos 3 meses" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
-                Últimos 3 meses
+              <SelectItem value="now" className="rounded-lg">
+                Hoy
+              </SelectItem>
+              <SelectItem value="7d" className="rounded-lg">
+                Últimos 7 días
               </SelectItem>
               <SelectItem value="30d" className="rounded-lg">
                 Últimos 30 días
               </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Últimos 7 días
+              <SelectItem value="90d" className="rounded-lg">
+                Últimos 3 meses
               </SelectItem>
             </SelectContent>
           </Select>
@@ -228,27 +243,27 @@ export function ChartAreaInteractive() {
         >
           <AreaChart data={filteredData} accessibilityLayer>
             <defs>
-              <linearGradient id="fillAlquiler" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-alquiler)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-alquiler)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
               <linearGradient id="fillVenta" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-venta)"
-                  stopOpacity={0.8}
+                  stopOpacity={1.0}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-venta)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillAlquiler" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-alquiler)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-alquiler)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -268,33 +283,18 @@ export function ChartAreaInteractive() {
                 });
               }}
             />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("es-ES", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
+            <ChartTooltip cursor={false} content={<SortedTooltipContent />} />
             <Area
               dataKey="venta"
               type="natural"
               fill="url(#fillVenta)"
               stroke="var(--color-venta)"
-              stackId="a"
             />
             <Area
               dataKey="alquiler"
               type="natural"
               fill="url(#fillAlquiler)"
               stroke="var(--color-alquiler)"
-              stackId="a"
             />
           </AreaChart>
         </ChartContainer>
