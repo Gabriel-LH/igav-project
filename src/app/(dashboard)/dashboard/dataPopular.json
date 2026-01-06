@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "name": "Apartamento Luxury Vista Mar",
+    "type": "Alquiler",
+    "count": 45,
+    "income": 12500.50
+  },
+  {
+    "id": 2,
+    "name": "Residencial Los Olivos",
+    "type": "Venta",
+    "count": 12,
+    "income": 450000.00
+  },
+  {
+    "id": 3,
+    "name": "Oficinas Centro Empresarial",
+    "type": "Alquiler",
+    "count": 28,
+    "income": 32400.75
+  },
+  {
+    "id": 4,
+    "name": "Local Comercial Plaza Norte",
+    "type": "Alquiler",
+    "count": 15,
+    "income": 8900.00
+  },
+  {
+    "id": 5,
+    "name": "Casa de Campo San Isidro",
+    "type": "Venta",
+    "count": 3,
+    "income": 1250000.00
+  },
+  {
+    "id": 6,
+    "name": "Penthouse Avenida Central",
+    "type": "Alquiler",
+    "count": 10,
+    "income": 18200.00
+  },
+  {
+    "id": 7,
+    "name": "Bodega Industrial Sector Sur",
+    "type": "Venta",
+    "count": 5,
+    "income": 890000.50
+  },
+  {
+    "id": 8,
+    "name": "Estudio Minimalista Loft",
+    "type": "Alquiler",
+    "count": 52,
+    "income": 6500.25
+  },
+  {
+    "id": 9,
+    "name": "Terreno Urbanizable Costa",
+    "type": "Venta",
+    "count": 2,
+    "income": 310000.00
+  },
+  {
+    "id": 10,
+    "name": "Consultorios Médicos Médica",
+    "type": "Alquiler",
+    "count": 19,
+    "income": 14750.00
+  },
+  {
+    "id": 11,
+    "name": "Consultorios Médicos Médica",
+    "type": "Alquiler",
+    "count": 19,
+    "income": 14750.00
+  }
+]

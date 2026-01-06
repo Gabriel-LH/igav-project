@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "item": "Apartamentos tipo Loft - Zona Norte",
+    "lastweek": 145,
+    "thisweek": 168,
+    "difference": 23
+  },
+  {
+    "id": 2,
+    "item": "Locales Comerciales (Centro)",
+    "lastweek": 89,
+    "thisweek": 82,
+    "difference": -7
+  },
+  {
+    "id": 3,
+    "item": "Oficinas Coworking",
+    "lastweek": 210,
+    "thisweek": 245,
+    "difference": 35
+  },
+  {
+    "id": 4,
+    "item": "Casas Residenciales - Suburbios",
+    "lastweek": 67,
+    "thisweek": 70,
+    "difference": 3
+  },
+  {
+    "id": 5,
+    "item": "Terrenos Industriales",
+    "lastweek": 34,
+    "thisweek": 28,
+    "difference": -6
+  },
+  {
+    "id": 6,
+    "item": "Estudios para Estudiantes",
+    "lastweek": 112,
+    "thisweek": 156,
+    "difference": 44
+  },
+  {
+    "id": 7,
+    "item": "Penthouses de Lujo",
+    "lastweek": 15,
+    "thisweek": 12,
+    "difference": -3
+  },
+  {
+    "id": 8,
+    "item": "Bodegas de Almacenamiento",
+    "lastweek": 45,
+    "thisweek": 48,
+    "difference": 3
+  },
+  {
+    "id": 9,
+    "item": "Consultorios Médicos",
+    "lastweek": 78,
+    "thisweek": 92,
+    "difference": 14
+  },
+  {
+    "id": 10,
+    "item": "Plazas de Garaje / Parking",
+    "lastweek": 230,
+    "thisweek": 215,
+    "difference": -15
+  }
+]

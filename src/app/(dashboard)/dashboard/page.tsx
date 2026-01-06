@@ -1,9 +1,10 @@
 // app/(admin)/dashboard/page.tsx
 import { ChartAreaInteractive } from "@/src/components/dashboard/chart-area-interactive";
-import { DataTable } from "@/src/components/dashboard/data-table";
 import { SectionCards } from "@/src/components/dashboard/section-cards";
-
-import data from "./data.json";
+import dataClient from "./dataClient.json";
+import dataPopular from "./dataPopular.json";
+import dataTrading from "./dataTrading.json";
+import { DataTable } from "@/src/components/data-table/data-table";
 
 export default function AdminDashboardPage() {
   return (
@@ -14,7 +15,11 @@ export default function AdminDashboardPage() {
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive />
           </div>
-          <DataTable data={data} />
+          <DataTable
+            dataClient={dataClient}
+            dataPopular={dataPopular}
+            dataTrading={dataTrading}
+          />
         </div>
       </div>
     </div>
