@@ -12,7 +12,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { NavMain } from "@/src/components/nav-bar/nav-main";
 import { NavInventory } from "@/src/components/nav-bar/nav-inventory";
-import { NavSecondary } from "@/src/components/nav-bar/nav-secondary";
+
 import { NavUser } from "@/src/components/nav-bar/nav-user";
 import {
   Sidebar,
@@ -29,15 +29,16 @@ import {
   CatalogueIcon,
   Chart02Icon,
   Clock01Icon,
+  CreditCardIcon,
   DashboardSquare02Icon,
-  DeliveryReturn01Icon,
   File02Icon,
   Home12Icon,
+  Repeat,
   SaleTag02Icon,
   Settings01Icon,
   ShieldUserIcon,
   StoreLocation01Icon,
-  Suit01Icon,
+  Undo03Icon,
   UserGroupIcon,
   UserMultiple02Icon,
   Wardrobe01Icon,
@@ -57,7 +58,7 @@ const data = {
   navMain: [
     {
       title: "Principal",
-      url: "/principal",
+      url: "/home",
       icon: <HugeiconsIcon icon={Home12Icon} strokeWidth={2.2} />,
     },
     {
@@ -110,20 +111,20 @@ const data = {
     {
       title: "Alquileres",
       url: "/alquileres",
-      icon: <HugeiconsIcon icon={Suit01Icon} strokeWidth={2.2} />,
+      icon: <HugeiconsIcon icon={Repeat} strokeWidth={2.2} />,
     },
     {
       title: "Devoluciones",
       url: "/devoluciones",
-      icon: <HugeiconsIcon icon={DeliveryReturn01Icon} strokeWidth={2.2} />,
+      icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
     }, // cambia icono si quieres
-    { title: "Pagos", url: "/pagos", icon: <IconCreditCard /> },
+    { title: "Pagos", url: "/pagos", icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />  },
   ],
   navRRHH: [
     {
       title: "Asistencia",
       url: "/asistencia",
-      icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2} />,
+      icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2}  />,
     },
     {
       title: "Turnos",

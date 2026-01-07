@@ -1,6 +1,6 @@
 import { Row } from "@tanstack/react-table";
 import { z } from "zod";
-import { clientSchema } from "../../type";
+import { clientSchema } from "./../../type";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { flexRender } from "@tanstack/react-table";

@@ -123,3 +123,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+@supports (selector(::-webkit-scrollbar)) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280; /* Un poco más oscuro para que se note el cambio */
+  }
+}
+
+/* Específico para Firefox */
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af transparent;
+  }
+}

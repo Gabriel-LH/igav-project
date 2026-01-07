@@ -145,7 +145,7 @@ const chartConfig = {
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("now");
-  const [timeRange2, setTimeRange2] = React.useState("últimos 3 meses");
+  const [timeRange2, setTimeRange2] = React.useState("hoy");
 
   React.useEffect(() => {
     if (isMobile) {
@@ -177,7 +177,7 @@ export function ChartAreaInteractive() {
         <CardTitle>Total de movimientos</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total de los {timeRange2}
+            Total de {timeRange2}
           </span>
           <span className="@[540px]/card:hidden">{timeRange2}</span>
         </CardDescription>
@@ -193,19 +193,19 @@ export function ChartAreaInteractive() {
               Hoy
             </ToggleGroupItem>
             <ToggleGroupItem
-              onClick={() => setTimeRange2("últimos 7 días")}
+              onClick={() => setTimeRange2("los últimos 7 días")}
               value="7d"
             >
               Últimos 7 días
             </ToggleGroupItem>
             <ToggleGroupItem
-              onClick={() => setTimeRange2("últimos 30 días")}
+              onClick={() => setTimeRange2("los últimos 30 días")}
               value="30d"
             >
               Últimos 30 días
             </ToggleGroupItem>
             <ToggleGroupItem
-              onClick={() => setTimeRange2("últimos 3 meses")}
+              onClick={() => setTimeRange2("los últimos 3 meses")}
               value="90d"
             >
               Últimos 3 meses

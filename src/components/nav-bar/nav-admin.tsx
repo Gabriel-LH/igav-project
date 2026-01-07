@@ -8,6 +8,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/sidebar";
+import Link from "next/link";
 import React from "react";
 
 export function NavAdmin({
@@ -28,11 +29,11 @@ export function NavAdmin({
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link href={item.url}>
                 {item.icon &&
                   (React.isValidElement(item.icon) ? item.icon : <item.icon />)}
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

@@ -219,7 +219,7 @@ export function DataTable({
         <TopMostPopularTable data={dataPopular} table={tablePopular} />
       </TabsContent>
       <TabsContent value="trending-fast" className="flex flex-col px-4 lg:px-6">
-       <TradingFastTable data={dataTrading} table={tableTrading} />
+        <TradingFastTable data={dataTrading} table={tableTrading} />
       </TabsContent>
       <TabsContent
         value="focus-documents"

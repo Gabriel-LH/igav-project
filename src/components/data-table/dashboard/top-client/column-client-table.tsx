@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  IconDotsVertical,
-} from "@tabler/icons-react";
+import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 

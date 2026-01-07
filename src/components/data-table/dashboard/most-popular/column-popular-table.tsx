@@ -96,7 +96,7 @@ export const columnsPopular: ColumnDef<z.infer<typeof popularSchema>>[] = [
   {
     accessorKey: "income",
     header: "Ingreso generado",
-    cell: ({ row }) => <div className="w-32">S/. { row.original.income}</div>,
+    cell: ({ row }) => <div className="w-32">S/. {row.original.income}</div>,
   },
   {
     id: "actions",

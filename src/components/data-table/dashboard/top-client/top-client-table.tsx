@@ -45,7 +45,7 @@ import {
 } from "@/components/table";
 import { DraggableRow } from "./draggable-row-client";
 import { columns } from "./column-client-table";
-import { clientSchema } from "../../type";
+import { clientSchema } from "../type";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
 
