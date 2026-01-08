@@ -12,7 +12,7 @@ export const reservationSchema = z.object({
   details: z.object({
     size: z.string().optional(),     // Talla (si es ropa)
     quantity: z.number().default(1), // Cantidad
-    color: z.string().optional(),    // Color
+    color: z.string().optional(),    // Color      // Hex del color
     notes: z.string().optional(),    // Notas adicionales
   }),
   

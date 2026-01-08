@@ -4,35 +4,46 @@ import { useState } from "react";
 import { ProductFilters } from "./home-product-filter";
 import { ProductCard } from "./product-card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BubbleChatSearchIcon, Calendar03Icon, SearchRemoveIcon } from "@hugeicons/core-free-icons";
+import {
+  BubbleChatSearchIcon,
+  Calendar03Icon,
+  SearchRemoveIcon,
+} from "@hugeicons/core-free-icons";
 import { Button } from "@/components/button";
-import { MOCK_DATA } from "@/src/util/mocks";
+import { MOCK_DATA, RESERVATIONS_MOCK } from "@/src/util/mocks";
 
 // src/components/home/product-grid.tsx
 export function ProductGrid() {
-  const [activeTab, setActiveTab] = useState("todos");
+ const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showReserved, setShowReserved] = useState(false); // Nuevo estado
+  const [showReserved, setShowReserved] = useState(false);
 
-  const filteredProducts = MOCK_DATA.filter((product) => {
-    // 1. Filtro de Búsqueda
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  // 1. Aquí traes tus dos fuentes de datos (Mocks o API)
+  const products = MOCK_DATA; 
+  const reservations = RESERVATIONS_MOCK; // Tu nueva tabla de reservas
 
-    // 2. Filtro de Tipo (Alquiler/Venta)
+  const filteredProducts = products.filter((product) => {
+    // 2. DETERMINAR SI ESTÁ RESERVADO REALMENTE
+    // Buscamos si el ID del producto existe en la lista de reservas
+    const hasActiveReservation = reservations.some(
+      (res) => res.productId === product.id && res.status !== "finalizada"
+    );
+
+    // 3. Filtros básicos
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    
     let matchesTab = true;
     if (activeTab === "alquiler") matchesTab = product.can_rent;
     if (activeTab === "venta") matchesTab = product.can_sell;
 
-    // 3. Filtro de Reservados (Excluyente)
-    // Si showReserved es true, solo mostramos los que tienen is_reserved: true
-    // Si showReserved es false, solo mostramos los que tienen is_reserved: false
-    const matchesReserved = product.is_reserved === showReserved;
-
-    return matchesSearch && matchesTab && matchesReserved;
+    // 4. EL FILTRO CLAVE:
+    // Ahora comparamos contra la existencia real de la reserva, no contra el campo de la DB
+    if (showReserved) {
+      return matchesSearch && matchesTab && hasActiveReservation;
+    } else {
+      return matchesSearch && matchesTab && !hasActiveReservation;
+    }
   });
-
   return (
     <div className="w-full">
       <ProductFilters
@@ -45,9 +56,18 @@ export function ProductGrid() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {filteredProducts.map((product) => {
+        // Buscamos la info de la reserva para pasársela a la Card
+        const reservationData = reservations.find(res => res.productId === product.id);
+        
+        return (
+          <ProductCard 
+            key={product.id} 
+            product={product as any} 
+            reservation={reservationData} 
+          />
+        );
+      })}
       </div>
 
       {filteredProducts.length === 0 && (
@@ -77,7 +97,8 @@ export function ProductGrid() {
               onClick={() => setSearchQuery("")}
               className="mt-2 text-primary"
             >
-             <HugeiconsIcon icon={SearchRemoveIcon} strokeWidth={2.2}/> Limpiar búsqueda
+              <HugeiconsIcon icon={SearchRemoveIcon} strokeWidth={2.2} />{" "}
+              Limpiar búsqueda
             </Button>
           )}
         </div>

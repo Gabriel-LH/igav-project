@@ -18,6 +18,7 @@ import {
   InformationCircleIcon,
   PackageIcon,
   Layers01Icon,
+  CheckmarkBadge03Icon,
 } from "@hugeicons/core-free-icons";
 import {
   OPERATIONS_MOCK,
@@ -192,8 +193,8 @@ export function DetailsReservedViewer({
 
           {/* ACCIONES DE RESERVA */}
           <DrawerFooter className="border-t bg-muted/20 grid grid-cols-2 gap-3">
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 font-bold col-span-2 py-6 text-lg">
-              <HugeiconsIcon icon={PackageIcon} className="mr-2" size={20} />
+            <Button className="w-full text-white bg-amber-600 hover:bg-amber-700 font-bold col-span-2 py-6 text-md">
+              <HugeiconsIcon icon={CheckmarkBadge03Icon} strokeWidth={3}/>
               ENTREGAR AHORA
             </Button>
             <Button variant="outline" className="w-full">

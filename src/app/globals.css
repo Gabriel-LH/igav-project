@@ -144,6 +144,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #6b7280; /* Un poco más oscuro para que se note el cambio */
   }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Específico para Firefox */
