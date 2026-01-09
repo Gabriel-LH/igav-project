@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, X } from "lucide-react";
-import { Switch } from "@/components/ui/switch"; // Asegúrate de tenerlo instalado
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 export function ProductFilters({
@@ -10,8 +10,8 @@ export function ProductFilters({
   setActiveTab,
   searchQuery,
   setSearchQuery,
-  showReserved, // Nuevo prop
-  setShowReserved, // Nuevo prop
+  showReserved,
+  setShowReserved,
 }: any) {
   return (
     <div className="flex flex-col gap-4 mb-6">
@@ -29,8 +29,8 @@ export function ProductFilters({
             </TabsList>
           </Tabs>
 
-          {/* Sección del Switch de Reservados */}
-          <div className="flex items-center space-x-2 px-3 py-2 bg-muted  rounded-lg">
+          {/* Sección del Switch de Reservados - Diseño Original */}
+          <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-lg">
             <Label htmlFor="reserved-mode" className="text-xs font-medium">
               Ver reservados
             </Label>
@@ -41,11 +41,21 @@ export function ProductFilters({
             />
           </div>
         </div>
+        {showReserved && searchQuery && (
+          <p className="text-[10px] text-muted-foreground italic px-1">
+            Buscando coincidencias en productos y clientes...
+          </p>
+        )}
 
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4" />
           <Input
-            placeholder="Buscar productos..."
+            // Lógica de placeholder según el modo
+            placeholder={
+              showReserved
+                ? "Producto, cliente o DNI..."
+                : "Buscar productos..."
+            }
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

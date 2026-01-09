@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Payment } from "../type.payments";
+import { Payment } from "../../../types/payments/type.payments";
 
 interface PaymentHistoryModalProps {
   open: boolean;
@@ -26,7 +26,9 @@ export function PaymentHistoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden"> {/* p-0 para controlar los bordes */}
+      <DialogContent className="max-w-md p-0 overflow-hidden">
+        {" "}
+        {/* p-0 para controlar los bordes */}
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <HugeiconsIcon
@@ -40,7 +42,6 @@ export function PaymentHistoryModal({
             Registro de abonos realizados para esta operación.
           </DialogDescription>
         </DialogHeader>
-
         <div className="p-6 pt-0 space-y-4">
           {/* Listado de Pagos con Scroll si hay muchos */}
           <div className="rounded-xl border border-border bg-card overflow-hidden">
@@ -51,12 +52,17 @@ export function PaymentHistoryModal({
                     <tr>
                       <th className="px-4 py-2.5 font-bold">Fecha / Recibió</th>
                       <th className="px-4 py-2.5 font-bold">Método</th>
-                      <th className="px-4 py-2.5 text-right font-bold">Monto</th>
+                      <th className="px-4 py-2.5 text-right font-bold">
+                        Monto
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {payments.map((p) => (
-                      <tr key={p.id} className="hover:bg-muted/30 transition-colors">
+                      <tr
+                        key={p.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
                         <td className="px-4 py-3">
                           <p className="font-bold text-[12px] text-foreground leading-none mb-1">
                             {p.date.toLocaleDateString()}
@@ -91,19 +97,25 @@ export function PaymentHistoryModal({
           {/* Resumen Final: Se corrigió el Separator manual */}
           <div className="bg-muted/30 p-4 rounded-xl space-y-3 border border-border">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground font-medium">Costo Total:</span>
-              <span className="font-semibold">${totalOperation.toLocaleString()}</span>
+              <span className="text-muted-foreground font-medium">
+                Costo Total:
+              </span>
+              <span className="font-semibold">
+                ${totalOperation.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between text-xs text-emerald-600 font-bold">
               <span>Total Abonado:</span>
               <span>- ${totalPagado.toLocaleString()}</span>
             </div>
-            
+
             {/* Divisor Manual Simple */}
             <div className="h-px w-full bg-border my-2" />
-            
+
             <div className="flex justify-between items-center">
-              <span className="text-sm font-bold uppercase tracking-tight">Deuda Actual:</span>
+              <span className="text-sm font-bold uppercase tracking-tight">
+                Deuda Actual:
+              </span>
               <span className="text-lg font-black text-orange-600">
                 ${(totalOperation - totalPagado).toLocaleString()}
               </span>

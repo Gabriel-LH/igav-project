@@ -10,38 +10,70 @@ import {
   SearchRemoveIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/button";
-import { MOCK_DATA, RESERVATIONS_MOCK } from "@/src/util/mocks";
+import { MOCK_DATA } from "@/src/mocks/mocks.product";
+import { RESERVATIONS_MOCK } from "@/src/mocks/mock.reservation";
+import { hasActiveReservation } from "@/src/utils/filtered-products";
+import { Reservation } from "@/src/types/payments/type.reservation";
+import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 
 // src/components/home/product-grid.tsx
 export function ProductGrid() {
- const [activeTab, setActiveTab] = useState("todos");
+  const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
   const [showReserved, setShowReserved] = useState(false);
 
   // 1. Aquí traes tus dos fuentes de datos (Mocks o API)
-  const products = MOCK_DATA; 
+  const products = MOCK_DATA;
   const reservations = RESERVATIONS_MOCK; // Tu nueva tabla de reservas
+  const clients = CLIENTS_MOCK;
 
   const filteredProducts = products.filter((product) => {
-    // 2. DETERMINAR SI ESTÁ RESERVADO REALMENTE
-    // Buscamos si el ID del producto existe en la lista de reservas
-    const hasActiveReservation = reservations.some(
-      (res) => res.productId === product.id && res.status !== "finalizada"
+    // 1. DETERMINAR SI ESTÁ RESERVADO
+    const productReservations = reservations.filter(
+      (r) => r.productId === product.id
     );
+    const active = hasActiveReservation(productReservations);
 
-    // 3. Filtros básicos
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
+    // 2. LOGICA DE BÚSQUEDA AMPLIADA
+    const query = searchQuery.toLowerCase();
+
+    // Búsqueda básica (Producto/SKU)
+    const matchesProduct =
+      product.name.toLowerCase().includes(query) ||
+      product.sku.toLowerCase().includes(query);
+
+    let matchesClient = false;
+
+    // 3. SI ESTÁ EN MODO RESERVA, BUSCAMOS POR CLIENTE
+    if (showReserved && active && query.length > 0) {
+      // Buscamos la reserva activa específica para este producto
+      const currentRes = productReservations.find(
+        (r) => r.status === "pendiente"
+      ); // o tu lógica de activa
+
+      if (currentRes) {
+        const cliente = clients.find((c) => c.id === currentRes.customerId);
+        if (cliente) {
+          const nombreCompleto =
+            `${cliente.firstName} ${cliente.lastName}`.toLowerCase();
+          matchesClient =
+            nombreCompleto.includes(query) || cliente.dni?.includes(query); // Asumiendo que existe el campo dni
+        }
+      }
+    }
+
+    const matchesSearch = matchesProduct || matchesClient;
+
+    // 4. Filtros de Tabs
     let matchesTab = true;
     if (activeTab === "alquiler") matchesTab = product.can_rent;
     if (activeTab === "venta") matchesTab = product.can_sell;
 
-    // 4. EL FILTRO CLAVE:
-    // Ahora comparamos contra la existencia real de la reserva, no contra el campo de la DB
+    // 5. Retorno final (Filtro Switch)
     if (showReserved) {
-      return matchesSearch && matchesTab && hasActiveReservation;
+      return matchesSearch && matchesTab && active;
     } else {
-      return matchesSearch && matchesTab && !hasActiveReservation;
+      return matchesSearch && matchesTab && !active;
     }
   });
   return (
@@ -55,19 +87,16 @@ export function ProductGrid() {
         setShowReserved={setShowReserved}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 g:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map((product) => {
-        // Buscamos la info de la reserva para pasársela a la Card
-        const reservationData = reservations.find(res => res.productId === product.id);
-        
-        return (
-          <ProductCard 
-            key={product.id} 
-            product={product as any} 
-            reservation={reservationData} 
-          />
-        );
-      })}
+          return (
+            <ProductCard
+              key={product.id}
+              product={product as any}
+              reservations={reservations as any}
+            />
+          );
+        })}
       </div>
 
       {filteredProducts.length === 0 && (

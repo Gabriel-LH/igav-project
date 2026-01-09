@@ -1,5 +1,5 @@
 // src/components/home/details-product-viewer.tsx
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,10 +21,11 @@ import {
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import { z } from "zod";
-import { productSchema } from "./type.product";
+import { productSchema } from "../../types/payments/type.product";
 import { Label } from "@/components/label";
 import { CardContent, Card } from "@/components/card";
 import { cn } from "@/lib/utils";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 
 export function DetailsProductViewer({
   item,
@@ -32,40 +33,53 @@ export function DetailsProductViewer({
   item: z.infer<typeof productSchema>;
 }) {
   const isMobile = useIsMobile();
-
-  // 1. Estados principales
-  const [selectedSize, setSelectedSize] = useState(item.sizes?.[0] || null);
+  const user = USER_MOCK;
+  const currentBranchId = user[0].branchId;
 
   // 2. Colores que tienen stock (en cualquier tienda) para la talla elegida
-  const availableColorsForSize = item.inventory
-    .filter(
-      (inv) =>
-        inv.size === selectedSize &&
-        (inv.stock > 0 || inv.other_branch_stock > 0)
-    )
-    .map((inv) => inv.color);
-
-  const [selectedColor, setSelectedColor] = useState(item.colors[0]);
-
-  // 3. Auto-corrección de color al cambiar talla
-  React.useEffect(() => {
-    if (!availableColorsForSize.includes(selectedColor?.name)) {
-      const nextAvailable = item.colors.find((c) =>
-        availableColorsForSize.includes(c.name)
-      );
-      if (nextAvailable) setSelectedColor(nextAvailable);
-    }
-  }, [selectedSize]);
-
-  // 4. Datos de stock de la combinación exacta
-  const currentInv = item.inventory.find(
-    (inv) => inv.color === selectedColor?.name && inv.size === selectedSize
+  // 1. OBTENER TALLAS ÚNICAS (Desde el inventario)
+  const availableSizes = useMemo(
+    () => Array.from(new Set(item.inventory.map((inv) => inv.size))),
+    [item.inventory]
   );
 
-  const localStock = currentInv?.stock || 0;
-  const otherBranchStock = currentInv?.other_branch_stock || 0;
-  const totalStockCombo = localStock + otherBranchStock;
+  const [selectedSize, setSelectedSize] = useState(availableSizes[0] || null);
 
+  // 2. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
+  // Extraemos los colores únicos que existen para la talla que el usuario tocó
+  const colorsForSelectedSize = useMemo(() => {
+    return item.inventory
+      .filter((inv) => inv.size === selectedSize)
+      .map((inv) => ({ name: inv.color, hex: inv.colorHex }));
+  }, [selectedSize, item.inventory]);
+
+  const [selectedColor, setSelectedColor] = useState(
+    colorsForSelectedSize[0] || null
+  );
+
+  // 3. AUTO-CORRECCIÓN: Si cambio de talla y el color ya no existe en esa talla
+  React.useEffect(() => {
+    const isColorStillAvailable = colorsForSelectedSize.some(
+      (c) => c.name === selectedColor?.name
+    );
+    if (!isColorStillAvailable && colorsForSelectedSize.length > 0) {
+      setSelectedColor(colorsForSelectedSize[0]);
+    }
+  }, [selectedSize, colorsForSelectedSize]);
+
+  // 4. CÁLCULO DE STOCK DE LA COMBINACIÓN EXACTA (Talla + Color)
+  const currentVariant = item.inventory.find(
+    (inv) => inv.size === selectedSize && inv.color === selectedColor?.name
+  );
+
+  const localStock =
+    currentVariant?.locations.find((loc) => loc.branchId === currentBranchId)
+      ?.quantity || 0;
+
+  const totalStockCombo =
+    currentVariant?.locations.reduce((acc, loc) => acc + loc.quantity, 0) || 0;
+
+  const otherBranchStock = totalStockCombo - localStock;
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
@@ -76,29 +90,35 @@ export function DetailsProductViewer({
 
       <DrawerContent className={isMobile ? "" : "max-w-md ml-auto h-full"}>
         <DrawerHeader className="border-b">
-          <DrawerTitle>{item.name}</DrawerTitle>
+          <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
           <div className="flex gap-2 mt-2">
-            <Badge variant="outline" className="font-mono">
-              {item.sku}
+            <Badge
+              variant="outline"
+              className="font-mono text-blue-600 border-blue-200"
+            >
+              SKU: {item.sku}
             </Badge>
-            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">
-              Stock Global: {item.total_stock}
+            <Badge className="bg-slate-100 text-slate-700 border-none">
+              Existencia Total: {item.total_stock_global}
             </Badge>
           </div>
         </DrawerHeader>
 
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">
-          {/* 1. SELECCIÓN DE TALLA */}
+          {/* PASO 1: SELECCIÓN DE TALLA */}
           <div className="space-y-3">
-            <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-              Paso 1: Seleccionar Talla
+            <Label className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter">
+              1. Seleccionar Talla
             </Label>
             <div className="flex flex-wrap gap-2">
-              {item.sizes.map((size) => (
+              {availableSizes.map((size) => (
                 <Button
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
-                  className="h-12 w-14 font-bold relative"
+                  className={cn(
+                    "h-12 w-14 font-bold",
+                    selectedSize === size && "ring-2 ring-primary ring-offset-2"
+                  )}
                   onClick={() => setSelectedSize(size)}
                 >
                   {size}
@@ -107,148 +127,149 @@ export function DetailsProductViewer({
             </div>
           </div>
 
-          {/* 2. SELECCIÓN DE COLOR */}
+          {/* PASO 2: SELECCIÓN DE COLOR */}
           <div className="space-y-3">
-            <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-              Paso 2: Color en Talla {selectedSize}
+            <Label className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter">
+              2. Color en Talla {selectedSize}
             </Label>
-            <div className="flex gap-4">
-              {item.colors.map((color) => {
-                // Calculamos disponibilidad para este color específico en la talla seleccionada
-                const invForThisColor = item.inventory.find(
-                  (inv) => inv.color === color.name && inv.size === selectedSize
+            <div className="flex flex-wrap gap-4">
+              {colorsForSelectedSize.map((color) => {
+                const isSelected = selectedColor?.name === color.name;
+                // Verificamos si este color tiene stock en algún lugar
+                const variantData = item.inventory.find(
+                  (inv) => inv.size === selectedSize && inv.color === color.name
                 );
-
-                const hasLocal = (invForThisColor?.stock || 0) > 0;
-                const hasOther = (invForThisColor?.other_branch_stock || 0) > 0;
-                const isAvailableGlobal = hasLocal || hasOther;
+                const hasGlobalStock =
+                  (variantData?.locations.reduce((a, b) => a + b.quantity, 0) ||
+                    0) > 0;
 
                 return (
-                  <div
+                  <button
                     key={color.name}
-                    className="flex flex-col items-center gap-1"
+                    onClick={() => setSelectedColor(color)}
+                    className={cn(
+                      "group relative flex flex-col items-center gap-1 transition-all",
+                      !hasGlobalStock && "opacity-40"
+                    )}
                   >
-                    <button
-                      type="button"
-                      // IMPORTANTE: Ya no usamos 'disabled', ahora siempre es cliqueable
-                      onClick={() => setSelectedColor(color)}
-                      className={`relative w-12 h-12 rounded-full border-2 transition-all ${
-                        selectedColor?.name === color.name
-                          ? "border-primary ring-4 ring-primary/20 scale-110 z-10"
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all",
+                        isSelected
+                          ? "border-primary scale-110 shadow-lg"
                           : "border-transparent"
-                      } ${!isAvailableGlobal ? "opacity-20 grayscale" : ""}`} // Solo opaco si NO HAY NADA en ninguna parte
+                      )}
                       style={{ backgroundColor: color.hex }}
                     >
-                      {/* Si no hay stock LOCAL, pero sí hay en OTRA sucursal, ponemos un aviso visual sutil */}
-                      {!hasLocal && hasOther && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center">
-                          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                        </div>
+                      {isSelected && (
+                        <HugeiconsIcon
+                          icon={Tick01Icon}
+                          className="w-6 h-6 text-white mix-blend-difference"
+                        />
                       )}
-
-                      {/* Marcador de seleccionado */}
-                      {selectedColor?.name === color.name && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <HugeiconsIcon
-                            icon={Tick01Icon}
-                            className="w-6 h-6 text-white mix-blend-difference"
-                          />
-                        </div>
+                      {!hasGlobalStock && (
+                        <div className="absolute inset-0 border-t-2 border-destructive rotate-45 top-1/2 w-full" />
                       )}
-
-                      {/* Tachado: SOLO si está agotado en TODAS las tiendas */}
-                      {!isAvailableGlobal && (
-                        <div className="absolute inset-0 border-t-2 border-red-500 rotate-45 top-1/2 w-full" />
-                      )}
-                    </button>
+                    </div>
                     <span
-                      className={`text-[9px] font-medium uppercase ${
-                        selectedColor?.name === color.name
-                          ? "text-primary font-bold"
+                      className={cn(
+                        "text-[10px] uppercase",
+                        isSelected
+                          ? "font-bold text-primary"
                           : "text-muted-foreground"
-                      }`}
+                      )}
                     >
                       {color.name}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          {/* PANEL DE DISPONIBILIDAD Y PRECIOS */}
-          <div className="pt-4 space-y-4">
-            <Card className="rounded-xl">
-              <CardContent className="space-y-3">
-                {/* STOCK */}
-                <div className="flex justify-between items-start">
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      Stock en esta tienda
+          {/* PANEL DE DISPONIBILIDAD */}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="border rounded-lg bg-card border-emerald-100">
+              <div className="flex flex-col justify-between items-center">
+                <div className="flex w-full bg-muted justify-between rounded-t-lg border-b pb-1">
+                  <div className="flex w-full justify-between px-2 py-1">
+                    <p className="text-[10px] font-bold uppercase text-emerald-700">
+                      Stock en esta Sede
                     </p>
+                    <p className="text-[10px] font-bold uppercase text-slate-500">
+                      Otras Sedes
+                    </p>
+                  </div>
+                </div>
+                <div className="flex w-full justify-between">
+                  <div className="flex w-full justify-between px-2 py-1">
                     <p
                       className={cn(
-                        "text-xl font-bold",
-                        localStock > 0 ? "text-emerald-100" : "text-orange-600"
+                        "text-2xl font-black",
+                        localStock > 0 ? "text-emerald-600" : "text-slate-400"
                       )}
                     >
-                      {localStock > 0 ? localStock > 1 ? `${localStock} unidades` : " unidad" : "Agotado"}
+                      {localStock}{" "}
+                      <span className="text-xs font-medium">unid.</span>
                     </p>
-                  </div>
-
-                  <div className="text-right space-y-1">
-                    <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      Otras sucursales
-                    </p>
-                    <p className="text-lg font-semibold text-foreground">
-                      {otherBranchStock > 0 ? `+${otherBranchStock}` : "0"}
+                    <p className="text-xl font-bold text-slate-700">
+                      +{otherBranchStock}
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                {/* AVISO DE OTRA SUCURSAL */}
-                {localStock === 0 && otherBranchStock > 0 && (
-                  <div className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-2 text-orange-700 text-xs">
-                    <HugeiconsIcon
-                      icon={Tick01Icon}
-                      className="w-4 h-4 mt-0.5 text-orange-600"
-                    />
-                    <span>
-                      Hay existencias en otra sucursal. Puedes solicitar un
-                      traslado.
-                    </span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* TABLA DE SEDES DETALLADA (Nuevo para ERP Relacional) */}
+            <div className="rounded-lg border bg-card overflow-hidden">
+              <div className="bg-muted p-2 text-[10px] font-bold uppercase">
+                Distribución por Sucursal
+              </div>
+              {currentVariant?.locations.map((loc) => (
+                <div
+                  key={loc.branchId}
+                  className="flex justify-between p-3 border-t text-sm"
+                >
+                  <span
+                    className={cn(
+                      loc.branchId === currentBranchId &&
+                        "font-bold text-blue-600"
+                    )}
+                  >
+                    {loc.branchName}{" "}
+                    {loc.branchId === currentBranchId && "(Aquí)"}
+                  </span>
+                  <span className="font-mono font-bold">{loc.quantity}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-            {/* PRECIOS Y CONDICIÓN */}
-            <Card className="rounded-xl">
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      Precio alquiler
-                    </p>
-                    <p className="text-md font-bold">
-                      ${item.price_rent} por {item.rent_unit}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      Precio venta
-                    </p>
-                    <p className="text-md font-bold">
-                      ${item.price_sell}
-                    </p>
-                  </div>
+          {/* PRECIOS Y CONDICIÓN */}
+          <div className="rounded-lg p-2 border bg-card">
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase text-muted-foreground">
+                    Precio alquiler
+                  </p>
+                  <p className="text-md font-bold">
+                    ${item.price_rent} por {item.rent_unit}
+                  </p>
                 </div>
 
-                <Separator />
+                <div>
+                  <p className="text-xs font-semibold uppercase text-muted-foreground">
+                    Precio venta
+                  </p>
+                  <p className="text-md font-bold">${item.price_sell}</p>
+                </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
+              <Separator />
+
+              <div className=" grid grid-cols-2 gap-3">
+                <div>
                   <p className="text-xs font-semibold uppercase text-muted-foreground">
                     Condición
                   </p>
@@ -264,9 +285,8 @@ export function DetailsProductViewer({
                     {item.status.toUpperCase()}
                   </p>
                 </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <Separator />

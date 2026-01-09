@@ -12,43 +12,63 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 import { DetailsProductViewer } from "./details-product-viewer";
 import { DetailsReservedViewer } from "./details-reserved-viewer";
-import { productSchema } from "./type.product";
-import { reservationSchema } from "./type.reservation";
+import { productSchema } from "../../types/payments/type.product";
+import { reservationSchema } from "../../types/payments/type.reservation";
 import { z } from "zod";
-
+import { getActiveReservation } from "@/src/utils/filtered-products";
+import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 interface Props {
   product: z.infer<typeof productSchema>;
-  reservation?: z.infer<typeof reservationSchema>;
+  reservations: z.infer<typeof reservationSchema>[];
 }
 
-export function ProductCard({ product, reservation }: Props) {
-  const isReserved = !!reservation;
-  const activeColors = product.colors.filter((color) =>
-    product.inventory.some((inv) => inv.color === color.name && inv.stock > 0)
-  );
+export function ProductCard({ product, reservations }: Props) {
+  // Filtramos las reservas de este producto específico
+const  user  = USER_MOCK; 
+  const currentBranchId = user[0].branchId;
 
-  const activeSizes = product.sizes.filter((size) =>
-    product.inventory.some((inv) => inv.size === size && inv.stock > 0)
-  );
+  // 2. Filtros de reservas (Sigue igual)
+  const myReservations = reservations.filter((r) => r.productId === product.id);
+  const activeRes = getActiveReservation(myReservations);
+  const isReserved = !!activeRes;
 
-  const reservedColorHex = product.colors.find(
-    (c) => c.name === reservation?.details.color
-  )?.hex;
+ const activeColors = Array.from(
+  new Map(
+    product.inventory
+      .filter((inv) =>
+        inv.locations.some(
+          (loc) => loc.branchId === currentBranchId && loc.quantity > 0
+        )
+      )
+      .map((item) => [item.color, { name: item.color, hex: item.colorHex }])
+  ).values()
+);
 
-  if (isReserved) {
-    console.log("Reservado: " + reservation?.productId);
-    console.log("Talla " + reservation?.details.size);
-    console.log("Color " + reservation?.details.color);
-    console.log("Cantidad " + reservation?.details.quantity);
-    console.log("Notas " + reservation?.details.notes);
-    console.log("Fecha de inicio " + reservation?.startDate);
-    console.log("Fecha de fin " + reservation?.endDate);
-    console.log("Precio " + reservation?.totalAmount);
-  }
+// 2. Obtener las TALLAS únicas disponibles en la sucursal actual
+const activeSizes = Array.from(
+  new Set(
+    product.inventory
+      .filter((inv) =>
+        inv.locations.some(
+          (loc) => loc.branchId === currentBranchId && loc.quantity > 0
+        )
+      )
+      .map((inv) => inv.size)
+  )
+);
 
+// 3. Obtener el Hex del color reservado
+// Como el color ya está en el inventario, lo buscamos ahí
+const reservedColorHex = product.inventory.find(
+  (inv) => inv.color === activeRes?.details.color
+)?.colorHex;
+
+  // 5. Cliente (Sigue igual)
+  const client = CLIENTS_MOCK.find((c) => c.id === activeRes?.customerId);
   return (
-    <Card className="group overflow-hidden transition-all shadow-xl">
-      <div className="aspect-video bg-muted relative overflow-hidden group">
+    <Card className="group pt-0 pb-1  overflow-hidden transition-all shadow-xl">
+      <div className=" bg-muted relative overflow-hidden group">
         {/* Badges de estado (Venta/Alquiler) */}
         <div className="absolute top-2 right-2 flex gap-1 z-20 pointer-events-none">
           {isReserved ? (
@@ -72,26 +92,24 @@ export function ProductCard({ product, reservation }: Props) {
         </div>
 
         {/* CONTENEDOR CON SCROLL */}
-        <div className="absolute inset-0 overflow-y-auto overflow-x-hidden scrollbar-hide snap-y snap-mandatory touch-pan-y pointer-events-auto">
-          <div className="relative w-full h-[150%] snap-start">
-            {/* h-[150%] hace que la imagen sea más larga que el contenedor para poder deslizarla */}
+        <div className="relative  bg-neutral-100 group overflow-hidden rounded-t-xl">
+          <div className="relative aspect-square">
             <Image
               src={product.image}
               alt={product.name}
               fill
-              className="transition-all duration-500 ease-out group-hover:scale-[1.04] group-hover:-translate-y-1"
-              sizes="(max-width: 768px) 100vw, 33vw"
+              priority
+              className="
+          object-contain 
+          transition-transform duration-700 ease-in-out
+          group-hover:scale-110
+          "
             />
           </div>
         </div>
 
-        {/* Overlay que indica que se puede deslizar (solo aparece en hover) */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          <div className="bg-black/50 backdrop-blur-md px-2 py-1 rounded-full text-[8px] text-white flex items-center gap-1">
-            <span>Deslizar para ver más</span>
           </div>
-        </div>
-      </div>
+
 
       <CardHeader className="p-4 pb-2 space-y-0">
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
@@ -113,10 +131,10 @@ export function ProductCard({ product, reservation }: Props) {
                 </span>
                 <div className="flex gap-1.5">
                   <div
-                    key={reservation?.details.color}
+                    key={activeRes?.details.color}
                     className="h-3 w-3 rounded-full border border-black/10 shadow-sm"
                     style={{ backgroundColor: reservedColorHex }}
-                    title={reservation?.details.color}
+                    title={activeRes?.details.color}
                   />
                 </div>
               </div>
@@ -128,10 +146,24 @@ export function ProductCard({ product, reservation }: Props) {
                 </span>
                 <div className="flex gap-1">
                   <span
-                    key={reservation?.details.size}
+                    key={activeRes?.details.size}
                     className="rounded-[4px] border bg-card px-1.5 py-0.5 text-[9px] font-black text-card-foreground"
                   >
-                    {reservation?.details.size}
+                    {activeRes?.details.size}
+                  </span>
+                </div>
+              </div>
+
+               <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase font-bold text-muted-foreground">
+                  Cliente:
+                </span>
+                <div className="flex gap-1">
+                  <span
+                    key={client?.id}
+                    className="font-semibold text-xs"
+                  >
+                    {client?.firstName} {client?.lastName}
                   </span>
                 </div>
               </div>
@@ -217,7 +249,7 @@ export function ProductCard({ product, reservation }: Props) {
 
       <CardFooter className="p-4 pt-0">
         {isReserved ? (
-          <DetailsReservedViewer item={product} />
+          <DetailsReservedViewer item={product} reservation={activeRes } />
         ) : (
           <DetailsProductViewer item={product} />
         )}
