@@ -14,8 +14,8 @@ export const PAYMENTS_MOCK: Payment[] = [
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440101",
-    operationId: 501,
-    branchId: "branch-002",
+    operationId: 502,
+    branchId: "branch-001",
     receivedById: "550e8400-e29b-41d4-a716-446655440000",
     amount: 200,
     method: "efectivo",

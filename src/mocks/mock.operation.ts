@@ -1,4 +1,4 @@
-import { Operation } from "../types/payments/type.operations";
+import { Operation } from "../types/operation/type.operations";
 
 export const OPERATIONS_MOCK: Operation[] = [
   {
@@ -17,8 +17,8 @@ export const OPERATIONS_MOCK: Operation[] = [
   {
     id: 502,
     branchId: "branch-001",
-    sellerId: "550e8400-e29b-41d4-a716-446655440010",
-    customerId: "cl_001",
+    sellerId: "550e8400-e29b-41d4-a716-446655440000",
+    customerId: "cl_002",
     reservationId: "RES-002",
     type: "alquiler",
     status: "pendiente",

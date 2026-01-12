@@ -1,43 +1,85 @@
-import { Product } from "../types/payments/type.product";
+import { Product } from "../types/product/type.product";
+import { Stock } from "../types/product/type.stock";
 
 /**
- * 1. Filtra el catálogo: Solo productos con stock en una sede específica.
+ * 1. Filtra el catálogo: Solo productos que tienen existencias en una sede específica.
  */
-export const getProductsInBranch = (products: Product[], branchId: string): Product[] => {
-  return products.filter(product => 
-    product.inventory.some(variant => 
-      variant.locations.some(loc => loc.branchId === branchId && loc.quantity > 0)
-    )
-  );
+export const getProductsInBranch = (
+  products: Product[], 
+  stocks: Stock[], 
+  branchId: string
+): Product[] => {
+  // Obtenemos los IDs de productos que tienen stock > 0 en esa sucursal
+  const productIdsWithStock = stocks
+    .filter(s => s.branchId === branchId && s.quantity > 0)
+    .map(s => s.productId);
+
+  // Devolvemos solo los productos cuyos IDs están en esa lista
+  return products.filter(p => productIdsWithStock.includes(p.id.toString()));
 };
 
 /**
- * 2. Analítica Global: ¿Cuántos hay en "todo el mundo" de X variante?
+ * 2. Analítica Global: ¿Cuántos hay en "todas las sedes" de X variante?
  */
-export const getVariantGlobalStock = (product: Product, size: string, color: string): number => {
-  const variant = product.inventory.find(
-    inv => inv.size === size && inv.color === color
-  );
-  
-  // Usamos reduce para sumar el stock de todas las locations
-  return variant?.locations.reduce((acc, loc) => acc + loc.quantity, 0) || 0;
+export const getVariantGlobalStock = (
+  stocks: Stock[], 
+  productId: string, 
+  size: string, 
+  color: string
+): number => {
+  return stocks
+    .filter(s => 
+      s.productId === productId && 
+      s.size === size && 
+      s.color === color
+    )
+    .reduce((acc, curr) => acc + curr.quantity, 0);
 };
 
 /**
  * 3. Operativo Local: ¿Cuántos hay de X variante en MI mostrador?
- * (Este es el que usará el vendedor para confirmar una venta inmediata)
  */
 export const getVariantBranchStock = (
-  product: Product, 
+  stocks: Stock[], 
+  productId: string, 
+  branchId: string,
   size: string, 
-  color: string, 
-  branchId: string
+  color: string
 ): number => {
-  const variant = product.inventory.find(
-    inv => inv.size === size && inv.color === color
+  const stockItem = stocks.find(s => 
+    s.productId === productId && 
+    s.branchId === branchId && 
+    s.size === size && 
+    s.color === color
   );
   
-  const locationStock = variant?.locations.find(loc => loc.branchId === branchId);
+  return stockItem?.quantity || 0;
+};
+
+/**
+ * Suma todo el stock de un producto sin importar talla, color o sede.
+ * Útil para la vista general del Catálogo.
+ */
+export const getProductGlobalStock = (stocks: Stock[], productId: number | string): number => {
+  const productIdStr = productId.toString(); // Normalizamos para evitar errores de tipo
   
-  return locationStock?.quantity || 0;
+  return stocks
+    .filter(s => s.productId.toString() === productIdStr)
+    .reduce((acc, curr) => acc + curr.quantity, 0);
+};
+
+/**
+ * Suma todo el stock de un producto en una sucursal específica.
+ * Útil para saber cuánta mercadería total hay en "Sucursal Centro".
+ */
+export const getProductStockByBranch = (
+  stocks: Stock[], 
+  productId: number | string, 
+  branchId: string
+): number => {
+  const productIdStr = productId.toString();
+  
+  return stocks
+    .filter(s => s.productId.toString() === productIdStr && s.branchId === branchId)
+    .reduce((acc, curr) => acc + curr.quantity, 0);
 };

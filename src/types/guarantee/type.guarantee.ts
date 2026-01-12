@@ -26,3 +26,5 @@ export const guaranteeSchema = z.object({
   createdAt: z.date(),
   returnedAt: z.date().optional(),
 });
+
+export type Guarantee = z.infer<typeof guaranteeSchema>;

@@ -21,11 +21,14 @@ import {
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import { z } from "zod";
-import { productSchema } from "../../types/payments/type.product";
+import { productSchema } from "../../types/product/type.product";
 import { Label } from "@/components/label";
 import { CardContent, Card } from "@/components/card";
 import { cn } from "@/lib/utils";
 import { USER_MOCK } from "@/src/mocks/mock.user";
+import { STOCK_MOCK } from "@/src/mocks/mock.stock";
+import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 export function DetailsProductViewer({
   item,
@@ -36,50 +39,68 @@ export function DetailsProductViewer({
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
-  // 2. Colores que tienen stock (en cualquier tienda) para la talla elegida
-  // 1. OBTENER TALLAS ÚNICAS (Desde el inventario)
+  // --- NUEVA LÓGICA DE DATOS (STOCK_MOCK es la fuente de verdad) ---
+
+  // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
+  const allProductStock = useMemo(
+    () =>
+      STOCK_MOCK.filter((s) => s.productId.toString() === item.id.toString()),
+    [item.id]
+  );
+
+  // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
-    () => Array.from(new Set(item.inventory.map((inv) => inv.size))),
-    [item.inventory]
+    () => Array.from(new Set(allProductStock.map((s) => s.size))),
+    [allProductStock]
   );
 
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || null);
 
-  // 2. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
-  // Extraemos los colores únicos que existen para la talla que el usuario tocó
+  // 3. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
   const colorsForSelectedSize = useMemo(() => {
-    return item.inventory
-      .filter((inv) => inv.size === selectedSize)
-      .map((inv) => ({ name: inv.color, hex: inv.colorHex }));
-  }, [selectedSize, item.inventory]);
+    const stockInSize = allProductStock.filter((s) => s.size === selectedSize);
+    // Agrupamos para tener colores únicos con sus hex
+    return Array.from(
+      new Map(
+        stockInSize.map((s) => [s.color, { name: s.color, hex: s.colorHex }])
+      ).values()
+    );
+  }, [selectedSize, allProductStock]);
 
   const [selectedColor, setSelectedColor] = useState(
     colorsForSelectedSize[0] || null
   );
 
-  // 3. AUTO-CORRECCIÓN: Si cambio de talla y el color ya no existe en esa talla
+  // 4. AUTO-CORRECCIÓN DE COLOR AL CAMBIAR TALLA
   React.useEffect(() => {
-    const isColorStillAvailable = colorsForSelectedSize.some(
+    const isColorAvailable = colorsForSelectedSize.some(
       (c) => c.name === selectedColor?.name
     );
-    if (!isColorStillAvailable && colorsForSelectedSize.length > 0) {
+    if (!isColorAvailable && colorsForSelectedSize.length > 0) {
       setSelectedColor(colorsForSelectedSize[0]);
     }
   }, [selectedSize, colorsForSelectedSize]);
 
-  // 4. CÁLCULO DE STOCK DE LA COMBINACIÓN EXACTA (Talla + Color)
-  const currentVariant = item.inventory.find(
-    (inv) => inv.size === selectedSize && inv.color === selectedColor?.name
+  // 5. CÁLCULO DE STOCK (Local vs Global)
+  // Filtramos el stock específico de la combinación Talla + Color
+  const variantLocations = allProductStock.filter(
+    (s) => s.size === selectedSize && s.color === selectedColor?.name
   );
 
   const localStock =
-    currentVariant?.locations.find((loc) => loc.branchId === currentBranchId)
-      ?.quantity || 0;
-
-  const totalStockCombo =
-    currentVariant?.locations.reduce((acc, loc) => acc + loc.quantity, 0) || 0;
-
+    variantLocations.find((l) => l.branchId === currentBranchId)?.quantity || 0;
+  const totalStockCombo = variantLocations.reduce(
+    (acc, curr) => acc + curr.quantity,
+    0
+  );
   const otherBranchStock = totalStockCombo - localStock;
+
+  // Para el Badge del Header (Stock total de todas las tallas/colores)
+  const totalGlobalStock = allProductStock.reduce(
+    (acc, curr) => acc + curr.quantity,
+    0
+  );
+
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
@@ -99,7 +120,7 @@ export function DetailsProductViewer({
               SKU: {item.sku}
             </Badge>
             <Badge className="bg-slate-100 text-slate-700 border-none">
-              Existencia Total: {item.total_stock_global}
+              Existencia Total: {totalGlobalStock}
             </Badge>
           </div>
         </DrawerHeader>
@@ -135,13 +156,16 @@ export function DetailsProductViewer({
             <div className="flex flex-wrap gap-4">
               {colorsForSelectedSize.map((color) => {
                 const isSelected = selectedColor?.name === color.name;
-                // Verificamos si este color tiene stock en algún lugar
-                const variantData = item.inventory.find(
-                  (inv) => inv.size === selectedSize && inv.color === color.name
-                );
-                const hasGlobalStock =
-                  (variantData?.locations.reduce((a, b) => a + b.quantity, 0) ||
-                    0) > 0;
+
+                // CAMBIO: Buscamos el stock total de este color específico en la talla seleccionada
+                // usando nuestro array plano de stock
+                const totalStockThisColor = allProductStock
+                  .filter(
+                    (s) => s.size === selectedSize && s.color === color.name
+                  )
+                  .reduce((acc, curr) => acc + curr.quantity, 0);
+
+                const hasGlobalStock = totalStockThisColor > 0;
 
                 return (
                   <button
@@ -220,32 +244,38 @@ export function DetailsProductViewer({
               </div>
             </div>
 
-            {/* TABLA DE SEDES DETALLADA (Nuevo para ERP Relacional) */}
+            {/* TABLA DE SEDES DETALLADA */}
             <div className="rounded-lg border bg-card overflow-hidden">
               <div className="bg-muted p-2 text-[10px] font-bold uppercase">
                 Distribución por Sucursal
               </div>
-              {currentVariant?.locations.map((loc) => (
-                <div
-                  key={loc.branchId}
-                  className="flex justify-between p-3 border-t text-sm"
-                >
-                  <span
-                    className={cn(
-                      loc.branchId === currentBranchId &&
-                        "font-bold text-blue-600"
-                    )}
+              {/* CAMBIO: Ahora mapeamos 'variantLocations' que ya tiene el filtro de Talla + Color */}
+              {variantLocations.map((loc) => {
+                const branchName =
+                  BRANCH_MOCKS.find((b) => b.id === loc.branchId)?.name ||
+                  "Sucursal";
+                return (
+                  <div
+                    key={loc.branchId}
+                    className="flex justify-between p-3 border-t text-sm"
                   >
-                    {loc.branchName}{" "}
-                    {loc.branchId === currentBranchId && "(Aquí)"}
-                  </span>
-                  <span className="font-mono font-bold">{loc.quantity}</span>
-                </div>
-              ))}
+                    <span
+                      className={cn(
+                        loc.branchId === currentBranchId &&
+                          "font-bold text-blue-600"
+                      )}
+                    >
+                      {branchName}{" "}
+                      {loc.branchId === currentBranchId && "(Aquí)"}
+                    </span>
+                    <span className="font-mono font-bold">{loc.quantity}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
-
           {/* PRECIOS Y CONDICIÓN */}
+
           <div className="rounded-lg p-2 border bg-card">
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-3">
@@ -253,16 +283,22 @@ export function DetailsProductViewer({
                   <p className="text-xs font-semibold uppercase text-muted-foreground">
                     Precio alquiler
                   </p>
-                  <p className="text-md font-bold">
-                    ${item.price_rent} por {item.rent_unit}
-                  </p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-md font-bold">
+                      {formatCurrency(item.price_rent || 0)}
+                    </p>
+                    <p className="text-xs font-bold">por {item.rent_unit}</p>
+                  </div>
                 </div>
 
                 <div>
                   <p className="text-xs font-semibold uppercase text-muted-foreground">
                     Precio venta
                   </p>
-                  <p className="text-md font-bold">${item.price_sell}</p>
+
+                  <p className="text-md font-bold">
+                    {formatCurrency(item.price_sell || 0)}
+                  </p>
                 </div>
               </div>
 
@@ -273,16 +309,19 @@ export function DetailsProductViewer({
                   <p className="text-xs font-semibold uppercase text-muted-foreground">
                     Condición
                   </p>
+
                   <p className="text-sm font-bold text-foreground">
-                    {item.condition}
+                    {allProductStock[0].condition}
                   </p>
                 </div>
+
                 <div>
                   <p className="text-xs font-semibold uppercase text-muted-foreground">
                     Estado
                   </p>
-                  <p className="text-xs font-bold text-foreground">
-                    {item.status.toUpperCase()}
+
+                  <p className="text-sm capitalize font-bold text-foreground">
+                    {allProductStock[0].status}
                   </p>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 // src/utils/payment-helpers.ts
 
 import { Payment } from "../types/payments/type.payments";
-import { Operation } from "../types/payments/type.operations";
+import { Operation } from "../types/operation/type.operations";
 
 /**
  * Calcula el estado de pago basado en el total y lo abonado.

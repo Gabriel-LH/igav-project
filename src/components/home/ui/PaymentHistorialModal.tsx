@@ -8,6 +8,8 @@ import {
 import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Payment } from "../../../types/payments/type.payments";
+import { USER_MOCK } from "../../../mocks/mock.user";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 interface PaymentHistoryModalProps {
   open: boolean;
@@ -24,6 +26,10 @@ export function PaymentHistoryModal({
 }: PaymentHistoryModalProps) {
   const totalPagado = payments.reduce((acc, p) => acc + p.amount, 0);
 
+  const receivedByName =
+    payments.length > 0
+      ? USER_MOCK.find((p) => p.id === payments[0].receivedById)?.name
+      : "Sin registros";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md p-0 overflow-hidden">
@@ -47,8 +53,8 @@ export function PaymentHistoryModal({
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="max-h-[280px] overflow-y-auto">
               {payments.length > 0 ? (
-                <table className="w-full text-sm text-left border-collapse">
-                  <thead className="bg-muted/50 text-[10px] uppercase text-muted-foreground sticky top-0 backdrop-blur-sm">
+                <table className="w-full text-sm  text-left border-collapse">
+                  <thead className="bg-muted/50  text-[10px] uppercase text-muted-foreground sticky ">
                     <tr>
                       <th className="px-4 py-2.5 font-bold">Fecha / Recibió</th>
                       <th className="px-4 py-2.5 font-bold">Método</th>
@@ -68,7 +74,7 @@ export function PaymentHistoryModal({
                             {p.date.toLocaleDateString()}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
-                            {p.receivedBy}
+                            {receivedByName}
                           </p>
                         </td>
                         <td className="px-4 py-3 italic text-[11px] text-muted-foreground capitalize">
@@ -80,7 +86,7 @@ export function PaymentHistoryModal({
                           )}
                         </td>
                         <td className="px-4 py-3 text-right font-bold text-foreground">
-                          ${p.amount.toLocaleString()}
+                          {formatCurrency(p.amount)}
                         </td>
                       </tr>
                     ))}

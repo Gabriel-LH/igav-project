@@ -1,5 +1,5 @@
 // src/utils/reservation-helpers.ts
-import { Reservation } from "../types/payments/type.reservation";
+import { Reservation } from "../types/reservation/type.reservation";
 
 /**
  * Verifica si hay al menos una reserva activa en un listado de reservas.

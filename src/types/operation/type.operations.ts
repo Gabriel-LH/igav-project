@@ -1,5 +1,5 @@
 import z from "zod";
-import { Payment, paymentSchema } from "./type.payments";
+import { Payment, paymentSchema } from "../payments/type.payments";
 
 export const operationSchema = z.object({
   id: z.number(),
