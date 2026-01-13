@@ -54,7 +54,7 @@ export const STOCK_MOCK: Stock[] = [
   },
     {
     id: "STK-005",
-    productId: "3",
+    productId: "2",
     branchId: "branch-001",
     size: "M",
     color: "Negro",

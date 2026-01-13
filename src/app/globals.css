@@ -161,3 +161,26 @@
     scrollbar-color: #9ca3af transparent;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden; /* Oculta todo */
+  }
+  .printable, .printable * {
+    visibility: visible; /* Solo lo marcado como printable se ve */
+  }
+  .printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+#printable {
+  font-family: "Courier New", monospace;
+  color: #000000; /* negro sólido */
+  -webkit-print-color-adjust: exact; /* fuerza que se imprima como negro real */
+  print-color-adjust: exact; /* estándar */
+}
+

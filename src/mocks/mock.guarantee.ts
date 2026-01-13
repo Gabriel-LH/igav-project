@@ -1,6 +1,6 @@
 import { Guarantee } from "../types/guarantee/type.guarantee"; // opcional, si tienes el tipo inferido
 
-export const guaranteeMocks: Guarantee[] = [
+export const MOCK_GUARANTEE: Guarantee[] = [
   {
     id: "g-001",
     operationId: 502,
@@ -14,7 +14,7 @@ export const guaranteeMocks: Guarantee[] = [
   },
   {
     id: "g-002",
-    operationId: 12346,
+    operationId: 501,
     branchId: "branch-002",
     type: "dni_fisico",
     value: 0,
@@ -27,7 +27,7 @@ export const guaranteeMocks: Guarantee[] = [
   },
   {
     id: "g-003",
-    operationId: 12347,
+    operationId: 503,
     branchId: "branch-001",
     type: "objeto_valor",
     value: 120000,

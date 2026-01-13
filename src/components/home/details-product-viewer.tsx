@@ -29,6 +29,7 @@ import { USER_MOCK } from "@/src/mocks/mock.user";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { calculateOperationTotal } from "@/src/utils/payment-helpers";
 
 export function DetailsProductViewer({
   item,
@@ -87,6 +88,7 @@ export function DetailsProductViewer({
     (s) => s.size === selectedSize && s.color === selectedColor?.name
   );
 
+
   const localStock =
     variantLocations.find((l) => l.branchId === currentBranchId)?.quantity || 0;
   const totalStockCombo = variantLocations.reduce(
@@ -115,11 +117,11 @@ export function DetailsProductViewer({
           <div className="flex gap-2 mt-2">
             <Badge
               variant="outline"
-              className="font-mono text-blue-600 border-blue-200"
+              className="font-mono text-blue-600 border-blue-500"
             >
               SKU: {item.sku}
             </Badge>
-            <Badge className="bg-slate-100 text-slate-700 border-none">
+            <Badge className="bg-muted text-primary border-gray-500">
               Existencia Total: {totalGlobalStock}
             </Badge>
           </div>
@@ -137,8 +139,8 @@ export function DetailsProductViewer({
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
                   className={cn(
-                    "h-12 w-14 font-bold",
-                    selectedSize === size && "ring-2 ring-primary ring-offset-2"
+                    "h-12 w-14 rounded-2xl font-bold",
+                    selectedSize === size && "ring-primary ring-offset-2"
                   )}
                   onClick={() => setSelectedSize(size)}
                 >
@@ -178,10 +180,10 @@ export function DetailsProductViewer({
                   >
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all",
+                        "w-12 h-12 rounded-full border flex items-center justify-center transition-all",
                         isSelected
-                          ? "border-primary scale-110 shadow-lg"
-                          : "border-transparent"
+                          ? "border-primary scale-110 transition-all shadow-lg"
+                          : "border border-gray-800"
                       )}
                       style={{ backgroundColor: color.hex }}
                     >
@@ -213,7 +215,7 @@ export function DetailsProductViewer({
 
           {/* PANEL DE DISPONIBILIDAD */}
           <div className="grid grid-cols-1 gap-4">
-            <div className="border rounded-lg bg-card border-emerald-100">
+            <div className="border rounded-lg bg-card border-gray-800">
               <div className="flex flex-col justify-between items-center">
                 <div className="flex w-full bg-muted justify-between rounded-t-lg border-b pb-1">
                   <div className="flex w-full justify-between px-2 py-1">
@@ -230,13 +232,13 @@ export function DetailsProductViewer({
                     <p
                       className={cn(
                         "text-2xl font-black",
-                        localStock > 0 ? "text-emerald-600" : "text-slate-400"
+                        localStock > 0 ? "text-emerald-500" : "text-slate-400"
                       )}
                     >
                       {localStock}{" "}
                       <span className="text-xs font-medium">unid.</span>
                     </p>
-                    <p className="text-xl font-bold text-slate-700">
+                    <p className="text-xl font-bold text-violet-700">
                       +{otherBranchStock}
                     </p>
                   </div>

@@ -3,123 +3,114 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/badge";
 import Image from "next/image";
 import { DetailsReservedViewer } from "./details-reserved-viewer";
-import { productSchema } from "../../types/product/type.product";
-import { z } from "zod";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
-import { useIsMobile } from "@/src/hooks/use-mobile";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 
 interface Props {
-  product: z.infer<typeof productSchema>;
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
   reservation: any;
 }
 
-export function ReservationProductCard({ product, reservation }: Props) {
+export function ReservationProductCard({ reservation }: Props) {
   // 1. Buscamos el item exacto de esta reserva
-  const specificItem = MOCK_RESERVATION_ITEM.find(
-    (i) =>
-      i.reservationId === reservation.id &&
-      i.productId === product.id.toString()
+  const specificItems = MOCK_RESERVATION_ITEM.filter(
+    (i) => i.reservationId === reservation.id
   );
-
   const specificClient = CLIENTS_MOCK.find(
     (c) => c.id === reservation.customerId
   );
 
-  const specificColorHex = STOCK_MOCK.find(
-    (s) =>
-      s.productId.toString() === product.id.toString() &&
-      s.color === specificItem?.color
-  )?.colorHex;
+  if (!specificItems.length) {
+    return null;
+  }
 
   return (
-    <Card className="flex  flex-row items-center justify-between p-3 gap-4 hover:shadow-md transition-all border-l-4">
-      {/* 1. Miniatura de Imagen */}
-
-      <div className=" hidden md:flex bg-muted border rounded-lg">
-        <Image
-          src={product.image}
-          alt={product.name}
-          width={60}
-          height={60}
-          className="rounded-lg"
-        />
-      </div>
-
-      {/* 2. Información del Producto y Variante */}
-      <div className="flex flex-col ">
-        <h4 className="text-sm font-bold truncate">{product.name}</h4>
-        <div className="flex flex-col gap-2 mt-1">
-          <div className="flex items-center gap-1">
-            <div
-              className="h-2.5 w-2.5 rounded-full border border-black/10"
-              style={{ backgroundColor: specificColorHex }}
-            />
-            <span className="text-[10px] text-muted-foreground font-medium uppercase">
-              {specificItem?.color}
-            </span>
-          </div>
-          <Badge
-            variant="outline"
-            className="text-[9px] h-4 px-1.5 font-bold bg-slate-50"
-          >
-            TALLA {specificItem?.size}
+    <Card className="flex flex-col p-4 gap-4 hover:shadow-md transition-all ">
+      {/* CABECERA: Info del Cliente y Estado */}
+      <div className="flex justify-between items-start border-b pb-3">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter">
+            Cliente
+          </span>
+          <span className="text-sm font-bold text-primary">
+            {specificClient?.firstName} {specificClient?.lastName}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {specificClient?.phone}
+          </span>
+        </div>
+        <div className="text-right">
+          <Badge className=" bg-accent border border-gray-600 text-green-600  text-[10px] font-black">
+            {reservation.status.toUpperCase()}
           </Badge>
+          <p className="text-[10px] text-muted-foreground mt-1 font-bold">
+            Retiro:{" "}
+            {new Date(reservation.startDate).toLocaleDateString("es-PE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
         </div>
       </div>
 
-      {/* 3. Información del Cliente (Visible en Desktop) */}
-      <div className="flex md:flex flex-col border-x md:px-4">
-        <span className="text-[9px] uppercase font-black text-muted-foreground tracking-tighter">
-          Cliente
-        </span>
-        <span className="text-xs font-semibold text-primary truncate">
-          {specificClient?.firstName} {specificClient?.lastName}
-        </span>
-        <span className="text-[10px] text-muted-foreground">
-          {specificClient?.phone}
-        </span>
+      {/* CUERPO: Lista de productos de esta reserva */}
+      <div className="space-y-3">
+        {specificItems.map((item) => {
+          // Buscamos la info del producto (nombre, imagen) para cada ítem
+          const productInfo = PRODUCTS_MOCK.find(
+            (p) => p.id.toString() === item.productId
+          );
+
+          const itemColorHex = STOCK_MOCK.find(
+            (s) =>
+              s.productId.toString() === item.productId.toString() &&
+              s.color === item.color
+          )?.colorHex;
+
+          return (
+            <div
+              key={item.id}
+              className="flex items-center gap-3 bg-muted/30 p-2 rounded-lg"
+            >
+              <Image
+                src={productInfo?.image ?? ""}
+                alt="Product"
+                width={40}
+                height={40}
+                className="rounded "
+              />
+              <div className="flex-1">
+                <p className="text-xs font-bold">{productInfo?.name}</p>
+                <div className="flex gap-2 items-center">
+                  <span className="text-[10px] text-muted-foreground uppercase">
+                    Talla {item.size}
+                  </span>
+                  <div
+                    className="h-2.5 w-2.5 rounded-full border border-black/10"
+                    style={{ backgroundColor: itemColorHex }}
+                  />
+
+                  <span className="md:text-[10px] text-[8px] text-muted-foreground font-medium uppercase">
+                    {item.color}
+                  </span>
+                </div>
+              </div>
+              <span className="text-xs font-bold">
+                {formatCurrency(item.priceAtMoment)}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* 4. Estado y Fecha */}
-      <div className="hidden lg:flex flex-col">
-        <span className="text-[9px] uppercase font-black text-muted-foreground tracking-tighter">
-          Estado
-        </span>
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] font-bold uppercase text-yellow-600">
-            {reservation.status}
-          </span>
-        </div>
-        <span className="text-[10px] text-muted-foreground font-medium">
-          {new Date(reservation.startDate).toLocaleDateString("es-PE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })}
-        </span>
-      </div>
-
-       <div className="hidden lg:flex flex-col">
-        <span className="text-[9px] uppercase font-black text-muted-foreground tracking-tighter">
-          Precio
-        </span>
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] font-bold uppercase text-yellow-600">
-            {formatCurrency(specificItem?.priceAtMoment || 0)}
-          </span>
-        </div>
-        <span>
-            
-        </span>
-      </div>
-
-      {/* 5. Acción Principal */}
-      <div>
-        <DetailsReservedViewer item={product} reservation={reservation} />
+      {/* FOOTER: Botón de acción */}
+      <div className="pt-2">
+        {/* Pasamos el primer producto como referencia o ajustamos el viewer para recibir la reserva completa */}
+        <DetailsReservedViewer reservation={reservation} />
       </div>
     </Card>
   );

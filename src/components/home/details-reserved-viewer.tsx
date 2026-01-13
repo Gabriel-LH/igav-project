@@ -27,20 +27,20 @@ import {
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { PAYMENTS_MOCK } from "@/src/mocks/mock.payment";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { sumPayments, getRemainingBalance } from "@/src/utils/payment-helpers";
+import { sumPayments, getRemainingBalance, calculateOperationTotal, getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/PaymentHistorialModal";
 import { useState } from "react";
 import { Badge } from "@/components/badge";
-import { reservationSchema } from "@/src/types/reservation/type.reservation"; 
+import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
+import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
-   item,
 }: {
-  item: z.infer<typeof productSchema>;
   reservation?: z.infer<typeof reservationSchema>;
 }) {
   const isMobile = useIsMobile();
@@ -52,35 +52,52 @@ export function DetailsReservedViewer({
     (ri) => ri.reservationId === activeRes?.id
   );
   
-  // Tomamos el primer ítem para las etiquetas rápidas (talla/color)
-  const firstItem = activeResItems[0];
-
   // --- LÓGICA DE SEDE ---
-  const sedeName = BRANCH_MOCKS.find(
-    (b) => b.id === activeRes?.branchId
-  )?.name || "Sede no encontrada";
+  const sedeName =
+    BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
+    "Sede no encontrada";
 
-
-  // LOGICA FINANCIERA ACTUALIZADA
+  // 1. Buscamos la operación que centraliza todo
   const operation = OPERATIONS_MOCK.find(
     (op) => op.reservationId === activeRes?.id
   );
+
+  // 2. Traemos todos los pagos vinculados a esa operación
   const allPayments = PAYMENTS_MOCK.filter(
     (p) => p.operationId === operation?.id
   );
 
-  // Separar adelantos de garantía
+  // 3. Separamos pagos de alquiler (adelantos/cuotas) vs Garantía en EFECTIVO
   const paymentsTowardsPrice = allPayments.filter((p) => p.type !== "garantia");
   const totalAbonado = sumPayments(paymentsTowardsPrice);
-  const garantiaRecibida = sumPayments(
+
+  // 4. Lógica de Garantía (Combinamos pago en efectivo + objeto de garantía)
+  // Buscamos si existe un registro en la tabla de garantías (para ver si es DNI, Joya, etc.)
+
+  const guaranteeRecord = MOCK_GUARANTEE.find(
+    (g) => g.operationId === operation?.id
+  );
+  const garantiaEfectivo = sumPayments(
     allPayments.filter((p) => p.type === "garantia")
   );
 
-  const pendiente = operation
-    ? getRemainingBalance(operation.totalAmount, totalAbonado)
-    : 0;
+  // El valor de la garantía es el monto en efectivo O el valor declarado del objeto
+  const valorGarantia =
+    garantiaEfectivo > 0 ? garantiaEfectivo : guaranteeRecord?.value || 0;
 
+    const calculateOperation = calculateOperationTotal(activeRes?.id || "");
+
+  // 5. Cálculo del saldo pendiente del servicio
+  const pendiente = operation
+    ? getRemainingBalance(calculateOperation, totalAbonado)
+    : 0; 
+    
   const cliente = CLIENTS_MOCK.find((c) => c.id === activeRes?.customerId);
+
+  const { totalCalculated, totalPaid, balance } = getOperationBalances(
+  activeRes?.id || "", 
+  allPayments
+);
 
   return (
     <>
@@ -105,8 +122,8 @@ export function DetailsReservedViewer({
             </div>
             <DrawerDescription>
               {/* NUEVO: Información de Sede */}
-              <Badge className="w-fit bg-amber-200 text-amber-800 hover:bg-amber-200 border-none text-sm">
-                Sede:{" "}{sedeName}
+              <Badge className="w-fit bg-card text-amber-400 border- text-sm">
+                Sede: {sedeName}
               </Badge>
             </DrawerDescription>
           </DrawerHeader>
@@ -237,41 +254,83 @@ export function DetailsReservedViewer({
                   </p>
                 </div>
               </div>
-
-              <div className="flex gap-4 pt-1 text-sm border-t">
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <HugeiconsIcon icon={Layers01Icon} size={14} /> Cant:{" "}
-                  {firstItem.quantity}
-                </span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <HugeiconsIcon icon={InformationCircleIcon} size={14} />{" "}
-                  Talla: {firstItem.size}
-                </span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <HugeiconsIcon icon={ColorsIcon} size={14} /> Color:{" "}
-                  {firstItem.color}
-                </span>
-              </div>
             </div>
 
             {/* NUEVO: GARANTÍA (Agregado debajo de datos de cliente) */}
-            <div className="px-4 py-3 border rounded-xl bg-blue-50/30 border-blue-100 flex justify-between items-center">
+            {/* SECCIÓN DE GARANTÍA ACTUALIZADA */}
+            <div
+              className={`px-4 py-3 border rounded-xl flex justify-between items-center ${
+                valorGarantia > 0
+                  ? "border-muted"
+                  : "border-destructive/20 bg-destructive/5"
+              }`}
+            >
               <div>
-                <p className="text-[10px] uppercase font-bold text-blue-700">
-                  Garantía / Depósito
+                <p className="text-[10px] uppercase font-black text-blue-700 tracking-tighter">
+                  Garantía en Custodia
                 </p>
                 <p className="text-sm font-bold">
-                  {garantiaRecibida > 0
-                    ? `$${garantiaRecibida} en caja`
-                    : "Pendiente de cobro"}
+                  {valorGarantia > 0
+                    ? guaranteeRecord?.type === "efectivo"
+                      ? formatCurrency(valorGarantia)
+                      : guaranteeRecord?.description
+                    : "FALTA GARANTÍA"}
                 </p>
+                {valorGarantia > 0 && (
+                  <p className="text-[10px] text-blue-600/70 italic">
+                    Estado: {guaranteeRecord?.status || "Recibido"}
+                  </p>
+                )}
               </div>
               <HugeiconsIcon
                 icon={CheckmarkBadge03Icon}
                 className={
-                  garantiaRecibida > 0 ? "text-blue-500" : "text-slate-300"
+                  valorGarantia > 0 ? "text-blue-500" : "text-destructive/30"
                 }
               />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-black uppercase text-muted-foreground">
+                Artículos en esta reserva ({activeResItems.length})
+              </span>
+              <div className="space-y-2">
+                {activeResItems.map((item) => {
+                  const prod = PRODUCTS_MOCK.find(
+                    (p) => p.id.toString() === item.productId
+                  );
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-3 p-3 border rounded-xl bg-muted/20"
+                    >
+                      <div className="h-12 w-10 bg-white border rounded overflow-hidden">
+                        <img
+                          src={prod?.image}
+                          className="object-cover h-full w-full"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold leading-tight">
+                          {prod?.name}
+                        </p>
+                        <div className="flex gap-2 text-[10px]  font-semibold mt-1">
+                          <span className="px-1.5 rounded border">
+                            TALLA {item.size}
+                          </span>
+                          <span className="px-1.5 rounded border uppercase">
+                            {item.color}
+                          </span>
+                          <span>x{item.quantity}</span>
+                        </div>
+                      </div>
+                      <span className="font-bold text-sm">
+                        {formatCurrency(item.priceAtMoment)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* 4. CHECKLIST DE PREPARACIÓN */}
@@ -353,6 +412,7 @@ export function DetailsReservedViewer({
         open={isHistoryOpen}
         onOpenChange={setIsHistoryOpen}
         payments={allPayments}
+        operationId={operation?.id || 0}
         totalOperation={operation?.totalAmount || 0}
       />
     </>

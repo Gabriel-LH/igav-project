@@ -30,6 +30,8 @@ export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
+  
+
   // STOCK LOCAL
   const productStockInBranch = STOCK_MOCK.filter(
     (s) =>

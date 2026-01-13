@@ -5,8 +5,8 @@ export const  MOCK_RESERVATION_ITEM: ReservationItem[] = [
         id: "RES-001-001",
         operationId: 501,
         reservationId: "RES-001",
-        size: "S",        // Dato vital para ropa
-        productId: "4",
+        size: "M",        // Dato vital para ropa
+        productId: "2",
         itemStatus: "en_tienda",
         quantity: 1,
         color: "Negro",   // Dato vital para ropa

@@ -27,8 +27,8 @@ export const RESERVATIONS_MOCK: Reservation[] = [
   },
   {
     id: "RES-003",
-    customerId: "cl_003",
-    branchId: "branch-003",
+    customerId: "cl_002",
+    branchId: "branch-002",
     updatedAt: new Date(2026, 0, 7),
     startDate: new Date(2026, 0, 5),
     endDate: new Date(2026, 0, 7),
