@@ -66,28 +66,33 @@ export const getUpdatedPaymentStatus = (operation: Operation, payments: Payment[
 };
 
 export const getOperationBalances = (reservationId: string, payments: Payment[]) => {
-  // 1. Calculamos el total real sumando los items actuales en los mocks
-  const currentItems = MOCK_RESERVATION_ITEM.filter(
-    (item) => item.reservationId === reservationId
-  );
+  // 1. Obtener el costo total (ej. 180)
+  const currentItems = MOCK_RESERVATION_ITEM.filter(i => i.reservationId === reservationId);
+  const totalCalculated = currentItems.reduce((acc, item) => acc + (item.priceAtMoment * item.quantity), 0);
 
-  const totalCalculated = currentItems.reduce(
-    (acc, item) => acc + (item.priceAtMoment * item.quantity),
-    0
-  );
+  // 2. Sumar abonos (tipo alquiler/adelanto, NO garantía)
+  const totalPaid = payments
+    .filter(p => p.type !== "garantia")
+    .reduce((acc, p) => acc + p.amount, 0);
 
-  // 2. Filtramos y sumamos solo los pagos que NO son garantía
-  const paymentsOnly = payments.filter((p) => p.type !== "garantia");
-  const totalPaid = paymentsOnly.reduce((acc, p) => acc + p.amount, 0);
+    console.log("totalPaid", totalPaid);
+    console.log("totalCalculated", totalCalculated);
 
-  // 3. El saldo final
-  const balance = totalCalculated - totalPaid;
+  // 3. LA LÓGICA CORRECTA:
+  // Si totalPaid es 180 y totalCalculated es 180, diff es 0.
+  const diff = totalPaid - totalCalculated;
+
+  console.log("diff", diff);
 
   return {
-    totalCalculated, // Lo que cuestan los productos hoy
-    totalPaid,       // Lo que ya pagó el cliente
-    balance,         // Lo que falta cobrar (si es negativo, es saldo a favor)
-    itemsCount: currentItems.length
+    totalCalculated,
+    totalPaid,
+    // balance: Si falta dinero, mostramos cuánto. Si sobra o es exacto, es 0.
+    balance: diff < 0 ? Math.abs(diff) : 0,
+    // creditAmount: Solo si el pago es MAYOR al costo (diff > 0)
+    creditAmount: diff > 0 ? diff : 0,
+    isCredit: diff > 0,
+    isPaid: diff >= 0
   };
 };
 

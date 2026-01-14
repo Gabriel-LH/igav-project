@@ -2,7 +2,7 @@
 
 'use client'
 import { useState } from "react";
-import Boleta from "@/src/components/boleta/boleta";
+import Boleta from "@/src/components/ticket/payment-ticket";
 
 export default function Home() {
   const [size, setSize] = useState("80"); // default 80 mm

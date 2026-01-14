@@ -27,8 +27,13 @@ import {
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { PAYMENTS_MOCK } from "@/src/mocks/mock.payment";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { sumPayments, getRemainingBalance, calculateOperationTotal, getOperationBalances } from "@/src/utils/payment-helpers";
-import { PaymentHistoryModal } from "./ui/PaymentHistorialModal";
+import {
+  sumPayments,
+  getRemainingBalance,
+  calculateOperationTotal,
+  getOperationBalances,
+} from "@/src/utils/payment-helpers";
+import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import { useState } from "react";
 import { Badge } from "@/components/badge";
 import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
@@ -37,6 +42,9 @@ import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
+import { Payment } from "@/src/types/payments/type.payments";
+import { USER_MOCK } from "@/src/mocks/mock.user";
+import { toast } from "sonner";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -46,62 +54,97 @@ export function DetailsReservedViewer({
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // --- NUEVA LÓGICA DE ITEMS ---
-  // Recuperamos los ítems vinculados a esta reserva
-  const activeResItems = MOCK_RESERVATION_ITEM.filter(
-    (ri) => ri.reservationId === activeRes?.id
-  );
-  
-  // --- LÓGICA DE SEDE ---
-  const sedeName =
-    BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
-    "Sede no encontrada";
+  const currentUser = USER_MOCK[0];
 
-  // 1. Buscamos la operación que centraliza todo
+  // Creamos el estado con los pagos iniciales
+  const [payments, setPayments] = useState(PAYMENTS_MOCK);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const [checklist, setChecklist] = useState({
+    limpieza: false,
+    garantia: false,
+  });
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    setIsDrawerOpen(open);
+
+    // Si el Drawer se está cerrando, reseteamos el checklist
+    if (!open) {
+    setChecklist({ limpieza: false, garantia: false });
+  }
+}
+  // 4. Función para agregar un pago (esta se la pasaremos al modal)
+  const handleAddPayment = (data: any): Payment => {
+    const newPayment: Payment = {
+      id: `PAY-${Date.now()}`,
+      operationId: operation?.id || 0,
+      ...data,
+      receivedById: currentUser.id,
+      receivedByName: currentUser.name,
+    };
+
+    setPayments((prev) => [...prev, newPayment]);
+    return newPayment; // 👈 CLAVE
+  };
+
+  // 1. Buscamos la operación vinculada
   const operation = OPERATIONS_MOCK.find(
     (op) => op.reservationId === activeRes?.id
   );
 
-  // 2. Traemos todos los pagos vinculados a esa operación
-  const allPayments = PAYMENTS_MOCK.filter(
-    (p) => p.operationId === operation?.id
-  );
+  // Modificamos el filtro para que use el 'useState' en lugar del mock estático
+  const allPayments = payments.filter((p) => p.operationId === operation?.id);
 
-  // 3. Separamos pagos de alquiler (adelantos/cuotas) vs Garantía en EFECTIVO
-  const paymentsTowardsPrice = allPayments.filter((p) => p.type !== "garantia");
-  const totalAbonado = sumPayments(paymentsTowardsPrice);
+  // 3. LA FUENTE DE VERDAD: Usamos el helper para todo
+  const { totalCalculated, totalPaid, balance, isCredit, creditAmount } =
+    getOperationBalances(activeRes?.id || "", allPayments);
 
-  // 4. Lógica de Garantía (Combinamos pago en efectivo + objeto de garantía)
-  // Buscamos si existe un registro en la tabla de garantías (para ver si es DNI, Joya, etc.)
-
+  // 4. Garantía
   const guaranteeRecord = MOCK_GUARANTEE.find(
     (g) => g.operationId === operation?.id
   );
-  const garantiaEfectivo = sumPayments(
-    allPayments.filter((p) => p.type === "garantia")
+
+  const canDeliver = balance <= 0 && checklist.limpieza && checklist.garantia;
+
+  const isReadyToDeliver =
+    (balance === 0 || isCredit) && checklist.limpieza && checklist.garantia;
+
+  const handleDeliver = () => {
+    if (!canDeliver) return;
+
+    toast.success("Reserva entregada exitosamente", {
+      style: {
+        background: "rgba(0, 255, 0, 0.1)",
+        color: "white",
+      },
+    });
+    // 3. Lógica de Negocio
+    console.log("Cambiando estado de reserva a: ENTREGADO");
+
+    // 4. Generación del Ticket de Salida (Lo que mencionabas de los productos)
+    // Aquí llamarás a tu futura función de ticket de productos
+    // const productTicket = buildProductTicketHtml(activeRes);
+    // printTicket(productTicket);
+
+    setIsDrawerOpen(false);
+  };
+
+  // 5. Items y Sede
+  const activeResItems = MOCK_RESERVATION_ITEM.filter(
+    (ri) => ri.reservationId === activeRes?.id
   );
-
-  // El valor de la garantía es el monto en efectivo O el valor declarado del objeto
-  const valorGarantia =
-    garantiaEfectivo > 0 ? garantiaEfectivo : guaranteeRecord?.value || 0;
-
-    const calculateOperation = calculateOperationTotal(activeRes?.id || "");
-
-  // 5. Cálculo del saldo pendiente del servicio
-  const pendiente = operation
-    ? getRemainingBalance(calculateOperation, totalAbonado)
-    : 0; 
-    
+  const sedeName =
+    BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
+    "Sede central";
   const cliente = CLIENTS_MOCK.find((c) => c.id === activeRes?.customerId);
-
-  const { totalCalculated, totalPaid, balance } = getOperationBalances(
-  activeRes?.id || "", 
-  allPayments
-);
 
   return (
     <>
-      <Drawer direction={isMobile ? "bottom" : "right"}>
+      <Drawer
+        direction={isMobile ? "bottom" : "right"}
+        open={isDrawerOpen}
+        onOpenChange={handleDrawerOpenChange}
+      >
         <DrawerTrigger asChild>
           <Button variant="secondary" className="w-full shadow-sm">
             Ver reserva
@@ -195,8 +238,8 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
-            {/* 2. ESTADO FINANCIERO */}
-            <div className="px-4 py-3 border rounded-xl bg-card space-y-2">
+            {/* 2. ESTADO FINANCIERO ACTUALIZADO */}
+            <div className="px-4 py-3 border rounded-xl bg-card space-y-4">
               <div className="flex justify-between items-center">
                 <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
                   Resumen de Pagos
@@ -204,7 +247,7 @@ export function DetailsReservedViewer({
                 <Button
                   variant="link"
                   size="sm"
-                  className="h-auto p-0 text-blue-600 font-bold"
+                  className="h-auto p-0 text-blue-600 font-bold text-[11px]"
                   onClick={() => setIsHistoryOpen(true)}
                 >
                   Ver historial ({allPayments.length})
@@ -214,24 +257,41 @@ export function DetailsReservedViewer({
               <div className="flex justify-between items-end">
                 <div>
                   <p className="text-2xl font-black text-emerald-600">
-                    {formatCurrency(totalAbonado)}
+                    {formatCurrency(totalPaid)}
                   </p>
                   <p className="text-[10px] text-muted-foreground uppercase">
-                    Total recibido
+                    Total abonado
                   </p>
                 </div>
                 <div className="text-right">
+                  {/* Lógica de color dinámica: Naranja si debe, Azul si es saldo a favor, Verde si está saldado */}
                   <p
-                    className={`text-lg font-bold ${
-                      pendiente > 0 ? "text-orange-600" : "text-emerald-600"
+                    className={`text-xl font-black ${
+                      isCredit
+                        ? "text-blue-600"
+                        : balance > 0
+                        ? "text-orange-600"
+                        : "text-emerald-600"
                     }`}
                   >
-                    {pendiente > 0 ? formatCurrency(pendiente) : "Pagado"}
+                    {isCredit
+                      ? `+ ${formatCurrency(creditAmount)}`
+                      : balance > 0
+                      ? formatCurrency(balance)
+                      : "PAGADO"}
                   </p>
-                  <p className="text-[10px] text-muted-foreground uppercase">
-                    Saldo pendiente
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    {isCredit ? "Crédito a favor" : "Saldo pendiente"}
                   </p>
                 </div>
+              </div>
+
+              {/* Pequeño indicador visual del total real del contrato */}
+              <div className="pt-2 border-t border-dashed flex justify-between text-[10px] text-muted-foreground">
+                <span>Valor total del servicio:</span>
+                <span className="font-bold">
+                  {formatCurrency(totalCalculated)}
+                </span>
               </div>
             </div>
 
@@ -260,7 +320,7 @@ export function DetailsReservedViewer({
             {/* SECCIÓN DE GARANTÍA ACTUALIZADA */}
             <div
               className={`px-4 py-3 border rounded-xl flex justify-between items-center ${
-                valorGarantia > 0
+                guaranteeRecord // 👈 Cambiamos: Si existe el registro, ya hay una garantía
                   ? "border-muted"
                   : "border-destructive/20 bg-destructive/5"
               }`}
@@ -270,22 +330,25 @@ export function DetailsReservedViewer({
                   Garantía en Custodia
                 </p>
                 <p className="text-sm font-bold">
-                  {valorGarantia > 0
-                    ? guaranteeRecord?.type === "efectivo"
-                      ? formatCurrency(valorGarantia)
-                      : guaranteeRecord?.description
+                  {guaranteeRecord // 👈 Si existe el registro...
+                    ? guaranteeRecord.type === "efectivo"
+                      ? formatCurrency(guaranteeRecord.value) // Muestra $ si es efectivo
+                      : guaranteeRecord.description // Muestra "DNI", "Pasaporte", etc.
                     : "FALTA GARANTÍA"}
                 </p>
-                {valorGarantia > 0 && (
+
+                {/* Mostramos el estado solo si existe el registro */}
+                {guaranteeRecord && (
                   <p className="text-[10px] text-blue-600/70 italic">
-                    Estado: {guaranteeRecord?.status || "Recibido"}
+                    Estado: {guaranteeRecord.status || "Recibido"}
                   </p>
                 )}
               </div>
+
               <HugeiconsIcon
                 icon={CheckmarkBadge03Icon}
                 className={
-                  valorGarantia > 0 ? "text-blue-500" : "text-destructive/30"
+                  guaranteeRecord ? "text-blue-500" : "text-destructive/30"
                 }
               />
             </div>
@@ -333,72 +396,97 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
-            {/* 4. CHECKLIST DE PREPARACIÓN */}
+            {/* 4. CHECKLIST DE SALIDA (Corregido con el balance real) */}
             <div className="space-y-3">
               <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
                 Checklist de salida
               </h4>
               <div className="space-y-2">
+                {/* Solo mostramos el check de cobro si realmente falta dinero */}
+                {balance > 0 && !isCredit && (
+                  <label className="flex items-center gap-3 p-3 border  rounded-lg cursor-pointer animate-in fade-in slide-in-from-top-1">
+                    <span className="text-sm font-medium text-orange-800">
+                      Cobrar saldo pendiente: {formatCurrency(balance)}
+                    </span>
+                  </label>
+                )}
+
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 text-primary"
+                    className="rounded border-gray-300 text-primary w-4 h-4"
+                    checked={checklist.limpieza}
+                    onChange={(e) =>
+                      setChecklist({ ...checklist, limpieza: e.target.checked })
+                    }
                   />
                   <span className="text-sm">
                     Limpieza y desinfección verificada
                   </span>
                 </label>
+
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 text-primary"
+                    className="rounded border-gray-300 text-primary w-4 h-4"
+                    checked={checklist.garantia}
+                    onChange={(e) =>
+                      setChecklist({ ...checklist, garantia: e.target.checked })
+                    }
                   />
-                  <span className="text-sm">
-                    Cobro de saldo pendiente verificado (${pendiente})
+                  <span className="text-sm font-semibold">
+                    DNI o Garantía física en resguardo
                   </span>
-                </label>
-                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-primary"
-                  />
-                  <span className="text-sm">Garantía/DNI en resguardo</span>
                 </label>
               </div>
             </div>
           </div>
 
-          <DrawerFooter className="border-t bg-muted/20 grid grid-cols-2 gap-3">
+          <DrawerFooter className="border-t bg-muted/20">
             <Button
-              disabled={pendiente > 0 && operation?.type === "venta"}
-              className="w-full text-white bg-amber-600 hover:bg-amber-700 font-bold col-span-2 py-6 text-md shadow-lg"
+              // El botón se deshabilita si NO está listo para entregar
+              disabled={!isReadyToDeliver}
+              onClick={() => {
+                handleDeliver();
+              }}
+              className={`w-full text-white font-bold py-6 text-md shadow-lg transition-all ${
+                isReadyToDeliver
+                  ? "bg-emerald-600 hover:bg-emerald-700 active:scale-95"
+                  : "bg-slate-400 cursor-not-allowed opacity-70"
+              }`}
             >
               <HugeiconsIcon
                 icon={CheckmarkBadge03Icon}
                 strokeWidth={3}
                 className="mr-2"
               />
-              {pendiente > 0 ? "LIQUIDAR Y ENTREGAR" : "ENTREGAR AHORA"}
+              {balance > 0 && !isCredit
+                ? `FALTA COBRO: ${formatCurrency(balance)}`
+                : !isReadyToDeliver
+                ? "COMPLETE EL CHECKLIST"
+                : "CONFIRMAR ENTREGA Y SALIDA"}
             </Button>
-            <Button variant="outline" className="w-full">
-              <HugeiconsIcon
-                icon={CalendarAdd01Icon}
-                strokeWidth={2.2}
-                className="mr-1"
-              />
-              Reagendar
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full text-destructive border-destructive/20"
-            >
-              <HugeiconsIcon
-                icon={CalendarRemove01Icon}
-                strokeWidth={2.2}
-                className="mr-1"
-              />
-              Anular
-            </Button>
+            <div className="flex justify-between gap-2 w-full ">
+              <Button variant="outline" className="w-1/2">
+                <HugeiconsIcon
+                  icon={CalendarAdd01Icon}
+                  strokeWidth={2.2}
+                  className="mr-1"
+                />
+                Reagendar
+              </Button>
+              <Button
+                variant="outline"
+                className="text-destructive border-destructive/20 w-1/2"
+              >
+                <HugeiconsIcon
+                  icon={CalendarRemove01Icon}
+                  strokeWidth={2.2}
+                  className="mr-1"
+                />
+                Anular
+              </Button>
+            </div>
             <DrawerClose asChild>
               <Button variant="ghost" className="col-span-2">
                 Regresar
@@ -413,7 +501,12 @@ export function DetailsReservedViewer({
         onOpenChange={setIsHistoryOpen}
         payments={allPayments}
         operationId={operation?.id || 0}
-        totalOperation={operation?.totalAmount || 0}
+        // Pasamos los valores ya calculados para evitar el "parpadeo" de los logs
+        totalOperation={totalCalculated}
+        calculatedBalance={balance}
+        calculatedIsCredit={isCredit}
+        onAddPayment={handleAddPayment}
+        customerName={cliente?.firstName + " " + cliente?.lastName}
       />
     </>
   );

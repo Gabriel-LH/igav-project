@@ -165,6 +165,8 @@
 @media print {
   body * {
     visibility: hidden; /* Oculta todo */
+    display: flex;
+    justify-content: center;
   }
   .printable, .printable * {
     visibility: visible; /* Solo lo marcado como printable se ve */
