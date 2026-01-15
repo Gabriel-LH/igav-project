@@ -13,24 +13,17 @@ import {
 } from "@/components/drawer";
 import { Separator } from "@/components/separator";
 import { z } from "zod";
-import { productSchema } from "../../types/product/type.product";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar03Icon,
-  InformationCircleIcon,
-  Layers01Icon,
   CheckmarkBadge03Icon,
   CalendarAdd01Icon,
   CalendarRemove01Icon,
-  ColorsIcon,
 } from "@hugeicons/core-free-icons";
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { PAYMENTS_MOCK } from "@/src/mocks/mock.payment";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import {
-  sumPayments,
-  getRemainingBalance,
-  calculateOperationTotal,
   getOperationBalances,
 } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
@@ -45,11 +38,15 @@ import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Payment } from "@/src/types/payments/type.payments";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { toast } from "sonner";
+import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
+import { printTicket } from "@/src/utils/ticket/print-ticket";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
+  onDeliver,
 }: {
   reservation?: z.infer<typeof reservationSchema>;
+  onDeliver: () => void;
 }) {
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -67,12 +64,7 @@ export function DetailsReservedViewer({
 
   const handleDrawerOpenChange = (open: boolean) => {
     setIsDrawerOpen(open);
-
-    // Si el Drawer se está cerrando, reseteamos el checklist
-    if (!open) {
-    setChecklist({ limpieza: false, garantia: false });
-  }
-}
+  };
   // 4. Función para agregar un pago (esta se la pasaremos al modal)
   const handleAddPayment = (data: any): Payment => {
     const newPayment: Payment = {
@@ -109,24 +101,47 @@ export function DetailsReservedViewer({
   const isReadyToDeliver =
     (balance === 0 || isCredit) && checklist.limpieza && checklist.garantia;
 
-  const handleDeliver = () => {
+  const handleDeliver = async () => {
     if (!canDeliver) return;
 
-    toast.success("Reserva entregada exitosamente", {
-      style: {
-        background: "rgba(0, 255, 0, 0.1)",
-        color: "white",
-      },
-    });
-    // 3. Lógica de Negocio
-    console.log("Cambiando estado de reserva a: ENTREGADO");
+    const currentClient = CLIENTS_MOCK.find(
+      (c) => c.id === activeRes?.customerId
+    );
 
-    // 4. Generación del Ticket de Salida (Lo que mencionabas de los productos)
-    // Aquí llamarás a tu futura función de ticket de productos
-    // const productTicket = buildProductTicketHtml(activeRes);
-    // printTicket(productTicket);
+    // 1. Mostramos un toast simple de carga o éxito inmediato
+    const toastId = toast.loading("Procesando entrega e impresión...");
 
-    setIsDrawerOpen(false);
+    try {
+      const currentItems = MOCK_RESERVATION_ITEM.filter(
+        (item) => item.reservationId === activeRes?.id
+      );
+
+      const ticketHtml = buildDeliveryTicketHtml(
+        activeRes,
+        currentClient!,
+        currentItems,
+        guaranteeRecord
+      );
+
+      //Logica de negocio
+      console.log("Cambiando estado de reserva a: ENTREGADO");
+      onDeliver();
+
+      // 2. Cerramos el drawer y limpiamos checks ANTES de imprimir
+      // Esto asegura que la UI principal ya esté reseteada al volver
+      setChecklist({ limpieza: false, garantia: false });
+      setIsDrawerOpen(false);
+
+      // 3. Imprimimos (Esta parte bloquea el hilo)
+      await printTicket(ticketHtml);
+
+      // 4. AL VOLVER: Cambiamos el toast a éxito y lo programamos para morir
+      toast.success("Entrega realizada correctamente", {
+        id: toastId, // Reemplaza el de carga
+      });
+    } catch (error) {
+      toast.error("Error al procesar la entrega", { id: toastId });
+    }
   };
 
   // 5. Items y Sede
@@ -414,6 +429,7 @@ export function DetailsReservedViewer({
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <input
                     type="checkbox"
+                    id="limpieza-check" // Agregado
                     className="rounded border-gray-300 text-primary w-4 h-4"
                     checked={checklist.limpieza}
                     onChange={(e) =>
@@ -428,6 +444,7 @@ export function DetailsReservedViewer({
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <input
                     type="checkbox"
+                    id="garantia-check" // Agregado
                     className="rounded border-gray-300 text-primary w-4 h-4"
                     checked={checklist.garantia}
                     onChange={(e) =>

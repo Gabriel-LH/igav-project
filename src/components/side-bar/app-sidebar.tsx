@@ -105,57 +105,57 @@ const data = {
   navOperation: [
     {
       title: "Ventas",
-      url: "/ventas",
+      url: "/sales",
       icon: <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2.2} />,
     },
     {
       title: "Alquileres",
-      url: "/alquileres",
+      url: "/rentals",
       icon: <HugeiconsIcon icon={Repeat} strokeWidth={2.2} />,
     },
     {
       title: "Devoluciones",
-      url: "/devoluciones",
+      url: "/returns",
       icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
     }, // cambia icono si quieres
-    { title: "Pagos", url: "/pagos", icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />  },
+    { title: "Pagos", url: "/payments", icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />  },
   ],
   navRRHH: [
     {
       title: "Asistencia",
-      url: "/asistencia",
+      url: "/attendance",
       icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2}  />,
     },
     {
       title: "Turnos",
-      url: "/turnos",
+      url: "/shifts",
       icon: <HugeiconsIcon icon={Clock01Icon} strokeWidth={2.2} />,
     },
     {
       title: "Roles / Permisos",
-      url: "/roles",
+      url: "/permissions",
       icon: <HugeiconsIcon icon={ShieldUserIcon} strokeWidth={2.2} />,
     },
     {
       title: "Sucursales",
-      url: "/sucursales",
+      url: "/branches",
       icon: <HugeiconsIcon icon={StoreLocation01Icon} strokeWidth={2.2} />,
     },
     {
       title: "Usuarios",
-      url: "/usuarios",
+      url: "/users",
       icon: <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2.2} />,
     }, // lo que antes llamaste "Equipo"
   ],
   navAdmin: [
     {
       title: "Configuración",
-      url: "/settings",
+      url: "/config",
       icon: <HugeiconsIcon icon={Settings01Icon} strokeWidth={2.2} />,
     },
     {
       title: "Métodos de pago",
-      url: "/metodos-pago",
+      url: "/payments",
       icon: <IconCreditCard />,
     },
     {
@@ -167,7 +167,7 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/settings",
+      url: "/config",
       icon: IconSettings,
     },
     {

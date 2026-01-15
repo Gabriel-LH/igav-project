@@ -5,7 +5,13 @@ import { CatalogProductCard } from "./catalog-product-card";
 import { ReservationProductCard } from "./reservation-product-card";
 import { Button } from "@/components/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BubbleChatSearchIcon, Calendar03Icon, SearchRemoveIcon } from "@hugeicons/core-free-icons";
+import {
+  BubbleChatSearchIcon,
+  Calendar03Icon,
+  CleanIcon,
+  SearchRemoveIcon,
+  ToolsIcon,
+} from "@hugeicons/core-free-icons";
 
 // Mocks e IDs
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
@@ -14,12 +20,19 @@ import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { USER_MOCK } from "@/src/mocks/mock.user";
+import { useReservationStore } from "@/src/store/useReservationStore";
+import { HomeStats } from "./home-stats";
+import { LaundryActionCard } from "./laundry/laundry-card";
+import { MaintenanceActionCard } from "./maintance/maintance-card";
 
 export function ProductGrid() {
+  const { reservations, deliverReservation } = useReservationStore();
+
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showReserved, setShowReserved] = useState(false);
+  const [viewMode, setViewMode] = useState("catalog");
 
+  const showReserved = viewMode === "reserved";
   const currentUser = USER_MOCK[0];
   const query = searchQuery.toLowerCase();
 
@@ -28,18 +41,23 @@ export function ProductGrid() {
     return PRODUCTS_MOCK.filter((product) => {
       // Filtro de Sede: Sumamos stock total del producto en esta sucursal
       const branchStock = STOCK_MOCK.filter(
-        (s) => s.productId.toString() === product.id.toString() && s.branchId === currentUser.branchId
+        (s) =>
+          s.productId.toString() === product.id.toString() &&
+          s.branchId === currentUser.branchId
       ).reduce((acc, curr) => acc + curr.quantity, 0);
 
       // Si no hay stock en esta sede, no va al catálogo de disponibles
       if (branchStock <= 0) return false;
 
       // Filtro de Búsqueda (Nombre o SKU)
-      const matchesSearch = product.name.toLowerCase().includes(query) || product.sku.toLowerCase().includes(query);
-      
+      const matchesSearch =
+        product.name.toLowerCase().includes(query) ||
+        product.sku.toLowerCase().includes(query);
+
       // Filtro de Tabs
-      const matchesTab = activeTab === "todos" || 
-                        (activeTab === "alquiler" ? product.can_rent : product.can_sell);
+      const matchesTab =
+        activeTab === "todos" ||
+        (activeTab === "alquiler" ? product.can_rent : product.can_sell);
 
       return matchesSearch && matchesTab;
     });
@@ -49,20 +67,29 @@ export function ProductGrid() {
   const filteredReservations = useMemo(() => {
     return RESERVATIONS_MOCK.filter((res) => {
       // Seguridad: Solo de mi sede (a menos que sea admin)
-      const isMyBranch = currentUser.role === "admin" || res.branchId === currentUser.branchId;
+      const isMyBranch =
+        currentUser.role === "admin" || res.branchId === currentUser.branchId;
       if (!isMyBranch) return false;
 
       // Estado: Solo pendientes o confirmadas
-      const isActive = res.status === "pendiente" || res.status === "confirmada";
+      const isActive =
+        res.status === "pendiente" || res.status === "confirmada";
       if (!isActive) return false;
 
       // Búsqueda: Por Cliente o por nombre de algún producto dentro de la reserva
       const client = CLIENTS_MOCK.find((c) => c.id === res.customerId);
-      const matchesClient = `${client?.firstName} ${client?.lastName}`.toLowerCase().includes(query) || client?.dni?.includes(query);
-      
-      const resItems = MOCK_RESERVATION_ITEM.filter(i => i.reservationId === res.id);
-      const matchesAnyProduct = resItems.some(item => {
-        const p = PRODUCTS_MOCK.find(prod => prod.id.toString() === item.productId);
+      const matchesClient =
+        `${client?.firstName} ${client?.lastName}`
+          .toLowerCase()
+          .includes(query) || client?.dni?.includes(query);
+
+      const resItems = MOCK_RESERVATION_ITEM.filter(
+        (i) => i.reservationId === res.id
+      );
+      const matchesAnyProduct = resItems.some((item) => {
+        const p = PRODUCTS_MOCK.find(
+          (prod) => prod.id.toString() === item.productId
+        );
         return p?.name.toLowerCase().includes(query);
       });
 
@@ -70,54 +97,116 @@ export function ProductGrid() {
     });
   }, [query, currentUser.branchId, currentUser.role]);
 
+  const filteredLaundry = useMemo(() => {
+    return STOCK_MOCK.filter(
+      (s) =>
+        s.branchId === currentUser.branchId &&
+        s.status === "lavanderia" &&
+        s.productId.toString().includes(query)
+    );
+  }, [query, currentUser.branchId]);
+
+  // --- 4. LÓGICA DE MANTENIMIENTO ---
+  const filteredMaintenance = useMemo(() => {
+    return STOCK_MOCK.filter(
+      (s) => s.branchId === currentUser.branchId && s.status === "mantenimiento"
+    );
+  }, [currentUser.branchId]);
+
   // Decidir qué lista mostrar
   const displayList = showReserved ? filteredReservations : filteredCatalog;
 
   return (
     <div className="w-full">
+      <HomeStats reservations={reservations} />
       <ProductFilters
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        showReserved={showReserved}
-        setShowReserved={setShowReserved}
+        viewMode={viewMode} // Pasamos el estado
+        setViewMode={setViewMode} // Pasamos la función (ESTO CORRIGE TU ERROR)
       />
 
       {/* Grid Dinámico */}
-      <div className={`grid gap-6 ${
-        showReserved 
-          ? "grid-cols-1 md:grid-cols-2 items-start" 
-          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      }`}>
-        {showReserved 
-          ? filteredReservations.map((res) => (
-              <ReservationProductCard key={res.id} reservation={res} />
-            ))
-          : filteredCatalog.map((prod) => (
-              <CatalogProductCard key={prod.id} product={prod} />
-            ))
-        }
-      </div>
+      <div
+        className={`grid gap-6 ${
+          viewMode !== "catalog"
+            ? "grid-cols-1 md:grid-cols-2 items-start"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        }`}
+      >
+        {viewMode === "reserved" &&
+          filteredReservations.map((res) => (
+            <ReservationProductCard
+              key={res.id}
+              reservation={res}
+              onDeliver={() => deliverReservation(res.id)}
+            />
+          ))}
 
+        {viewMode === "catalog" &&
+          filteredCatalog.map((prod) => (
+            <CatalogProductCard key={prod.id} product={prod} />
+          ))}
+
+        {viewMode === "laundry" &&
+          filteredLaundry.map((item) => (
+            <LaundryActionCard
+              key={item.id}
+              item={item}
+              onFinish={() => {
+                /* Luego haremos la lógica */
+              }}
+            />
+          ))}
+
+        {viewMode === "maintenance" &&
+          filteredMaintenance.map((item) => (
+            <MaintenanceActionCard
+              key={item.id}
+              item={item}
+              onFinish={() => {
+                /* Luego haremos la lógica */
+              }}
+            />
+          ))}
+      </div>
       {/* Estado Vacío */}
       {displayList.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-500">
           <div className="bg-muted rounded-full p-6 mb-4">
             <HugeiconsIcon
-              icon={showReserved ? Calendar03Icon : BubbleChatSearchIcon}
+              icon={
+                viewMode === "reserved"
+                  ? Calendar03Icon
+                  : viewMode === "laundry"
+                  ? CleanIcon
+                  : viewMode === "maintenance"
+                  ? ToolsIcon
+                  : BubbleChatSearchIcon
+              }
               className="w-12 h-12 text-muted-foreground/40"
             />
           </div>
           <h3 className="text-lg font-semibold">No hay resultados</h3>
           <p className="text-muted-foreground max-w-xs mx-auto">
-            {showReserved
-              ? "No hay reservas que coincidan con la búsqueda en esta sede."
-              : "No hay productos con stock disponible actualmente."}
+            {viewMode === "laundry"
+              ? "No hay prendas pendientes de lavado."
+              : viewMode === "maintenance"
+              ? "No hay prendas en reparación."
+              : viewMode === "reserved"
+              ? "No hay reservas activas."
+              : "No hay productos con stock disponible."}
           </p>
           {searchQuery && (
-            <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2 text-primary">
-              <HugeiconsIcon icon={SearchRemoveIcon} strokeWidth={2.2} /> Limpiar búsqueda
+            <Button
+              variant="link"
+              onClick={() => setSearchQuery("")}
+              className="mt-2 text-primary"
+            >
+              <HugeiconsIcon icon={SearchRemoveIcon} strokeWidth={2.2} />{" "}
+              Limpiar búsqueda
             </Button>
           )}
         </div>

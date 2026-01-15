@@ -4,6 +4,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CleanIcon, ToolsIcon } from "@hugeicons/core-free-icons";
 
 export function ProductFilters({
   activeTab,
@@ -12,11 +14,15 @@ export function ProductFilters({
   setSearchQuery,
   showReserved,
   setShowReserved,
+  viewMode, // Agregamos esto
+  setViewMode,
 }: any) {
   return (
-    <div className="flex flex-col gap-4 mb-6">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center space-x-9">
+    <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between  gap-4">
+        <div className="flex items-center space-x-4">
+          {" "}
+          {/* Ajusté el space-x-9 a 4 para que quepan los nuevos botones */}
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
@@ -28,18 +34,53 @@ export function ProductFilters({
               <TabsTrigger value="venta">Venta</TabsTrigger>
             </TabsList>
           </Tabs>
-
-          {/* Sección del Switch de Reservados - Diseño Original */}
-          <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-lg">
-            <Label htmlFor="reserved-mode" className="text-xs font-medium">
-              Ver reservados
+          {/* Switch de Reservados */}
+          <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-lg border border-transparent has-checked:border-blue-500/30 transition-all">
+            <Label
+              htmlFor="reserved-mode"
+              className="text-[10px] font-bold uppercase text-muted-foreground"
+            >
+              Reservas
             </Label>
             <Switch
               id="reserved-mode"
-              checked={showReserved}
-              onCheckedChange={setShowReserved}
+              checked={viewMode === "reserved"}
+              onCheckedChange={(checked) =>
+                setViewMode(checked ? "reserved" : "catalog")
+              }
             />
           </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() =>
+              setViewMode(viewMode === "laundry" ? "catalog" : "laundry")
+            }
+            className={`p-2 rounded-lg border transition-all ${
+              viewMode === "laundry"
+                ? "bg-blue-600/30  border-blue-600/30"
+                : "bg-card text-slate-400 "
+            }`}
+            title="Lavandería"
+          >
+            <HugeiconsIcon icon={CleanIcon} size={18} />
+          </button>
+          <button
+            onClick={() =>
+              setViewMode(
+                viewMode === "maintenance" ? "catalog" : "maintenance"
+              )
+            }
+            className={`p-2 rounded-lg border transition-all ${
+              viewMode === "maintenance"
+                ? "bg-amber-500/30 border-amber-500/30"
+                : "bg-card text-slate-400 "
+            }`}
+            title="Mantenimiento"
+          >
+            <HugeiconsIcon icon={ToolsIcon} size={18} />
+          </button>
         </div>
         {showReserved && searchQuery && (
           <p className="text-[10px] text-muted-foreground italic px-1">

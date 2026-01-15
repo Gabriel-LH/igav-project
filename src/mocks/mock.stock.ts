@@ -11,7 +11,7 @@ export const STOCK_MOCK: Stock[] = [
     colorHex: "#000000",
     quantity: 2,
     condition: "Nuevo",
-    status: "disponible",
+    status: "lavanderia",
     updatedAt: new Date()
   },
   {

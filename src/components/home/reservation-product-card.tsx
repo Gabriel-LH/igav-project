@@ -12,9 +12,10 @@ import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 interface Props {
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
   reservation: any;
+  onDeliver: () => void;
 }
 
-export function ReservationProductCard({ reservation }: Props) {
+export function ReservationProductCard({ reservation, onDeliver }: Props) {
   // 1. Buscamos el item exacto de esta reserva
   const specificItems = MOCK_RESERVATION_ITEM.filter(
     (i) => i.reservationId === reservation.id
@@ -110,7 +111,7 @@ export function ReservationProductCard({ reservation }: Props) {
       {/* FOOTER: Botón de acción */}
       <div className="pt-2">
         {/* Pasamos el primer producto como referencia o ajustamos el viewer para recibir la reserva completa */}
-        <DetailsReservedViewer reservation={reservation} />
+        <DetailsReservedViewer reservation={reservation} onDeliver={onDeliver} />
       </div>
     </Card>
   );
