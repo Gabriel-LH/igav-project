@@ -16,14 +16,22 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/drawer";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { GiSewingMachine } from "react-icons/gi";
+import { PiWashingMachineFill } from "react-icons/pi";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
 import { Badge } from "@/components/badge";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useReservationStore } from "@/src/store/useReservationStore";
+import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
+import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 
 export function ReturnInspectionDrawer({
   reservation,
@@ -44,6 +52,38 @@ export function ReturnInspectionDrawer({
     noPhysicalDamage: true,
   });
 
+  const updateStockStatus = useInventoryStore(
+    (state) => state.updateStockStatus
+  );
+  const returnReservation = useReservationStore(
+    (state) => state.returnReservation
+  );
+
+  // 1. Buscamos los items de la reserva
+  const reservationItems = useMemo(
+    () =>
+      MOCK_RESERVATION_ITEM.filter((i) => i.reservationId === reservation.id),
+    [reservation.id]
+  );
+
+  const [waivePenalty, setWaivePenalty] = useState(false); // Perdonar mora
+
+  // 2. Estado para cada prenda: { stockId: "status" }
+  const [itemsInspection, setItemsInspection] = useState<
+    Record<string, string>
+  >(
+    Object.fromEntries(reservationItems.map((item) => [item.id, "lavanderia"]))
+  );
+
+  const counts = useMemo(() => {
+    const stats = { lavanderia: 0, mantenimiento: 0, baja: 0, disponible: 0 };
+    Object.values(itemsInspection).forEach(status => {
+      stats[status as keyof typeof stats]++;
+    });
+    return stats;
+  }, [itemsInspection]);
+
+
   // 1. Obtener la garantía real del sistema
   const guarantee = useMemo(() => {
     const op = OPERATIONS_MOCK.find((o) => o.reservationId === reservation.id);
@@ -61,8 +101,9 @@ export function ReturnInspectionDrawer({
       0,
       Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1
     );
-    const penaltyAmount = daysLate * 15; // Regla de negocio
 
+    // Si waivePenalty es true, la mora es 0
+    const penaltyAmount = waivePenalty ? 0 : daysLate * 15;
     const totalToPay = penaltyAmount + extraDamageCharge;
 
     // Si la garantía es efectivo, restamos. Si es objeto, sumamos deuda.
@@ -81,13 +122,27 @@ export function ReturnInspectionDrawer({
           : 0
         : totalToPay,
     };
-  }, [reservation.endDate, extraDamageCharge, guarantee]);
+  }, [reservation.endDate, waivePenalty, extraDamageCharge, guarantee]);
 
   // Mostrar inputs de multa si algo falla
   const showDamageInput =
     !itemsStatus.allPartsPresent ||
     !itemsStatus.noStains ||
     !itemsStatus.noPhysicalDamage;
+
+  const handleCompleteReturn = () => {
+
+    console.log("Iniciando proceso de retorno...");
+
+
+    Object.entries(itemsInspection).forEach(([stockId, status]) => {
+      updateStockStatus(stockId, status as any, damageNotes);
+    });
+
+    const totalExtra = summary.penaltyAmount + extraDamageCharge;
+    returnReservation(reservation.id, totalExtra);
+    onClose();
+  };
 
   return (
     <>
@@ -96,7 +151,7 @@ export function ReturnInspectionDrawer({
         //open={isDrawerOpen}
         //onOpenChange={handleDrawerOpenChange}
       >
-        <DrawerTrigger className="w-full">
+        <DrawerTrigger asChild>
           <Button
             className={`h-full min-h-[50px] w-full px-6  text-white transition-all ${
               isOverdue
@@ -104,7 +159,11 @@ export function ReturnInspectionDrawer({
                 : "bg-emerald-600 hover:bg-emerald-700"
             }`}
           >
-            <HugeiconsIcon icon={PackageReceiveIcon} size={22} strokeWidth={2.2} />
+            <HugeiconsIcon
+              icon={PackageReceiveIcon}
+              size={22}
+              strokeWidth={2.2}
+            />
             <span className="font-bold text-[12px] uppercase text-center leading-tight">
               Procesar retorno
             </span>
@@ -112,20 +171,146 @@ export function ReturnInspectionDrawer({
         </DrawerTrigger>
 
         <DrawerContent className={isMobile ? "" : "max-w-md ml-auto h-full"}>
-          <DrawerHeader>
+          <DrawerHeader className="border-b">
             <DrawerTitle>Inspección de Retorno</DrawerTitle>
             <DrawerDescription>ID Reserva: {reservation.id}</DrawerDescription>
           </DrawerHeader>
           <div className="h-px bg-accent" />
-          <div className="flex flex-col h-full p-6 gap-6">
+          <div className="p-4 overflow-y-auto ">
+            <section className="space-y-3">
+              <h3 className="text-[12px] font-semibold uppercase tracking-widest">
+                Inspección por prenda
+              </h3>
+              {reservationItems.map((item) => {
+                const product = PRODUCTS_MOCK.find(
+                  (p) => p.id === item.productId
+                );
+                return (
+                  <div
+                    key={item.id}
+                    className="p-3 border rounded-xl bg-accent/50 space-y-3 mb-3"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold">
+                        {product?.name} ({item.size})
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[
+                        {
+                          id: "lavanderia",
+                          label: "Enviar a Lavar",
+                          icon: <PiWashingMachineFill />,
+                          activeColor: "bg-blue-100/10  text-blue-600",
+                        },
+                        {
+                          id: "mantenimiento",
+                          label: "Reparación",
+                          icon: <GiSewingMachine />,
+                          activeColor: "bg-amber-100/10  text-amber-600",
+                        },
+                        {
+                          id: "baja",
+                          label: "Dar de Baja",
+                          icon: <RiDeleteBin5Line />,
+                          activeColor: "bg-red-100/10  text-red-600",
+                        },
+                      ].map((opt) => {
+                        const isSelected = itemsInspection[item.id] === opt.id;
+
+                        return (
+                          <button
+                            key={opt.id}
+                            onClick={() => {
+                              // Si hace clic en el que ya está seleccionado, se desmarca (vuelve a 'disponible')
+                              const newStatus = isSelected
+                                ? "disponible"
+                                : opt.id;
+                              setItemsInspection((prev) => ({
+                                ...prev,
+                                [item.id]: newStatus,
+                              }));
+                            }}
+                            className={`flex-1 flex flex-col items-center p-2 cursor-pointer rounded-xl border transition-all ${
+                              isSelected
+                                ? opt.activeColor
+                                : "opacity-50 hover:opacity-100"
+                            }`}
+                          >
+                            <span className="text-lg">{opt.icon}</span>
+                            <span className="text-[9px] italic pt-1 uppercase text-center leading-tight">
+                              {opt.label}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+
+            <section className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+              <h4 className="text-[10px] font-black uppercase text-slate-400 mb-3">
+                Resumen Operativo
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                {counts.lavanderia > 0 && (
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">
+                    <span>✨ {counts.lavanderia} a Lavandería</span>
+                  </div>
+                )}
+                {counts.mantenimiento > 0 && (
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
+                    <span>🛠️ {counts.mantenimiento} a Reparación</span>
+                  </div>
+                )}
+                {counts.baja > 0 && (
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">
+                    <span>🗑️ {counts.baja} de Baja</span>
+                  </div>
+                )}
+                {counts.disponible > 0 && (
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                    <span>✅ {counts.disponible} a Catálogo</span>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* OPCIÓN PERDONAR MORA */}
+            {summary.daysLate > 0 && (
+              <div
+                onClick={() => setWaivePenalty(!waivePenalty)}
+                className="flex items-center justify-between p-3 mb-3 border border-dashed border-slate-600 rounded-xl cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <HugeiconsIcon
+                    icon={AlertCircleIcon}
+                    className="text-red-500"
+                    size={18}
+                  />
+                  <span className="text-xs font-bold text-red-500">
+                    Perdonar mora acumulada
+                  </span>
+                </div>
+                <div
+                  className={`w-10 h-5 rounded-full relative transition-colors ${
+                    waivePenalty ? "bg-emerald-500" : "bg-accent"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${
+                      waivePenalty ? "left-6" : "left-1"
+                    }`}
+                  />
+                </div>
+              </div>
+            )}
+            <div className="h-px bg-accent mb-2" />
             {/* SECCIÓN 1: CHECKLIST DE ESTADO */}
-            <section className="space-y-4">
-              <h3 className="text-[15px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Settings03Icon}
-                  size={20}
-                  strokeWidth={2.2}
-                />{" "}
+            <section className="space-y-4 mb-3">
+              <h3 className="text-[13px] font-semibold uppercase tracking-widest">
                 Inspección Física
               </h3>
 
@@ -155,7 +340,7 @@ export function ReturnInspectionDrawer({
             </section>
 
             {showDamageInput && (
-              <section className=" p-4 rounded-xl border bg-accent space-y-3 animate-in fade-in">
+              <section className=" p-4 mb-3 rounded-xl border bg-accent space-y-3 animate-in fade-in">
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase">
                     Detalle del problema
@@ -270,23 +455,17 @@ export function ReturnInspectionDrawer({
                 )}
               </div>
             </section>
-
-            <Button
-              disabled={!itemsStatus.allPartsPresent}
-              onClick={() => {
-                // Aquí llamarías al store de Zustand para finalizar
-                onClose();
-              }}
-              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white text-md font-semibold"
-            >
-                <>
-              <HugeiconsIcon icon={CheckmarkBadge03Icon} size={22} strokeWidth={2.2} />
-              {summary.totalToPay > 0 && !summary.isCash
-                ? "COBRAR Y FINALIZAR"
-                : "FINALIZAR RETORNO"}
-                </>
-            </Button>
           </div>
+          <DrawerFooter>
+            <Button
+              onClick={handleCompleteReturn} // AHORA SÍ SE EJECUTA
+              className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+            >
+              {summary.totalToPay > 0
+                ? `COBRAR ${formatCurrency(summary.totalToPay)} Y FINALIZAR`
+                : "FINALIZAR RETORNO"}
+            </Button>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>

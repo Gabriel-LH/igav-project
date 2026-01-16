@@ -24,6 +24,7 @@ import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function ProductGrid() {
   const { reservations, deliverReservation } = useReservationStore();
@@ -36,11 +37,13 @@ export function ProductGrid() {
   const currentUser = USER_MOCK[0];
   const query = searchQuery.toLowerCase();
 
+  const stock = useInventoryStore((state) => state.stock);
+
   // --- 1. LÓGICA DE CATÁLOGO (PRODUCTOS DISPONIBLES) ---
   const filteredCatalog = useMemo(() => {
     return PRODUCTS_MOCK.filter((product) => {
       // Filtro de Sede: Sumamos stock total del producto en esta sucursal
-      const branchStock = STOCK_MOCK.filter(
+      const branchStock = stock.filter(
         (s) =>
           s.productId.toString() === product.id.toString() &&
           s.branchId === currentUser.branchId
@@ -97,21 +100,23 @@ export function ProductGrid() {
     });
   }, [query, currentUser.branchId, currentUser.role]);
 
-  const filteredLaundry = useMemo(() => {
-    return STOCK_MOCK.filter(
-      (s) =>
-        s.branchId === currentUser.branchId &&
-        s.status === "lavanderia" &&
-        s.productId.toString().includes(query)
-    );
-  }, [query, currentUser.branchId]);
+ const filteredLaundry = useMemo(() => {
+    // Usamos 'stock' que viene de Zustand
+    return stock.filter((s) => {
+      const isMatch = s.branchId === currentUser.branchId && (s.status as string) === "lavanderia";
+      if (!isMatch) return false;
 
-  // --- 4. LÓGICA DE MANTENIMIENTO ---
+      const productInfo = PRODUCTS_MOCK.find(p => p.id.toString() === s.productId.toString());
+      const productName = productInfo?.name.toLowerCase() || "";
+      return productName.includes(query) || productInfo?.sku.toLowerCase().includes(query);
+    });
+  }, [query, currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' a las dependencias
+
   const filteredMaintenance = useMemo(() => {
-    return STOCK_MOCK.filter(
-      (s) => s.branchId === currentUser.branchId && s.status === "mantenimiento"
+    return stock.filter( // Usamos 'stock' de Zustand
+      (s) => s.branchId === currentUser.branchId && (s.status as string) === "mantenimiento"
     );
-  }, [currentUser.branchId]);
+  }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
 
   // Decidir qué lista mostrar
   const displayList = showReserved ? filteredReservations : filteredCatalog;
@@ -132,7 +137,7 @@ export function ProductGrid() {
       <div
         className={`grid gap-6 ${
           viewMode !== "catalog"
-            ? "grid-cols-1 md:grid-cols-2 items-start"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start"
             : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         }`}
       >
@@ -155,9 +160,6 @@ export function ProductGrid() {
             <LaundryActionCard
               key={item.id}
               item={item}
-              onFinish={() => {
-                /* Luego haremos la lógica */
-              }}
             />
           ))}
 
@@ -166,9 +168,6 @@ export function ProductGrid() {
             <MaintenanceActionCard
               key={item.id}
               item={item}
-              onFinish={() => {
-                /* Luego haremos la lógica */
-              }}
             />
           ))}
       </div>

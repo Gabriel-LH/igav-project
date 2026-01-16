@@ -2,35 +2,91 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CleanIcon, TickIcon } from "@hugeicons/core-free-icons";
+import {
+  CleanIcon,
+  TickIcon,
+  WashingMachineIcon,
+} from "@hugeicons/core-free-icons";
 import Image from "next/image";
+import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { Badge } from "@/components/badge";
 
-export function LaundryActionCard({ item, onFinish }: { item: any, onFinish: () => void }) {
+export function LaundryActionCard({ item }: { item: any }) {
+  const updateStockStatus = useInventoryStore(
+    (state) => state.updateStockStatus
+  );
 
-    console.log(item)
+  const productName = PRODUCTS_MOCK.find(
+    (product: any) => product.id === item.productId
+  )?.name;
+  const sku = PRODUCTS_MOCK.find(
+    (product: any) => product.id === item.productId
+  )?.sku;
+
   return (
-    <Card className="flex items-center p-3 w-fit gap-4 border-l-4 shadow-sm hover:shadow-md transition-all">
-      <div className="relative h-16 w-16 bg-muted rounded-lg overflow-hidden shrink-0">
-        <Image src={"https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=400" || "/placeholder.png"} alt="Prenda" fill className="object-cover" />
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="border text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">
-            Lavandería
-          </span>
+    <Card className="relative flex items-center p-3 w-fit gap-4 border-l-2 border-l-blue-500 shadow-sm hover:shadow-md transition-all">
+      <Badge className="absolute animate-pulse -top-2 border border-blue-200/20 bg-blue-100/20 text-blue-500 -right-2 shadow-md backdrop-blur-sm transition-all hover:scale-101">
+        En Lavandería
+      </Badge>
+
+      <div className="flex justify-between items-start">
+        <div className="flex items-center gap-3">
+          <div className="relative h-16 w-16 bg-muted rounded-lg overflow-hidden shrink-0">
+            <Image
+              src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=400"
+              alt="Prenda"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          <div className="h-10 w-10 bg-accent rounded-lg flex items-center justify-center text-blue-600">
+            <HugeiconsIcon
+              icon={WashingMachineIcon}
+              size={20}
+              strokeWidth={2.2}
+            />
+          </div>
+
+          <div>
+            <h4 className="font-bold text-sm uppercase tracking-tighter">
+              {productName}
+            </h4>
+            <p className="text-[10px] text-muted-foreground uppercase font-black">
+              Ref: {sku}
+            </p>
+          </div>
         </div>
-        <h4 className="font-bold text-sm truncate uppercase tracking-tighter text-slate-800">{item.productName}</h4>
-        <p className="text-[10px] text-muted-foreground font-medium">Talla {item.size} • Color {item.color}</p>
       </div>
 
-      <Button 
-        onClick={onFinish}
-        className="bg-blue-600 hover:bg-blue-700 text-white h-12 px-4 flex flex-col gap-0 group"
-      >
-        <HugeiconsIcon icon={CleanIcon} size={18} className="group-hover:animate-pulse" />
-        <span className="text-[9px] font-black uppercase">Listo</span>
-      </Button>
+      <div className="flex items-center gap-3">
+        <p className="text-[10px] uppercase font-black">Talla: {item.size}</p>
+        <p className="text-[10px] uppercase font-black">Color: {item.color}</p>
+        <p className="text-[10px] uppercase font-black">
+          Cantidad: {item.quantity}
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <Button
+          onClick={() => updateStockStatus(item.id, "disponible")}
+          variant="outline"
+          className="border-blue-500 border text-blue-600 hover:bg-blue-500 hover:text-blue-500 font-black text-[10px] uppercase flex gap-0 group"
+        >
+          <span className="text-[11px] font-bold uppercase pl-2 tracking-wider">
+            Listo
+          </span>
+        </Button>
+        <Button
+          onClick={() => updateStockStatus(item.id, "mantenimiento")}
+          variant="outline"
+          className="border-amber-500 border text-amber-600 hover:bg-amber-500 hover:text-amber-500 font-black text-[10px] uppercase flex gap-0 group"
+        >
+          <span className="text-[11px] font-bold uppercase pl-2 tracking-wider">
+            Mantenimiento
+          </span>
+        </Button>
+      </div>
     </Card>
   );
 }

@@ -20,6 +20,7 @@ import { Button } from "@/components/button";
 import { AddPaymentForm } from "../forms/AddPaymentForm";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { ConfirmPrintModal } from "./ConfirmPrintModal";
+import { DialogDescription } from "@radix-ui/react-dialog";
 interface PaymentHistoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -113,6 +114,9 @@ export function PaymentHistoryModal({
               />
               Historial de Pagos
             </DialogTitle>
+            <DialogDescription>
+              
+            </DialogDescription>
           </DialogHeader>
 
           <div className="p-6 pt-0 space-y-4">

@@ -11,7 +11,7 @@ export function ReturnStats({ reservations, overdue }: { reservations: any[]; ov
   ).length;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:w-full w-fit md:grid-cols-3 gap-4 mb-6">
       <StatCard 
         label="Retornos para Hoy" 
         value={returnsToday} 

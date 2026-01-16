@@ -13,6 +13,7 @@ export const stockSchema = z.object({
     // Estos campos están bien aquí porque definen el estado de la prenda física
     condition: z.enum(["Nuevo", "Usado", "Vintage"]),
     status: z.enum(["disponible", "mantenimiento", "alquilado", "lavanderia", "baja", "agotado", "vendido"]), 
+    damageNotes: z.string().optional(),
     updatedAt: z.date(),
    
   })

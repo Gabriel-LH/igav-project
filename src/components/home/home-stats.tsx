@@ -1,9 +1,12 @@
 // Componente sugerido: HomeStats.tsx
+import { useIsMobile } from "@/src/hooks/use-mobile";
 import { PackageMoving01Icon, AlertCircleIcon, ContainerTruck02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 export function HomeStats({ reservations }: { reservations: any[] }) {
   const today = new Date().setHours(0,0,0,0);
+
+  const isMobile = useIsMobile()
 
   // 1. Entregas para hoy
   const deliveriesToday = reservations.filter(r => 
@@ -34,12 +37,14 @@ export function HomeStats({ reservations }: { reservations: any[] }) {
         icon={AlertCircleIcon} 
         color="text-red-600" 
       />
-      <StatCard 
-        label="Retornos para Hoy" 
-        value={returnsToday} 
-        icon={ContainerTruck02Icon} 
-        color="text-emerald-600" 
-      />
+      {!isMobile && (
+        <StatCard 
+          label="Retornos para Hoy" 
+          value={returnsToday} 
+          icon={ContainerTruck02Icon} 
+          color="text-emerald-600" 
+        />
+      )}
     </div>
   );
 }
