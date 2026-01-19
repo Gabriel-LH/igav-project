@@ -1,12 +1,13 @@
 // src/components/home/product-filters.tsx
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, X } from "lucide-react";
+import { Icon, Search, WashingMachine, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CleanIcon, ToolsIcon, WashingMachineIcon } from "@hugeicons/core-free-icons";
 import { useIsMobile } from "@/src/hooks/use-mobile";
+import { iron } from "@lucide/lab";
 
 export function ProductFilters({
   activeTab,
@@ -168,7 +169,7 @@ export function ProductFilters({
                     }`}
                     title="Lavandería"
                   >
-                    <HugeiconsIcon icon={WashingMachineIcon} size={18} strokeWidth={2} />
+                    <WashingMachine size={18} strokeWidth={2} />
                   </button>
                   <button
                     onClick={() =>
@@ -183,7 +184,7 @@ export function ProductFilters({
                     }`}
                     title="Mantenimiento"
                   >
-                    <HugeiconsIcon icon={ToolsIcon} size={18} strokeWidth={2} />
+                    <Icon iconNode={iron} size={18} strokeWidth={2} />
                   </button>
                 </div>
               </div>

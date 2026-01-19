@@ -1,56 +1,69 @@
 import { create } from "zustand";
 import { STOCK_MOCK } from "../mocks/mock.stock";
 
-
 type StockStatus = "disponible" | "mantenimiento" | "alquilado" | "lavanderia" | "baja" | "agotado" | "vendido";
-interface InventoryStore {
-  reservations: any[];
-  stock: typeof STOCK_MOCK;
-  processReturn: (
-    reservationId: string,
-    items: any[],
-    hasDamage: boolean
-  ) => void;
 
-  updateStockStatus: (stockId: string, newStatus: StockStatus, damageNotes?: string) => void;
-
+interface InventoryLog {
+  timestamp: Date;
+  stockId: string;
+  fromBranch: string;
+  toBranch: string;
+  userId: string;
+  reason: string;
 }
 
+interface InventoryStore {
+  stock: typeof STOCK_MOCK;
+  inventoryLogs: InventoryLog[]; // Importante para la trazabilidad
+  updateStockStatus: (stockId: string, newStatus: StockStatus, damageNotes?: string) => void;
+  // Esta es la función profesional de "Mudanza + Alquiler"
+  deliverAndTransfer: (stockId: string, targetBranchId: string, adminId: string) => void;
+}
 
 export const useInventoryStore = create<InventoryStore>((set) => ({
-  reservations: [],
   stock: STOCK_MOCK,
-  processReturn: (reservationId, items, hasDamage) =>
-    set((state) => {
-      // 1. Finalizar la reserva
-      const updatedReservations = state.reservations.map((res) =>
-        res.id === reservationId
-          ? { ...res, status: "finalizado" }
-          : res
-      );
+  inventoryLogs: [],
 
-      // 2. Determinar destino del stock
-      const newStatus = hasDamage ? "mantenimiento" : "lavanderia";
-
-      // 👉 Aquí luego podrás:
-      // - recorrer items
-      // - actualizar stock por item.productId
-      // - setear status = newStatus
-
-      return {
-        reservations: updatedReservations,
-      };
-    }),
-
-  updateStockStatus: (stockId, newStatus, damageNotes?: string) =>
+  updateStockStatus: (stockId, newStatus, damageNotes) =>
     set((state) => ({
       stock: state.stock.map((item) =>
-        item.id.toString() === stockId.toString() ? {
-           ...item, 
-           status: newStatus, 
-           damageNotes: damageNotes || item.damageNotes,
-           updatedAt: new Date(),
-          } : item
+        item.id.toString() === stockId.toString()
+          ? {
+              ...item,
+              status: newStatus,
+              damageNotes: damageNotes || item.damageNotes,
+              updatedAt: new Date(),
+            }
+          : item
       ),
     })),
+
+  deliverAndTransfer: (stockId, targetBranchId, adminId) =>
+    set((state) => {
+      const item = state.stock.find((s) => s.id.toString() === stockId.toString());
+      if (!item) return state;
+
+      const needsTransfer = item.branchId !== targetBranchId;
+      const newLogs = [...state.inventoryLogs];
+
+      if (needsTransfer) {
+        newLogs.push({
+          timestamp: new Date(),
+          stockId,
+          fromBranch: item.branchId,
+          toBranch: targetBranchId,
+          userId: adminId,
+          reason: "Transferencia automática por entrega de reserva",
+        });
+      }
+
+      return {
+        stock: state.stock.map((s) =>
+          s.id.toString() === stockId.toString()
+            ? { ...s, status: "alquilado", branchId: targetBranchId, updatedAt: new Date() }
+            : s
+        ),
+        inventoryLogs: newLogs,
+      };
+    }),
 }));

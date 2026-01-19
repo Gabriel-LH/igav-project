@@ -43,7 +43,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { DraggableRow } from "../top-client/draggable-row-client";
 import { popularSchema } from "../../type.popular";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";

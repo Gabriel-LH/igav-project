@@ -11,16 +11,24 @@ import { printTicket } from "@/src/utils/ticket/print-ticket";
 interface ConfirmPrintModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    ticketToPrint: string | null;
+    ticketToPrint: string | null; 
+    onClose: () => void;
 }
 
 export const ConfirmPrintModal = ({
-    open,
-    onOpenChange,
-    ticketToPrint
+  open,
+  onOpenChange,
+  ticketToPrint,
+  onClose,
 }: ConfirmPrintModalProps) => {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        onOpenChange(value);
+        if (!value) onClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>¿Imprimir comprobante?</DialogTitle>
@@ -30,13 +38,21 @@ export const ConfirmPrintModal = ({
         </DialogHeader>
 
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false);
+              onClose();
+            }}
+          >
             No
           </Button>
+
           <Button
             onClick={() => {
               if (ticketToPrint) printTicket(ticketToPrint);
               onOpenChange(false);
+              onClose();
             }}
           >
             Sí, imprimir

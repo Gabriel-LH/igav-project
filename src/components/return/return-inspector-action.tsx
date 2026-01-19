@@ -4,13 +4,12 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/button";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { iron } from "@lucide/lab";
 import {
   Tick02Icon,
-  Settings03Icon,
   AlertCircleIcon,
   Invoice01Icon,
-  PackageReceiveIcon,
-  CheckmarkBadge03Icon,
+  ContainerTruck02Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Drawer,
@@ -21,9 +20,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/drawer";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { GiSewingMachine } from "react-icons/gi";
-import { PiWashingMachineFill } from "react-icons/pi";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
@@ -32,19 +28,32 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
+import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
+import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
+import { printTicket } from "@/src/utils/ticket/print-ticket";
+
+type StockStatus =
+  | "disponible"
+  | "mantenimiento"
+  | "alquilado"
+  | "lavanderia"
+  | "baja";
 
 export function ReturnInspectionDrawer({
   reservation,
+  client,
   isOverdue,
-  onClose,
 }: {
   reservation: any;
+  client: any;
   isOverdue: boolean;
-  onClose: () => void;
 }) {
   const isMobile = useIsMobile();
   const [extraDamageCharge, setExtraDamageCharge] = useState(0);
   const [damageNotes, setDamageNotes] = useState("");
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   // Estados de inspección
   const [itemsStatus, setItemsStatus] = useState({
     allPartsPresent: false,
@@ -68,21 +77,24 @@ export function ReturnInspectionDrawer({
 
   const [waivePenalty, setWaivePenalty] = useState(false); // Perdonar mora
 
-  // 2. Estado para cada prenda: { stockId: "status" }
   const [itemsInspection, setItemsInspection] = useState<
-    Record<string, string>
+    Record<string, StockStatus>
   >(
-    Object.fromEntries(reservationItems.map((item) => [item.id, "lavanderia"]))
+    Object.fromEntries(
+      reservationItems.map((item) => [
+        item.productId,
+        "lavanderia" as StockStatus,
+      ])
+    )
   );
 
   const counts = useMemo(() => {
     const stats = { lavanderia: 0, mantenimiento: 0, baja: 0, disponible: 0 };
-    Object.values(itemsInspection).forEach(status => {
+    Object.values(itemsInspection).forEach((status) => {
       stats[status as keyof typeof stats]++;
     });
     return stats;
   }, [itemsInspection]);
-
 
   // 1. Obtener la garantía real del sistema
   const guarantee = useMemo(() => {
@@ -124,35 +136,57 @@ export function ReturnInspectionDrawer({
     };
   }, [reservation.endDate, waivePenalty, extraDamageCharge, guarantee]);
 
+  const ticketHtml = buildReturnTicketHtml(
+    reservation,
+    client!,
+    reservationItems,
+    guarantee,
+    {
+      itemsInspection,
+      damageNotes: damageNotes || undefined,
+    },
+    {
+      ...summary,
+      extraDamageCharge,
+    }
+  );
+
   // Mostrar inputs de multa si algo falla
   const showDamageInput =
     !itemsStatus.allPartsPresent ||
     !itemsStatus.noStains ||
     !itemsStatus.noPhysicalDamage;
 
-  const handleCompleteReturn = () => {
-
+  const handleCompleteReturn = async () => {
     console.log("Iniciando proceso de retorno...");
 
+    // 4. ACTUALIZACIÓN DE STOCK (Físico)
+    reservationItems.forEach((item) => {
+      const targetStatus = itemsInspection[item.productId];
 
-    Object.entries(itemsInspection).forEach(([stockId, status]) => {
-      updateStockStatus(stockId, status as any, damageNotes);
+      updateStockStatus(item.productId, targetStatus, damageNotes);
     });
 
     const totalExtra = summary.penaltyAmount + extraDamageCharge;
+
     returnReservation(reservation.id, totalExtra);
-    onClose();
+
+    setDrawerOpen(false);
+
+    await printTicket(ticketHtml);
   };
 
   return (
     <>
       <Drawer
+        modal={false}
         direction={isMobile ? "bottom" : "right"}
-        //open={isDrawerOpen}
-        //onOpenChange={handleDrawerOpenChange}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
       >
         <DrawerTrigger asChild>
           <Button
+            onClick={() => setDrawerOpen(true)}
             className={`h-full min-h-[50px] w-full px-6  text-white transition-all ${
               isOverdue
                 ? "bg-red-600 hover:bg-red-700"
@@ -160,9 +194,9 @@ export function ReturnInspectionDrawer({
             }`}
           >
             <HugeiconsIcon
-              icon={PackageReceiveIcon}
+              icon={ContainerTruck02Icon}
               size={22}
-              strokeWidth={2.2}
+              strokeWidth={2.5}
             />
             <span className="font-bold text-[12px] uppercase text-center leading-tight">
               Procesar retorno
@@ -200,45 +234,56 @@ export function ReturnInspectionDrawer({
                         {
                           id: "lavanderia",
                           label: "Enviar a Lavar",
-                          icon: <PiWashingMachineFill />,
+                          icon: (
+                            <WashingMachine
+                              size={16}
+                              className="text-blue-600"
+                            />
+                          ),
                           activeColor: "bg-blue-100/10  text-blue-600",
                         },
                         {
                           id: "mantenimiento",
                           label: "Reparación",
-                          icon: <GiSewingMachine />,
+                          icon: (
+                            <Icon
+                              iconNode={iron}
+                              size={16}
+                              className="text-amber-600"
+                            />
+                          ),
                           activeColor: "bg-amber-100/10  text-amber-600",
                         },
                         {
                           id: "baja",
                           label: "Dar de Baja",
-                          icon: <RiDeleteBin5Line />,
+                          icon: <Trash2 size={16} className="text-red-600" />,
                           activeColor: "bg-red-100/10  text-red-600",
                         },
                       ].map((opt) => {
-                        const isSelected = itemsInspection[item.id] === opt.id;
+                        const isSelected =
+                          itemsInspection[item.productId] === opt.id;
 
                         return (
                           <button
                             key={opt.id}
                             onClick={() => {
-                              // Si hace clic en el que ya está seleccionado, se desmarca (vuelve a 'disponible')
-                              const newStatus = isSelected
-                                ? "disponible"
-                                : opt.id;
+                              const newStatus = (
+                                isSelected ? "disponible" : opt.id
+                              ) as StockStatus;
                               setItemsInspection((prev) => ({
                                 ...prev,
-                                [item.id]: newStatus,
+                                [item.productId]: newStatus,
                               }));
                             }}
                             className={`flex-1 flex flex-col items-center p-2 cursor-pointer rounded-xl border transition-all ${
                               isSelected
                                 ? opt.activeColor
-                                : "opacity-50 hover:opacity-100"
+                                : "opacity-50 hover:opacity-100 border"
                             }`}
                           >
                             <span className="text-lg">{opt.icon}</span>
-                            <span className="text-[9px] italic pt-1 uppercase text-center leading-tight">
+                            <span className="text-[9px] pt-1 uppercase font-bold leading-tight">
                               {opt.label}
                             </span>
                           </button>
@@ -250,29 +295,45 @@ export function ReturnInspectionDrawer({
               })}
             </section>
 
-            <section className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <h4 className="text-[10px] font-black uppercase text-slate-400 mb-3">
+            <section className="border rounded-2xl px-2 py-2 mb-3">
+              <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2">
                 Resumen Operativo
               </h4>
               <div className="grid grid-cols-2 gap-2">
                 {counts.lavanderia > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">
-                    <span>✨ {counts.lavanderia} a Lavandería</span>
+                  <div className="flex items-center gap-2 text-[11px] bg-blue-100/10 border border-blue-100/10 font-bold text-blue-600 px-2 py-1 rounded-lg">
+                    <span className="flex items-center gap-1">
+                      <WashingMachine size={16} className="text-blue-600" />
+                      {counts.lavanderia} a Lavandería
+                    </span>
                   </div>
                 )}
                 {counts.mantenimiento > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
-                    <span>🛠️ {counts.mantenimiento} a Reparación</span>
+                  <div className="flex items-center gap-2 text-[11px] bg-amber-100/10 border border-amber-100/10 font-bold text-amber-600 px-2 py-1 rounded-lg">
+                    <span className="flex items-center gap-1">
+                      <Icon
+                        iconNode={iron}
+                        size={16}
+                        className="text-amber-600"
+                      />{" "}
+                      {counts.mantenimiento} a Reparación
+                    </span>
                   </div>
                 )}
                 {counts.baja > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">
-                    <span>🗑️ {counts.baja} de Baja</span>
+                  <div className="flex items-center gap-2 text-[11px] bg-red-100/10 border border-red-100/10 font-bold text-red-600 px-2 py-1 rounded-lg">
+                    <span className="flex items-center gap-1">
+                      <Trash2 size={16} className="text-red-600" />{" "}
+                      {counts.baja} de Baja
+                    </span>
                   </div>
                 )}
                 {counts.disponible > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
-                    <span>✅ {counts.disponible} a Catálogo</span>
+                  <div className="flex items-center gap-2 text-[11px] bg-emerald-100/10 border border-emerald-100/10 font-bold text-emerald-600 px-2 py-1 rounded-lg">
+                    <span className="flex items-center gap-1">
+                      <BadgeCheck size={16} className="text-emerald-600" />{" "}
+                      {counts.disponible} a Catálogo
+                    </span>
                   </div>
                 )}
               </div>
@@ -282,7 +343,7 @@ export function ReturnInspectionDrawer({
             {summary.daysLate > 0 && (
               <div
                 onClick={() => setWaivePenalty(!waivePenalty)}
-                className="flex items-center justify-between p-3 mb-3 border border-dashed border-slate-600 rounded-xl cursor-pointer"
+                className="flex items-center justify-between p-3 mb-3 border border-dashed rounded-xl cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <HugeiconsIcon

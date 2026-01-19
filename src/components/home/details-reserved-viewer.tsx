@@ -19,13 +19,12 @@ import {
   CheckmarkBadge03Icon,
   CalendarAdd01Icon,
   CalendarRemove01Icon,
+  ShippingTruckIcon,
 } from "@hugeicons/core-free-icons";
 import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { PAYMENTS_MOCK } from "@/src/mocks/mock.payment";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import {
-  getOperationBalances,
-} from "@/src/utils/payment-helpers";
+import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import { useState } from "react";
 import { Badge } from "@/components/badge";
@@ -40,13 +39,24 @@ import { USER_MOCK } from "@/src/mocks/mock.user";
 import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/select";
+import { useRentalStore } from "@/src/store/useRentalStore";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
   onDeliver,
 }: {
   reservation?: z.infer<typeof reservationSchema>;
-  onDeliver: () => void;
+  onDeliver: (itemsWithStock: any[]) => void;
 }) {
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -56,12 +66,22 @@ export function DetailsReservedViewer({
   // Creamos el estado con los pagos iniciales
   const [payments, setPayments] = useState(PAYMENTS_MOCK);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
+    {}
+  );
+  const stock = useInventoryStore((state) => state.stock);
+  const updateStockStatus = useInventoryStore(
+    (state) => state.updateStockStatus
+  );
+
+  const createRentalFromReservation = useRentalStore(
+    (state) => state.createRentalFromReservation
+  );
 
   const [checklist, setChecklist] = useState({
     limpieza: false,
     garantia: false,
   });
-
   const handleDrawerOpenChange = (open: boolean) => {
     setIsDrawerOpen(open);
   };
@@ -96,13 +116,30 @@ export function DetailsReservedViewer({
     (g) => g.operationId === operation?.id
   );
 
-  const canDeliver = balance <= 0 && checklist.limpieza && checklist.garantia;
+  const activeResItems = MOCK_RESERVATION_ITEM.filter(
+    (ri) => ri.reservationId === activeRes?.id
+  );
+
+  const allItemsAssigned = activeResItems.every(
+    (item) => selectedStocks[item.id]
+  );
 
   const isReadyToDeliver =
-    (balance === 0 || isCredit) && checklist.limpieza && checklist.garantia;
+    (balance === 0 || isCredit) &&
+    checklist.limpieza &&
+    checklist.garantia &&
+    allItemsAssigned;
 
   const handleDeliver = async () => {
-    if (!canDeliver) return;
+    if (!allItemsAssigned) {
+      toast.error("Faltan requisitos para la entrega");
+      return;
+    }
+
+    const itemsWithStock = activeResItems.map((item) => ({
+      ...item,
+      stockId: selectedStocks[item.id], // El ID real que elegimos
+    }));
 
     const currentClient = CLIENTS_MOCK.find(
       (c) => c.id === activeRes?.customerId
@@ -112,6 +149,14 @@ export function DetailsReservedViewer({
     const toastId = toast.loading("Procesando entrega e impresión...");
 
     try {
+      itemsWithStock.forEach((item) => {
+        // Usamos la nueva función que transfiere y alquila en un solo paso
+        useInventoryStore.getState().deliverAndTransfer(
+          item.stockId,
+          activeRes?.branchId!, // Sede destino
+          currentUser.id // Quién lo autoriza
+        );
+      });
       const currentItems = MOCK_RESERVATION_ITEM.filter(
         (item) => item.reservationId === activeRes?.id
       );
@@ -123,9 +168,18 @@ export function DetailsReservedViewer({
         guaranteeRecord
       );
 
+      createRentalFromReservation(activeRes, itemsWithStock);
+
+      // B. Actualizamos cada prenda en InventoryStore a "alquilado"
+      itemsWithStock.forEach((item) => {
+        updateStockStatus(item.stockId, "alquilado");
+      });
+
+      // C.
+
       //Logica de negocio
       console.log("Cambiando estado de reserva a: ENTREGADO");
-      onDeliver();
+      onDeliver(itemsWithStock);
 
       // 2. Cerramos el drawer y limpiamos checks ANTES de imprimir
       // Esto asegura que la UI principal ya esté reseteada al volver
@@ -144,10 +198,6 @@ export function DetailsReservedViewer({
     }
   };
 
-  // 5. Items y Sede
-  const activeResItems = MOCK_RESERVATION_ITEM.filter(
-    (ri) => ri.reservationId === activeRes?.id
-  );
   const sedeName =
     BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
     "Sede central";
@@ -372,39 +422,131 @@ export function DetailsReservedViewer({
               <span className="text-[10px] font-black uppercase text-muted-foreground">
                 Artículos en esta reserva ({activeResItems.length})
               </span>
-              <div className="space-y-2">
+              <div>
                 {activeResItems.map((item) => {
                   const prod = PRODUCTS_MOCK.find(
                     (p) => p.id.toString() === item.productId
                   );
+
+                  const allMatchingStock = stock.filter((s) => {
+                    const matchProduct =
+                      String(s.productId).trim() ===
+                      String(item.productId).trim();
+                    const matchSize =
+                      String(s.size).trim().toUpperCase() ===
+                      String(item.size).trim().toUpperCase();
+                    const matchColor =
+                      String(s.color).trim().toLowerCase() ===
+                      String(item.color).trim().toLowerCase();
+                    const isAvailable = s.status === "disponible";
+
+                    return (
+                      matchProduct && matchSize && matchColor && isAvailable
+                    );
+                  });
+
+                  // 2. Lo dividimos en dos grupos para la UI
+                  const localOptions = allMatchingStock.filter(
+                    (s) => s.branchId === activeRes?.branchId
+                  );
+                  const remoteOptions = allMatchingStock.filter(
+                    (s) => s.branchId !== activeRes?.branchId
+                  );
                   return (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 border rounded-xl bg-muted/20"
+                      className="flex flex-col gap-3 p-3 border rounded-xl bg-muted/20"
                     >
-                      <div className="h-12 w-10 bg-white border rounded overflow-hidden">
-                        <img
-                          src={prod?.image}
-                          className="object-cover h-full w-full"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold leading-tight">
-                          {prod?.name}
-                        </p>
-                        <div className="flex gap-2 text-[10px]  font-semibold mt-1">
-                          <span className="px-1.5 rounded border">
-                            TALLA {item.size}
-                          </span>
-                          <span className="px-1.5 rounded border uppercase">
-                            {item.color}
-                          </span>
-                          <span>x{item.quantity}</span>
+                      <div className="flex">
+                        <div className="h-12 w-10 bg-white border rounded overflow-hidden">
+                          <img
+                            src={prod?.image}
+                            className="object-cover h-full w-full"
+                          />
                         </div>
+                        <div className="flex-1 pl-2">
+                          <p className="text-sm font-bold leading-tight">
+                            {prod?.name}
+                          </p>
+                          <div className="flex gap-2 text-[10px]  font-semibold mt-1">
+                            <span className="px-1.5 rounded border">
+                              TALLA {item.size}
+                            </span>
+                            <span className="px-1.5 rounded border uppercase">
+                              {item.color}
+                            </span>
+                            <span>x{item.quantity}</span>
+                          </div>
+                        </div>
+                        <span className="font-bold text-sm">
+                          {formatCurrency(item.priceAtMoment)}
+                        </span>
                       </div>
-                      <span className="font-bold text-sm">
-                        {formatCurrency(item.priceAtMoment)}
-                      </span>
+
+                      {/* NUEVO: Selector de Stock Físico */}
+                      <div className="mt-2 pt-2 border-t border-dashed">
+                        <p className="text-[10px] font-bold text-primary uppercase mb-1">
+                          Asignar Prenda Física:
+                        </p>
+                        <Select
+                          value={selectedStocks[item.id] || ""}
+                          onValueChange={(value) =>
+                            setSelectedStocks({
+                              ...selectedStocks,
+                              [item.id]: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="w-full text-xs p-2 rounded border">
+                            <SelectValue placeholder="Seleccionar código de barra (Stock)..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {/* GRUPO 1: Disponibles aquí mismo */}
+                            {localOptions.length > 0 && (
+                              <SelectGroup>
+                                <SelectLabel className="text-emerald-600 font-bold text-[10px]">
+                                  EN ESTA SEDE
+                                </SelectLabel>
+                                {localOptions.map((s) => (
+                                  <SelectItem key={s.id} value={s.id}>
+                                    {s.id} -{" "}
+                                    {s.damageNotes || "Excelente estado"}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            )}
+
+                            {remoteOptions.length > 0 && (
+                              <SelectGroup>
+                                <SelectLabel className="text-orange-600 font-bold text-[10px] border-t mt-1 pt-1">
+                                  EN OTRA SEDE (Requiere traslado)
+                                </SelectLabel>
+                                {remoteOptions.map((s) => {
+                                  const otherBranch =
+                                    BRANCH_MOCKS.find(
+                                      (b) => b.id === s.branchId
+                                    )?.name || "Otra Sede";
+                                  return (
+                                    <SelectItem
+                                      key={s.id}
+                                      value={s.id}
+                                      className="text-orange-700"
+                                    >
+                                      {s.id} - Ubicado en: {otherBranch} -{" "}
+                                      {s.damageNotes || "Excelente estado"}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectGroup>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        {allMatchingStock.length === 0 && (
+                          <p className="text-xs p-3 text-center text-muted-foreground">
+                            No hay stock disponible en ninguna sede.
+                          </p>
+                        )}
+                      </div>
                     </div>
                   );
                 })}

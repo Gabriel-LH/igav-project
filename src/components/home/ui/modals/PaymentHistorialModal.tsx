@@ -310,6 +310,7 @@ export function PaymentHistoryModal({
         open={confirmPrintOpen}
         onOpenChange={setConfirmPrintOpen}
         ticketToPrint={ticketToPrint}
+        onClose={() => setConfirmPrintOpen(false)}
       />
     </>
   );

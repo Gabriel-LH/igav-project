@@ -18,16 +18,19 @@ import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { RESERVATIONS_MOCK } from "@/src/mocks/mock.reservation";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
+import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { toast } from "sonner";
 
 export function ProductGrid() {
-  const { reservations, deliverReservation } = useReservationStore();
+  const { updateStatus } = useReservationStore();
+  const { createRentalFromReservation } = useRentalStore(); // NUEVO
+  const { updateStockStatus } = useInventoryStore();
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,11 +46,13 @@ export function ProductGrid() {
   const filteredCatalog = useMemo(() => {
     return PRODUCTS_MOCK.filter((product) => {
       // Filtro de Sede: Sumamos stock total del producto en esta sucursal
-      const branchStock = stock.filter(
-        (s) =>
-          s.productId.toString() === product.id.toString() &&
-          s.branchId === currentUser.branchId
-      ).reduce((acc, curr) => acc + curr.quantity, 0);
+      const branchStock = stock
+        .filter(
+          (s) =>
+            s.productId.toString() === product.id.toString() &&
+            s.branchId === currentUser.branchId
+        )
+        .reduce((acc, curr) => acc + curr.quantity, 0);
 
       // Si no hay stock en esta sede, no va al catálogo de disponibles
       if (branchStock <= 0) return false;
@@ -66,19 +71,20 @@ export function ProductGrid() {
     });
   }, [activeTab, query, currentUser.branchId]);
 
+  const reservations = useReservationStore((state) => state.reservations);
+
   // --- 2. LÓGICA DE OPERACIONES (RESERVAS ACTIVAS) ---
   const filteredReservations = useMemo(() => {
-    return RESERVATIONS_MOCK.filter((res) => {
-      // Seguridad: Solo de mi sede (a menos que sea admin)
+    return reservations.filter((res) => {
       const isMyBranch =
         currentUser.role === "admin" || res.branchId === currentUser.branchId;
       if (!isMyBranch) return false;
 
-      // Estado: Solo pendientes o confirmadas
-      const isActive =
-        res.status === "pendiente" || res.status === "confirmada";
-      if (!isActive) return false;
-
+      // CAMBIO: Solo mostramos lo que está listo para salir.
+      // Si el status es "completada", significa que ya es un Rental y no va aquí.
+      const isReadyForPickup =
+        res.status === "confirmada" || res.status === "pendiente";
+      if (!isReadyForPickup) return false;
       // Búsqueda: Por Cliente o por nombre de algún producto dentro de la reserva
       const client = CLIENTS_MOCK.find((c) => c.id === res.customerId);
       const matchesClient =
@@ -98,25 +104,46 @@ export function ProductGrid() {
 
       return matchesClient || matchesAnyProduct;
     });
-  }, [query, currentUser.branchId, currentUser.role]);
+  }, [query, currentUser.branchId, currentUser.role, reservations]);
 
- const filteredLaundry = useMemo(() => {
-    // Usamos 'stock' que viene de Zustand
-    return stock.filter((s) => {
-      const isMatch = s.branchId === currentUser.branchId && (s.status as string) === "lavanderia";
-      if (!isMatch) return false;
-
-      const productInfo = PRODUCTS_MOCK.find(p => p.id.toString() === s.productId.toString());
-      const productName = productInfo?.name.toLowerCase() || "";
-      return productName.includes(query) || productInfo?.sku.toLowerCase().includes(query);
-    });
-  }, [query, currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' a las dependencias
+  const filteredLaundry = useMemo(() => {
+    return stock.filter(
+      (s) => s.branchId === currentUser.branchId && s.status === "lavanderia"
+    );
+  }, [stock, currentUser.branchId]);
 
   const filteredMaintenance = useMemo(() => {
-    return stock.filter( // Usamos 'stock' de Zustand
-      (s) => s.branchId === currentUser.branchId && (s.status as string) === "mantenimiento"
+    return stock.filter(
+      // Usamos 'stock' de Zustand
+      (s) =>
+        s.branchId === currentUser.branchId &&
+        (s.status as string) === "mantenimiento"
     );
   }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
+
+  // Función profesional de entrega
+  const handleDeliver = (reservation: any) => {
+    // 1. En un futuro aquí abrirás un Modal para elegir el stockId real.
+    // Por ahora, simulamos que elegimos el primer stock disponible del producto.
+    const mockSelectedItems = MOCK_RESERVATION_ITEM.filter(
+      (item) => item.reservationId === reservation.id
+    ).map((item) => ({
+      ...item,
+      stockId: `STK-GENERIC-${item.productId}`, // Esto lo cambiaremos por el Selector
+    }));
+
+    // A) Creamos el Alquiler Activo
+    createRentalFromReservation(reservation, mockSelectedItems);
+
+    // B) Marcamos los items de stock como "alquilado"
+    mockSelectedItems.forEach((item) => {
+      updateStockStatus(item.stockId, "alquilado");
+    });
+
+    // C) Cerramos la reserva (cambia de 'confirmada' a 'completada')
+    // Al cambiar a 'completada', desaparecerá de esta vista automáticamente
+    updateStatus(reservation.id, "completada");
+  };
 
   // Decidir qué lista mostrar
   const displayList = showReserved ? filteredReservations : filteredCatalog;
@@ -137,8 +164,8 @@ export function ProductGrid() {
       <div
         className={`grid gap-6 ${
           viewMode !== "catalog"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 items-start"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
         }`}
       >
         {viewMode === "reserved" &&
@@ -146,7 +173,22 @@ export function ProductGrid() {
             <ReservationProductCard
               key={res.id}
               reservation={res}
-              onDeliver={() => deliverReservation(res.id)}
+              onDeliver={(itemsWithStock) => {
+                // 👈 RECIBE LOS ITEMS AQUÍ
+
+                // 1. Crear el Alquiler Activo
+                createRentalFromReservation(res, itemsWithStock);
+
+                // 2. Actualizar Inventario (Stock)
+                itemsWithStock.forEach((item) => {
+                  updateStockStatus(item.stockId, "alquilado");
+                });
+
+                // 3. Marcar Reserva como completada para que desaparezca del Home
+                updateStatus(res.id, "completada");
+
+                toast.success("Alquiler iniciado correctamente");
+              }}
             />
           ))}
 
@@ -157,18 +199,12 @@ export function ProductGrid() {
 
         {viewMode === "laundry" &&
           filteredLaundry.map((item) => (
-            <LaundryActionCard
-              key={item.id}
-              item={item}
-            />
+            <LaundryActionCard key={item.id} item={item} />
           ))}
 
         {viewMode === "maintenance" &&
           filteredMaintenance.map((item) => (
-            <MaintenanceActionCard
-              key={item.id}
-              item={item}
-            />
+            <MaintenanceActionCard key={item.id} item={item} />
           ))}
       </div>
       {/* Estado Vacío */}

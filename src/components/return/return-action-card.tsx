@@ -57,6 +57,7 @@ export function ReturnActionCard({ reservation }: Props) {
       >
         <div className="flex items-center gap-2">
           <HugeiconsIcon
+          strokeWidth={2.5}
             icon={isOverdue ? AlertCircleIcon : CalendarCheckIn01Icon}
             size={14}
           />
@@ -101,7 +102,7 @@ export function ReturnActionCard({ reservation }: Props) {
             <p className="text-[9px] font-black uppercase text-emerald-400">
               Garantía en resguardo
             </p>
-            <p className="text-sm font-black ">
+            <p className="text-sm font-medium ">
               {guaranteeRecord
                 ? guaranteeRecord.type === "efectivo"
                   ? formatCurrency(guaranteeRecord.value)
@@ -112,12 +113,12 @@ export function ReturnActionCard({ reservation }: Props) {
         </div>
 
         {/* PRENDAS */}
-        <div className="md:col-span-2">
+        <div>
           <p className="text-[10px] font-black text-muted-foreground uppercase mb-2">
             Prendas a recuperar
           </p>
 
-          <div className="grid grid-cols-1  sm:grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-2">
             {items.map((item) => {
               const p = PRODUCTS_MOCK.find(
                 (prod) => prod.id === item.productId
@@ -145,7 +146,7 @@ export function ReturnActionCard({ reservation }: Props) {
 
         {/* ACCIÓN */}
         <div className="flex w-full">
-          <ReturnInspectionDrawer reservation={reservation} onClose={() => {}} isOverdue={isOverdue} />
+          <ReturnInspectionDrawer reservation={reservation} client={client} isOverdue={isOverdue} />
         </div>
       </div>
     </Card>

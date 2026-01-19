@@ -75,14 +75,12 @@ export const getOperationBalances = (reservationId: string, payments: Payment[])
     .filter(p => p.type !== "garantia")
     .reduce((acc, p) => acc + p.amount, 0);
 
-    console.log("totalPaid", totalPaid);
-    console.log("totalCalculated", totalCalculated);
 
   // 3. LA LÓGICA CORRECTA:
   // Si totalPaid es 180 y totalCalculated es 180, diff es 0.
   const diff = totalPaid - totalCalculated;
 
-  console.log("diff", diff);
+
 
   return {
     totalCalculated,

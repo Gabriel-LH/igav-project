@@ -19,7 +19,6 @@ import { popularSchema } from "../../type.popular";
 import { TableCellViewerPopular } from "./table-cell-viewer";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  LabelIcon,
   RepeatIcon,
   SaleTag02Icon,
 } from "@hugeicons/core-free-icons";

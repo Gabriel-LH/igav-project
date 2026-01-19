@@ -11,14 +11,11 @@ export const reservationSchema = z.object({
   endDate: z.date(),        // Cuándo debería traerlo
   hour: z.string(),         // Hora de la cita
   
-  // --- FECHAS OPERATIVAS (Lo que pasa en la realidad) ---
-  actualReturnDate: z.date().optional(), // Se llena solo cuando devuelven la ropa
-  
   // --- FECHAS DE AUDITORÍA (Control del sistema) ---
   createdAt: z.date(),      // Cuándo se creó el registro en el sistema
   updatedAt: z.date(),      // Cuándo fue la última vez que se editó (opcional pero recomendado)
 
-  status: z.enum(["pendiente", "confirmada", "entregada", "devuelta", "cancelada"]),
+  status: z.enum(["confirmada", "cancelada", "completada"]),
 });
 
 export type Reservation = z.infer<typeof reservationSchema>;
