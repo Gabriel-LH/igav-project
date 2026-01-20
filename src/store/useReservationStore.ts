@@ -4,6 +4,8 @@ import { RESERVATIONS_MOCK } from "@/src/mocks/mock.reservation";
 
 interface ReservationStore {
   reservations: any[];
+
+  createReservation: (reservation: any) => void;
   // Acciones
   completeReservation: (id: string) => void;
   updateStatus: (id: string, newStatus: string) => void;
@@ -12,19 +14,33 @@ interface ReservationStore {
   rearrangeReservation: (
     id: string,
     newStartDate: Date,
-    newEndDate: Date
+    newEndDate: Date,
   ) => void;
 }
 
 export const useReservationStore = create<ReservationStore>((set) => ({
   reservations: RESERVATIONS_MOCK, // Estado inicial con los mocks
 
+  createReservation: (newReservation) =>
+    set((state) => ({
+      // Añadimos la nueva reserva al inicio de la lista
+      reservations: [
+        {
+          ...newReservation,
+          id: `RES-${Math.random().toString(36).toUpperCase()}`, // ID temporal
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        ...state.reservations,
+      ],
+    })),
+
   completeReservation: (id) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
         res.id === id
           ? { ...res, status: "completada", updatedAt: new Date() }
-          : res
+          : res,
       ),
     })),
 
@@ -33,7 +49,7 @@ export const useReservationStore = create<ReservationStore>((set) => ({
       reservations: state.reservations.map((res) =>
         res.id === id
           ? { ...res, status: newStatus, updatedAt: new Date() }
-          : res
+          : res,
       ),
     })),
 
@@ -47,13 +63,13 @@ export const useReservationStore = create<ReservationStore>((set) => ({
               actualReturnDate: new Date(),
               total: (res.total || 0) + extraCharges, // Sumamos la mora al total cobrado
             }
-          : res
+          : res,
       ),
     })),
   cancelReservation: (id: string) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status: "cancelada" } : res
+        res.id === id ? { ...res, status: "cancelada" } : res,
       ),
     })),
 
@@ -62,7 +78,7 @@ export const useReservationStore = create<ReservationStore>((set) => ({
       reservations: state.reservations.map((res) =>
         res.id === id
           ? { ...res, startDate: newStartDate, endDate: newEndDate }
-          : res
+          : res,
       ),
     })),
 }));

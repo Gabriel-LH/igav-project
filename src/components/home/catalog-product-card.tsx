@@ -21,6 +21,8 @@ import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getReservationsByProductId } from "@/src/utils/get-product-reservation";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -30,45 +32,93 @@ export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
-  
-
-  // STOCK LOCAL
-  const productStockInBranch = STOCK_MOCK.filter(
+  // 1. Stock en esta sede (Entrega inmediata)
+  const localStock = STOCK_MOCK.filter(
     (s) =>
       s.productId.toString() === product.id.toString() &&
       s.branchId === currentBranchId &&
-      s.quantity > 0
+      s.status === "disponible",
   );
+
+  // 2. Stock en otras sedes (Disponible para traslado)
+  const remoteStock = STOCK_MOCK.filter(
+    (s) =>
+      s.productId.toString() === product.id.toString() &&
+      s.branchId !== currentBranchId &&
+      s.status === "disponible",
+  );
+
+  const productStock = STOCK_MOCK.filter(
+    (s) =>
+      s.productId.toString() === product.id.toString() &&
+      s.status === "disponible", // 👈 Solo lo que realmente se puede usar
+  );
+
+  // 2. Determinar disponibilidad REAL basada en el Stock
+  // (Suponiendo que añadiste 'isForRent' y 'isForSale' a tu stock)
+  const hasRentalStock = productStock.some(
+    (s) => s.status === "disponible" && s.isForRent,
+  );
+  const hasSaleStock = productStock.some(
+    (s) => s.status === "disponible" && s.isForSale,
+  );
+
+  const hasLocal = localStock.length > 0;
+  const hasRemote = remoteStock.length > 0;
+
+  // Colores y tallas (Priorizamos local, pero mostramos global si no hay local)
+  const displayStock = hasLocal ? localStock : remoteStock;
 
   const activeColors = Array.from(
     new Map(
-      productStockInBranch.map((s) => [
-        s.color,
-        { name: s.color, hex: s.colorHex },
-      ])
-    ).values() || []
+      displayStock.map((s) => [s.color, { name: s.color, hex: s.colorHex }]),
+    ).values(),
   );
+  const activeSizes = Array.from(new Set(displayStock.map((s) => s.size)));
 
-  const activeSizes = Array.from(
-    new Set(productStockInBranch.map((s) => s.size)) || []
-  );
+  // SOLUCIÓN: Solo calculamos si hay stock remoto, si no, ponemos 0 o el default
+  const days = hasRemote
+    ? getEstimatedTransferTime(
+        currentBranchId,
+        remoteStock[0].branchId,
+        BUSINESS_RULES_MOCK,
+      )
+    : BUSINESS_RULES_MOCK.defaultTransferTime;
 
   return (
     <Card className="group pt-0 pb-1 overflow-hidden transition-all shadow-xl">
       <div className=" bg-muted relative overflow-hidden group">
         <div className="absolute top-2 right-2 flex gap-1 z-20 pointer-events-none">
           <>
-            {product.can_sell && (
+            {product.can_sell && hasSaleStock && (
               <Badge className="bg-slate-900/80 backdrop-blur-sm font-bold text-white border-none text-[9px]">
                 Venta
               </Badge>
             )}
-            {product.can_rent && (
+            {product.can_rent && hasRentalStock && (
               <Badge className="bg-amber-100/90 backdrop-blur-sm font-bold text-amber-800 border-amber-200 text-[9px]">
                 Alquiler
               </Badge>
             )}
           </>
+        </div>
+
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
+          {/* Estado de Ubicación */}
+          {hasLocal ? (
+            <Badge className="bg-emerald-500/90 text-white border-none text-[8px] uppercase">
+              En esta sede
+            </Badge>
+          ) : hasRemote ? (
+            <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse">
+              Disponible para traslado (Llega en {days}{" "}
+              {days === 1 ? "día" : "días"}) 🚚
+            </Badge>
+          ) : (
+            <Badge variant="destructive" className="text-[8px] uppercase">
+              Agotado
+            </Badge>
+          )}
         </div>
 
         <div className="relative bg-neutral-100 group overflow-hidden rounded-t-xl">
@@ -99,7 +149,7 @@ export function CatalogProductCard({ product }: Props) {
             <>
               <div className="flex items-center justify-between">
                 <span className="text-[9px] uppercase font-bold text-muted-foreground">
-                  Colores disponibles:
+                  Colores disponibles {hasLocal ? "locales" : "en otras sedes"}:
                 </span>
                 <div className="flex gap-1.5">
                   {activeColors.length > 0 ? (
@@ -121,7 +171,7 @@ export function CatalogProductCard({ product }: Props) {
 
               <div className="flex items-center justify-between">
                 <span className="text-[9px] uppercase font-bold text-muted-foreground">
-                  Tallas disponibles:
+                  Tallas disponibles {hasLocal ? "locales" : "en otras sedes"}:
                 </span>
                 <div className="flex gap-1">
                   {activeSizes.length > 0 ? (

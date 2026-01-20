@@ -30,6 +30,9 @@ import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { calculateOperationTotal } from "@/src/utils/payment-helpers";
+import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { ReservationModal } from "./ui/reservation/ReservationModal";
 
 export function DetailsProductViewer({
   item,
@@ -40,19 +43,22 @@ export function DetailsProductViewer({
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
-  // --- NUEVA LÓGICA DE DATOS (STOCK_MOCK es la fuente de verdad) ---
-
   // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
   const allProductStock = useMemo(
     () =>
-      STOCK_MOCK.filter((s) => s.productId.toString() === item.id.toString()),
-    [item.id]
+      STOCK_MOCK.filter(
+        (s) =>
+          s.productId.toString() === item.id.toString() &&
+          s.status === "disponible",
+      ),
+
+    [item.id],
   );
 
   // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
     () => Array.from(new Set(allProductStock.map((s) => s.size))),
-    [allProductStock]
+    [allProductStock],
   );
 
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || null);
@@ -63,19 +69,19 @@ export function DetailsProductViewer({
     // Agrupamos para tener colores únicos con sus hex
     return Array.from(
       new Map(
-        stockInSize.map((s) => [s.color, { name: s.color, hex: s.colorHex }])
-      ).values()
+        stockInSize.map((s) => [s.color, { name: s.color, hex: s.colorHex }]),
+      ).values(),
     );
   }, [selectedSize, allProductStock]);
 
   const [selectedColor, setSelectedColor] = useState(
-    colorsForSelectedSize[0] || null
+    colorsForSelectedSize[0] || null,
   );
 
   // 4. AUTO-CORRECCIÓN DE COLOR AL CAMBIAR TALLA
   React.useEffect(() => {
     const isColorAvailable = colorsForSelectedSize.some(
-      (c) => c.name === selectedColor?.name
+      (c) => c.name === selectedColor?.name,
     );
     if (!isColorAvailable && colorsForSelectedSize.length > 0) {
       setSelectedColor(colorsForSelectedSize[0]);
@@ -85,22 +91,41 @@ export function DetailsProductViewer({
   // 5. CÁLCULO DE STOCK (Local vs Global)
   // Filtramos el stock específico de la combinación Talla + Color
   const variantLocations = allProductStock.filter(
-    (s) => s.size === selectedSize && s.color === selectedColor?.name
+    (s) => s.size === selectedSize && s.color === selectedColor?.name,
   );
 
+  const localStock = variantLocations
+  .filter((l) => l.branchId === currentBranchId)
+  .reduce((acc, curr) => acc + curr.quantity, 0);
 
-  const localStock =
-    variantLocations.find((l) => l.branchId === currentBranchId)?.quantity || 0;
+
   const totalStockCombo = variantLocations.reduce(
     (acc, curr) => acc + curr.quantity,
-    0
+    0,
   );
+
+  const maxTransferTime = useMemo(() => {
+    const externalBranches = variantLocations.filter(
+      (s) => s.branchId !== currentBranchId,
+    );
+    if (externalBranches.length === 0) return 0;
+    return Math.max(
+      ...externalBranches.map((s) =>
+        getEstimatedTransferTime(
+          s.branchId,
+          currentBranchId,
+          BUSINESS_RULES_MOCK,
+        ),
+      ),
+    );
+  }, [variantLocations, currentBranchId]);
+
   const otherBranchStock = totalStockCombo - localStock;
 
   // Para el Badge del Header (Stock total de todas las tallas/colores)
   const totalGlobalStock = allProductStock.reduce(
     (acc, curr) => acc + curr.quantity,
-    0
+    0,
   );
 
   return (
@@ -140,7 +165,7 @@ export function DetailsProductViewer({
                   variant={selectedSize === size ? "default" : "outline"}
                   className={cn(
                     "h-12 w-14 rounded-2xl font-bold",
-                    selectedSize === size && "ring-primary ring-offset-2"
+                    selectedSize === size && "ring-primary ring-offset-2",
                   )}
                   onClick={() => setSelectedSize(size)}
                 >
@@ -163,7 +188,7 @@ export function DetailsProductViewer({
                 // usando nuestro array plano de stock
                 const totalStockThisColor = allProductStock
                   .filter(
-                    (s) => s.size === selectedSize && s.color === color.name
+                    (s) => s.size === selectedSize && s.color === color.name,
                   )
                   .reduce((acc, curr) => acc + curr.quantity, 0);
 
@@ -175,7 +200,7 @@ export function DetailsProductViewer({
                     onClick={() => setSelectedColor(color)}
                     className={cn(
                       "group relative flex flex-col items-center gap-1 transition-all",
-                      !hasGlobalStock && "opacity-40"
+                      !hasGlobalStock && "opacity-40",
                     )}
                   >
                     <div
@@ -183,7 +208,7 @@ export function DetailsProductViewer({
                         "w-12 h-12 rounded-full border flex items-center justify-center transition-all",
                         isSelected
                           ? "border-primary scale-110 transition-all shadow-lg"
-                          : "border border-gray-800"
+                          : "border border-gray-800",
                       )}
                       style={{ backgroundColor: color.hex }}
                     >
@@ -202,7 +227,7 @@ export function DetailsProductViewer({
                         "text-[10px] uppercase",
                         isSelected
                           ? "font-bold text-primary"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground",
                       )}
                     >
                       {color.name}
@@ -232,7 +257,7 @@ export function DetailsProductViewer({
                     <p
                       className={cn(
                         "text-2xl font-black",
-                        localStock > 0 ? "text-emerald-500" : "text-slate-400"
+                        localStock > 0 ? "text-emerald-500" : "text-slate-400",
                       )}
                     >
                       {localStock}{" "}
@@ -251,26 +276,68 @@ export function DetailsProductViewer({
               <div className="bg-muted p-2 text-[10px] font-bold uppercase">
                 Distribución por Sucursal
               </div>
-              {/* CAMBIO: Ahora mapeamos 'variantLocations' que ya tiene el filtro de Talla + Color */}
-              {variantLocations.map((loc) => {
-                const branchName =
-                  BRANCH_MOCKS.find((b) => b.id === loc.branchId)?.name ||
-                  "Sucursal";
+
+              {/* 1. Agrupamos el stock de la variante por sucursal */}
+              {Array.from(
+                variantLocations.reduce((acc, curr) => {
+                  const branchId = curr.branchId;
+                  const currentQty = acc.get(branchId) || 0;
+                  acc.set(branchId, currentQty + curr.quantity);
+                  return acc;
+                }, new Map<string, number>()),
+              ).map(([branchId, quantity]) => {
+                // 2. Buscamos los datos de la sucursal
+                const branch = BRANCH_MOCKS.find((b) => b.id === branchId);
+                const branchName = branch?.name || "Sucursal";
+                const isLocal = branchId === currentBranchId;
+
+                // 3. Calculamos el tiempo de traslado (usando las reglas que definimos)
+                const transferTime = !isLocal
+                  ? getEstimatedTransferTime(
+                      branchId,
+                      currentBranchId,
+                      BUSINESS_RULES_MOCK,
+                    )
+                  : 0;
+
                 return (
                   <div
-                    key={loc.branchId}
-                    className="flex justify-between p-3 border-t text-sm"
+                    key={branchId} // Ahora el ID es único en este mapa
+                    className={cn("flex flex-col border-t p-3 text-sm")}
                   >
-                    <span
-                      className={cn(
-                        loc.branchId === currentBranchId &&
-                          "font-bold text-blue-600"
-                      )}
-                    >
-                      {branchName}{" "}
-                      {loc.branchId === currentBranchId && "(Aquí)"}
-                    </span>
-                    <span className="font-mono font-bold">{loc.quantity}</span>
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={cn(
+                          "flex items-center gap-1",
+                          isLocal && "font-bold text-emerald-600",
+                        )}
+                      >
+                        {isLocal ? (
+                          <HugeiconsIcon
+                            icon={Tick01Icon}
+                            className="w-3 h-3"
+                          />
+                        ) : (
+                          <div className="w-3" />
+                        )}
+                        {branchName} {isLocal && "(Aquí)"}
+                      </span>
+
+                      <span className="font-mono font-bold">
+                        {quantity} unid.
+                      </span>
+                    </div>
+                    {/* Aviso de tiempo si no es local */}
+                    {!isLocal && quantity > 0 && (
+                      <p className="text-[10px] text-blue-500 font-medium mt-1 flex items-center gap-1">
+                        <HugeiconsIcon
+                          icon={Calendar03Icon}
+                          className="w-3 h-3"
+                        />
+                        Traslado estimado: {transferTime}{" "}
+                        {transferTime === 1 ? "día hábil" : "días hábiles"}
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -347,48 +414,47 @@ export function DetailsProductViewer({
 
         <DrawerFooter className="border-t bg-muted/30">
           <div className="grid grid-cols-2 gap-2 w-full">
-            {/* BOTÓN ALQUILAR: Solo si hay stock Y el producto permite alquiler */}
+            {/* BOTÓN ALQUILAR: Solo si hay stock LOCAL */}
             <Button
-              disabled={totalStockCombo === 0 || !item.can_rent}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white"
+              disabled={localStock === 0 || !item.can_rent}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              <HugeiconsIcon
-                icon={Calendar03Icon}
-                strokeWidth={2.2}
-                className="w-4 h-4 mr-2"
-              />
-              Alquilar
+              <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 mr-2" />
+              {localStock > 0 ? "Alquilar hoy" : "Sin stock local"}
             </Button>
 
-            {/* BOTÓN VENDER: Solo si hay stock Y el producto permite venta */}
+            {/* BOTÓN VENDER: Solo si hay stock LOCAL */}
             <Button
-              disabled={totalStockCombo === 0 || !item.can_sell}
-              className="bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white"
+              disabled={localStock === 0 || !item.can_sell}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
             >
-              <HugeiconsIcon
-                icon={SaleTag02Icon}
-                strokeWidth={2.2}
-                className="w-4 h-4 mr-2"
-              />
+              <HugeiconsIcon icon={SaleTag02Icon} className="w-4 h-4 mr-2" />
               Vender
             </Button>
 
-            {/* RESERVAR FECHA: Muy usado en ropa de gala/eventos */}
-            <Button
-              disabled={totalStockCombo === 0}
-              className="col-span-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white"
+            {/* RESERVAR: Habilitado si hay stock en CUALQUIER sede */}
+            <ReservationModal
+              item={item}
+              currentBranchId={currentBranchId}
+              originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
             >
-              <HugeiconsIcon
-                icon={CalendarLock01Icon}
-                strokeWidth={2.2}
-                className="w-4 h-4 mr-2"
-              />
-              Reservar Fecha
-            </Button>
+              <Button
+                disabled={totalStockCombo === 0}
+                className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <HugeiconsIcon
+                  icon={CalendarLock01Icon}
+                  className="w-4 h-4 mr-2"
+                />
+                {localStock > 0
+                  ? "Reservar para evento"
+                  : `Solicitar traslado y reservar (${maxTransferTime} días)`}
+              </Button>
+            </ReservationModal>
 
             <DrawerClose asChild>
               <Button variant="ghost" className="col-span-2">
-                Regresar al catálogo
+                Regresar
               </Button>
             </DrawerClose>
           </div>

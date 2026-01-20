@@ -5,11 +5,15 @@ export const STOCK_MOCK: Stock[] = [
   {
     id: "STK-001",
     productId: "1",
-    branchId: "branch-001",
+    branchId: "branch-003",
     size: "S",
     color: "Negro",
     colorHex: "#000000",
     quantity: 2,
+    isForRent: true,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "lavanderia",
     updatedAt: new Date()
@@ -22,6 +26,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 1,
+    isForRent: true,
+    isForSale: false,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -34,6 +42,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 1,
+    isForRent: true,
+    isForSale: false,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -46,6 +58,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 1,
+    isForRent: true,
+    isForSale: false,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -58,6 +74,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 1,
+    isForRent: false,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -70,6 +90,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 1,
+    isForRent: true,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -82,6 +106,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Azul Marino",
     colorHex: "#000080",
     quantity: 6,
+    isForRent: true,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Usado", // Mira como aquí sí podemos decir que este lote es usado
     status: "mantenimiento", // Y este lote está en limpieza
     updatedAt: new Date()
@@ -96,6 +124,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Azul Marino",
     colorHex: "#000080",
     quantity: 3,
+    isForRent: true,
+    isForSale: false,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
@@ -108,6 +140,10 @@ export const STOCK_MOCK: Stock[] = [
     color: "Negro",
     colorHex: "#000000",
     quantity: 4,
+    isForRent: true,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()

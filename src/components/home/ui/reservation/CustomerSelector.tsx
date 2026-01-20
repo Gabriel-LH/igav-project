@@ -1,0 +1,90 @@
+import { Check, ChevronsUpDown, UserPlus } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/label";
+import React from "react";
+
+export function CustomerSelector({
+  selected,
+  onSelect,
+}: {
+  selected: any;
+  onSelect: (client: any) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+
+  return (
+    <div className="space-y-3">
+      <Label className="text-[10px] uppercase font-black text-muted-foreground">
+        Asociar Cliente
+      </Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            className="w-full justify-between h-12"
+          >
+            {value
+              ? selected?.firstName + " " + selected?.lastName
+              : "Buscar por nombre o DNI..."}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[400px] p-0">
+          <Command>
+            <CommandInput placeholder="Escribe el DNI o nombre..." />
+            <CommandEmpty>
+              <div className="p-4 text-center">
+                <p className="text-sm mb-2">No se encontró el cliente</p>
+                <Button size="sm" variant="outline" className="gap-2">
+                  <UserPlus className="h-4 w-4" /> Crear nuevo cliente
+                </Button>
+              </div>
+            </CommandEmpty>
+            <CommandGroup>
+              {CLIENTS_MOCK.map((client) => (
+                <CommandItem
+                  key={client.id}
+                  value={`${client.firstName} ${client.lastName} ${client.dni}`}
+                  onSelect={() => {
+                    setValue(client.firstName + " " + client.lastName);
+                    onSelect(client);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === client.firstName ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{client.firstName + " " + client.lastName}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      DNI: {client.dni}
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
