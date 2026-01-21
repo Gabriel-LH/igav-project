@@ -7,8 +7,8 @@ export const paymentSchema = z.object({
   receivedById: z.string(), // ID del usuario que cobró
   amount: z.number().positive(),
   receivedAmount: z.number().optional(), // Lo que el cliente entregó (ej: un billete de 100)
-  changeAmount: z.number().optional(),   // El vuelto que se le dio (ej: 15)
-  method: z.enum(["efectivo", "transferencia", "tarjeta", "qr", "cheque", "deposito", "yape", "plin"]),
+  changeAmount: z.number().optional(), // El vuelto que se le dio (ej: 15)
+  method: z.enum(["cash", "card", "transfer", "yape", "plin"]),
   type: z.enum(["adelanto", "cuota", "saldo_total", "garantia"]),
   reference: z.string().optional(),
   date: z.date(),

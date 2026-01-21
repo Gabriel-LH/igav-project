@@ -33,6 +33,7 @@ import { calculateOperationTotal } from "@/src/utils/payment-helpers";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
+import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 
 export function DetailsProductViewer({
   item,
@@ -54,6 +55,8 @@ export function DetailsProductViewer({
 
     [item.id],
   );
+
+  console.log("item padre", item);
 
   // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
@@ -95,9 +98,8 @@ export function DetailsProductViewer({
   );
 
   const localStock = variantLocations
-  .filter((l) => l.branchId === currentBranchId)
-  .reduce((acc, curr) => acc + curr.quantity, 0);
-
+    .filter((l) => l.branchId === currentBranchId)
+    .reduce((acc, curr) => acc + curr.quantity, 0);
 
   const totalStockCombo = variantLocations.reduce(
     (acc, curr) => acc + curr.quantity,
@@ -414,27 +416,40 @@ export function DetailsProductViewer({
 
         <DrawerFooter className="border-t bg-muted/30">
           <div className="grid grid-cols-2 gap-2 w-full">
-            {/* BOTÓN ALQUILAR: Solo si hay stock LOCAL */}
-            <Button
-              disabled={localStock === 0 || !item.can_rent}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+            <DirectTransactionModal
+              item={item}
+              type="alquiler"
+              currentBranchId={currentBranchId}
             >
-              <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 mr-2" />
-              {localStock > 0 ? "Alquilar hoy" : "Sin stock local"}
-            </Button>
+              <Button
+                disabled={localStock === 0}
+                className="bg-blue-600 text-white"
+              >
+                <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 mr-2" />
+                Alquilar hoy
+              </Button>
+            </DirectTransactionModal>
 
-            {/* BOTÓN VENDER: Solo si hay stock LOCAL */}
-            <Button
-              disabled={localStock === 0 || !item.can_sell}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+            {/* VENDER: Modal Directo */}
+            <DirectTransactionModal
+              item={item}
+              type="venta"
+              currentBranchId={currentBranchId}
             >
-              <HugeiconsIcon icon={SaleTag02Icon} className="w-4 h-4 mr-2" />
-              Vender
-            </Button>
+              <Button
+                disabled={localStock === 0}
+                className="bg-orange-600 text-white"
+              >
+                <HugeiconsIcon icon={SaleTag02Icon} className="w-4 h-4 mr-2" />
+                Vender
+              </Button>
+            </DirectTransactionModal>
 
             {/* RESERVAR: Habilitado si hay stock en CUALQUIER sede */}
             <ReservationModal
               item={item}
+              size={selectedSize || ""}
+              color={selectedColor?.name || ""}
               currentBranchId={currentBranchId}
               originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
             >
@@ -447,16 +462,10 @@ export function DetailsProductViewer({
                   className="w-4 h-4 mr-2"
                 />
                 {localStock > 0
-                  ? "Reservar para evento"
+                  ? "Realizar una reserva"
                   : `Solicitar traslado y reservar (${maxTransferTime} días)`}
               </Button>
             </ReservationModal>
-
-            <DrawerClose asChild>
-              <Button variant="ghost" className="col-span-2">
-                Regresar
-              </Button>
-            </DrawerClose>
           </div>
         </DrawerFooter>
       </DrawerContent>

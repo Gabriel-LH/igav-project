@@ -124,43 +124,81 @@
   }
 }
 
+/* Scroll tipo mobile – SOLO .scroll-area */
+.scroll-area {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+
+/* Webkit */
+.scroll-area::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Thumb invisible por defecto */
+.scroll-area::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Aparece SOLO al hacer scroll */
+.scroll-area.scrolling::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+
+
+/* Soporte para WebKit (Chrome, Safari, Edge) */
 @supports (selector(::-webkit-scrollbar)) {
+  /* Scrollbar global */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
 
   ::-webkit-scrollbar-track {
     background: transparent;
   }
 
+  /* Thumb invisible por defecto */
   ::-webkit-scrollbar-thumb {
-    background: #9ca3af;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background-clip: content-box;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
 
+  /* Aparece SOLO al hacer scroll (necesitarías agregar la clase .scrolling a body o elemento) */
+  .scrolling ::-webkit-scrollbar-thumb {
+    opacity: 1;
+  }
+
+  /* Hover opcional */
   ::-webkit-scrollbar-thumb:hover {
-    background: #6b7280; /* Un poco más oscuro para que se note el cambio */
+    background-color: rgba(0, 0, 0, 0.35);
   }
 
+  /* Opción para ocultar scrollbar si se quiere */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
 }
 
-/* Específico para Firefox */
+/* Soporte para Firefox */
 @supports (scrollbar-width: thin) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #9ca3af transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
   }
 }
+
 
 @media print {
   body * {

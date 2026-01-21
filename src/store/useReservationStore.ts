@@ -1,16 +1,29 @@
 // src/store/useReservationStore.ts
 import { create } from "zustand";
-import { RESERVATIONS_MOCK } from "@/src/mocks/mock.reservation";
+import { ReservationDTO } from "../interfaces/reservationDTO";
+
+type OperationType = "alquiler" | "venta";
 
 interface ReservationStore {
-  reservations: any[];
+  reservations: ReservationDTO[];
+  operationType: OperationType;
 
-  createReservation: (reservation: any) => void;
-  // Acciones
-  completeReservation: (id: string) => void;
+  // Acciones principales
+  setOperationType: (type: OperationType) => void;
+
+  // Modificamos createReservation para que pueda notificar al inventario
+  createReservation: (
+    newReservation: ReservationDTO,
+    updateStockFn?: (productId: string, qty: number, stockId?: string) => void,
+  ) => void;
+
+  // Gestión de estados (Consistente con tus Enums de Zod)
   updateStatus: (id: string, newStatus: string) => void;
-  returnReservation: (id: string, extraCharges?: number) => void;
   cancelReservation: (id: string) => void;
+  completeReservation: (id: string) => void;
+
+  // Específico para Alquileres
+  returnReservation: (id: string, extraCharges?: number) => void;
   rearrangeReservation: (
     id: string,
     newStartDate: Date,
@@ -19,37 +32,51 @@ interface ReservationStore {
 }
 
 export const useReservationStore = create<ReservationStore>((set) => ({
-  reservations: RESERVATIONS_MOCK, // Estado inicial con los mocks
+  reservations: [],
+  operationType: "alquiler",
 
-  createReservation: (newReservation) =>
+  setOperationType: (type) => set({ operationType: type }),
+
+  createReservation: (newReservation, updateStockFn) => {
+    // 1. Generamos un ID de operación único (como tu operationId: number)
+    const tempId = `OP-${Math.floor(Math.random() * 1000000)}`;
+
     set((state) => ({
-      // Añadimos la nueva reserva al inicio de la lista
       reservations: [
         {
           ...newReservation,
-          id: `RES-${Math.random().toString(36).toUpperCase()}`, // ID temporal
+          id: tempId,
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         ...state.reservations,
       ],
+    }));
+
+    // 2. Si pasamos la función de actualización de stock, la ejecutamos
+    // Esto es lo que hará que las Cards se actualicen o desaparezcan
+    if (updateStockFn) {
+      updateStockFn(newReservation.productId, newReservation.quantity);
+    }
+  },
+
+  updateStatus: (id, newStatus) =>
+    set((state) => ({
+      reservations: state.reservations.map((res) =>
+        res.id === id ? { ...res, status: newStatus as any } : res,
+      ),
+    })),
+
+  cancelReservation: (id) =>
+    set((state) => ({
+      reservations: state.reservations.map((res) =>
+        res.id === id ? { ...res, status: "cancelada" as any } : res,
+      ),
     })),
 
   completeReservation: (id) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
-        res.id === id
-          ? { ...res, status: "completada", updatedAt: new Date() }
-          : res,
-      ),
-    })),
-
-  updateStatus: (id, newStatus) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id
-          ? { ...res, status: newStatus, updatedAt: new Date() }
-          : res,
+        res.id === id ? { ...res, status: "completada" as any } : res,
       ),
     })),
 
@@ -59,21 +86,17 @@ export const useReservationStore = create<ReservationStore>((set) => ({
         res.id === id
           ? {
               ...res,
-              status: "devuelta",
-              actualReturnDate: new Date(),
-              total: (res.total || 0) + extraCharges, // Sumamos la mora al total cobrado
+              status: "completada" as any, // O "devuelta" según tu lógica
+              financials: {
+                ...res.financials,
+                total: res.financials.total + extraCharges,
+              },
             }
           : res,
       ),
     })),
-  cancelReservation: (id: string) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status: "cancelada" } : res,
-      ),
-    })),
 
-  rearrangeReservation: (id: string, newStartDate: Date, newEndDate: Date) =>
+  rearrangeReservation: (id, newStartDate, newEndDate) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
         res.id === id

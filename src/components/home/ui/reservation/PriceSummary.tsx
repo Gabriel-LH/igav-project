@@ -11,6 +11,10 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  HandCoins,
+  IdCard,
+  Gem,
+  Gift,
 } from "lucide-react";
 import { Badge } from "@/components/badge";
 import {
@@ -21,9 +25,12 @@ import {
   SelectValue,
 } from "@/components/select";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface PriceSummaryProps {
+  item: any;
   startDate: Date;
+  operationType: string;
   endDate: Date;
   priceRent: number;
   quantity: number;
@@ -31,13 +38,16 @@ interface PriceSummaryProps {
   setDownPayment: (val: string) => void;
   guarantee: string;
   setGuarantee: (val: string) => void;
-  // Nuevas props para pulir el diseño
+  guaranteeType: string;
+  setGuaranteeType: (val: string) => void;
   paymentMethod: string;
   setPaymentMethod: (val: string) => void;
 }
 
 export function PriceSummary({
+  item,
   startDate,
+  operationType,
   endDate,
   priceRent,
   quantity,
@@ -45,18 +55,48 @@ export function PriceSummary({
   setDownPayment,
   guarantee,
   setGuarantee,
+  guaranteeType,
+  setGuaranteeType,
   paymentMethod,
   setPaymentMethod,
 }: PriceSummaryProps) {
-  const days = Math.max(differenceInDays(endDate, startDate) + 1, 1);
-  const subtotalRental = priceRent * days * quantity;
-  const pendingAmount = subtotalRental - Number(downPayment);
-  const [guaranteeType, setGuaranteeType] = React.useState<
-    "dinero" | "dni" | "joyas" | "reloj" | "otros"
-  >("dinero");
-  const [guaranteeOtherType, setGuaranteeOtherType] = React.useState("");
+  // 1. DETERMINAR ESTADOS CLAVE
+  const isEvent = item.rent_unit === "evento";
+  const isVenta = operationType === "venta";
 
-  Number(downPayment) + (guaranteeType === "dinero" ? Number(guarantee) : 0);
+  // 2. CÁLCULO DE TIEMPO (Solo informativo si es evento)
+  const days = Math.max(differenceInDays(endDate, startDate) + 1, 1);
+
+  // 3. LÓGICA DE PRECIOS DINÁMICA
+  const calculateTotals = () => {
+    if (isVenta) {
+      const subtotal = item.price_sell * quantity;
+      return {
+        subtotal,
+        total: subtotal,
+        pending: subtotal - Number(downPayment || 0),
+      };
+    }
+
+    // Si es Alquiler/Reserva
+    // Si es evento: precio * cantidad
+    // Si es día: precio * días * cantidad
+    const subtotal = isEvent
+      ? priceRent * quantity
+      : priceRent * days * quantity;
+
+    const totalOperacion = subtotal; // El costo del servicio
+    const pending = totalOperacion - Number(downPayment || 0);
+
+    // Lo que el cliente paga hoy en caja: Adelanto + Garantía (si es dinero)
+    const payToday =
+      Number(downPayment || 0) +
+      (guaranteeType === "dinero" ? Number(guarantee || 0) : 0);
+
+    return { subtotal, total: totalOperacion, pending, payToday };
+  };
+
+  const { subtotal, total, pending, payToday } = calculateTotals();
 
   return (
     <Card className="shadow-md pb-2 overflow-hidden">
@@ -64,24 +104,50 @@ export function PriceSummary({
         <span className="text-[10px] font-black uppercase tracking-wider text-primary">
           Resumen de Operación
         </span>
-        <Badge variant="secondary" className="font-mono">
-          {days} {days === 1 ? "Día" : "Días"}
-        </Badge>
+        {!isVenta && (
+          <div className="flex gap-2">
+            <Badge variant="outline" className="text-[9px] uppercase">
+              {isEvent ? "Por Evento" : "Por Día"}
+            </Badge>
+            <Badge variant="secondary" className="font-mono">
+              {days} {days === 1 ? "Día" : "Días"}
+            </Badge>
+          </div>
+        )}
       </div>
 
-      <CardContent className="px-4 space-y-3">
-        {/* FILA 1: ADELANTO Y MÉTODO */}
-        <div className="grid grid-cols-2 gap-4">
+      <CardContent className="px-4 space-y-4">
+        {/* FILA PRECIO DETALLADO */}
+        <div className="flex justify-between text-sm font-bold bg-muted/20 p-2 rounded border-l-2 border-primary">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-muted-foreground uppercase">
+              Subtotal
+            </span>
+            <span className="text-xs">
+              {isVenta
+                ? "Venta directa"
+                : isEvent
+                  ? "Alquiler por evento"
+                  : `Alquiler x ${days} días`}
+            </span>
+          </div>
+          <span className="text-lg self-center">
+            {formatCurrency(subtotal)}
+          </span>
+        </div>
+
+        {/* INPUTS DE ADELANTO Y MÉTODO */}
+        <div className="flex justify-between w-full gap-4">
           <div className="space-y-2">
-            <Label className="text-[10px]  font-bold uppercase text-blue-600 flex items-center gap-1">
-              <Banknote className="w-3 h-3" /> Adelanto
+            <Label className="text-[10px] font-bold uppercase text-blue-600 flex items-center gap-1">
+              <Banknote className="w-3 h-3" /> Cobro Adelanto
             </Label>
             <div className="relative">
               <span className="absolute left-2.5 top-2 text-xs text-muted-foreground font-bold">
                 S/.
               </span>
               <Input
-                className="pl-8 h-8 font-bold focus-visible:ring-blue-500"
+                className="pl-8 h-8 font-bold"
                 value={downPayment}
                 onChange={(e) => setDownPayment(e.target.value)}
               />
@@ -90,27 +156,29 @@ export function PriceSummary({
 
           <div className="space-y-2">
             <Label className="text-[10px] font-bold uppercase text-muted-foreground">
-              Método de Pago
+              Método
             </Label>
-
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
               <SelectTrigger className="h-8 text-[10px] font-bold">
-                <SelectValue placeholder="Selecciona método..." />
+                <SelectValue placeholder="Método..." />
               </SelectTrigger>
-
               <SelectContent className="text-[10px]">
                 <SelectItem value="cash">
                   <Wallet className="w-3 h-3 mr-1 inline" /> Efectivo
                 </SelectItem>
+
                 <SelectItem value="card">
                   <CreditCard className="w-3 h-3 mr-1 inline" /> Tarjeta
                 </SelectItem>
+
                 <SelectItem value="yape">
                   <Smartphone className="w-3 h-3 mr-1 inline" /> Yape
                 </SelectItem>
+
                 <SelectItem value="plin">
                   <Smartphone className="w-3 h-3 mr-1 inline" /> Plin
                 </SelectItem>
+
                 <SelectItem value="transfer">
                   <Banknote className="w-3 h-3 mr-1 inline" /> Transferencia
                 </SelectItem>
@@ -119,104 +187,91 @@ export function PriceSummary({
           </div>
         </div>
 
-        {/* FILA 2: GARANTÍA CONFIGURABLE */}
-        <div className="space-y-2 pt-2 border-t border-dashed">
-          <div className="flex justify-between items-center">
-            <Label className="text-[10px] font-bold uppercase text-amber-600 flex items-center gap-1">
-              <PackageCheck className="w-3 h-3" /> Garantía
-            </Label>
-
-            {/* NUEVO SELECT CON TIPOS */}
-            <Select
-              value={guaranteeType}
-              onValueChange={(value) =>
-                setGuaranteeType(
-                  value as "dinero" | "dni" | "joyas" | "reloj" | "otros",
-                )
-              }
-            >
-              <SelectTrigger className="h-7 text-[10px]">
-                <SelectValue placeholder="Tipo..." />
-              </SelectTrigger>
-              <SelectContent className="text-[10px]">
-                <SelectItem value="dinero">Dinero</SelectItem>
-                <SelectItem value="dni">DNI</SelectItem>
-                <SelectItem value="joyas">Joyas</SelectItem>
-                <SelectItem value="reloj">Reloj</SelectItem>
-                <SelectItem value="otros">Otros</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* DINERO */}
-          {guaranteeType === "dinero" && (
-            <div className="relative animate-in slide-in-from-top-1 mt-2">
-              <span className="absolute left-2.5 top-2 text-xs text-muted-foreground font-bold">
-                S/.
-              </span>
-              <Input
-                className="pl-8 h-8 font-bold border-amber-200 focus-visible:ring-input"
-                placeholder="0.00"
-                value={guarantee} // monto
-                onChange={(e) => setGuarantee(e.target.value)}
-              />
+        {/* GARANTÍA (Solo alquiler) */}
+        {!isVenta && (
+          <div className="space-y-2 pt-2 border-t border-dashed">
+            <div className="flex justify-between items-center">
+              <Label className="text-[10px] font-bold uppercase text-amber-600 flex items-center gap-1">
+                <PackageCheck className="w-3 h-3" /> Garantía ({guaranteeType})
+              </Label>
+              <Select
+                value={guaranteeType}
+                onValueChange={(v: any) => setGuaranteeType(v)}
+              >
+                <SelectTrigger className="h-7 w-fit text-[10px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dinero">
+                    <HandCoins className="w-3 h-3 mr-1 inline" /> Dinero
+                  </SelectItem>
+                  <SelectItem value="dni">
+                    <IdCard className="w-3 h-3 mr-1 inline" /> DNI
+                  </SelectItem>
+                  <SelectItem value="joyas">
+                    <Gem className="w-3 h-3 mr-1 inline" /> Joyas
+                  </SelectItem>
+                  <SelectItem value="otros">
+                    <Gift className="w-3 h-3 mr-1 inline" /> Otros
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          )}
 
-          {/* OBJETOS: DNI, Joyas, Reloj */}
-          {(guaranteeType === "dni" ||
-            guaranteeType === "joyas" ||
-            guaranteeType === "reloj") && (
-            <div className="animate-in slide-in-from-top-1 mt-2">
+            {guaranteeType === "dinero" ? (
+              <div className="relative mt-1">
+                <span className="absolute left-2.5 top-2 text-xs text-muted-foreground font-bold">
+                  S/.
+                </span>
+                <Input
+                  className="pl-8 h-8 text-xs border-slate-700"
+                  placeholder="Monto garantía"
+                  value={guarantee}
+                  onChange={(e) => setGuarantee(e.target.value)}
+                />
+              </div>
+            ) : (
               <Input
                 className="h-8 text-xs"
-                placeholder={`Descripción de ${guaranteeType}`}
+                placeholder="Descripción del objeto..."
                 value={guarantee}
                 onChange={(e) => setGuarantee(e.target.value)}
               />
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
-          {/* OTROS: Tipo + descripción */}
-          {guaranteeType === "otros" && (
-            <div className="mt-2 flex gap-2 animate-in slide-in-from-top-1">
-              <Input
-                className="w-24 h-8 text-xs"
-                placeholder="Tipo"
-                value={guaranteeOtherType}
-                onChange={(e) => setGuaranteeOtherType(e.target.value)}
-              />
-              <Input
-                className="flex-1 h-8 text-xs"
-                placeholder="Descripción"
-                value={guarantee}
-                onChange={(e) => setGuarantee(e.target.value)}
-              />
-            </div>
-          )}
-        </div>
-        {/* TOTALES */}
-        <div className="bg-muted/30 p-3 rounded-lg space-y-2 border">
-          <div className="flex justify-between text-[11px]">
-            <span className="text-muted-foreground italic">
-              Restante por cobrar:
-            </span>
-            <span className="font-bold text-red-500">
-              {formatCurrency(pendingAmount)}
+        {/* BLOQUE FINAL DE TOTALES */}
+        <div className="p-3 rounded-lg border shadow-sm">
+          <div className="flex justify-between text-xs mb-1">
+            <span>Saldo Pendiente:</span>
+            <span
+              className={cn(
+                "font-bold",
+                pending > 0 ? "text-red-400" : "text-emerald-400",
+              )}
+            >
+              {formatCurrency(pending)}
             </span>
           </div>
-          <div className="flex justify-between items-baseline pt-1 border-t">
-            <span className="text-xs font-semibold">TOTAL HOY:</span>
+
+          <div className="flex justify-between items-center pt-2 border-t border-black/5">
+            <div className="flex flex-col">
+              <span className="text-[12px] font-semibold uppercase leading-none">
+                Total a Pagar hoy:
+              </span>
+              <span className="text-[9px] text-muted-foreground italic leading-none">
+                {isVenta ? "(Adelanto)" : "(Adelanto + Garantía)"}
+              </span>
+            </div>
             <div className="text-right">
-              <div className="text-xl font-semibold text-primary">
+              <span className="text-xl font-bold text-primary">
                 {formatCurrency(
-                  Number(downPayment) +
-                    (guaranteeType === "dinero" ? Number(guarantee) : 0),
+                  isVenta
+                    ? Number(downPayment || 0)
+                    : Number(downPayment || 0) + Number(guarantee || 0),
                 )}
-              </div>
-              <p className="text-[9px] text-muted-foreground leading-none">
-                (Adelanto + Garantía)
-              </p>
+              </span>
             </div>
           </div>
         </div>
