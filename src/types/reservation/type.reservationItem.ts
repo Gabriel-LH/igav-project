@@ -15,7 +15,7 @@ export const reservationItemSchema = z.object({
   notes: z.string().optional(),
   
   // --- ESTADO DE LA RESERVA DEL ITEM ---
-  itemStatus: z.enum(["confirmada", "cancelada", "completada"]),
+  itemStatus: z.enum(["confirmada", "cancelada", "convertida", "expirada"]),
 });
 
 export type ReservationItem = z.infer<typeof reservationItemSchema>;

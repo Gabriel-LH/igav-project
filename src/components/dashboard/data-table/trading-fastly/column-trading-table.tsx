@@ -4,7 +4,6 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import {
@@ -14,16 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
-import { DragHandle } from "../../ui/DragHandle";
-import { clientSchema } from "../../type";
-import { TableCellViewer } from "./table-cell-viewer";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  CancelCircleIcon,
-  CheckmarkCircle01Icon,
-} from "@hugeicons/core-free-icons";
+import { DragHandle } from "../ui/DragHandle";
+import { tradingSchema } from "../type.trading";
+import { TableCellViewerTrading } from "./table-cell-viewer";
 
-export const columns: ColumnDef<z.infer<typeof clientSchema>>[] = [
+export const columnsTrading: ColumnDef<z.infer<typeof tradingSchema>>[] = [
   {
     id: "drag",
     header: () => null,
@@ -56,64 +50,28 @@ export const columns: ColumnDef<z.infer<typeof clientSchema>>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
-    header: "Nombre",
+    accessorKey: "item",
+    header: "Item",
     cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />;
+      return <TableCellViewerTrading item={row.original} />;
     },
     enableHiding: false,
   },
   {
-    accessorKey: "operationsRent",
-    header: "No. Operaciones alquiler",
-    cell: ({ row }) => (
-      <div className="w-32">{row.original.operationsRent}</div>
-    ),
+    accessorKey: "lastweek",
+    header: "Semana pasada",
+    cell: ({ row }) => <div className="w-32">{row.original.lastweek}</div>,
   },
   {
-    accessorKey: "operationsBuy",
-    header: "No. Operaciones compra",
-    cell: ({ row }) => <div className="w-32">{row.original.operationsBuy}</div>,
+    accessorKey: "thisweek",
+    header: "Semana actual",
+    cell: ({ row }) => <div className="w-32">{row.original.thisweek}</div>,
   },
   {
-    accessorKey: "totalRent",
-    header: "Valor total alquiler",
-    cell: ({ row }) => <div className="w-32">{row.original.totalRent}</div>,
+    accessorKey: "difference",
+    header: "Diferencia",
+    cell: ({ row }) => <div className="w-32">{row.original.difference}</div>,
   },
-  {
-    accessorKey: "totalBuy",
-    header: "Valor total compra",
-    cell: ({ row }) => <div className="w-32">{row.original.totalBuy}</div>,
-  },
-  {
-    accessorKey: "lastOperation",
-    header: "Ultima operacion",
-    cell: ({ row }) => <div className="w-32">{row.original.lastOperation}</div>,
-  },
-
-  {
-    accessorKey: "status",
-    header: "Estado",
-    cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.status === "Activo" ? (
-          <HugeiconsIcon
-            icon={CheckmarkCircle01Icon}
-            strokeWidth={2.2}
-            className="text-green-500 dark:text-green-400"
-          />
-        ) : (
-          <HugeiconsIcon
-            icon={CancelCircleIcon}
-            strokeWidth={2.2}
-            className="text-red-500 dark:text-red-400"
-          />
-        )}
-        {row.original.status}
-      </Badge>
-    ),
-  },
-
   {
     id: "actions",
     cell: () => (

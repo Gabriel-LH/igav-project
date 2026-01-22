@@ -1,16 +1,16 @@
 import { Row } from "@tanstack/react-table";
 import { z } from "zod";
-import { popularSchema } from "../../type.popular";
+import { tradingSchema } from "../type.trading";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { flexRender } from "@tanstack/react-table";
 import { TableRow } from "@/components/table";
 import { TableCell } from "@/components/table";
 
-export function DraggableRowPopular({
+export function DraggableRowTrading({
   row,
 }: {
-  row: Row<z.infer<typeof popularSchema>>;
+  row: Row<z.infer<typeof tradingSchema>>;
 }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,

@@ -18,7 +18,8 @@ export const rentalSchema = z.object({
     "devuelto",      // Ya regresó (pasó por inspección)
     "atrasado",      // Ya pasó la fecha de devolución
     "con_daños",     // Regresó pero hubo problemas
-    "perdido"        // El cliente nunca volvió
+    "perdido",        // El cliente nunca volvió
+    "anulado",        // El alquiler fue cancelado
   ]),
 
   // Garantía vinculada

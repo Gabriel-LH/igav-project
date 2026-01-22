@@ -62,30 +62,43 @@ export function ReturnInspectionDrawer({
   });
 
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus
+    (state) => state.updateStockStatus,
   );
   const returnReservation = useReservationStore(
-    (state) => state.returnReservation
+    (state) => state.returnReservation,
   );
 
   // 1. Buscamos los items de la reserva
   const reservationItems = useMemo(
     () =>
       MOCK_RESERVATION_ITEM.filter((i) => i.reservationId === reservation.id),
-    [reservation.id]
+    [reservation.id],
   );
 
   const [waivePenalty, setWaivePenalty] = useState(false); // Perdonar mora
+
+  const getStockItem = useInventoryStore(
+    (state) => state.getAvailableStockItem,
+  );
+
+  // 2. Buscamos los items que el cliente TIENE en su poder (alquilados)
+  const exactStockItems = useMemo(
+    () =>
+      reservationItems.map((item) =>
+        getStockItem(item.productId, item.size, item.color, "alquilado"),
+      ),
+    [reservationItems, getStockItem],
+  );
 
   const [itemsInspection, setItemsInspection] = useState<
     Record<string, StockStatus>
   >(
     Object.fromEntries(
       reservationItems.map((item) => [
-        item.productId,
+        item.id,
         "lavanderia" as StockStatus,
-      ])
-    )
+      ]),
+    ),
   );
 
   const counts = useMemo(() => {
@@ -111,7 +124,7 @@ export function ReturnInspectionDrawer({
     const diffTime = today.getTime() - dueDate.getTime();
     const daysLate = Math.max(
       0,
-      Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1
+      Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1,
     );
 
     // Si waivePenalty es true, la mora es 0
@@ -119,7 +132,7 @@ export function ReturnInspectionDrawer({
     const totalToPay = penaltyAmount + extraDamageCharge;
 
     // Si la garantía es efectivo, restamos. Si es objeto, sumamos deuda.
-    const isCash = guarantee?.type === "efectivo";
+    const isCash = guarantee?.type === "dinero";
     const guaranteeValue = isCash ? guarantee?.value || 0 : 0;
 
     return {
@@ -148,7 +161,7 @@ export function ReturnInspectionDrawer({
     {
       ...summary,
       extraDamageCharge,
-    }
+    },
   );
 
   // Mostrar inputs de multa si algo falla
@@ -159,13 +172,18 @@ export function ReturnInspectionDrawer({
 
   const handleCompleteReturn = async () => {
     console.log("Iniciando proceso de retorno...");
+    
 
-    // 4. ACTUALIZACIÓN DE STOCK (Físico)
-    reservationItems.forEach((item) => {
-      const targetStatus = itemsInspection[item.productId];
+    reservationItems.forEach((item, index) => {
+    const targetStatus = itemsInspection[item.id] || "lavanderia";
+    
+    // Usamos el resultado de nuestra función del store
+    const stockId = exactStockItems[index]?.id;
 
-      updateStockStatus(item.productId, targetStatus, damageNotes);
-    });
+    if (stockId) {
+      updateStockStatus(stockId, targetStatus, damageNotes);
+    }
+  });
 
     const totalExtra = summary.penaltyAmount + extraDamageCharge;
 
@@ -217,7 +235,7 @@ export function ReturnInspectionDrawer({
               </h3>
               {reservationItems.map((item) => {
                 const product = PRODUCTS_MOCK.find(
-                  (p) => p.id === item.productId
+                  (p) => p.id === item.productId,
                 );
                 return (
                   <div

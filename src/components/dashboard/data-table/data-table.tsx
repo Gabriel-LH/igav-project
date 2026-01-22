@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
-import { TopClientTable } from "./dashboard/top-client/top-client-table";
+import { TopClientTable } from "./top-client/top-client-table";
 import { clientSchema } from "./type";
 import {
   getCoreRowModel,
@@ -37,13 +37,13 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
-import { columns } from "./dashboard/top-client/column-client-table";
-import { columnsPopular } from "./dashboard/most-popular/column-popular-table";
+import { columns } from "./top-client/column-client-table";
+import { columnsPopular } from "./most-popular/column-popular-table";
 import { popularSchema } from "./type.popular";
-import { TopMostPopularTable } from "./dashboard/most-popular/most-popular-table";
-import { columnsTrading } from "./dashboard/trading-fastly/column-trading-table";
+import { TopMostPopularTable } from "./most-popular/most-popular-table";
+import { columnsTrading } from "./trading-fastly/column-trading-table";
 import { tradingSchema } from "./type.trading";
-import { TradingFastTable } from "./dashboard/trading-fastly/trading-fast-table";
+import { TradingFastTable } from "./trading-fastly/trading-fast-table";
 
 export function DataTable({
   dataClient,
@@ -58,7 +58,7 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({
@@ -185,7 +185,7 @@ export function DataTable({
                 .filter(
                   (column) =>
                     typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
+                    column.getCanHide(),
                 )
                 .map((column) => {
                   return (

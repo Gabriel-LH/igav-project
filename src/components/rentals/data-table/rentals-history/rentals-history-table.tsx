@@ -43,18 +43,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { tradingSchema } from "../../type.trading";
+import { rentalSchema } from "@/src/types/rentals/type.rentals";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { columnsTrading } from "./column-trading-table";
-import { DraggableRowTrading } from "./draggable-row-trading";
+import { DraggableRowHistory } from "./dragable-row-history"; 
+import { columnsRentalsHistory } from "./column-history-table";
+import { rentalsHistorySchema } from "../type/type.history";
 
-export function TradingFastTable({
+export function RentalsHistoryTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof tradingSchema>[];
-  table: TanstackTable<z.infer<typeof tradingSchema>>;
+  data: z.infer<typeof rentalsHistorySchema>[];
+  table: TanstackTable<z.infer<typeof rentalsHistorySchema>>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -62,12 +63,12 @@ export function TradingFastTable({
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
+    useSensor(KeyboardSensor, {}),
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id }) => id) || [],
-    [data]
+    [data],
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -102,7 +103,7 @@ export function TradingFastTable({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -117,13 +118,13 @@ export function TradingFastTable({
                   strategy={verticalListSortingStrategy}
                 >
                   {table.getRowModel().rows.map((row) => (
-                    <DraggableRowTrading key={row.id} row={row} />
+                    <DraggableRowHistory key={row.id} row={row} />
                   ))}
                 </SortableContext>
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columnsTrading.length}
+                    colSpan={columnsRentalsHistory.length}
                     className="h-24 text-center"
                   >
                     No results.

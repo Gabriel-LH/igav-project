@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import React, { useMemo } from "react";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { toast } from "sonner";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, isToday } from "date-fns";
 import {
   Calendar02Icon,
   HugeiconsFreeIcons,
@@ -22,6 +22,7 @@ import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 interface ReservationModalProps {
   item: any;
@@ -58,24 +59,40 @@ export function ReservationModal({
     "dinero" | "dni" | "joyas" | "reloj" | "otros"
   >("dinero");
 
+  const getAvailableStockItem = useInventoryStore(
+    (state) => state.getAvailableStockItem,
+  );
+
   const scrollRef = useScrollIndicator();
 
   const isEvent = item.rent_unit === "evento";
   const isVenta = operationType === "venta";
 
   const sellerId = USER_MOCK[0].id;
-  const stockId = STOCK_MOCK.find((prod) => prod.id === item.id)?.id || "";
+  // Buscamos la prenda física exacta que coincida con el modelo, talla y color
+  const exactStockItem = getAvailableStockItem(
+    item.id,
+    size,
+    color,
+    "disponible",
+  );
 
-  // 2. Calcular días (solo para registro de fechas, no necesariamente para precio)
+  const stockId = exactStockItem?.id; // Este es el ID físico que usaremos
+  const isAvailable = !!exactStockItem; // Booleano para el botón
+
+  // Agrega este log para ver qué está recibiendo la función realmente
+console.log("Buscando Stock:", { id: item.id, size, color, status: "disponible", resultado: exactStockItem });
+
+  //Calculamos días (solo para registro de fechas, no necesariamente para precio)
   const days =
     dateRange?.from && dateRange?.to
       ? Math.max(differenceInDays(dateRange.to, dateRange.from) + 1, 1)
       : 1;
 
-  // 3. Obtener el precio unitario correcto según la operación
+  //Obtenemos el precio unitario correcto según la operación
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
 
-  // 4. LÓGICA DE TOTAL FINAL (La que se guarda en la BD)
+  //Obtenemos el total final (La que guardamos en la BD)
   const totalOperacion = useMemo(() => {
     if (isVenta) {
       return unitPrice * quantity;
@@ -88,13 +105,21 @@ export function ReservationModal({
 
   const { createReservation } = useReservationStore();
 
-
   console.log("totalOperacion", totalOperacion);
 
   const handleConfirm = () => {
     const isVenta = operationType === "venta";
     if (!dateRange?.from || !selectedCustomer) {
       toast.error("Faltan datos obligatorios (Fecha o Cliente)", {
+        style: {
+          background: "rgba(255, 0, 0, 0.15)",
+        },
+      });
+      return;
+    }
+
+    if (!isAvailable || !stockId) {
+      toast.error("Stock no disponible", {
         style: {
           background: "rgba(255, 0, 0, 0.15)",
         },
@@ -110,13 +135,13 @@ export function ReservationModal({
       sku: item.sku,
       size: size,
       color: color,
-      type: operationType, // "alquiler" o "venta"
+      type: operationType, // alquiler o venta
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
       startDate: isVenta ? new Date() : dateRange.from,
       endDate: isVenta ? dateRange.from : dateRange.to,
       quantity: quantity,
-      status: "pendiente", // O "reservado"
+      status: "confirmada",
       notes: notes,
       financials: {
         // priceRent: item.price_rent,
@@ -132,7 +157,7 @@ export function ReservationModal({
       },
       branchId: currentBranchId,
       stockId: stockId,
-      sellerId: sellerId
+      sellerId: sellerId,
     };
 
     console.log("newRes", newRes);
@@ -142,11 +167,9 @@ export function ReservationModal({
       const transactionRecord = processTransaction(newRes);
 
       console.log("transactionRecord", transactionRecord);
+
       // 2. Guardamos en el Store de Reservas/Operaciones
-      createReservation(newRes, (productId, qty) => {
-        // 3. Aquí llamarías a tu ProductStore para bajar el stock
-        console.log(`Bajando stock de ${productId} en ${qty} unidades`);
-      });
+      createReservation(newRes);
 
       toast.success(
         `${operationType === "venta" ? "Venta" : "Reserva"} creada con éxito`,
@@ -209,12 +232,18 @@ export function ReservationModal({
         </div>
 
         <div className="pt-4 border-t">
-          <Button
-            className={`w-full font-bold h-12 ${isVenta ? "bg-orange-600" : "bg-emerald-600"}`}
-            onClick={handleConfirm}
-          >
-            Confirmar reserva para {isVenta ? "Venta" : "Alquiler"}
-          </Button>
+          {!isAvailable || !stockId ? (
+            <Button disabled className="w-full font-bold h-12 bg-red-600">
+              Stock no disponible
+            </Button>
+          ) : (
+            <Button
+              className={`w-full font-bold h-12 ${isVenta ? "bg-orange-600" : "bg-emerald-600"}`}
+              onClick={handleConfirm}
+            >
+              Confirmar reserva para {isVenta ? "Venta" : "Alquiler"}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

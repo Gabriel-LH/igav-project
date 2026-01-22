@@ -1,7 +1,14 @@
 import { create } from "zustand";
 import { STOCK_MOCK } from "../mocks/mock.stock";
 
-type StockStatus = "disponible" | "mantenimiento" | "alquilado" | "lavanderia" | "baja" | "agotado" | "vendido";
+type StockStatus =
+  | "disponible"
+  | "mantenimiento"
+  | "alquilado"
+  | "lavanderia"
+  | "baja"
+  | "agotado"
+  | "vendido";
 
 interface InventoryLog {
   timestamp: Date;
@@ -15,14 +22,44 @@ interface InventoryLog {
 interface InventoryStore {
   stock: typeof STOCK_MOCK;
   inventoryLogs: InventoryLog[]; // Importante para la trazabilidad
-  updateStockStatus: (stockId: string, newStatus: StockStatus, damageNotes?: string) => void;
+  updateStockStatus: (
+    stockId: string,
+    newStatus: StockStatus,
+    damageNotes?: string,
+  ) => void;
   // Esta es la función profesional de "Mudanza + Alquiler"
-  deliverAndTransfer: (stockId: string, targetBranchId: string, adminId: string) => void;
+  deliverAndTransfer: (
+    stockId: string,
+    targetBranchId: string,
+    adminId: string,
+  ) => void;
+  getAvailableStockItem: (
+    productId: string,
+    size: string,
+    status: string,
+    color: string,
+  ) => any;
 }
 
-export const useInventoryStore = create<InventoryStore>((set) => ({
+export const useInventoryStore = create<InventoryStore>((set, get) => ({
   stock: STOCK_MOCK,
   inventoryLogs: [],
+
+  getAvailableStockItem: (
+    productId: string,
+    size: string,
+    status: string,
+    color: string,
+  ) => {
+    return get().stock.find(
+      (s) =>
+        s.productId.toString() === productId.toString() &&
+        // 2. Usamos trim() por si se coló un espacio en los mocks o selectores
+        s.size.trim() === size.trim() &&
+        s.color.trim() === color.trim() &&
+        s.status === status,
+    );
+  },
 
   updateStockStatus: (stockId, newStatus, damageNotes) =>
     set((state) => ({
@@ -34,13 +71,15 @@ export const useInventoryStore = create<InventoryStore>((set) => ({
               damageNotes: damageNotes || item.damageNotes,
               updatedAt: new Date(),
             }
-          : item
+          : item,
       ),
     })),
 
   deliverAndTransfer: (stockId, targetBranchId, adminId) =>
     set((state) => {
-      const item = state.stock.find((s) => s.id.toString() === stockId.toString());
+      const item = state.stock.find(
+        (s) => s.id.toString() === stockId.toString(),
+      );
       if (!item) return state;
 
       const needsTransfer = item.branchId !== targetBranchId;
@@ -60,8 +99,13 @@ export const useInventoryStore = create<InventoryStore>((set) => ({
       return {
         stock: state.stock.map((s) =>
           s.id.toString() === stockId.toString()
-            ? { ...s, status: "alquilado", branchId: targetBranchId, updatedAt: new Date() }
-            : s
+            ? {
+                ...s,
+                status: "alquilado",
+                branchId: targetBranchId,
+                updatedAt: new Date(),
+              }
+            : s,
         ),
         inventoryLogs: newLogs,
       };

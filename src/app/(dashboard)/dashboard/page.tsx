@@ -4,7 +4,7 @@ import { SectionCards } from "@/src/components/dashboard/section-cards";
 import dataClient from "./dataClient.json";
 import dataPopular from "./dataPopular.json";
 import dataTrading from "./dataTrading.json";
-import { DataTable } from "@/src/components/data-table/data-table";
+import { DataTable } from "@/src/components/dashboard/data-table/data-table";
 import { DashboardHeader } from "@/src/components/dashboard/dashboard-header";
 
 export default function AdminDashboardPage() {

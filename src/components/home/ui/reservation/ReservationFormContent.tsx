@@ -71,7 +71,7 @@ export function ReservationFormContent({
 
       {/* 1. INFO Y CANTIDAD */}
       <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
-        <div className="w-12 h-12 bg-white rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
+        <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
           {size || "S/T"}
         </div>
         <div className="flex-1">

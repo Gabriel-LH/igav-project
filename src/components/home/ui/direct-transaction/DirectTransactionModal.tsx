@@ -22,10 +22,13 @@ import {
 import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { STOCK_MOCK } from "@/src/mocks/mock.stock";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { Input } from "@/components/input";
 
 export function DirectTransactionModal({
   item,
+  size,
+  color,
   children,
   currentBranchId,
   type, // "alquiler" | "venta"
@@ -42,62 +45,76 @@ export function DirectTransactionModal({
   });
 
   // Finanzas
-  const [downPayment, setDownPayment] = React.useState(""); // Aquí debería ser el total
+  const [downPayment, setDownPayment] = React.useState(""); // Total del pago
   const [guarantee, setGuarantee] = React.useState("");
   const [paymentMethod, setPaymentMethod] = React.useState<any>("cash");
   const [guaranteeType, setGuaranteeType] = React.useState<any>("dinero");
 
-    const sellerId = USER_MOCK[0].id;
-    const stockId = STOCK_MOCK.find((prod) => prod.id === item.id)?.id || "";
+  const getAvailableStockItem = useInventoryStore(
+    (state) => state.getAvailableStockItem,
+  );
 
-    const isEvent = item.rent_unit === "evento";
-    const isVenta = type === "venta";
-  
-    // 2. Calcular días (solo para registro de fechas, no necesariamente para precio)
-    const days =
-      dateRange?.from && dateRange?.to
-        ? Math.max(differenceInDays(dateRange.to, dateRange.from) + 1, 1)
-        : 1;
-  
-    // 3. Obtener el precio unitario correcto según la operación
-    const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
-  
-    // 4. LÓGICA DE TOTAL FINAL (La que se guarda en la BD)
-    const totalOperacion = useMemo(() => {
-      if (isVenta) {
-        return unitPrice * quantity;
-      }
-  
-      // Si es Alquiler:
-      // Si es por evento, ignoramos 'days' en la multiplicación
-      return isEvent ? unitPrice * quantity : unitPrice * quantity * days;
-    }, [isVenta, isEvent, unitPrice, quantity, days]);
-  
+  const updateStockStatus = useInventoryStore(
+    (state) => state.updateStockStatus,
+  );
+
+  const sellerId = USER_MOCK[0].id;
+
+  // Buscamos la prenda física exacta que coincida con el modelo, talla y color
+  const exactStockItem = getAvailableStockItem(item.id, size, color, "disponible");
+  const stockId = exactStockItem?.id; // Este es el ID físico que usaremos
+  const isAvailable = !!exactStockItem; // Booleano para el botón
+
+  const isEvent = item.rent_unit === "evento";
+  const isVenta = type === "venta";
+
+  // 2. Calcular días (solo para registro de fechas, no necesariamente para precio)
+  const days =
+    dateRange?.from && dateRange?.to
+      ? Math.max(differenceInDays(dateRange.to, dateRange.from) + 1, 1)
+      : 1;
+
+  // 3. Obtener el precio unitario correcto según la operación
+  const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
+
+  // 4. LÓGICA DE TOTAL FINAL (La que se guarda en la BD)
+  const totalOperacion = useMemo(() => {
+    if (isVenta) {
+      return unitPrice * quantity;
+    }
+
+    // Si es Alquiler:
+    // Si es por evento, ignoramos 'days' en la multiplicación
+    return isEvent ? unitPrice * quantity : unitPrice * quantity * days;
+  }, [isVenta, isEvent, unitPrice, quantity, days]);
 
   const handleConfirm = () => {
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
+    if (!isAvailable || !stockId) {
+      return toast.error("No hay stock disponible físicamente.");
+    }
 
-  const transaction : ReservationDTO = {
+    const transaction: ReservationDTO = {
       productId: item.id,
-      productName: item.name, // Agregado para el DTO
-      sku: item.sku, // Agregado para el DTO
-      size: item.size || "M", // ¡IMPORTANTE! Esto debe venir del item seleccionado
-      color: item.color || "N/A",
+      productName: item.name,
+      sku: item.sku,
+      size: size,
+      color: color,
       type: type, // "alquiler" | "venta"
       status: type === "alquiler" ? "en_curso" : "vendido",
       startDate: dateRange.from,
       endDate: dateRange.to,
       quantity,
       financials: {
-          total: totalOperacion, // Asegúrate de tener esta función
-          downPayment: Number(downPayment),
-          pendingAmount: totalOperacion - Number(downPayment),
-          guarantee: isVenta
-              ? { type: "no_aplica" }
-              : guaranteeType === "dinero"
-                  ? { type: "dinero", value: guarantee }
-                  : { type: guaranteeType, description: guarantee },
-          paymentMethod,
+        total: totalOperacion, // Asegúrate de tener esta función
+        downPayment: Number(downPayment),
+        pendingAmount: totalOperacion - Number(downPayment),
+        guarantee: isVenta
+          ? { type: "no_aplica" }
+          : guaranteeType === "dinero"
+            ? { type: "dinero", value: guarantee }
+            : { type: guaranteeType, description: guarantee },
+        paymentMethod,
       },
       branchId: currentBranchId,
       customerId: selectedCustomer.id,
@@ -106,16 +123,20 @@ export function DirectTransactionModal({
       sellerId: sellerId,
       notes: notes,
       createdAt: new Date(),
-  };
+    };
 
-  // 1. Validar y Repartir con Zod
-  const result = processTransaction(transaction);
+    // 1. Validar y Repartir con Zod
+    const result = processTransaction(transaction);
 
-  // 2. ACTUALIZAR STOCK INMEDIATO
-  // Como esto es directo, AQUÍ SÍ bajamos el stock físico del Store
-//   updateProductStock(item.id, quantity); 
+    // 2. ACTUALIZAR STOCK FÍSICO (Esto es lo que hace reaccionar a la UI)
+    // Usamos el status exacto que pide tu stockSchema
+    updateStockStatus(stockId, type === "alquiler" ? "alquilado" : "vendido");
 
-  toast.success("Operación realizada con éxito");
+    toast.success(
+      type === "alquiler"
+        ? "Vestido entregado correctamente"
+        : "Venta finalizada con éxito",
+    );
   };
 
   return (
@@ -138,17 +159,25 @@ export function DirectTransactionModal({
         </DialogHeader>
 
         <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
-          {/* Info simplificada del producto */}
-          <div className="p-3 bg-muted/50 rounded-lg flex justify-between items-center">
-            <div>
-              <p className="font-bold text-sm">{item.name}</p>
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
+            <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
+              {size || "S/T"}
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm font-bold uppercase">{item.name}</h4>
               <p className="text-[10px] text-muted-foreground">
-                SKU: {item.sku}
+                Color: {color} | SKU: {item.sku}
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs font-bold">Stock Local</p>
-              <p className="text-emerald-600 font-black">Disponible</p>
+            <div className="w-20">
+              <Label className="text-[9px] uppercase font-black">Cant.</Label>
+              <Input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="h-8 font-bold"
+              />
             </div>
           </div>
 
@@ -197,12 +226,18 @@ export function DirectTransactionModal({
           />
         </div>
 
-        <Button
-          onClick={handleConfirm}
-          className={`w-full h-12 font-black ${type === "alquiler" ? "bg-blue-600" : "bg-orange-600"}`}
-        >
-          {type === "alquiler" ? "ENTREGAR Y COBRAR" : "FINALIZAR VENTA"}
-        </Button>
+        {!isAvailable || !selectedCustomer ? (
+          <Button disabled className="bg-red-600">
+            STOCK NO DISPONIBLE
+          </Button>
+        ) : (
+          <Button
+            onClick={handleConfirm}
+            className={`w-full h-12 font-black ${type === "alquiler" ? "bg-blue-600" : "bg-orange-600"}`}
+          >
+            {type === "alquiler" ? "ENTREGAR Y COBRAR" : "FINALIZAR VENTA"}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   );

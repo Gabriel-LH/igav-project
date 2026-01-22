@@ -43,18 +43,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { popularSchema } from "../../type.popular";
+import { rentalSchema } from "@/src/types/rentals/type.rentals";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { columnsPopular } from "./column-popular-table";
-import { DraggableRowPopular } from "./draggable-row-popular";
+import { DraggableRowActive} from "./dragrable-row-active";
+import { columnsRentalsActive } from "./column-active-table";
+import { rentalsActiveSchema } from "../type/type.active";
 
-export function TopMostPopularTable({
+export function RentalsActiveTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof popularSchema>[];
-  table: TanstackTable<z.infer<typeof popularSchema>>;
+  data: z.infer<typeof rentalsActiveSchema>[];
+  table: TanstackTable<z.infer<typeof rentalsActiveSchema>>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -62,12 +63,12 @@ export function TopMostPopularTable({
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
+    useSensor(KeyboardSensor, {}),
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id }) => id) || [],
-    [data]
+    [data],
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -102,7 +103,7 @@ export function TopMostPopularTable({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -117,13 +118,13 @@ export function TopMostPopularTable({
                   strategy={verticalListSortingStrategy}
                 >
                   {table.getRowModel().rows.map((row) => (
-                    <DraggableRowPopular key={row.id} row={row} />
+                    <DraggableRowActive key={row.id} row={row} />
                   ))}
                 </SortableContext>
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columnsPopular.length}
+                    colSpan={columnsRentalsActive.length}
                     className="h-24 text-center"
                   >
                     No results.

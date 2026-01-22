@@ -20,7 +20,7 @@ import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { Separator } from "@/components/separator";
 import { z } from "zod";
-import { tradingSchema } from "../../type.trading";
+import { rentalsHistorySchema } from "../type/type.history";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { IconTrendingUp } from "@tabler/icons-react";
 
@@ -44,10 +44,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function TableCellViewerTrading({
+export function TableCellViewerHistory({
   item,
 }: {
-  item: z.infer<typeof tradingSchema>;
+  item: z.infer<typeof rentalsHistorySchema>;
 }) {
   const isMobile = useIsMobile();
 
@@ -55,12 +55,12 @@ export function TableCellViewerTrading({
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
         <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.item}
+          {item.product}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="gap-1">
-          <DrawerTitle>{item.item}</DrawerTitle>
+          <DrawerTitle>{item.product}</DrawerTitle>
           <DrawerDescription>
             Showing total visitors for the last 6 months
           </DrawerDescription>
@@ -125,19 +125,19 @@ export function TableCellViewerTrading({
           )}
           <form className="flex flex-col gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="item">Item</Label>
-              <Input id="item" defaultValue={item.item} />
+              <Label htmlFor="name">Nombre</Label>
+              <Input id="name" defaultValue={item.product} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="lastweek">Semana pasada</Label>
-                <Input id="lastweek" defaultValue={item.lastweek.toString()} />
+                <Label htmlFor="count">Cantidad de veces</Label>
+                <Input id="count" defaultValue={item.count.toString()} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="thisweek">Semana actual</Label>
-                <Input id="thisweek" defaultValue={item.thisweek.toString()} />
+                <Label htmlFor="income">Ingreso generado</Label>
+                <Input id="income" defaultValue={item.income.toString()} />
               </div>
             </div>
           </form>

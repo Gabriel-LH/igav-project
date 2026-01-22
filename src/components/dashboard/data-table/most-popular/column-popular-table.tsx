@@ -14,14 +14,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
-import { DragHandle } from "../../ui/DragHandle";
-import { popularSchema } from "../../type.popular";
+import { DragHandle } from "../ui/DragHandle";
+import { popularSchema } from "../type.popular";
 import { TableCellViewerPopular } from "./table-cell-viewer";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  RepeatIcon,
-  SaleTag02Icon,
-} from "@hugeicons/core-free-icons";
+import { RepeatIcon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 
 export const columnsPopular: ColumnDef<z.infer<typeof popularSchema>>[] = [
   {

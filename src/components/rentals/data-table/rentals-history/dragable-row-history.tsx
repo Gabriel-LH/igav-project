@@ -1,16 +1,16 @@
 import { Row } from "@tanstack/react-table";
 import { z } from "zod";
-import { clientSchema } from "./../../type";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { flexRender } from "@tanstack/react-table";
 import { TableRow } from "@/components/table";
 import { TableCell } from "@/components/table";
+import { rentalsHistorySchema } from "../type/type.history";
 
-export function DraggableRow({
+export function DraggableRowHistory({
   row,
 }: {
-  row: Row<z.infer<typeof clientSchema>>;
+  row: Row<z.infer<typeof rentalsHistorySchema>>;
 }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,

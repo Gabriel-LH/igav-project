@@ -18,9 +18,16 @@ import {
 } from "@/components/drawer";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/select";
 import { Separator } from "@/components/separator";
 import { z } from "zod";
-import { popularSchema } from "../../type.popular";
+import { clientSchema } from "../type";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { IconTrendingUp } from "@tabler/icons-react";
 
@@ -44,10 +51,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function TableCellViewerPopular({
+export function TableCellViewer({
   item,
 }: {
-  item: z.infer<typeof popularSchema>;
+  item: z.infer<typeof clientSchema>;
 }) {
   const isMobile = useIsMobile();
 
@@ -125,20 +132,49 @@ export function TableCellViewerPopular({
           )}
           <form className="flex flex-col gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Nombre</Label>
+              <Label htmlFor="header">Header</Label>
               <Input id="name" defaultValue={item.name} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="count">Cantidad de veces</Label>
-                <Input id="count" defaultValue={item.count.toString()} />
+                <Label htmlFor="status">Estado</Label>
+                <Select defaultValue={item.status}>
+                  <SelectTrigger id="status" className="w-full">
+                    <SelectValue placeholder="Select a status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Done">Done</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Not Started">Not Started</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Ingreso generado</Label>
-                <Input id="income" defaultValue={item.income.toString()} />
+                <Label htmlFor="operationsRent">No. Operaciones alquiler</Label>
+                <Input id="operationsRent" defaultValue={item.operationsRent} />
               </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="operationsBuy">No. Operaciones compra</Label>
+                <Input id="operationsBuy" defaultValue={item.operationsBuy} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="totalRent">Valor total alquiler</Label>
+              <Input id="totalRent" defaultValue={item.totalRent} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="totalBuy">Valor total compra</Label>
+              <Input id="totalBuy" defaultValue={item.totalBuy} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="lastOperation">Ultima operacion</Label>
+              <Input id="lastOperation" defaultValue={item.lastOperation} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="status">Estado</Label>
+              <Input id="status" defaultValue={item.status} />
             </div>
           </form>
         </div>

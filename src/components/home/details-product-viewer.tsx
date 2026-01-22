@@ -418,6 +418,8 @@ export function DetailsProductViewer({
           <div className="grid grid-cols-2 gap-2 w-full">
             <DirectTransactionModal
               item={item}
+              size={selectedSize || ""}
+              color={selectedColor?.name || ""}
               type="alquiler"
               currentBranchId={currentBranchId}
             >
@@ -433,6 +435,8 @@ export function DetailsProductViewer({
             {/* VENDER: Modal Directo */}
             <DirectTransactionModal
               item={item}
+              size={selectedSize || ""}
+              color={selectedColor?.name || ""}
               type="venta"
               currentBranchId={currentBranchId}
             >

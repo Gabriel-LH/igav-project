@@ -1,13 +1,23 @@
+import { RentalsDataTable } from "./rentals-data-table";
 import { RentalsTab } from "./rentals-tab";
 
-
 export const RentalsGrid = () => {
- 
+  const dataRentalActive = [];
+  const dataRentalCanceled = [];
+  const dataRentalHistory = [];
 
   return (
-    <div className="w-full">
-        <RentalsTab/>
-    
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <RentalsTab />
+          <RentalsDataTable
+            dataRentalActive={dataRentalActive}
+            dataRentalCanceled={dataRentalCanceled}
+            dataRentalHistory={dataRentalHistory}
+          />
+        </div>
+      </div>
     </div>
   );
 };
