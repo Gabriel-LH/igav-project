@@ -2,7 +2,7 @@ import z from "zod";
 
 export const rentalSchema = z.object({
   id: z.string(),
-  operationId: z.number(),      // Conecta con la transacción financiera
+  operationId: z.string(),      // Conecta con la transacción financiera
   reservationId: z.string().optional(), // Puede venir de una reserva o ser alquiler directo
   customerId: z.string(),
   branchId: z.string(),

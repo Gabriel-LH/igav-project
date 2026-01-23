@@ -1,20 +1,15 @@
 // Componente sugerido: HomeStats.tsx
+import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
 import { AlertCircleIcon, ContainerTruck02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-export function ReturnStats({ reservations, overdue }: { reservations: any[]; overdue: any[] }) {
-  const today = new Date().setHours(0,0,0,0);
-
-  // Devoluciones esperadas para hoy
-  const returnsToday = reservations.filter(r => 
-    r.status === "entregado" && new Date(r.endDate).setHours(0,0,0,0) === today
-  ).length;
+export function ReturnStats({dueToday, overdue }: { dueToday: RentalItem[]; overdue: RentalItem[] }) {
 
   return (
     <div className="grid grid-cols-2 md:w-full w-fit md:grid-cols-3 gap-4 mb-6">
       <StatCard 
         label="Retornos para Hoy" 
-        value={returnsToday} 
+        value={dueToday.length} 
         icon={ContainerTruck02Icon} 
         color="text-emerald-600"  
       />

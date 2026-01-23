@@ -15,15 +15,15 @@ import { Label } from "@/components/label";
 import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Calendar01Icon,
   Calendar02Icon,
   Tag02Icon,
 } from "@hugeicons/core-free-icons";
-import { ReservationDTO } from "@/src/interfaces/reservationDTO";
-import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { RentalDTO } from "@/src/interfaces/RentalDTO";
+import { SaleDTO } from "@/src/interfaces/SaleDTO";
 
 export function DirectTransactionModal({
   item,
@@ -32,7 +32,10 @@ export function DirectTransactionModal({
   children,
   currentBranchId,
   type, // "alquiler" | "venta"
+  onSuccess,
 }: any) {
+  const [open, setOpen] = React.useState(false);
+
   // Estados simplificados para transacción directa
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [quantity, setQuantity] = React.useState(1);
@@ -49,9 +52,17 @@ export function DirectTransactionModal({
   const [guarantee, setGuarantee] = React.useState("");
   const [paymentMethod, setPaymentMethod] = React.useState<any>("cash");
   const [guaranteeType, setGuaranteeType] = React.useState<any>("dinero");
+  const [receivedAmount, setReceivedAmount] = React.useState<number>(0);
 
-  const getAvailableStockItem = useInventoryStore(
-    (state) => state.getAvailableStockItem,
+// Cálculo automático del vuelto (usando useMemo para eficiencia)
+const changeAmount = useMemo(() => {
+  const totalACobrar = Number(downPayment) || 0; // Lo que decidiste cobrar hoy
+  if (receivedAmount <= 0 || receivedAmount < totalACobrar) return 0;
+  return receivedAmount - totalACobrar;
+}, [receivedAmount, downPayment]);
+
+  const createDirectRental = useRentalStore(
+    (state) => state.createDirectRental,
   );
 
   const updateStockStatus = useInventoryStore(
@@ -61,9 +72,19 @@ export function DirectTransactionModal({
   const sellerId = USER_MOCK[0].id;
 
   // Buscamos la prenda física exacta que coincida con el modelo, talla y color
-  const exactStockItem = getAvailableStockItem(item.id, size, color, "disponible");
-  const stockId = exactStockItem?.id; // Este es el ID físico que usaremos
-  const isAvailable = !!exactStockItem; // Booleano para el botón
+  // Buscamos la prenda física exacta que coincida con el modelo, talla y color
+  const exactStockItem = useInventoryStore((state) =>
+    state.stock.find(
+      (s) =>
+        String(s.productId) === String(item.id) &&
+        s.size === size &&
+        s.color === color &&
+        s.status === "disponible",
+    ),
+  );
+
+  const stockId = exactStockItem?.id; // ID fisico que se usara para la reserva
+  const isAvailable = !!exactStockItem; // Booleano para el boton
 
   const isEvent = item.rent_unit === "evento";
   const isVenta = type === "venta";
@@ -82,7 +103,6 @@ export function DirectTransactionModal({
     if (isVenta) {
       return unitPrice * quantity;
     }
-
     // Si es Alquiler:
     // Si es por evento, ignoramos 'days' en la multiplicación
     return isEvent ? unitPrice * quantity : unitPrice * quantity * days;
@@ -94,53 +114,64 @@ export function DirectTransactionModal({
       return toast.error("No hay stock disponible físicamente.");
     }
 
-    const transaction: ReservationDTO = {
+    // Base común para ambos
+    const baseData = {
       productId: item.id,
       productName: item.name,
       sku: item.sku,
-      size: size,
-      color: color,
-      type: type, // "alquiler" | "venta"
-      status: type === "alquiler" ? "en_curso" : "vendido",
-      startDate: dateRange.from,
-      endDate: dateRange.to,
+      size,
+      color,
       quantity,
-      financials: {
-        total: totalOperacion, // Asegúrate de tener esta función
-        downPayment: Number(downPayment),
-        pendingAmount: totalOperacion - Number(downPayment),
-        guarantee: isVenta
-          ? { type: "no_aplica" }
-          : guaranteeType === "dinero"
-            ? { type: "dinero", value: guarantee }
-            : { type: guaranteeType, description: guarantee },
-        paymentMethod,
-      },
-      branchId: currentBranchId,
       customerId: selectedCustomer.id,
-      stockId: stockId,
       customerName: selectedCustomer.name,
-      sellerId: sellerId,
-      notes: notes,
+      sellerId,
+      branchId: currentBranchId,
+      notes,
       createdAt: new Date(),
+      stockId,
     };
 
-    // 1. Validar y Repartir con Zod
-    const result = processTransaction(transaction);
-
-    // 2. ACTUALIZAR STOCK FÍSICO (Esto es lo que hace reaccionar a la UI)
-    // Usamos el status exacto que pide tu stockSchema
-    updateStockStatus(stockId, type === "alquiler" ? "alquilado" : "vendido");
-
-    toast.success(
-      type === "alquiler"
-        ? "Vestido entregado correctamente"
-        : "Venta finalizada con éxito",
-    );
+    if (type === "alquiler") {
+      const rentalData: RentalDTO = {
+        ...baseData,
+        type: "alquiler",
+        startDate: dateRange.from,
+        endDate: dateRange.to,
+        financials: {
+          totalRent: totalOperacion,
+          guarantee: guaranteeType === "dinero"
+            ? { id: "", type: "dinero", value: guarantee }
+            : { id: "", type: guaranteeType, description: guarantee },
+          paymentMethod,
+        },
+        status: "en_curso",
+        id: "",
+        operationId: ""
+      };
+      createDirectRental(rentalData as any); // Tu store ahora recibirá datos limpios
+      updateStockStatus(stockId, "alquilado");
+      toast.success("Alquiler realizado correctamente");
+      onSuccess();
+      setOpen(false);
+    } else {
+      const saleData: SaleDTO = {
+        ...baseData,
+        type: "venta",
+        totalPrice: totalOperacion,
+        paymentMethod,
+        status: "vendido",
+        id: "",
+      };
+      // Aquí llamarías a un nuevo store: createSale(saleData);
+      updateStockStatus(stockId, "vendido");
+      toast.success("Venta realizada correctamente");
+    }
+    onSuccess();
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
@@ -214,6 +245,9 @@ export function DirectTransactionModal({
             startDate={dateRange.from}
             endDate={dateRange.to}
             priceRent={item.price_rent}
+            receivedAmount={receivedAmount}
+            setReceivedAmount={setReceivedAmount}
+            changeAmount={changeAmount}
             quantity={quantity}
             downPayment={downPayment}
             setDownPayment={setDownPayment}
@@ -226,7 +260,7 @@ export function DirectTransactionModal({
           />
         </div>
 
-        {!isAvailable || !selectedCustomer ? (
+        {!isAvailable ? (
           <Button disabled className="bg-red-600">
             STOCK NO DISPONIBLE
           </Button>

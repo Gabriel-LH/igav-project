@@ -2,7 +2,7 @@ import z from "zod";
 import { Payment, paymentSchema } from "../payments/type.payments";
 
 export const operationSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   branchId: z.string(), // ¡NUEVO! Dónde se hizo la transacción
   sellerId: z.string(), // ¡NUEVO! Quién la hizo (userSchema.id)
   customerId: z.string(),

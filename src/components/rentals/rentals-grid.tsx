@@ -1,8 +1,18 @@
+"use client";
+
+import { useMemo } from "react";
 import { RentalsDataTable } from "./rentals-data-table";
 import { RentalsTab } from "./rentals-tab";
+import { useRentalStore } from "@/src/store/useRentalStore"; 
+import { mapRentalToTable } from "@/src/adapters/rentals-active-adapters";
 
 export const RentalsGrid = () => {
-  const dataRentalActive = [];
+
+  const { rentals, rentalItems } = useRentalStore();
+
+  const allData = useMemo(() => mapRentalToTable(rentals, rentalItems), [rentals, rentalItems]);
+
+  const active = allData.filter(i => i.status === "alquilado");
   const dataRentalCanceled = [];
   const dataRentalHistory = [];
 
@@ -12,7 +22,7 @@ export const RentalsGrid = () => {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <RentalsTab />
           <RentalsDataTable
-            dataRentalActive={dataRentalActive}
+            dataRentalActive={active}
             dataRentalCanceled={dataRentalCanceled}
             dataRentalHistory={dataRentalHistory}
           />

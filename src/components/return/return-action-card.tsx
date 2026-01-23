@@ -1,152 +1,165 @@
-// src/components/devoluciones/return-action-card.tsx
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/badge";
-import { Button } from "@/components/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   CalendarCheckIn01Icon,
   AlertCircleIcon,
-  PackageReceiveIcon,
   UserIcon,
-  ColorPickerIcon,
   ColorsIcon,
+  Money03Icon,
+  PackageIcon,
 } from "@hugeicons/core-free-icons";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
-import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { Reservation } from "@/src/types/reservation/type.reservation";
-import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
-import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
 import { ReturnInspectionDrawer } from "./return-inspector-action";
+import { RentalDTO } from "@/src/interfaces/RentalDTO";
 
 interface Props {
-  reservation: Reservation;
+  rental: RentalDTO;
 }
 
-export function ReturnActionCard({ reservation }: Props) {
-  const client = CLIENTS_MOCK.find((c) => c.id === reservation.customerId);
-  const items = MOCK_RESERVATION_ITEM.filter(
-    (i) => i.reservationId === reservation.id
-  );
-  const operation = OPERATIONS_MOCK.find(
-    (op) => op.reservationId === reservation.id
-  );
+export function ReturnActionCard({ rental }: Props) {
+  // 1. HIDRATACIÓN: Buscamos al cliente
+  const client = CLIENTS_MOCK.find((c) => c.id === rental.customerId);
 
-  const guaranteeRecord = MOCK_GUARANTEE.find(
-    (g) => g.operationId === operation?.id
-  );
+  // 2. EXTRACCIÓN LIMPIA DE GARANTÍA
+  const { guarantee } = rental.financials;
 
-  // Lógica de Mora
+  console.log("garantia que llega al return action card", guarantee);
+
+  // 3. LÓGICA DE MORA (Profesional: Comparando solo fechas sin horas)
   const today = new Date();
-  const dueDate = new Date(reservation.endDate);
-  const isOverdue =
-    today > dueDate && today.toDateString() !== dueDate.toDateString();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = new Date(rental.endDate);
+  dueDate.setHours(0, 0, 0, 0);
 
-  // Calcular días de retraso
+  const isOverdue = today > dueDate;
   const diffTime = Math.abs(today.getTime() - dueDate.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return (
-    <Card className={`overflow-hidden transition-all`}>
-      {/* HEADER */}
+    <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+      {/* HEADER DINÁMICO */}
       <div
-        className={`flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-wide ${
+        className={`flex items-center justify-between px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${
           isOverdue ? "bg-red-600 text-white" : "bg-emerald-600 text-white"
         }`}
       >
         <div className="flex items-center gap-2">
           <HugeiconsIcon
-          strokeWidth={2.5}
+            strokeWidth={3}
             icon={isOverdue ? AlertCircleIcon : CalendarCheckIn01Icon}
             size={14}
           />
-          {isOverdue ? `Cliente en mora (+${diffDays} días)` : "Plazo vigente"}
+          {isOverdue
+            ? `MORA DETECTADA (+${diffDays} DÍAS)`
+            : "DENTRO DEL PLAZO"}
         </div>
-        <span className="opacity-90">
-          Vence: {dueDate.toLocaleDateString("es-PE")}
+        <span className="bg-white/20 px-2 py-0.5 rounded text-[9px]">
+          Expira: {dueDate.toLocaleDateString("es-PE")}
         </span>
       </div>
 
-      {/* BODY */}
-      <div className="px-4 grid grid-cols-1 gap-6">
-        {/* CLIENTE + GARANTÍA */}
-        <div className="space-y-3">
-          {/* Cliente */}
-          <div className="flex gap-3  border bg-accent rounded-lg p-3">
-            <div className="rounded-md p-2">
-              <HugeiconsIcon icon={UserIcon} size={20} />
-            </div>
-            <div>
-              <p className="text-[9px] font-black uppercase">Cliente</p>
-              <p className="font-bold text-blue-600 leading-tight">
-                {client?.firstName} {client?.lastName}
-              </p>
-              <div className="flex gap-2">
-                <p className="text-xs text-muted-foreground">{client?.phone}</p>
-                <p className="text-xs text-muted-foreground">
-                  • DNI {client?.dni}
-                </p>
-              </div>
-            </div>
+      <div className="p-4 space-y-5">
+        {/* SECCIÓN CLIENTE */}
+        <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-xl border border-border/50">
+          <div className="bg-primary/10 text-primary p-2.5 rounded-full">
+            <HugeiconsIcon icon={UserIcon} size={18} strokeWidth={2} />
           </div>
+          <div className="flex-1">
+            <p className="text-[9px] font-black text-muted-foreground uppercase leading-none mb-1">
+              Titular del Alquiler
+            </p>
+            <p className="font-bold text-sm text-foreground">
+              {client
+                ? `${client.firstName} ${client.lastName}`
+                : rental.customerName}
+            </p>
+            <p className="text-[10px] text-muted-foreground font-medium">
+              DNI {client?.dni || "---"} • {client?.phone || "Sin teléfono"}
+            </p>
+          </div>
+        </div>
 
-          {/* Garantía */}
+        {/* SECCIÓN GARANTÍA (Lo que te preocupaba) */}
+        <div
+          className={`group flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+            guarantee && guarantee.type !== "no_aplica"
+              ? "bg-amber-50/50 border-amber-200/50 dark:bg-amber-950/10 dark:border-amber-500/20"
+              : "bg-slate-50 border-slate-200"
+          }`}
+        >
           <div
-            className={`rounded-lg border p-3 ${
-              guaranteeRecord
-                ? "bg-amber-100/10 border-amber-700/20"
-                : "bg-red-100/10 border-red-700/20"
-            }`}
+            className={`p-2 rounded-lg ${guarantee && guarantee.type !== "no_aplica" ? "text-amber-600 bg-amber-100" : "text-slate-400 bg-slate-100"}`}
           >
-            <p className="text-[9px] font-black uppercase text-emerald-400">
-              Garantía en resguardo
+            <HugeiconsIcon icon={Money03Icon} size={18} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[9px] font-black text-muted-foreground uppercase leading-none mb-1">
+              Garantía en Custodia
             </p>
-            <p className="text-sm font-medium ">
-              {guaranteeRecord
-                ? guaranteeRecord.type === "efectivo"
-                  ? formatCurrency(guaranteeRecord.value)
-                  : guaranteeRecord.description
-                : "FALTA GARANTÍA"}
-            </p>
+            <div className="text-xs font-bold uppercase truncate">
+              {guarantee && guarantee.type !== "no_aplica" ? (
+                guarantee.type === "dinero" ? (
+                  <span className="text-amber-700 dark:text-amber-500 flex items-center gap-1">
+                    Efectivo: {formatCurrency(Number(guarantee.value))}
+                  </span>
+                ) : (
+                  <span className="text-blue-700 dark:text-blue-400">
+                    {guarantee.type}: {guarantee.description || guarantee.value}
+                  </span>
+                )
+              ) : (
+                <span className="text-red-500 italic">
+                  Sin garantía registrada
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* PRENDAS */}
-        <div>
-          <p className="text-[10px] font-black text-muted-foreground uppercase mb-2">
-            Prendas a recuperar
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => {
-              const p = PRODUCTS_MOCK.find(
-                (prod) => prod.id === item.productId
-              );
-
-              return (
+        {/* SECCIÓN PRODUCTO */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <HugeiconsIcon
+              icon={PackageIcon}
+              size={12}
+              className="text-muted-foreground"
+            />
+            <p className="text-[10px] font-black text-muted-foreground uppercase">
+              Detalle de Prenda
+            </p>
+          </div>
+          <div className="flex items-center justify-between bg-accent/40 rounded-lg p-3 border border-border/40">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold uppercase tracking-tight">
+                {reservation.productName}
+              </span>
+              <span className="text-[10px] text-muted-foreground">
+                SKU: {reservation.sku}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold">
+                Talla {reservation.size}
+              </span>
+              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
                 <div
-                  key={item.id}
-                  className="flex items-center gap-2 bg-accent rounded-md border px-3 py-2"
-                >
-                  <span className="text-[11px] font-medium truncate">
-                    {p?.name}{" "}
-                    <span className="text-blue-300">({item.size})</span>
-                  </span>
-                  <div className="w-px h-4 bg-slate-400" />
-                  <span className="flex items-center gap-1 text-[11px] font-medium truncate">
-                    <HugeiconsIcon icon={ColorsIcon} size={14} />
-                    Color: {item.color}
-                  </span>
-                </div>
-              );
-            })}
+                  className="w-2 h-2 rounded-full border"
+                  style={{ backgroundColor: reservation.color.toLowerCase() }}
+                />
+                {reservation.color}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* ACCIÓN */}
-        <div className="flex w-full">
-          <ReturnInspectionDrawer reservation={reservation} client={client} isOverdue={isOverdue} />
+        {/* BOTÓN DE ACCIÓN */}
+        <div className="pt-2">
+          <ReturnInspectionDrawer
+            reservation={reservation}
+            client={client}
+            isOverdue={isOverdue}
+          />
         </div>
       </div>
     </Card>

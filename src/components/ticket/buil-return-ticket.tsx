@@ -1,26 +1,25 @@
 // utils/ticket/build-return-ticket.ts
+import { RentalDTO } from "@/src/interfaces/RentalDTO";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
-import { Guarantee } from "@/src/types/guarantee/type.guarantee";
 import { formatCurrency } from "@/src/utils/currency-format";
 
 export const buildReturnTicketHtml = (
-  reservation: any,
+  rental: RentalDTO,
   client: any,
   items: any[],
-  guaranteeRecord: Guarantee | undefined,
+  guarantee: any,
   inspection: {
     itemsInspection: Record<string, string>;
     damageNotes?: string;
   },
-  summary: {
+  financials: {
+    isCash: boolean;
     daysLate: number;
     penaltyAmount: number;
-    extraDamageCharge: number;
     totalToPay: number;
     refundAmount: number;
-    debtAmount: number;
-    isCash: boolean;
-  }
+    extraDamageCharge: number; // <--- Aquí ya existe
+  },
 ) => {
   const productsList = items
     .map((item) => {
@@ -48,7 +47,7 @@ export const buildReturnTicketHtml = (
     
     <div style="text-align:center;margin-bottom:8px;">
       <h2 style="margin:0;font-size:13px;">TICKET DE DEVOLUCIÓN</h2>
-      <p style="margin:2px 0;font-size:10px;font-weight:bold;">${reservation.id}</p>
+      <p style="margin:2px 0;font-size:10px;font-weight:bold;">${rental.id}</p>
     </div>
 
     <div style="border-top:1px dashed #000;border-bottom:1px dashed #000;padding:6px 0;font-size:11px;">
@@ -58,20 +57,14 @@ export const buildReturnTicketHtml = (
     </div>
 
     <div style="margin:8px 0;font-size:11px;">
-      <p><strong>FECHA SALIDA:</strong> ${reservation.startDate.toLocaleDateString(
-        "es-PE"
-      )}</p>
-      <p><strong>FECHA DEVOLUCION ACORDADA:</strong> ${reservation.endDate.toLocaleDateString(
-        "es-PE"
-      )}</p>
-      <p><strong>FECHA DEVOLUCIÓN REAL:</strong> ${new Date().toLocaleDateString(
-        "es-PE"
-      )}</p>
+      <p><strong>FECHA SALIDA:</strong> ${rental.startDate ? new Date(rental.startDate).toLocaleDateString("es-PE") : "N/A"}</p>
+      <p><strong>FECHA DEVOLUCION ACORDADA:</strong> ${rental.endDate ? new Date(rental.endDate).toLocaleDateString("es-PE") : "N/A"}</p>
+      <p><strong>FECHA DEVOLUCIÓN REAL:</strong> ${new Date().toLocaleDateString("es-PE")}</p>
       <p><strong>GARANTÍA:</strong> ${
-        guaranteeRecord
-          ? guaranteeRecord.type === "efectivo"
-            ? formatCurrency(guaranteeRecord.value)
-            : guaranteeRecord.description
+        guarantee
+          ? guarantee.type === "dinero"
+            ? formatCurrency(guarantee.value)
+            : guarantee.description
           : "NO REGISTRADA"
       }</p>
     </div>
@@ -98,26 +91,26 @@ export const buildReturnTicketHtml = (
       <p style="font-size:10px;font-weight:bold;">LIQUIDACIÓN</p>
 
       ${
-        summary.daysLate > 0
-          ? `<div style="font-size:11px;">Mora (${summary.daysLate} días): -${formatCurrency(
-              summary.penaltyAmount
+        financials.daysLate > 0
+          ? `<div style="font-size:11px;">Mora (${financials.daysLate} días): -${formatCurrency(
+              financials.penaltyAmount,
             )}</div>`
           : ""
       }
 
       ${
-        summary.extraDamageCharge > 0
+        financials.extraDamageCharge > 0
           ? `<div style="font-size:11px;">Daños: -${formatCurrency(
-              summary.extraDamageCharge
+              financials.extraDamageCharge,
             )}</div>`
           : ""
       }
 
       <div style="border-top:1px solid #000;margin-top:4px;padding-top:4px;font-weight:bold;">
         ${
-          summary.isCash
-            ? `A DEVOLVER: ${formatCurrency(summary.refundAmount)}`
-            : `TOTAL A COBRAR: ${formatCurrency(summary.totalToPay)}`
+          financials.isCash
+            ? `A DEVOLVER: ${formatCurrency(financials.refundAmount)}`
+            : `TOTAL A COBRAR: ${formatCurrency(financials.totalToPay)}`
         }
       </div>
     </div>

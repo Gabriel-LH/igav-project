@@ -1,105 +1,124 @@
+import { RentalDTO } from "../interfaces/RentalDTO";
 import { ReservationDTO } from "../interfaces/reservationDTO";
+import { SaleDTO } from "../interfaces/SaleDTO";
+import { useGuaranteeStore } from "../store/useGuaranteeStore";
+import { useInventoryStore } from "../store/useInventoryStore";
+import { useRentalStore } from "../store/useRentalStore";
+import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { operationSchema } from "../types/operation/type.operations";
 import { paymentSchema } from "../types/payments/type.payments";
-import { saleSchema } from "../types/sales/type.sale";
 import { rentalSchema } from "../types/rentals/type.rentals";
-import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { reservationSchema } from "../types/reservation/type.reservation";
+import { saleSchema } from "../types/sales/type.sale";
 
-export const processTransaction = (dto: ReservationDTO) => {
+// 1. Firmas de la función (Overloads)
+export function processTransaction(dto: SaleDTO): any;
+export function processTransaction(dto: RentalDTO): any;
+export function processTransaction(dto: ReservationDTO): any;
+
+// 2. Implementación Única
+export function processTransaction(dto: any) {
   const now = new Date();
-  const operationId = Math.floor(Math.random() * 1000000); // En DB sería autoincremental
+  const operationId = Math.floor(Math.random() * 1000000);
+  
+  // Pequeño helper para extraer datos financieros según el DTO
+  // En SaleDTO es dto.totalPrice, en los otros es dto.financials.total
+  const totalAmount = dto.type === "venta" ? dto.totalPrice : dto.financials.total;
+  const downPayment = dto.type === "venta" ? dto.totalPrice : dto.financials.downPayment;
+  const paymentMethod = dto.type === "venta" ? dto.paymentMethod : dto.financials.paymentMethod;
 
-  const isFuture = dto.startDate > now && dto.type === "alquiler";
+  const isFuture = dto.type === "reserva" || (dto.type === "alquiler" && dto.startDate > now);
 
-  // 1. CREAR OPERACIÓN (La Madre)
+  let specificData: any = {};
+  let guaranteeData: any = null;
+  const gId = `GUA-${operationId}`;
+
+  // 2. CREAR OPERACIÓN MADRE
   const operationData = operationSchema.parse({
     id: operationId,
     branchId: dto.branchId,
-    sellerId: "user_actual_id", // Esto vendría de tu AuthStore
+    sellerId: dto.sellerId,
     customerId: dto.customerId,
-    type: dto.type, // "alquiler", "venta" o "reserva"
+    type: dto.type,
     status: "en_progreso",
-    paymentStatus: dto.financials.pendingAmount <= 0 ? "pagado" : "parcial",
-    totalAmount: dto.financials.total,
+    paymentStatus: (totalAmount - downPayment) <= 0 ? "pagado" : "parcial",
+    totalAmount: totalAmount,
     date: now,
     createdAt: now,
   });
 
-  // 2. CREAR PAGO (El primer adelanto)
+  // 3. CREAR PAGO INICIAL
   const paymentData = paymentSchema.parse({
-    id: `PAY-${Math.random().toString(36).toUpperCase()}`,
-    operationId: operationId,
+    id: `PAY-${Math.random().toString(36).toUpperCase().substring(2, 9)}`,
+    operationId,
     branchId: dto.branchId,
     receivedById: dto.sellerId,
-    amount: dto.financials.downPayment,
-    method: dto.financials.paymentMethod,
-    type: "adelanto",
+    amount: downPayment,
+    method: paymentMethod,
+    type: dto.type === "reserva" ? "adelanto" : "pago_total",
     date: now,
   });
 
-  // 3. REPARTO SEGÚN TIPO DE NEGOCIO
-  let specificData = {};
-
+  // 4. LÓGICA DE NEGOCIO SEGÚN TIPO
   if (dto.type === "venta") {
     specificData = saleSchema.parse({
       id: `SALE-${operationId}`,
-      operationId: operationId,
+      operationId,
       customerId: dto.customerId,
-      branchId: dto.branchId,
-      sellerId: dto.sellerId,
-      totalAmount: dto.financials.total,
+      totalAmount: dto.totalPrice,
       saleDate: now,
       status: "completado",
-      createdAt: now,
     });
-  } else if (isFuture) {
-    return reservationSchema.parse({
-      id: `RES-${Math.random().toString(36).toUpperCase()}`,
+    
+    useInventoryStore.getState().updateStockStatus(dto.stockId, "vendido");
+
+  } else if (dto.type === "reserva") {
+    specificData = reservationSchema.parse({
+      id: `RES-${operationId}`,
       customerId: dto.customerId,
-      branchId: dto.branchId,
       startDate: dto.startDate,
       endDate: dto.endDate,
-      hour: "10:00 AM", // Podrías sacarlo del DTO si lo agregas
-      status: "confirmada", // Status válido según tu reservationSchema
-      createdAt: now,
-      updatedAt: now,
+      status: "confirmada",
     });
-  } else {
-    // Es Alquiler
+    // Aquí podrías actualizar el stock a "reservado" si tuvieras ese estado
+
+  } else if (dto.type === "alquiler") {
     specificData = rentalSchema.parse({
       id: `RENT-${operationId}`,
-      operationId: operationId,
-      customerId: dto.customerId,
-      branchId: dto.branchId,
+      operationId,
       outDate: dto.startDate,
       expectedReturnDate: dto.endDate,
-      status: dto.startDate <= now ? "en_curso" : "en_espera",
-      guaranteeId: `GUA-${operationId}`,
-      createdAt: now,
-      updatedAt: now,
+      status: "en_curso",
+      guaranteeId: gId,
     });
 
-    // Crear Garantía si aplica
-    if (dto.financials.guarantee.type !== "no_aplica") {
-      const guaranteeData = guaranteeSchema.parse({
-        id: `GUA-${operationId}`,
-        operationId: operationId,
-        branchId: dto.branchId,
-        type: dto.financials.guarantee.type,
-        value: Number(dto.financials.guarantee.value) || 0,
-        description: dto.notes || "Garantía de alquiler",
+    // Lógica de Garantía (Solo existe en Alquiler)
+    if (dto.guarantee && dto.guarantee.type !== "no_aplica") {
+      guaranteeData = guaranteeSchema.parse({
+        id: gId,
+        operationId,
+        type: dto.guarantee.type,
+        value: Number(dto.guarantee.value) || 0,
+        description: dto.guarantee.description || "Garantía de alquiler",
         status: "custodia",
-        receivedById: "user_actual_id",
         createdAt: now,
       });
-      console.log("Garantía creada:", guaranteeData);
+      
+      useGuaranteeStore.getState().addGuarantee(guaranteeData);
     }
+
+    useRentalStore.getState().createDirectRental({
+        ...dto,
+        guarantee: { ...dto.guarantee, id: gId }
+    });
+    
+    useInventoryStore.getState().updateStockStatus(dto.stockId, "alquilado");
   }
 
   return {
     operation: operationData,
     payment: paymentData,
     details: specificData,
+    guarantee: guaranteeData,
   };
-};
+}

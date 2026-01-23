@@ -44,6 +44,9 @@ export function DetailsProductViewer({
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+
   // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
   const allProductStock = useMemo(
     () =>
@@ -131,9 +134,9 @@ export function DetailsProductViewer({
   );
 
   return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
+    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="secondary" className="w-full">
+        <Button variant="secondary" className="w-full" onClick={() => setDrawerOpen(true)}>
           Ver detalles
         </Button>
       </DrawerTrigger>
@@ -422,6 +425,7 @@ export function DetailsProductViewer({
               color={selectedColor?.name || ""}
               type="alquiler"
               currentBranchId={currentBranchId}
+              onSuccess={() => setDrawerOpen(false)}
             >
               <Button
                 disabled={localStock === 0}
@@ -439,6 +443,7 @@ export function DetailsProductViewer({
               color={selectedColor?.name || ""}
               type="venta"
               currentBranchId={currentBranchId}
+              onSuccess={() => setDrawerOpen(false)}
             >
               <Button
                 disabled={localStock === 0}
@@ -456,6 +461,7 @@ export function DetailsProductViewer({
               color={selectedColor?.name || ""}
               currentBranchId={currentBranchId}
               originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
+              // onSuccess={() => setDrawerOpen(false)}
             >
               <Button
                 disabled={totalStockCombo === 0}

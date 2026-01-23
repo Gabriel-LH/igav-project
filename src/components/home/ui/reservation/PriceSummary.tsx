@@ -31,6 +31,9 @@ interface PriceSummaryProps {
   item: any;
   startDate: Date;
   operationType: string;
+  receivedAmount: number;
+  setReceivedAmount: (val: number) => void;
+  changeAmount: number;
   endDate: Date;
   priceRent: number;
   quantity: number;
@@ -48,6 +51,8 @@ export function PriceSummary({
   item,
   startDate,
   operationType,
+  setReceivedAmount,
+  changeAmount,
   endDate,
   priceRent,
   quantity,
@@ -140,7 +145,7 @@ export function PriceSummary({
         <div className="flex justify-between w-full gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-bold uppercase text-blue-600 flex items-center gap-1">
-              <Banknote className="w-3 h-3" /> Cobro Adelanto
+              <Banknote className="w-3 h-3" /> Cobrar total
             </Label>
             <div className="relative">
               <span className="absolute left-2.5 top-2 text-xs text-muted-foreground font-bold">
@@ -148,7 +153,7 @@ export function PriceSummary({
               </span>
               <Input
                 className="pl-8 h-8 font-bold"
-                value={downPayment}
+                value={subtotal}
                 onChange={(e) => setDownPayment(e.target.value)}
               />
             </div>
@@ -187,6 +192,40 @@ export function PriceSummary({
           </div>
         </div>
 
+        {paymentMethod === "cash" && (
+          <div className="grid grid-cols-2 gap-4 p-3  rounded-lg border mt-4">
+            <div>
+              <Label className="text-[10px] font-black uppercase">
+                Monto Recibido
+              </Label>
+             <div className="relative">
+               <span className="absolute left-2.5 top-2.5 text-xs text-muted-foreground font-bold">
+                S/.
+              </span>
+              <Input
+                type="number"
+                placeholder="0.00"
+                className="h-9 pl-8 font-bold"
+                onChange={(e) => setReceivedAmount(Number(e.target.value))}
+              />
+             </div>
+            </div>
+            <div>
+              <Label className="text-[10px] font-black uppercase">
+                Vuelto a entregar
+              </Label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs text-muted-foreground font-bold">
+                S/.
+              </span>
+              <div className="h-9 pl-8 flex items-center px-3 bg-muted border  rounded-md font-bold  text-md">
+                {changeAmount.toFixed(2)}
+              </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* GARANTÍA (Solo alquiler) */}
         {!isVenta && (
           <div className="space-y-2 pt-2 border-t border-dashed">
@@ -217,7 +256,6 @@ export function PriceSummary({
                 </SelectContent>
               </Select>
             </div>
-
             {guaranteeType === "dinero" ? (
               <div className="relative mt-1">
                 <span className="absolute left-2.5 top-2 text-xs text-muted-foreground font-bold">

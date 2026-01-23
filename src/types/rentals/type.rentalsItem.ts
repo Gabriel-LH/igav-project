@@ -4,7 +4,7 @@ import z from "zod";
 export const rentalItemSchema = z.object({
   id: z.string(),
   rentalId: z.string(),      // Conecta con el Alquiler (Cabecera)
-  operationId: z.number(),   // Conecta con el pago/garantía
+  operationId: z.string(),   // Conecta con el pago/garantía
   
   // --- IDENTIFICACIÓN ---
   productId: z.string(),     // Modelo del vestido

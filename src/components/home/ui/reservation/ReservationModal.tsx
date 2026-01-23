@@ -18,7 +18,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/reservationDTO";
+import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
@@ -59,10 +59,6 @@ export function ReservationModal({
     "dinero" | "dni" | "joyas" | "reloj" | "otros"
   >("dinero");
 
-  const getAvailableStockItem = useInventoryStore(
-    (state) => state.getAvailableStockItem,
-  );
-
   const scrollRef = useScrollIndicator();
 
   const isEvent = item.rent_unit === "evento";
@@ -70,18 +66,27 @@ export function ReservationModal({
 
   const sellerId = USER_MOCK[0].id;
   // Buscamos la prenda física exacta que coincida con el modelo, talla y color
-  const exactStockItem = getAvailableStockItem(
-    item.id,
-    size,
-    color,
-    "disponible",
+  const exactStockItem = useInventoryStore((state) =>
+    state.stock.find(
+      (s) =>
+        String(s.productId) === String(item.id) &&
+        s.size === size &&
+        s.color === color &&
+        s.status === "disponible",
+    ),
   );
 
-  const stockId = exactStockItem?.id; // Este es el ID físico que usaremos
-  const isAvailable = !!exactStockItem; // Booleano para el botón
+  const stockId = exactStockItem?.id; // ID fisico que se usara para la reserva
+  const isAvailable = !!exactStockItem; // Booleano para el boton
 
   // Agrega este log para ver qué está recibiendo la función realmente
-console.log("Buscando Stock:", { id: item.id, size, color, status: "disponible", resultado: exactStockItem });
+  console.log("Buscando Stock:", {
+    id: item.id,
+    size,
+    color,
+    status: "disponible",
+    resultado: exactStockItem,
+  });
 
   //Calculamos días (solo para registro de fechas, no necesariamente para precio)
   const days =

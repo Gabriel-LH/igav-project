@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const rentalsActiveSchema = z.object({
-    id: z.number(),
+    id: z.string(),
     branchName: z.string(), // Sucursal 
     sellerName: z.string(), // Vendedor 
     outDate: z.string(),

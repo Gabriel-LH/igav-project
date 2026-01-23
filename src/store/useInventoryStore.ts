@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { STOCK_MOCK } from "../mocks/mock.stock";
+import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 
 type StockStatus =
   | "disponible"
@@ -21,6 +22,7 @@ interface InventoryLog {
 
 interface InventoryStore {
   stock: typeof STOCK_MOCK;
+  products: typeof PRODUCTS_MOCK;
   inventoryLogs: InventoryLog[]; // Importante para la trazabilidad
   updateStockStatus: (
     stockId: string,
@@ -33,16 +35,11 @@ interface InventoryStore {
     targetBranchId: string,
     adminId: string,
   ) => void;
-  getAvailableStockItem: (
-    productId: string,
-    size: string,
-    status: string,
-    color: string,
-  ) => any;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
   stock: STOCK_MOCK,
+  products: PRODUCTS_MOCK,
   inventoryLogs: [],
 
   getAvailableStockItem: (

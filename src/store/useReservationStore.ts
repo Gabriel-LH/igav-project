@@ -1,6 +1,6 @@
 // src/store/useReservationStore.ts
 import { create } from "zustand";
-import { ReservationDTO } from "../interfaces/reservationDTO";
+import { ReservationDTO } from "../interfaces/reservationDTO"; 
 
 type OperationType = "alquiler" | "venta";
 
@@ -89,7 +89,7 @@ export const useReservationStore = create<ReservationStore>((set) => ({
               status: "completada" as any, // O "devuelta" según tu lógica
               financials: {
                 ...res.financials,
-                total: res.financials.total + extraCharges,
+                total: res.financials.totalPrice + extraCharges,
               },
             }
           : res,
