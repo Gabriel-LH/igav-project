@@ -56,8 +56,6 @@ export function DetailsProductViewer({
     [item.id],
   );
 
-  console.log("item padre", item);
-
   // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
     () => Array.from(new Set(allProductStock.map((s) => s.size))),

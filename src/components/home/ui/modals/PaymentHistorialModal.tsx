@@ -21,6 +21,7 @@ import { AddPaymentForm } from "../forms/AddPaymentForm";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { ConfirmPrintModal } from "./ConfirmPrintModal";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { getOperationBalances } from "@/src/utils/payment-helpers";
 interface PaymentHistoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -48,32 +49,35 @@ export function PaymentHistoryModal({
   const [confirmPrintOpen, setConfirmPrintOpen] = useState(false);
   const [ticketToPrint, setTicketToPrint] = useState<string | null>(null);
 
-  const guaranteeData = MOCK_GUARANTEE.find(
-    (g) => g.operationId === operationId
-  );
-  const totalPagadoAlquiler = payments
-    .filter((p) => p.type !== "garantia")
-    .reduce((acc, p) => acc + p.amount, 0);
+  const {
+    balance: currentBalance,
+    creditAmount: currentCredit,
+    isCredit,
+    totalPaid,
+  } = getOperationBalances(String(operationId || ""), payments, totalOperation);
+
+
+  const totalPagadoAlquiler = payments.reduce((acc, p) => acc + p.amount, 0);
 
   const creditAmount = calculatedIsCredit
     ? totalPagadoAlquiler - totalOperation
     : 0;
 
-    const receivedByName =
-  payments.length > 0
-    ? USER_MOCK.find((u) => u.id === payments[0].receivedById)?.name
-    : "Sin registros";
+  const receivedByName =
+    payments.length > 0
+      ? USER_MOCK.find((u) => u.id === payments[0].receivedById)?.name
+      : "Sin registros";
 
-    const currentUser = USER_MOCK[0];
+  const currentUser = USER_MOCK[0];
 
   const buildTicketHtml = (p: Payment) => `
   <div style="width: 280px; font-family: monospace; font-size: 12px;">
     <h2 style="text-align: center; font-weight: bold;">${
-      p.type === "garantia"
-        ? "TICKET DE GARANTIA"
+      p.type === "cuota"
+        ? "TICKET DE CUOTA"
         : p.type === "adelanto"
-        ? "TICKET DE ADELANTO"
-        : "TICKET DE PAGO"
+          ? "TICKET DE ADELANTO"
+          : "TICKET DE PAGO"
     }</h2>
     <hr style="border-style: dashed;" />
     <p> ID: ${p.id}</p>
@@ -114,9 +118,7 @@ export function PaymentHistoryModal({
               />
               Historial de Pagos
             </DialogTitle>
-            <DialogDescription>
-              
-            </DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
 
           <div className="p-6 pt-0 space-y-4">
@@ -254,15 +256,15 @@ export function PaymentHistoryModal({
                     calculatedIsCredit
                       ? "text-blue-500"
                       : calculatedBalance === 0
-                      ? "text-emerald-500"
-                      : "text-foreground"
+                        ? "text-emerald-500"
+                        : "text-foreground"
                   }`}
                 >
                   {calculatedIsCredit
                     ? `+ ${formatCurrency(creditAmount)}`
                     : calculatedBalance === 0
-                    ? "PAGADO"
-                    : formatCurrency(calculatedBalance)}
+                      ? "PAGADO"
+                      : formatCurrency(calculatedBalance)}
                 </span>
               </div>
 

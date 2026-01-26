@@ -16,7 +16,6 @@ import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
 
@@ -97,7 +96,6 @@ export function ReservationModal({
   // 💲 Precio unitario
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
 
-  const { createReservation } = useReservationStore();
 
   const handleConfirm = () => {
     if (!selectedCustomer || !dateRange?.from) {
@@ -145,7 +143,6 @@ export function ReservationModal({
 
     try {
       processTransaction(newReservation);
-      createReservation(newReservation);
       toast.success(
         operationType === "venta"
           ? "Venta registrada correctamente"

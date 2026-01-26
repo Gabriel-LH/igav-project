@@ -13,7 +13,6 @@ export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
   addGuarantee: (guarantee) =>
     set((state) => {
       console.log("🔵 [addGuarantee] Nueva garantía:", guarantee);
-      console.log("🔵 Estado actual:", state.guarantees.length, "garantías");
       return {
         guarantees: [...state.guarantees, guarantee],
       };

@@ -25,6 +25,7 @@ import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase"
 import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
 import { GuaranteeSection } from "../reservation/GuaranteeSection";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
+import { processTransaction } from "@/src/services/transactionServices";
 
 export function DirectTransactionModal({
   item,
@@ -67,10 +68,6 @@ export function DirectTransactionModal({
   // --------------------
   // Stores
   // --------------------
-  const createDirectRental = useRentalStore(
-    (state) => state.createDirectRental,
-  );
-
   const updateStockStatus = useInventoryStore(
     (state) => state.updateStockStatus,
   );
@@ -166,8 +163,7 @@ export function DirectTransactionModal({
         operationId: "",
       };
 
-      createDirectRental(rentalData as any);
-      updateStockStatus(stockId, "alquilado");
+      processTransaction(rentalData);
       toast.success("Alquiler realizado correctamente");
     } else {
       const saleData: SaleDTO = {

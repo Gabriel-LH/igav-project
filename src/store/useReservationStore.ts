@@ -1,107 +1,37 @@
 // src/store/useReservationStore.ts
 import { create } from "zustand";
-import { ReservationDTO } from "../interfaces/ReservationDTO";
-
-type OperationType = "alquiler" | "venta";
+import { Reservation } from "../types/reservation/type.reservation";
+import { ReservationItem } from "../types/reservation/type.reservationItem";
 
 interface ReservationStore {
-  reservations: ReservationDTO[];
-  operationType: OperationType;
+  reservations: Reservation[];
+  reservationItems: ReservationItem[];
 
-  // Acciones principales
-  setOperationType: (type: OperationType) => void;
-
-  // Modificamos createReservation para que pueda notificar al inventario
-  createReservation: (
-    newReservation: ReservationDTO,
-    updateStockFn?: (productId: string, qty: number, stockId?: string) => void,
+  addReservation: (
+    reservation: Reservation,
+    reservationItems: ReservationItem[],
   ) => void;
-
-  // Gestión de estados (Consistente con tus Enums de Zod)
-  updateStatus: (id: string, newStatus: string) => void;
-  cancelReservation: (id: string) => void;
-  completeReservation: (id: string) => void;
-
-  // Específico para Alquileres
-  returnReservation: (id: string, extraCharges?: number) => void;
-  rearrangeReservation: (
-    id: string,
-    newStartDate: Date,
-    newEndDate: Date,
-  ) => void;
+  updateStatus: (id: string, status: Reservation["status"]) => void;
 }
 
 export const useReservationStore = create<ReservationStore>((set) => ({
   reservations: [],
-  operationType: "alquiler",
+  reservationItems: [],
 
-  setOperationType: (type) => set({ operationType: type }),
+  addReservation: (reservation, reservationItems) =>
+    set((state) => {
+      console.log("🔵 [addReservation] Nueva reserva:", reservation);
+      console.log("🔵 [addReservation] Nuevos items:", reservationItems);
+      return {
+        reservations: [reservation, ...state.reservations],
+        reservationItems: [...reservationItems, ...state.reservationItems],
+      };
+    }),
 
-  createReservation: (newReservation, updateStockFn) => {
-    // 1. Generamos un ID de operación único (como tu operationId: number)
-    const tempId = `OP-${Math.floor(Math.random() * 1000000)}`;
-
-    set((state) => ({
-      reservations: [
-        {
-          ...newReservation,
-          id: tempId,
-          createdAt: new Date(),
-        },
-        ...state.reservations,
-      ],
-    }));
-
-    // 2. Si pasamos la función de actualización de stock, la ejecutamos
-    // Esto es lo que hará que las Cards se actualicen o desaparezcan
-    if (updateStockFn) {
-      updateStockFn(newReservation.productId, newReservation.quantity);
-    }
-  },
-
-  updateStatus: (id, newStatus) =>
+  updateStatus: (id, status) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status: newStatus as any } : res,
-      ),
-    })),
-
-  cancelReservation: (id) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status: "cancelada" as any } : res,
-      ),
-    })),
-
-  completeReservation: (id) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status: "completada" as any } : res,
-      ),
-    })),
-
-  returnReservation: (id, extraCharges = 0) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id
-          ? {
-              ...res,
-              status: "completada" as any, // O "devuelta" según tu lógica
-              financials: {
-                ...res.financials,
-                total: res.financials.totalPrice + extraCharges,
-              },
-            }
-          : res,
-      ),
-    })),
-
-  rearrangeReservation: (id, newStartDate, newEndDate) =>
-    set((state) => ({
-      reservations: state.reservations.map((res) =>
-        res.id === id
-          ? { ...res, startDate: newStartDate, endDate: newEndDate }
-          : res,
+        res.id === id ? { ...res, status, updatedAt: new Date() } : res,
       ),
     })),
 }));

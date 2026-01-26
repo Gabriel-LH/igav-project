@@ -11,6 +11,7 @@ export const RESERVATIONS_MOCK: Reservation[] = [
     hour: "10:00 AM",
     status: "confirmada",
     createdAt: new Date(2026, 0, 1),
+    operationType: "venta"
   },
   {
     id: "RES-002",
@@ -22,6 +23,7 @@ export const RESERVATIONS_MOCK: Reservation[] = [
     hour: "10:00 AM",
     status: "confirmada",
     createdAt: new Date(2026, 0, 5),
+    operationType: "venta"
   },
   {
     id: "RES-003",
@@ -33,6 +35,7 @@ export const RESERVATIONS_MOCK: Reservation[] = [
     hour: "10:00 AM",
     status: "confirmada",
     createdAt: new Date(2025, 11, 28),
+    operationType: "venta"
   }
 ];
 

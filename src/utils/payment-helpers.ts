@@ -8,8 +8,8 @@ import { MOCK_RESERVATION_ITEM } from "../mocks/mock.reservationItem";
  * Calcula el estado de pago basado en el total y lo abonado.
  */
 export const calculatePaymentStatus = (
-  totalAmount: number, 
-  totalPaid: number
+  totalAmount: number,
+  totalPaid: number,
 ): "no_pagado" | "parcial" | "pagado" => {
   if (totalPaid <= 0) return "no_pagado";
   if (totalPaid >= totalAmount) return "pagado";
@@ -26,7 +26,10 @@ export const sumPayments = (payments: { amount: number }[]): number => {
 /**
  * Calcula el saldo restante de una operación.
  */
-export const getRemainingBalance = (totalAmount: number, totalPaid: number): number => {
+export const getRemainingBalance = (
+  totalAmount: number,
+  totalPaid: number,
+): number => {
   const balance = totalAmount - totalPaid;
   return balance > 0 ? balance : 0;
 };
@@ -34,24 +37,32 @@ export const getRemainingBalance = (totalAmount: number, totalPaid: number): num
 // Lógica conceptual para calcular el total de una operación
 export const calculateOperationTotal = (reservationId: string) => {
   // 1. Buscamos todos los ítems de esa reserva
-  const items = MOCK_RESERVATION_ITEM.filter(item => item.reservationId === reservationId);
+  const items = MOCK_RESERVATION_ITEM.filter(
+    (item) => item.reservationId === reservationId,
+  );
 
   // 2. Sumamos los precios que se pactaron al momento de reservar
   // (Usamos priceAtMoment porque el precio del producto podría cambiar mañana en el catálogo)
-  return items.reduce((total, item) => total + (item.priceAtMoment * item.quantity), 0);
+  return items.reduce(
+    (total, item) => total + item.priceAtMoment * item.quantity,
+    0,
+  );
 };
 /**
  * Recibe una operación y sus pagos, y devuelve el estado de pago correcto.
  */
-export const getUpdatedPaymentStatus = (operation: Operation, payments: Payment[]) => {
+export const getUpdatedPaymentStatus = (
+  operation: Operation,
+  payments: Payment[],
+) => {
   const totalPaid = payments
-    .filter(p => p.operationId === operation.id)
+    .filter((p) => p.operationId === operation.id)
     .reduce((sum, p) => sum + p.amount, 0);
 
   const remaining = operation.totalAmount - totalPaid;
 
   let status: "no_pagado" | "parcial" | "pagado" = "no_pagado";
-  
+
   if (totalPaid > 0 && totalPaid < operation.totalAmount) {
     status = "parcial";
   } else if (totalPaid >= operation.totalAmount) {
@@ -61,36 +72,26 @@ export const getUpdatedPaymentStatus = (operation: Operation, payments: Payment[
   return {
     status,
     totalPaid,
-    remaining: remaining > 0 ? remaining : 0
+    remaining: remaining > 0 ? remaining : 0,
   };
 };
 
-export const getOperationBalances = (reservationId: string, payments: Payment[]) => {
-  // 1. Obtener el costo total (ej. 180)
-  const currentItems = MOCK_RESERVATION_ITEM.filter(i => i.reservationId === reservationId);
-  const totalCalculated = currentItems.reduce((acc, item) => acc + (item.priceAtMoment * item.quantity), 0);
+export const getOperationBalances = (
+  operationId: string,
+  payments: Payment[],
+  totalToPay: number, // <--- Aquí recibe el total que calculaste arriba
+) => {
+  const totalPaid = payments.reduce((acc, p) => acc + p.amount, 0);
 
-  // 2. Sumar abonos (tipo alquiler/adelanto, NO garantía)
-  const totalPaid = payments
-    .filter(p => p.type !== "garantia")
-    .reduce((acc, p) => acc + p.amount, 0);
-
-
-  // 3. LA LÓGICA CORRECTA:
-  // Si totalPaid es 180 y totalCalculated es 180, diff es 0.
-  const diff = totalPaid - totalCalculated;
-
-
+  const diff = totalPaid - totalToPay;
 
   return {
-    totalCalculated,
+    totalCalculated: totalToPay,
     totalPaid,
-    // balance: Si falta dinero, mostramos cuánto. Si sobra o es exacto, es 0.
     balance: diff < 0 ? Math.abs(diff) : 0,
-    // creditAmount: Solo si el pago es MAYOR al costo (diff > 0)
     creditAmount: diff > 0 ? diff : 0,
     isCredit: diff > 0,
-    isPaid: diff >= 0
+    isPaid: diff >= 0,
   };
 };
 
@@ -101,7 +102,7 @@ export const getOperationBalances = (reservationId: string, payments: Payment[])
 export const validateNewPayment = (
   operation: Operation,
   currentPayments: Payment[],
-  newAmount: number
+  newAmount: number,
 ) => {
   const { remaining } = getUpdatedPaymentStatus(operation, currentPayments);
 
@@ -115,6 +116,6 @@ export const validateNewPayment = (
 
   return {
     isCompletingPayment: newAmount === remaining,
-    newRemaining: remaining - newAmount
+    newRemaining: remaining - newAmount,
   };
 };

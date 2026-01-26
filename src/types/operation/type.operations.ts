@@ -7,7 +7,6 @@ export const operationSchema = z.object({
   branchId: z.string(), // ¡NUEVO! Dónde se hizo la transacción
   sellerId: z.string(), // ¡NUEVO! Quién la hizo (userSchema.id)
   customerId: z.string(),
-  reservationId: z.string().optional(),
   type: z.enum(["alquiler", "venta", "reserva"]),
   status: z.enum(["pendiente", "en_progreso", "completado", "cancelado"]),
   paymentStatus: z.enum(["pendiente", "parcial", "pagado"]),

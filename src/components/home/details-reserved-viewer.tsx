@@ -50,6 +50,11 @@ import {
   SelectValue,
 } from "@/components/select";
 import { useRentalStore } from "@/src/store/useRentalStore";
+import { useReservationStore } from "@/src/store/useReservationStore";
+import { usePaymentStore } from "@/src/store/usePaymentStore";
+import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+import { useOperationStore } from "@/src/store/useOperationStore";
+import { registerPayment } from "@/src/services/paymentService";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -63,20 +68,26 @@ export function DetailsReservedViewer({
 
   const currentUser = USER_MOCK[0];
 
-  // Creamos el estado con los pagos iniciales
-  const [payments, setPayments] = useState(PAYMENTS_MOCK);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const stock = useInventoryStore((state) => state.stock);
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus
+    (state) => state.updateStockStatus,
   );
 
   const createRentalFromReservation = useRentalStore(
-    (state) => state.createRentalFromReservation
+    (state) => state.createRentalFromReservation,
   );
+
+  const { reservations, reservationItems } = useReservationStore();
+
+  const { payments: globalPayments } = usePaymentStore();
+
+  const { guarantees } = useGuaranteeStore();
+
+  const { operations } = useOperationStore();
 
   const [checklist, setChecklist] = useState({
     limpieza: false,
@@ -85,44 +96,48 @@ export function DetailsReservedViewer({
   const handleDrawerOpenChange = (open: boolean) => {
     setIsDrawerOpen(open);
   };
+
+  const operation = operations.find((op) => op.id === activeRes?.operationId);
+
   // 4. Función para agregar un pago (esta se la pasaremos al modal)
   const handleAddPayment = (data: any): Payment => {
-    const newPayment: Payment = {
-      id: `PAY-${Date.now()}`,
-      operationId: operation?.id || 0,
+    
+    return registerPayment({
+      operationId: operation?.id || "",
       ...data,
-      receivedById: currentUser.id,
-      receivedByName: currentUser.name,
-    };
-
-    setPayments((prev) => [...prev, newPayment]);
-    return newPayment; // 👈 CLAVE
+    });
+    
   };
 
-  // 1. Buscamos la operación vinculada
-  const operation = OPERATIONS_MOCK.find(
-    (op) => op.reservationId === activeRes?.id
+  // 2. Combinamos pagos del Mock con los reales del Store
+  const allPaymentsForThisOp = [
+    ...globalPayments.filter(
+      (p) => String(p.operationId) === String(operation?.id),
+    ),
+  ];
+
+    // 4. Garantía
+  const guaranteeRecord = guarantees.find(
+    (g) => g.operationId === operation?.id,
   );
 
-  // Modificamos el filtro para que use el 'useState' en lugar del mock estático
-  const allPayments = payments.filter((p) => p.operationId === operation?.id);
-
-  // 3. LA FUENTE DE VERDAD: Usamos el helper para todo
-  const { totalCalculated, totalPaid, balance, isCredit, creditAmount } =
-    getOperationBalances(activeRes?.id || "", allPayments);
-
-  // 4. Garantía
-  const guaranteeRecord = MOCK_GUARANTEE.find(
-    (g) => g.operationId === operation?.id
-  );
-
-  const activeResItems = MOCK_RESERVATION_ITEM.filter(
-    (ri) => ri.reservationId === activeRes?.id
+  const activeResItems = reservationItems.filter(
+    (ri) => ri.reservationId === activeRes?.id,
   );
 
   const allItemsAssigned = activeResItems.every(
-    (item) => selectedStocks[item.id]
+    (item) => selectedStocks[item.id],
   );
+
+
+  const totalCalculated = activeResItems.reduce(
+    (acc, item) => acc + (item.priceAtMoment * item.quantity),
+    0,
+  );
+
+  const { totalPaid, balance, isCredit, creditAmount } =
+    getOperationBalances(operation?.id || "", allPaymentsForThisOp, totalCalculated);
+
 
   const isReadyToDeliver =
     (balance === 0 || isCredit) &&
@@ -142,7 +157,7 @@ export function DetailsReservedViewer({
     }));
 
     const currentClient = CLIENTS_MOCK.find(
-      (c) => c.id === activeRes?.customerId
+      (c) => c.id === activeRes?.customerId,
     );
 
     // 1. Mostramos un toast simple de carga o éxito inmediato
@@ -154,18 +169,18 @@ export function DetailsReservedViewer({
         useInventoryStore.getState().deliverAndTransfer(
           item.stockId,
           activeRes?.branchId!, // Sede destino
-          currentUser.id // Quién lo autoriza
+          currentUser.id, // Quién lo autoriza
         );
       });
-      const currentItems = MOCK_RESERVATION_ITEM.filter(
-        (item) => item.reservationId === activeRes?.id
+      const currentItems = reservations.filter(
+        (item) => item.id === activeRes?.id,
       );
 
       const ticketHtml = buildDeliveryTicketHtml(
         activeRes,
         currentClient!,
         currentItems,
-        guaranteeRecord
+        guaranteeRecord,
       );
 
       createRentalFromReservation(activeRes, itemsWithStock);
@@ -315,7 +330,7 @@ export function DetailsReservedViewer({
                   className="h-auto p-0 text-blue-600 font-bold text-[11px]"
                   onClick={() => setIsHistoryOpen(true)}
                 >
-                  Ver historial ({allPayments.length})
+                  Ver historial ({allPaymentsForThisOp.length})
                 </Button>
               </div>
 
@@ -335,15 +350,15 @@ export function DetailsReservedViewer({
                       isCredit
                         ? "text-blue-600"
                         : balance > 0
-                        ? "text-orange-600"
-                        : "text-emerald-600"
+                          ? "text-orange-600"
+                          : "text-emerald-600"
                     }`}
                   >
                     {isCredit
                       ? `+ ${formatCurrency(creditAmount)}`
                       : balance > 0
-                      ? formatCurrency(balance)
-                      : "PAGADO"}
+                        ? formatCurrency(balance)
+                        : "PAGADO"}
                   </p>
                   <p className="text-[10px] text-muted-foreground uppercase font-bold">
                     {isCredit ? "Crédito a favor" : "Saldo pendiente"}
@@ -396,7 +411,7 @@ export function DetailsReservedViewer({
                 </p>
                 <p className="text-sm font-bold">
                   {guaranteeRecord // 👈 Si existe el registro...
-                    ? guaranteeRecord.type === "efectivo"
+                    ? guaranteeRecord.type === "dinero"
                       ? formatCurrency(guaranteeRecord.value) // Muestra $ si es efectivo
                       : guaranteeRecord.description // Muestra "DNI", "Pasaporte", etc.
                     : "FALTA GARANTÍA"}
@@ -425,13 +440,19 @@ export function DetailsReservedViewer({
               <div>
                 {activeResItems.map((item) => {
                   const prod = PRODUCTS_MOCK.find(
-                    (p) => p.id.toString() === item.productId
+                    (p) => p.id.toString() === item.id,
                   );
 
-                  const allMatchingStock = stock.filter((s) => {
+                  const availableStock = stock.filter(
+                    (s) =>
+                      String(s.productId) === String(item.productId) &&
+                      s.size === item.size &&
+                      s.status === "disponible",
+                  );
+
+                  const allMatchingStock = availableStock.filter((s) => {
                     const matchProduct =
-                      String(s.productId).trim() ===
-                      String(item.productId).trim();
+                      String(s.productId).trim() === String(item.id).trim();
                     const matchSize =
                       String(s.size).trim().toUpperCase() ===
                       String(item.size).trim().toUpperCase();
@@ -447,10 +468,10 @@ export function DetailsReservedViewer({
 
                   // 2. Lo dividimos en dos grupos para la UI
                   const localOptions = allMatchingStock.filter(
-                    (s) => s.branchId === activeRes?.branchId
+                    (s) => s.branchId === activeRes?.branchId,
                   );
                   const remoteOptions = allMatchingStock.filter(
-                    (s) => s.branchId !== activeRes?.branchId
+                    (s) => s.branchId !== activeRes?.branchId,
                   );
                   return (
                     <div
@@ -458,7 +479,7 @@ export function DetailsReservedViewer({
                       className="flex flex-col gap-3 p-3 border rounded-xl bg-muted/20"
                     >
                       <div className="flex">
-                        <div className="h-12 w-10 bg-white border rounded overflow-hidden">
+                        <div className="h-12 w-10 rounded overflow-hidden">
                           <img
                             src={prod?.image}
                             className="object-cover h-full w-full"
@@ -524,7 +545,7 @@ export function DetailsReservedViewer({
                                 {remoteOptions.map((s) => {
                                   const otherBranch =
                                     BRANCH_MOCKS.find(
-                                      (b) => b.id === s.branchId
+                                      (b) => b.id === s.branchId,
                                     )?.name || "Otra Sede";
                                   return (
                                     <SelectItem
@@ -622,8 +643,8 @@ export function DetailsReservedViewer({
               {balance > 0 && !isCredit
                 ? `FALTA COBRO: ${formatCurrency(balance)}`
                 : !isReadyToDeliver
-                ? "COMPLETE EL CHECKLIST"
-                : "CONFIRMAR ENTREGA Y SALIDA"}
+                  ? "COMPLETE EL CHECKLIST"
+                  : "CONFIRMAR ENTREGA Y SALIDA"}
             </Button>
             <div className="flex justify-between gap-2 w-full ">
               <Button variant="outline" className="w-1/2">
@@ -658,7 +679,7 @@ export function DetailsReservedViewer({
       <PaymentHistoryModal
         open={isHistoryOpen}
         onOpenChange={setIsHistoryOpen}
-        payments={allPayments}
+        payments={allPaymentsForThisOp}
         operationId={operation?.id || 0}
         // Pasamos los valores ya calculados para evitar el "parpadeo" de los logs
         totalOperation={totalCalculated}

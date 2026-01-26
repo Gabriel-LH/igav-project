@@ -9,7 +9,7 @@ interface RentalStore {
   rentalItems: RentalItem[];
 
   // Acciones principales
-  createDirectRental: (transaction: RentalDTO) => void;
+  createDirectRental: (rental: Rental, rentalItems: RentalItem[]) => void;
   createRentalFromReservation: (reservation: any, selectedItems: any[]) => void;
   processReturn: (itemId: string, status: string, penalty: number) => void;
 }
@@ -18,67 +18,11 @@ export const useRentalStore = create<RentalStore>((set) => ({
   rentals: [],
   rentalItems: [],
 
-  createDirectRental: (transaction: RentalDTO) =>
-    set((state) => {
-      const now = new Date();
-      // Generamos un ID de alquiler si el DTO no trae uno específico para la renta
-      const rentalId = `RENT-${transaction.id || Math.random().toString(36).substr(2, 5)}`;
-
-      // 1. EL PADRE (Rental): Adaptamos los campos del DTO a la interfaz Rental
-      const newRental: Rental = {
-        id: rentalId,
-        operationId: transaction.operationId, // ID numérico de operación que pide tu tipo
-        reservationId: transaction.id || "",
-        customerId: transaction.customerId,
-        branchId: transaction.branchId,
-        outDate: transaction.startDate, // Usamos la fecha de inicio del DTO
-        expectedReturnDate: transaction.endDate, // Usamos la fecha de fin del DTO
-        status: "en_curso",
-
-        // Mapeamos la garantía del DTO al campo guaranteeId o similar
-        // Si tu tipo Rental pide un ID de garantía, usamos el del DTO o creamos uno vinculado
-        guaranteeId: transaction.financials.guarantee.id!,
-
-        totalPenalty: 0,
-        createdAt: transaction.createdAt || now,
-        updatedAt: now,
-        notes: transaction.notes || "",
-      };
-
-      // 2. EL HIJO (RentalItem): Basado en los datos físicos del DTO
-      const newItem: RentalItem = {
-        // USAMOS EL ID DEL DTO (el de la reserva) para que sea fácil de encontrar luego
-        id: transaction.id || `R-ITEM-${transaction.stockId}`,
-        rentalId: rentalId,
-        operationId: newRental.operationId,
-        productId: transaction.productId,
-        stockId: transaction.stockId,
-        size: transaction.size,
-        color: transaction.color,
-        priceAtMoment: transaction.financials.totalRent,
-        quantity: transaction.quantity || 1,
-        conditionOut: "Excelente",
-        itemStatus: "alquilado",
-        notes: transaction.notes || "",
-      };
-
-      if (transaction.type === "alquiler") {
-        useGuaranteeStore.getState().addGuarantee({
-          id: newRental.guaranteeId,
-          customerId: transaction.customerId,
-          value: Number(transaction.financials.guarantee.value) || 0,
-          type: transaction.financials.guarantee.type,
-          status: "custodia",
-          createdAt: new Date(),
-          notes: `Garantía de renta ${newRental.id}`,
-        } as any);
-      }
-
-      return {
-        rentals: [...state.rentals, newRental],
-        rentalItems: [...state.rentalItems, newItem],
-      };
-    }),
+  createDirectRental: (rental, items) =>
+  set((state) => ({
+    rentals: [...state.rentals, rental],
+    rentalItems: [...state.rentalItems, ...items],
+  })),
 
   createRentalFromReservation: (reservation, selectedItems) =>
     set((state) => {

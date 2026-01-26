@@ -3,6 +3,7 @@ import { reservationItemSchema } from "./type.reservationItem";
 
 export const reservationSchema = z.object({
   id: z.string(),
+  operationId: z.string(),
   customerId: z.string(),
   branchId: z.string(),
 

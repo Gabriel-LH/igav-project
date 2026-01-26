@@ -50,7 +50,7 @@ export function ProductGrid() {
         .filter(
           (s) =>
             s.productId.toString() === product.id.toString() &&
-            s.branchId === currentUser.branchId
+            s.branchId === currentUser.branchId,
         )
         .reduce((acc, curr) => acc + curr.quantity, 0);
 
@@ -71,7 +71,9 @@ export function ProductGrid() {
     });
   }, [activeTab, query, currentUser.branchId]);
 
-  const reservations = useReservationStore((state) => state.reservations);
+
+
+  const { reservations } = useReservationStore();
 
   // --- 2. LÓGICA DE OPERACIONES (RESERVAS ACTIVAS) ---
   const filteredReservations = useMemo(() => {
@@ -83,7 +85,7 @@ export function ProductGrid() {
       // CAMBIO: Solo mostramos lo que está listo para salir.
       // Si el status es "completada", significa que ya es un Rental y no va aquí.
       const isReadyForPickup =
-        res.status === "confirmada" || res.status === "pendiente";
+        res.status === "confirmada" || res.status === "expirada";
       if (!isReadyForPickup) return false;
       // Búsqueda: Por Cliente o por nombre de algún producto dentro de la reserva
       const client = CLIENTS_MOCK.find((c) => c.id === res.customerId);
@@ -92,12 +94,12 @@ export function ProductGrid() {
           .toLowerCase()
           .includes(query) || client?.dni?.includes(query);
 
-      const resItems = MOCK_RESERVATION_ITEM.filter(
-        (i) => i.reservationId === res.id
+      const resItems = reservations.filter(
+        (i) => i.id === res.id,
       );
       const matchesAnyProduct = resItems.some((item) => {
         const p = PRODUCTS_MOCK.find(
-          (prod) => prod.id.toString() === item.productId
+          (prod) => prod.id.toString() === item.id,
         );
         return p?.name.toLowerCase().includes(query);
       });
@@ -108,7 +110,7 @@ export function ProductGrid() {
 
   const filteredLaundry = useMemo(() => {
     return stock.filter(
-      (s) => s.branchId === currentUser.branchId && s.status === "lavanderia"
+      (s) => s.branchId === currentUser.branchId && s.status === "lavanderia",
     );
   }, [stock, currentUser.branchId]);
 
@@ -117,7 +119,7 @@ export function ProductGrid() {
       // Usamos 'stock' de Zustand
       (s) =>
         s.branchId === currentUser.branchId &&
-        (s.status as string) === "mantenimiento"
+        (s.status as string) === "mantenimiento",
     );
   }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
 
@@ -126,7 +128,7 @@ export function ProductGrid() {
     // 1. En un futuro aquí abrirás un Modal para elegir el stockId real.
     // Por ahora, simulamos que elegimos el primer stock disponible del producto.
     const mockSelectedItems = MOCK_RESERVATION_ITEM.filter(
-      (item) => item.reservationId === reservation.id
+      (item) => item.reservationId === reservation.id,
     ).map((item) => ({
       ...item,
       stockId: `STK-GENERIC-${item.productId}`, // Esto lo cambiaremos por el Selector
@@ -142,7 +144,7 @@ export function ProductGrid() {
 
     // C) Cerramos la reserva (cambia de 'confirmada' a 'completada')
     // Al cambiar a 'completada', desaparecerá de esta vista automáticamente
-    updateStatus(reservation.id, "completada");
+    updateStatus(reservation.id, "convertida");
   };
 
   // Decidir qué lista mostrar
@@ -185,7 +187,7 @@ export function ProductGrid() {
                 });
 
                 // 3. Marcar Reserva como completada para que desaparezca del Home
-                updateStatus(res.id, "completada");
+                updateStatus(res.id, "convertida");
 
                 toast.success("Alquiler iniciado correctamente");
               }}
@@ -216,10 +218,10 @@ export function ProductGrid() {
                 viewMode === "reserved"
                   ? Calendar03Icon
                   : viewMode === "laundry"
-                  ? CleanIcon
-                  : viewMode === "maintenance"
-                  ? ToolsIcon
-                  : BubbleChatSearchIcon
+                    ? CleanIcon
+                    : viewMode === "maintenance"
+                      ? ToolsIcon
+                      : BubbleChatSearchIcon
               }
               className="w-12 h-12 text-muted-foreground/40"
             />
@@ -229,10 +231,10 @@ export function ProductGrid() {
             {viewMode === "laundry"
               ? "No hay prendas pendientes de lavado."
               : viewMode === "maintenance"
-              ? "No hay prendas en reparación."
-              : viewMode === "reserved"
-              ? "No hay reservas activas."
-              : "No hay productos con stock disponible."}
+                ? "No hay prendas en reparación."
+                : viewMode === "reserved"
+                  ? "No hay reservas activas."
+                  : "No hay productos con stock disponible."}
           </p>
           {searchQuery && (
             <Button

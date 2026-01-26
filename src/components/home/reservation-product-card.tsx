@@ -8,16 +8,22 @@ import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
+import { Reservation } from "@/src/types/reservation/type.reservation";
+import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
+import { useReservationStore } from "@/src/store/useReservationStore";
 
 interface Props {
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
-  reservation: any;
+  reservation: Reservation;
   onDeliver: (itemsWithStock: any[]) => void;
 }
 
 export function ReservationProductCard({ reservation, onDeliver }: Props) {
+
+  const { reservationItems } = useReservationStore();
+
   // 1. Buscamos el item exacto de esta reserva
-  const specificItems = MOCK_RESERVATION_ITEM.filter(
+  const specificItems = reservationItems.filter(
     (i) => i.reservationId === reservation.id
   );
   const specificClient = CLIENTS_MOCK.find(
