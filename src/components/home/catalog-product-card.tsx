@@ -11,16 +11,11 @@ import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 import { DetailsProductViewer } from "./details-product-viewer";
-import { DetailsReservedViewer } from "./details-reserved-viewer";
 import { productSchema } from "../../types/product/type.product";
-import { reservationSchema } from "../../types/reservation/type.reservation";
 import { z } from "zod";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
-import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { getReservationsByProductId } from "@/src/utils/get-product-reservation";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 

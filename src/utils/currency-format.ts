@@ -1,4 +1,4 @@
-export const formatCurrency = (amount: number) => {
+export const formatCurrency = (amount?: number) => {
     const currency = "S/.";
-    return `${currency} ${amount.toFixed(2)}`;
+    return `${currency} ${amount?.toFixed(2)}`;
   };

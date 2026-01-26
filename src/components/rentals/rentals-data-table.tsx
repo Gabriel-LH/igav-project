@@ -1,10 +1,7 @@
 "use client";
+"use no memo";
 import z from "zod";
-import {
-  IconChevronDown,
-  IconLayoutColumns,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconChevronDown, IconLayoutColumns } from "@tabler/icons-react";
 
 import { Button } from "@/components/button";
 import {
@@ -13,7 +10,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
-import { Label } from "@/components/label";
 import {
   Select,
   SelectContent,
@@ -68,22 +64,23 @@ export function RentalsDataTable({
   });
 
   const COLUMN_LABELS_ES: Record<string, string> = {
-  nameCustomer: "Cliente",
-  product: "Producto",
-  rent_unit: "Evento / Día",
-  count: "Cantidad",
-  income: "Ingreso",
-  gurantee: "Garantía",
-  status: "Estado",
-  outDate: "Fecha de salida",
-  expectedReturnDate: "Fecha de devolución",
-  returnDate: "Fecha de retorno",
-  cancelDate: "Fecha de cancelación",
-  branchName: "Sucursal",
-  sellerName: "Vendedor",
-  guarantee_status: "Estado de garantía",
-};
+    nameCustomer: "Cliente",
+    product: "Producto",
+    rent_unit: "Evento / Día",
+    count: "Cantidad",
+    income: "Ingreso",
+    gurantee: "Garantía",
+    status: "Estado",
+    outDate: "Fecha de salida",
+    expectedReturnDate: "Fecha de devolución",
+    returnDate: "Fecha de retorno",
+    cancelDate: "Fecha de cancelación",
+    branchName: "Sucursal",
+    sellerName: "Vendedor",
+    guarantee_status: "Estado de garantía",
+  };
 
+  // eslint-disable-next-line
   const tableRentalActive = useReactTable({
     data: dataRentalActive,
     columns: columnsRentalsActive,
@@ -229,7 +226,6 @@ export function RentalsDataTable({
       </div>
 
       {/* CONTENIDOS: Los "value" deben coincidir con los de arriba */}
-
       <TabsContent
         value="active"
         className="relative flex flex-col gap-4 overflow-auto"

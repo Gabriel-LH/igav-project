@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { paymentSchema } from "../payments/type.payments";
 
+// Relación financiera global (crédito/deuda)
 export const clientSchema = z.object({
   id: z.string(),
   userName: z.string().optional(),

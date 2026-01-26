@@ -7,17 +7,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PriceSummary } from "../reservation/PriceSummary"; // Reutilizamos tu componente
 import { CustomerSelector } from "../reservation/CustomerSelector";
 import { toast } from "sonner";
-import { addDays, differenceInDays, format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { Label } from "@/components/label";
 import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Calendar02Icon,
-  Tag02Icon,
-} from "@hugeicons/core-free-icons";
+import { Calendar02Icon, Tag02Icon } from "@hugeicons/core-free-icons";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
@@ -25,42 +21,52 @@ import { useRentalStore } from "@/src/store/useRentalStore";
 import { RentalDTO } from "@/src/interfaces/RentalDTO";
 import { SaleDTO } from "@/src/interfaces/SaleDTO";
 
+import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
+import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
+import { GuaranteeSection } from "../reservation/GuaranteeSection";
+import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
+
 export function DirectTransactionModal({
   item,
   size,
   color,
   children,
   currentBranchId,
-  type, // "alquiler" | "venta"
+  type,
   onSuccess,
 }: any) {
   const [open, setOpen] = React.useState(false);
 
-  // Estados simplificados para transacción directa
+  // --------------------
+  // Estados base
+  // --------------------
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
 
-  // Fechas automáticas: Hoy -> +3 días (alquiler) o Hoy (venta)
+  // Fechas
   const [dateRange, setDateRange] = React.useState<any>({
     from: new Date(),
     to: type === "alquiler" ? addDays(new Date(), 3) : new Date(),
   });
 
-  // Finanzas
-  const [downPayment, setDownPayment] = React.useState(""); // Total del pago
-  const [guarantee, setGuarantee] = React.useState("");
-  const [paymentMethod, setPaymentMethod] = React.useState<any>("cash");
-  const [guaranteeType, setGuaranteeType] = React.useState<any>("dinero");
+  // --------------------
+  // Estados financieros
+  // --------------------
+  const [paymentMethod, setPaymentMethod] = React.useState<
+    "cash" | "card" | "transfer" | "yape" | "plin"
+  >("cash");
+
   const [receivedAmount, setReceivedAmount] = React.useState<number>(0);
 
-// Cálculo automático del vuelto (usando useMemo para eficiencia)
-const changeAmount = useMemo(() => {
-  const totalACobrar = Number(downPayment) || 0; // Lo que decidiste cobrar hoy
-  if (receivedAmount <= 0 || receivedAmount < totalACobrar) return 0;
-  return receivedAmount - totalACobrar;
-}, [receivedAmount, downPayment]);
+  const [guarantee, setGuarantee] = React.useState("");
+  const [guaranteeType, setGuaranteeType] = React.useState<
+    "dinero" | "dni" | "joyas" | "otros"
+  >("dinero");
 
+  // --------------------
+  // Stores
+  // --------------------
   const createDirectRental = useRentalStore(
     (state) => state.createDirectRental,
   );
@@ -71,8 +77,9 @@ const changeAmount = useMemo(() => {
 
   const sellerId = USER_MOCK[0].id;
 
-  // Buscamos la prenda física exacta que coincida con el modelo, talla y color
-  // Buscamos la prenda física exacta que coincida con el modelo, talla y color
+  // --------------------
+  // Stock exacto
+  // --------------------
   const exactStockItem = useInventoryStore((state) =>
     state.stock.find(
       (s) =>
@@ -83,38 +90,44 @@ const changeAmount = useMemo(() => {
     ),
   );
 
-  const stockId = exactStockItem?.id; // ID fisico que se usara para la reserva
-  const isAvailable = !!exactStockItem; // Booleano para el boton
+  const stockId = exactStockItem?.id;
+  const isAvailable = !!exactStockItem;
 
-  const isEvent = item.rent_unit === "evento";
-  const isVenta = type === "venta";
+  const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
+    operationType: type,
+    priceSell: item.price_sell,
+    priceRent: item.price_rent,
+    quantity,
+    startDate: dateRange?.from,
+    endDate: dateRange?.to,
+    rentUnit: item.rent_unit,
+    receivedAmount: Number(receivedAmount),
+    guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
+  });
 
-  // 2. Calcular días (solo para registro de fechas, no necesariamente para precio)
-  const days =
-    dateRange?.from && dateRange?.to
-      ? Math.max(differenceInDays(dateRange.to, dateRange.from) + 1, 1)
-      : 1;
+  const totalACobrarHoy = useMemo(() => {
+    if (type === "venta") return totalOperacion;
 
-  // 3. Obtener el precio unitario correcto según la operación
-  const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
+    return (
+      totalOperacion + (guaranteeType === "dinero" ? Number(guarantee || 0) : 0)
+    );
+  }, [type, totalOperacion, guaranteeType, guarantee]);
 
-  // 4. LÓGICA DE TOTAL FINAL (La que se guarda en la BD)
-  const totalOperacion = useMemo(() => {
-    if (isVenta) {
-      return unitPrice * quantity;
-    }
-    // Si es Alquiler:
-    // Si es por evento, ignoramos 'days' en la multiplicación
-    return isEvent ? unitPrice * quantity : unitPrice * quantity * days;
-  }, [isVenta, isEvent, unitPrice, quantity, days]);
+  const changeAmount = useMemo(() => {
+    if (paymentMethod !== "cash") return 0;
+    if (receivedAmount <= 0) return 0;
+    if (receivedAmount < totalACobrarHoy) return 0;
+    return receivedAmount - totalACobrarHoy;
+  }, [receivedAmount, totalACobrarHoy, paymentMethod]);
 
+  // --------------------
+  // Confirmar operación
+  // --------------------
   const handleConfirm = () => {
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
-    if (!isAvailable || !stockId) {
+    if (!isAvailable || !stockId)
       return toast.error("No hay stock disponible físicamente.");
-    }
 
-    // Base común para ambos
     const baseData = {
       productId: item.id,
       productName: item.name,
@@ -139,20 +152,23 @@ const changeAmount = useMemo(() => {
         endDate: dateRange.to,
         financials: {
           totalRent: totalOperacion,
-          guarantee: guaranteeType === "dinero"
-            ? { id: "", type: "dinero", value: guarantee }
-            : { id: "", type: guaranteeType, description: guarantee },
+          guarantee: {
+            type: guaranteeType,
+            value: guaranteeType === "dinero" ? guarantee : undefined,
+            description: guaranteeType !== "dinero" ? guarantee : undefined,
+          },
           paymentMethod,
+          receivedAmount: receivedAmount,
+          keepAsCredit: false,
         },
         status: "en_curso",
         id: "",
-        operationId: ""
+        operationId: "",
       };
-      createDirectRental(rentalData as any); // Tu store ahora recibirá datos limpios
+
+      createDirectRental(rentalData as any);
       updateStockStatus(stockId, "alquilado");
       toast.success("Alquiler realizado correctamente");
-      onSuccess();
-      setOpen(false);
     } else {
       const saleData: SaleDTO = {
         ...baseData,
@@ -162,10 +178,11 @@ const changeAmount = useMemo(() => {
         status: "vendido",
         id: "",
       };
-      // Aquí llamarías a un nuevo store: createSale(saleData);
+
       updateStockStatus(stockId, "vendido");
       toast.success("Venta realizada correctamente");
     }
+
     onSuccess();
     setOpen(false);
   };
@@ -173,6 +190,7 @@ const changeAmount = useMemo(() => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
+
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="uppercase text-sm font-black">
@@ -183,13 +201,15 @@ const changeAmount = useMemo(() => {
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                <HugeiconsIcon icon={Tag02Icon} strokeWidth={2} /> Venta Directa
+                <HugeiconsIcon icon={Tag02Icon} strokeWidth={2} />
+                Venta Directa
               </span>
             )}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
+          {/* Producto */}
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
             <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
               {size || "S/T"}
@@ -212,20 +232,21 @@ const changeAmount = useMemo(() => {
             </div>
           </div>
 
+          {/* Fecha devolución */}
           {type === "alquiler" && (
-            <div className="space-y-2 p-3 rounded-lg border ">
+            <div className="space-y-2 p-3 rounded-lg border">
               <Label className="text-[12px] font-black uppercase text-blue-600">
                 Fecha de Devolución
               </Label>
               <ReservationCalendar
-                mode="single" // Cambiamos a single para que solo elija el "To"
+                mode="single"
                 dateRange={{ from: dateRange.to, to: dateRange.to }}
                 setDateRange={(val: any) =>
                   setDateRange({ ...dateRange, to: val?.from })
                 }
-                originBranchId={""}
-                currentBranchId={""}
-                rules={""} // ... otras props
+                originBranchId=""
+                currentBranchId=""
+                rules=""
               />
               <p className="text-[10px] text-blue-400 italic">
                 * El alquiler inicia hoy {format(new Date(), "dd/MM")}
@@ -238,26 +259,36 @@ const changeAmount = useMemo(() => {
             onSelect={setSelectedCustomer}
           />
 
-          {/* Solo mostramos el PriceSummary porque es una transacción de dinero rápida */}
-          <PriceSummary
-            item={item}
-            operationType={type}
-            startDate={dateRange.from}
-            endDate={dateRange.to}
-            priceRent={item.price_rent}
+          {/* BLOQUES FINANCIEROS */}
+
+          <div className="space-y-4">
+            <PriceBreakdownBase
+              unitPrice={isVenta ? item.price_sell : item.price_rent}
+              quantity={quantity}
+              days={days}
+              isEvent={isEvent}
+              total={totalOperacion}
+            />
+          </div>
+
+          <CashPaymentSummary
+            type={type}
+            totalToPay={totalACobrarHoy}
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
             receivedAmount={receivedAmount}
             setReceivedAmount={setReceivedAmount}
             changeAmount={changeAmount}
-            quantity={quantity}
-            downPayment={downPayment}
-            setDownPayment={setDownPayment}
-            guarantee={guarantee}
-            setGuarantee={setGuarantee}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            guaranteeType={guaranteeType}
-            setGuaranteeType={setGuaranteeType}
           />
+
+          {type === "alquiler" && (
+            <GuaranteeSection
+              guarantee={guarantee}
+              setGuarantee={setGuarantee}
+              guaranteeType={guaranteeType}
+              setGuaranteeType={setGuaranteeType}
+            />
+          )}
         </div>
 
         {!isAvailable ? (
@@ -267,7 +298,9 @@ const changeAmount = useMemo(() => {
         ) : (
           <Button
             onClick={handleConfirm}
-            className={`w-full h-12 font-black ${type === "alquiler" ? "bg-blue-600" : "bg-orange-600"}`}
+            className={`w-full h-12 font-black ${
+              type === "alquiler" ? "bg-blue-600" : "bg-orange-600"
+            }`}
           >
             {type === "alquiler" ? "ENTREGAR Y COBRAR" : "FINALIZAR VENTA"}
           </Button>

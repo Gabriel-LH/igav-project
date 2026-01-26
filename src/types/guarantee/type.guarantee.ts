@@ -2,7 +2,7 @@ import z from "zod";
 
 export const guaranteeSchema = z.object({
   id: z.string(),
-  operationId: z.number(), // Conecta con la venta/alquiler
+  operationId: z.string(), // Conecta con la venta/alquiler
   branchId: z.string(), // Dónde está físicamente el objeto/dinero
   
   type: z.enum(["dinero", "dni", "joyas", "reloj", "otros", "no_aplica"]),

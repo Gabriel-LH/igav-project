@@ -11,9 +11,13 @@ interface GuaranteeStore {
 export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
   guarantees: [],
   addGuarantee: (guarantee) =>
-    set((state) => ({
-      guarantees: [...state.guarantees, guarantee],
-    })),
+    set((state) => {
+      console.log("🔵 [addGuarantee] Nueva garantía:", guarantee);
+      console.log("🔵 Estado actual:", state.guarantees.length, "garantías");
+      return {
+        guarantees: [...state.guarantees, guarantee],
+      };
+    }),
   updateGuaranteeStatus: (id, status) =>
     set((state) => ({
       guarantees: state.guarantees.map((g) =>

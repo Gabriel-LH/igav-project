@@ -1,6 +1,6 @@
 // src/store/useReservationStore.ts
 import { create } from "zustand";
-import { ReservationDTO } from "../interfaces/reservationDTO"; 
+import { ReservationDTO } from "../interfaces/ReservationDTO";
 
 type OperationType = "alquiler" | "venta";
 

@@ -1,8 +1,9 @@
 import { z } from "zod";
 
+// Cómo entró el dinero
 export const paymentSchema = z.object({
   id: z.string(),
-  operationId: z.number(),
+  operationId: z.string(),
   branchId: z.string(), // Sucursal donde se recibió el dinero
   receivedById: z.string(), // ID del usuario que cobró
   amount: z.number().positive(),

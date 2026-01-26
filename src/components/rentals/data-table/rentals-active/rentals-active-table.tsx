@@ -43,7 +43,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { rentalSchema } from "@/src/types/rentals/type.rentals";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
 import { DraggableRowActive} from "./dragrable-row-active";

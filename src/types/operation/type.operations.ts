@@ -1,6 +1,7 @@
 import z from "zod";
-import { Payment, paymentSchema } from "../payments/type.payments";
+import {paymentSchema } from "../payments/type.payments";
 
+//Qué se debía y qué se pagó para ESA operación
 export const operationSchema = z.object({
   id: z.string(),
   branchId: z.string(), // ¡NUEVO! Dónde se hizo la transacción

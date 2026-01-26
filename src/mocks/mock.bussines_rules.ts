@@ -1,7 +1,7 @@
 import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules";
 
 export const BUSINESS_RULES_MOCK: BusinessRules = {
-  defaultTransferTime: 2, // 2 días por defecto
+  defaultTransferTime: 2, // 2 días por defecto de transferencia de una  sucursal a otra
   penaltyPerDay: 15.00,   // $15 por día de retraso
   stainPenalty: 25.00,
   lostButtonPenalty: 5.00,

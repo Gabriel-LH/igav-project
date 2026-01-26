@@ -6,7 +6,8 @@ import {
   UserIcon,
   ColorsIcon,
   Money03Icon,
-  PackageIcon,
+  Information,
+  ShoppingBag02Icon,
 } from "@hugeicons/core-free-icons";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
@@ -59,7 +60,7 @@ export function ReturnActionCard({ rental }: Props) {
         </span>
       </div>
 
-      <div className="p-4 space-y-5">
+      <div className="px-4 space-y-3">
         {/* SECCIÓN CLIENTE */}
         <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-xl border border-border/50">
           <div className="bg-primary/10 text-primary p-2.5 rounded-full">
@@ -121,8 +122,9 @@ export function ReturnActionCard({ rental }: Props) {
         <div className="space-y-2">
           <div className="flex items-center gap-2 px-1">
             <HugeiconsIcon
-              icon={PackageIcon}
+              icon={ShoppingBag02Icon}
               size={12}
+              strokeWidth={2}
               className="text-muted-foreground"
             />
             <p className="text-[10px] font-black text-muted-foreground uppercase">
@@ -132,31 +134,29 @@ export function ReturnActionCard({ rental }: Props) {
           <div className="flex items-center justify-between bg-accent/40 rounded-lg p-3 border border-border/40">
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase tracking-tight">
-                {reservation.productName}
+                {rental.productName}
               </span>
               <span className="text-[10px] text-muted-foreground">
-                SKU: {reservation.sku}
+                SKU: {rental.sku}
               </span>
             </div>
             <div className="flex gap-2">
-              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold">
-                Talla {reservation.size}
+              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
+                <HugeiconsIcon icon={Information} size={12} strokeWidth={2} />
+                Talla {rental.size}
               </span>
               <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
-                <div
-                  className="w-2 h-2 rounded-full border"
-                  style={{ backgroundColor: reservation.color.toLowerCase() }}
-                />
-                {reservation.color}
+                <HugeiconsIcon icon={ColorsIcon} size={12} strokeWidth={2} />
+                {rental.color}
               </span>
             </div>
           </div>
         </div>
 
         {/* BOTÓN DE ACCIÓN */}
-        <div className="pt-2">
+        <div className="py-2">
           <ReturnInspectionDrawer
-            reservation={reservation}
+            rental={rental}
             client={client}
             isOverdue={isOverdue}
           />

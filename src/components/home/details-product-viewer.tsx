@@ -4,7 +4,6 @@ import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -23,13 +22,11 @@ import {
 import { z } from "zod";
 import { productSchema } from "../../types/product/type.product";
 import { Label } from "@/components/label";
-import { CardContent, Card } from "@/components/card";
 import { cn } from "@/lib/utils";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { calculateOperationTotal } from "@/src/utils/payment-helpers";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
@@ -92,7 +89,7 @@ export function DetailsProductViewer({
     if (!isColorAvailable && colorsForSelectedSize.length > 0) {
       setSelectedColor(colorsForSelectedSize[0]);
     }
-  }, [selectedSize, colorsForSelectedSize]);
+  }, [selectedSize, colorsForSelectedSize, selectedColor?.name]);
 
   // 5. CÁLCULO DE STOCK (Local vs Global)
   // Filtramos el stock específico de la combinación Talla + Color

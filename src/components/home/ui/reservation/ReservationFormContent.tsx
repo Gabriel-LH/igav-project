@@ -23,6 +23,10 @@ export function ReservationFormContent({
   setQuantity,
   downPayment,
   setDownPayment,
+  amountPaid,
+  setAmountPaid,
+  keepAsCredit,
+  setKeepAsCredit,
   guarantee,
   setGuarantee,
   paymentMethod,
@@ -135,6 +139,10 @@ export function ReservationFormContent({
           quantity={quantity}
           downPayment={downPayment}
           setDownPayment={setDownPayment}
+          amountPaid={amountPaid}
+          setAmountPaid={setAmountPaid}
+          keepAsCredit={keepAsCredit}
+          setKeepAsCredit={setKeepAsCredit}
           guarantee={guarantee}
           setGuarantee={setGuarantee}
           paymentMethod={paymentMethod}

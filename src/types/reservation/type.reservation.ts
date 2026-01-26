@@ -19,8 +19,7 @@ export const reservationSchema = z.object({
   status: z.enum(["confirmada", "cancelada", "convertida", "expirada"]),
 
   //Estos 2 estados nos puede servir para saber en que sera convertida y para algun filtro de mas adelante
-  isSell: z.boolean().optional(),
-  isRent: z.boolean().optional(),
+  operationType: z.enum(["venta", "alquiler"]),
 });
 
 export type Reservation = z.infer<typeof reservationSchema>;
