@@ -31,6 +31,7 @@ import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-tra
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export function DetailsProductViewer({
   item,
@@ -42,7 +43,6 @@ export function DetailsProductViewer({
   const currentBranchId = user[0].branchId;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-
 
   // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
   const allProductStock = useMemo(
@@ -129,9 +129,17 @@ export function DetailsProductViewer({
   );
 
   return (
-    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction={isMobile ? "bottom" : "right"}>
+    <Drawer
+      open={drawerOpen}
+      onOpenChange={setDrawerOpen}
+      direction={isMobile ? "bottom" : "right"}
+    >
       <DrawerTrigger asChild>
-        <Button variant="secondary" className="w-full" onClick={() => setDrawerOpen(true)}>
+        <Button
+          variant="secondary"
+          className="w-full"
+          onClick={() => setDrawerOpen(true)}
+        >
           Ver detalles
         </Button>
       </DrawerTrigger>
@@ -139,6 +147,8 @@ export function DetailsProductViewer({
       <DrawerContent className={isMobile ? "" : "max-w-md ml-auto h-full"}>
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
+
+          <DialogDescription>Detalles del producto</DialogDescription>
           <div className="flex gap-2 mt-2">
             <Badge
               variant="outline"
@@ -456,7 +466,7 @@ export function DetailsProductViewer({
               color={selectedColor?.name || ""}
               currentBranchId={currentBranchId}
               originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
-              // onSuccess={() => setDrawerOpen(false)}
+              onSuccess={() => setDrawerOpen(false)}
             >
               <Button
                 disabled={totalStockCombo === 0}

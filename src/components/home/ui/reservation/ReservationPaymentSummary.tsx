@@ -10,6 +10,8 @@ import {
 } from "@/components/select";
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
 import { PaymentMethod } from "../direct-transaction/CashPaymentSummary";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Checkbox } from "@/components/checkbox";
 
 interface Props {
   amountPaid: number | string;
@@ -31,14 +33,13 @@ export function ReservationPaymentSummary({
   keepAsCredit,
   setKeepAsCredit,
 }: Props) {
-
   const changeAmount =
     paymentMethod === "cash"
       ? Math.max(Number(amountPaid) - Number(downPayment), 0)
       : 0;
 
   return (
-    <Card className="p-4 space-y-4 shadow-sm">
+    <Card className="p-4 space-y-1 shadow-sm">
       <div className="flex justify-between">
         <div className="space-y-2">
           <Label className="text-[10px] font-bold uppercase text-muted-foreground">
@@ -91,7 +92,7 @@ export function ReservationPaymentSummary({
       </div>
 
       {/* MONTO ENTREGADO */}
-      <div className="flex gap-18 ">
+      <div className="flex justify-between">
         <div className="space-y-2">
           <Label className="text-[10px] font-bold uppercase text-muted-foreground">
             Monto entregado
@@ -108,36 +109,46 @@ export function ReservationPaymentSummary({
             />
           </div>
         </div>
-        <div className="w-full">
+        <div className="space-y-2">
           {paymentMethod === "cash" && (
-            <div className="flex gap-2 text-muted-foreground pt-2 text-sm font-bold">
-              <span>Vuelto</span>
-              <span
+            <div className="flex flex-col justify-end gap-2 text-muted-foreground text-sm font-bold">
+              <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+                Vuelto
+              </Label>
+              <div
                 className={
                   changeAmount > 0
-                    ? "text-emerald-500"
+                    ? "text-emerald-500 border h-9 flex items-center justify-center rounded-md px-2 bg-muted/80"
                     : "text-muted-foreground"
                 }
               >
-                S/. {changeAmount.toFixed(2)}
-              </span>
-            </div>
-          )}
-
-          {paymentMethod === "cash" && changeAmount > 0 && (
-            <div className="flex items-center gap-2 pt-2">
-              <input
-                type="checkbox"
-                checked={keepAsCredit}
-                onChange={(e) => setKeepAsCredit(e.target.checked)}
-                className="accent-primary"
-              />
-              <Label className="text-xs text-muted-foreground">
-                Dejar el excedente como crédito a favor
-              </Label>
+                <span>S/. {changeAmount.toFixed(2)}</span>
+              </div>
             </div>
           )}
         </div>
+      </div>
+
+      <div className="w-full -mt-2">
+        {paymentMethod === "cash" && changeAmount > 0 && (
+          <FieldGroup>
+            <Field orientation="horizontal">
+              <Checkbox
+                id="credit-check"
+                checked={keepAsCredit}
+                onCheckedChange={(checked) =>
+                  setKeepAsCredit(checked as boolean)
+                }
+              />
+              <Label
+                htmlFor="credit-check"
+                className="text-[11px] font-medium text-blue-400"
+              >
+                ¿Dejar excedente como crédito a favor del cliente?
+              </Label>
+            </Field>
+          </FieldGroup>
+        )}
       </div>
     </Card>
   );

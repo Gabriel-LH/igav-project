@@ -15,6 +15,7 @@ export const guaranteeSchema = z.object({
   
   status: z.enum([
     "pendiente",    // Aún no la entrega
+    "liberada",     // Se pone cuando se anula un alquiler
     "custodia",     // La tiene el local
     "devuelta",     // Se le regresó al cliente
     "retenida"      // Hubo daños y no se devuelve

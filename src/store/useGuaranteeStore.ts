@@ -6,6 +6,7 @@ interface GuaranteeStore {
   guarantees: Guarantee[];
   addGuarantee: (guarantee: Guarantee) => void;
   updateGuaranteeStatus: (id: string, status: Guarantee["status"]) => void;
+  releaseGuarantee: (id: string) => void;
 }
 
 export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
@@ -21,6 +22,14 @@ export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
     set((state) => ({
       guarantees: state.guarantees.map((g) =>
         g.id === id ? { ...g, status, updatedAt: new Date() } : g,
+      ),
+    })),
+  releaseGuarantee: (id) =>
+    set((state) => ({
+      guarantees: state.guarantees.map((g) =>
+        g.id === id
+          ? { ...g, status: "liberada", updatedAt: new Date() }
+          : g,
       ),
     })),
 }));

@@ -61,11 +61,7 @@ export function ReservationCalendar({
   };
 
   return (
-    <div className="space-y-4 p-4 border rounded-xl bg-muted/20">
-      <Label className="text-[11px] uppercase font-bold ">
-        Selecciona las fechas
-      </Label>
-
+    <div>
       <Popover>
         <PopoverTrigger asChild>
           <Button

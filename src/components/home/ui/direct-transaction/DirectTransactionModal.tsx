@@ -17,7 +17,6 @@ import { Calendar02Icon, Tag02Icon } from "@hugeicons/core-free-icons";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
-import { useRentalStore } from "@/src/store/useRentalStore";
 import { RentalDTO } from "@/src/interfaces/RentalDTO";
 import { SaleDTO } from "@/src/interfaces/SaleDTO";
 
@@ -26,6 +25,7 @@ import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
 import { GuaranteeSection } from "../reservation/GuaranteeSection";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { processTransaction } from "@/src/services/transactionServices";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export function DirectTransactionModal({
   item,
@@ -202,6 +202,9 @@ export function DirectTransactionModal({
               </span>
             )}
           </DialogTitle>
+          <DialogDescription>
+            Completa el formulario para realizar la operación
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">

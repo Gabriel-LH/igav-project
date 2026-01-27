@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
-import { RentalsActiveTable } from "./data-table/rentals-active/rentals-active-table";
-import { rentalsActiveSchema } from "./data-table/type/type.active";
+import { RentalsActiveTable } from "./tables/rentals-active/rentals-active-table";
+import { rentalsActiveSchema } from "./tables/type/type.active";
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -33,13 +33,13 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
-import { columnsRentalsActive } from "./data-table/rentals-active/column-active-table";
-import { columnsRentalCanceled } from "./data-table/canceled-rentals/column-cancel-table";
-import { columnsRentalsHistory } from "./data-table/rentals-history/column-history-table";
-import { rentalsCanceledSchema } from "./data-table/type/type.canceled";
-import { rentalsHistorySchema } from "./data-table/type/type.history";
-import { RentalsCanceledTable } from "./data-table/canceled-rentals/rental-canceled-table";
-import { RentalsHistoryTable } from "./data-table/rentals-history/rentals-history-table";
+import { columnsRentalsActive } from "./tables/rentals-active/column-active-table";
+import { columnsRentalCanceled } from "./tables/canceled-rentals/column-cancel-table";
+import { columnsRentalsHistory } from "./tables/rentals-history/column-history-table";
+import { rentalsCanceledSchema } from "./tables/type/type.canceled";
+import { rentalsHistorySchema } from "./tables/type/type.history";
+import { RentalsCanceledTable } from "./tables/canceled-rentals/rental-canceled-table";
+import { RentalsHistoryTable } from "./tables/rentals-history/rentals-history-table";
 
 export function RentalsDataTable({
   dataRentalActive,

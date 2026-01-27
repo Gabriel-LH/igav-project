@@ -12,12 +12,13 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
+import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface ReservationModalProps {
   item: any;
@@ -26,6 +27,7 @@ interface ReservationModalProps {
   children: React.ReactNode;
   currentBranchId: string;
   originBranchId: string;
+  onSuccess: () => void;
 }
 
 export function ReservationModal({
@@ -35,7 +37,10 @@ export function ReservationModal({
   children,
   currentBranchId,
   originBranchId,
+  onSuccess,
 }: ReservationModalProps) {
+  const [open, setOpen] = React.useState(false);
+
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [dateRange, setDateRange] = React.useState<any>(undefined);
   const [quantity, setQuantity] = React.useState(1);
@@ -72,12 +77,12 @@ export function ReservationModal({
     ),
   );
 
-  const balance = useClientCreditStore(
-    (s) => s.getBalance(selectedCustomer?.id)
+  const balance = useClientCreditStore((s) =>
+    s.getBalance(selectedCustomer?.id),
   );
 
   console.log("balance", balance);
-  
+
   const stockId = exactStockItem?.id;
   const isAvailable = !!exactStockItem;
 
@@ -95,7 +100,6 @@ export function ReservationModal({
 
   // 💲 Precio unitario
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
-
 
   const handleConfirm = () => {
     if (!selectedCustomer || !dateRange?.from) {
@@ -152,10 +156,12 @@ export function ReservationModal({
       console.error(err);
       toast.error("Error al crear la operación");
     }
+    setOpen(false);
+    onSuccess();
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
@@ -173,6 +179,9 @@ export function ReservationModal({
               </span>
             )}
           </DialogTitle>
+          <DialogDescription>
+            Completa el formulario para crear una reserva
+          </DialogDescription>
         </DialogHeader>
 
         <div

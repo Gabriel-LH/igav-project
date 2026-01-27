@@ -3,7 +3,6 @@ import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -19,18 +18,13 @@ import {
   CheckmarkBadge03Icon,
   CalendarAdd01Icon,
   CalendarRemove01Icon,
-  ShippingTruckIcon,
 } from "@hugeicons/core-free-icons";
-import { OPERATIONS_MOCK } from "@/src/mocks/mock.operation";
-import { PAYMENTS_MOCK } from "@/src/mocks/mock.payment";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import { useState } from "react";
 import { Badge } from "@/components/badge";
-import { MOCK_GUARANTEE } from "@/src/mocks/mock.guarantee";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
-import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
@@ -55,6 +49,11 @@ import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
 import { registerPayment } from "@/src/services/paymentService";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Checkbox } from "@/components/checkbox";
+import { Label } from "@/components/label";
+import { RescheduleModal } from "./ui/modals/RescheduleModal";
+import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -72,6 +71,9 @@ export function DetailsReservedViewer({
   const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
     {},
   );
+  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
+
   const stock = useInventoryStore((state) => state.stock);
   const updateStockStatus = useInventoryStore(
     (state) => state.updateStockStatus,
@@ -81,6 +83,15 @@ export function DetailsReservedViewer({
     (state) => state.createRentalFromReservation,
   );
 
+  //Store's en general
+
+  const cancelReservation = useReservationStore(
+    (state) => state.cancelReservation,
+  );
+  const rearrangeReservation = useReservationStore(
+    (state) => state.rearrangeReservation,
+  );
+
   const { reservations, reservationItems } = useReservationStore();
 
   const { payments: globalPayments } = usePaymentStore();
@@ -88,6 +99,12 @@ export function DetailsReservedViewer({
   const { guarantees } = useGuaranteeStore();
 
   const { operations } = useOperationStore();
+
+  console.log("activeRes", activeRes);
+  console.log("reservationItems", reservationItems);
+  console.log("reservations", reservations);
+
+  //
 
   const [checklist, setChecklist] = useState({
     limpieza: false,
@@ -99,14 +116,30 @@ export function DetailsReservedViewer({
 
   const operation = operations.find((op) => op.id === activeRes?.operationId);
 
+  const handleConfirmReschedule = (newStartDate: Date, newEndDate: Date) => {
+    if (!activeRes) return;
+
+    rearrangeReservation(activeRes.id, newStartDate, newEndDate);
+    toast.success("Reserva reagendada correctamente");
+    setIsRescheduleOpen(false);
+    setIsDrawerOpen(false);
+  };
+
+  const handleConfirmCancel = () => {
+    if (!activeRes) return;
+
+    cancelReservation(activeRes.id);
+    toast.success("Reserva anulada correctamente");
+    setIsCancelOpen(false);
+    setIsDrawerOpen(false);
+  };
+
   // 4. Función para agregar un pago (esta se la pasaremos al modal)
   const handleAddPayment = (data: any): Payment => {
-    
     return registerPayment({
       operationId: operation?.id || "",
       ...data,
     });
-    
   };
 
   // 2. Combinamos pagos del Mock con los reales del Store
@@ -116,7 +149,7 @@ export function DetailsReservedViewer({
     ),
   ];
 
-    // 4. Garantía
+  // 4. Garantía
   const guaranteeRecord = guarantees.find(
     (g) => g.operationId === operation?.id,
   );
@@ -129,15 +162,16 @@ export function DetailsReservedViewer({
     (item) => selectedStocks[item.id],
   );
 
-
   const totalCalculated = activeResItems.reduce(
-    (acc, item) => acc + (item.priceAtMoment * item.quantity),
+    (acc, item) => acc + item.priceAtMoment * item.quantity,
     0,
   );
 
-  const { totalPaid, balance, isCredit, creditAmount } =
-    getOperationBalances(operation?.id || "", allPaymentsForThisOp, totalCalculated);
-
+  const { totalPaid, balance, isCredit, creditAmount } = getOperationBalances(
+    operation?.id || "",
+    allPaymentsForThisOp,
+    totalCalculated,
+  );
 
   const isReadyToDeliver =
     (balance === 0 || isCredit) &&
@@ -306,13 +340,17 @@ export function DetailsReservedViewer({
                 <Separator orientation="vertical" className="h-10" />
                 <div className="text-center flex-1">
                   <p className="text-xl font-black">
-                    {activeRes?.endDate.getDate()}
+                    {activeRes?.operationType === "alquiler"
+                      ? activeRes?.endDate.getDate()
+                      : "NO APLICA"}
                   </p>
                   <p className="text-[10px] uppercase font-medium">
-                    {activeRes?.endDate.toLocaleString("es-ES", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {activeRes?.operationType === "alquiler"
+                      ? activeRes?.endDate.toLocaleString("es-ES", {
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : "NO APLICA"}
                   </p>
                 </div>
               </div>
@@ -395,44 +433,6 @@ export function DetailsReservedViewer({
                 </div>
               </div>
             </div>
-
-            {/* NUEVO: GARANTÍA (Agregado debajo de datos de cliente) */}
-            {/* SECCIÓN DE GARANTÍA ACTUALIZADA */}
-            <div
-              className={`px-4 py-3 border rounded-xl flex justify-between items-center ${
-                guaranteeRecord // 👈 Cambiamos: Si existe el registro, ya hay una garantía
-                  ? "border-muted"
-                  : "border-destructive/20 bg-destructive/5"
-              }`}
-            >
-              <div>
-                <p className="text-[10px] uppercase font-black text-blue-700 tracking-tighter">
-                  Garantía en Custodia
-                </p>
-                <p className="text-sm font-bold">
-                  {guaranteeRecord // 👈 Si existe el registro...
-                    ? guaranteeRecord.type === "dinero"
-                      ? formatCurrency(guaranteeRecord.value) // Muestra $ si es efectivo
-                      : guaranteeRecord.description // Muestra "DNI", "Pasaporte", etc.
-                    : "FALTA GARANTÍA"}
-                </p>
-
-                {/* Mostramos el estado solo si existe el registro */}
-                {guaranteeRecord && (
-                  <p className="text-[10px] text-blue-600/70 italic">
-                    Estado: {guaranteeRecord.status || "Recibido"}
-                  </p>
-                )}
-              </div>
-
-              <HugeiconsIcon
-                icon={CheckmarkBadge03Icon}
-                className={
-                  guaranteeRecord ? "text-blue-500" : "text-destructive/30"
-                }
-              />
-            </div>
-
             <div className="space-y-2">
               <span className="text-[10px] font-black uppercase text-muted-foreground">
                 Artículos en esta reserva ({activeResItems.length})
@@ -521,7 +521,7 @@ export function DetailsReservedViewer({
                           <SelectTrigger className="w-full text-xs p-2 rounded border">
                             <SelectValue placeholder="Seleccionar código de barra (Stock)..." />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent aria-hidden="false">
                             {/* GRUPO 1: Disponibles aquí mismo */}
                             {localOptions.length > 0 && (
                               <SelectGroup>
@@ -590,33 +590,49 @@ export function DetailsReservedViewer({
                 )}
 
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    id="limpieza-check" // Agregado
-                    className="rounded border-gray-300 text-primary w-4 h-4"
-                    checked={checklist.limpieza}
-                    onChange={(e) =>
-                      setChecklist({ ...checklist, limpieza: e.target.checked })
-                    }
-                  />
-                  <span className="text-sm">
-                    Limpieza y desinfección verificada
-                  </span>
+                  <FieldGroup>
+                    <Field orientation="horizontal">
+                      <Checkbox
+                        id="credit-check"
+                        checked={checklist.limpieza}
+                        onCheckedChange={(checked) =>
+                          setChecklist({
+                            ...checklist,
+                            limpieza: checked as boolean,
+                          })
+                        }
+                      />
+                      <Label
+                        htmlFor="credit-check"
+                        className="text-[11px] font-medium text-blue-400"
+                      >
+                        El producto esta revisado y desinfectado
+                      </Label>
+                    </Field>
+                  </FieldGroup>
                 </label>
 
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    id="garantia-check" // Agregado
-                    className="rounded border-gray-300 text-primary w-4 h-4"
-                    checked={checklist.garantia}
-                    onChange={(e) =>
-                      setChecklist({ ...checklist, garantia: e.target.checked })
-                    }
-                  />
-                  <span className="text-sm font-semibold">
-                    DNI o Garantía física en resguardo
-                  </span>
+                  <FieldGroup>
+                    <Field orientation="horizontal">
+                      <Checkbox
+                        id="garantia-check"
+                        checked={checklist.garantia}
+                        onCheckedChange={(checked) =>
+                          setChecklist({
+                            ...checklist,
+                            garantia: checked as boolean,
+                          })
+                        }
+                      />
+                      <Label
+                        htmlFor="credit-check"
+                        className="text-[11px] font-medium text-blue-400"
+                      >
+                        DNI o Garantía física en resguardo
+                      </Label>
+                    </Field>
+                  </FieldGroup>
                 </label>
               </div>
             </div>
@@ -647,7 +663,11 @@ export function DetailsReservedViewer({
                   : "CONFIRMAR ENTREGA Y SALIDA"}
             </Button>
             <div className="flex justify-between gap-2 w-full ">
-              <Button variant="outline" className="w-1/2">
+              <Button
+                variant="outline"
+                className="w-1/2"
+                onClick={() => setIsRescheduleOpen(true)}
+              >
                 <HugeiconsIcon
                   icon={CalendarAdd01Icon}
                   strokeWidth={2.2}
@@ -658,6 +678,7 @@ export function DetailsReservedViewer({
               <Button
                 variant="outline"
                 className="text-destructive border-destructive/20 w-1/2"
+                onClick={() => setIsCancelOpen(true)}
               >
                 <HugeiconsIcon
                   icon={CalendarRemove01Icon}
@@ -667,14 +688,25 @@ export function DetailsReservedViewer({
                 Anular
               </Button>
             </div>
-            <DrawerClose asChild>
-              <Button variant="ghost" className="col-span-2">
-                Regresar
-              </Button>
-            </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+
+      <RescheduleModal
+        open={isRescheduleOpen}
+        onOpenChange={setIsRescheduleOpen}
+        onConfirm={handleConfirmReschedule}
+        currentStartDate={activeRes?.startDate}
+        currentEndDate={activeRes?.endDate}
+        operationType={activeRes?.operationType}
+      />
+
+      <CancelReservationModal
+        open={isCancelOpen}
+        onOpenChange={setIsCancelOpen}
+        onConfirm={handleConfirmCancel}
+        balance={totalPaid}
+      />
 
       <PaymentHistoryModal
         open={isHistoryOpen}

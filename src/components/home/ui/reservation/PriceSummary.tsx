@@ -59,17 +59,7 @@ export function PriceSummary({
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
       />
-
-      {!isVenta && (
-        <GuaranteeSection
-          guarantee={guarantee}
-          setGuarantee={setGuarantee}
-          guaranteeType={guaranteeType}
-          setGuaranteeType={setGuaranteeType}
-        />
-      )}
-
-      <div className="p-3 border rounded">
+      <div className="p-3 border rounded-lg bg-muted/30">
         <div className="flex justify-between text-xs">
           <span>Saldo pendiente</span>
           <span

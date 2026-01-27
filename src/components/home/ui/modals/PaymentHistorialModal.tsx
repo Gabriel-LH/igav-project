@@ -22,6 +22,7 @@ import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { ConfirmPrintModal } from "./ConfirmPrintModal";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
+import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 interface PaymentHistoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,13 +50,16 @@ export function PaymentHistoryModal({
   const [confirmPrintOpen, setConfirmPrintOpen] = useState(false);
   const [ticketToPrint, setTicketToPrint] = useState<string | null>(null);
 
+  const { guarantees } = useGuaranteeStore.getState();
+
+  const guaranteeData = guarantees.find((g) => g.operationId === operationId);
+
   const {
     balance: currentBalance,
     creditAmount: currentCredit,
     isCredit,
     totalPaid,
   } = getOperationBalances(String(operationId || ""), payments, totalOperation);
-
 
   const totalPagadoAlquiler = payments.reduce((acc, p) => acc + p.amount, 0);
 
@@ -199,7 +203,7 @@ export function PaymentHistoryModal({
                         </td>
                         <td
                           className={`px-4 py-3 text-right font-black ${
-                            p.type === "garantia"
+                            p.type === "cuota"
                               ? "text-amber-500"
                               : "text-emerald-600"
                           }`}
@@ -276,7 +280,7 @@ export function PaymentHistoryModal({
                   </p>
                   <div className="flex text-amber-500 justify-between items-center text-sm font-bold">
                     <span>
-                      {guaranteeData.type === "efectivo"
+                      {guaranteeData.type === "dinero"
                         ? formatCurrency(guaranteeData.value)
                         : guaranteeData.description}
                     </span>

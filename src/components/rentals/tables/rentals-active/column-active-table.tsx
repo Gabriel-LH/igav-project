@@ -16,7 +16,7 @@ import {
 } from "@/components/dropdown-menu";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
 import { rentalsActiveSchema } from "../type/type.active";
-import { ArrowUpDown, CircleDashed } from "lucide-react";
+import { ArrowUpDown, CircleDashed, CircleX, PencilLine } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
 
 export const columnsRentalsActive: ColumnDef<
@@ -169,11 +169,11 @@ function ActionCell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
+        <DropdownMenuItem><PencilLine/> Editar</DropdownMenuItem>
+        <DropdownMenuItem>Hacer una copia</DropdownMenuItem>
+        <DropdownMenuItem>Favorito</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        <DropdownMenuItem variant="destructive" className="text-red-500"> <CircleX/> Anular</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

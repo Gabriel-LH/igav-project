@@ -21,7 +21,7 @@ export function PriceBreakdownBase({
   total,
 }: PriceBreakdownBaseProps) {
   return (
-    <Card className="p-4 shadow-sm">
+    <Card className="px-4 py-2 shadow-sm">
       {/* HEADER */}
       <div className="flex justify-between items-center border-b pb-2">
         <span className="text-[11px] font-black uppercase tracking-wide text-muted-foreground">
@@ -30,7 +30,7 @@ export function PriceBreakdownBase({
       </div>
 
       {/* PRECIO UNITARIO */}
-      <div className="flex justify-between text-sm">
+      <div className="flex justify-between -mt-3 text-sm">
         <span className="text-muted-foreground">
           Precio {isEvent ? "por evento" : "unitario"}
         </span>
@@ -40,7 +40,7 @@ export function PriceBreakdownBase({
       </div>
 
       {/* CANTIDAD */}
-      <div className="flex justify-between text-sm">
+      <div className="flex justify-between -mt-3 text-sm">
         <span className="text-muted-foreground">Cantidad</span>
         <span className="font-semibold">× {quantity}</span>
       </div>
@@ -54,8 +54,8 @@ export function PriceBreakdownBase({
       )}
 
       {/* TOTAL */}
-      <div className="flex justify-between items-center pt-2 border-t">
-        <span className="text-sm font-bold uppercase">Total</span>
+      <div className="flex justify-between items-center -mt-2 border-t">
+        <span className="text-sm font-bold mt-1 uppercase">Total</span>
         <span className={cn("text-lg font-black text-primary")}>
           {formatCurrency(total)}
         </span>
