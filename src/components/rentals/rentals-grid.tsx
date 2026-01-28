@@ -19,6 +19,8 @@ export const RentalsGrid = () => {
   const allData = useMemo(() => mapRentalToTable(customers, rentals, guarantees, rentalItems, products), [rentals, rentalItems, products, customers, guarantees]);
 
   const active = allData.filter(i => i.status === "alquilado");
+
+  console.log("Informacion completa del rental activo", allData);
   const dataRentalCanceled = [];
   const dataRentalHistory = [];
 

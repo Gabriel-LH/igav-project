@@ -1,7 +1,7 @@
 "use client";
 
 import { IconDotsVertical } from "@tabler/icons-react";
-import { type ColumnDef } from "@tanstack/react-table";
+import { Row, type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 
 import { Badge } from "@/components/badge";
@@ -18,6 +18,7 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { rentalsActiveSchema } from "../type/type.active";
 import { ArrowUpDown, CircleDashed, CircleX, PencilLine } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
+import { cancelRentalTransaction } from "@/src/services/cancelRental";
 
 export const columnsRentalsActive: ColumnDef<
   z.infer<typeof rentalsActiveSchema>
@@ -151,11 +152,11 @@ export const columnsRentalsActive: ColumnDef<
   },
   {
     id: "actions",
-    cell: () => <ActionCell />,
+    cell: ({row}) => <ActionCell row={row} />,
   },
 ];
 
-function ActionCell() {
+function ActionCell({row}: {row: Row<z.infer<typeof rentalsActiveSchema>>}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -169,11 +170,20 @@ function ActionCell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem><PencilLine/> Editar</DropdownMenuItem>
+        <DropdownMenuItem>
+          <PencilLine /> Editar
+        </DropdownMenuItem>
         <DropdownMenuItem>Hacer una copia</DropdownMenuItem>
         <DropdownMenuItem>Favorito</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" className="text-red-500"> <CircleX/> Anular</DropdownMenuItem>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => cancelRentalTransaction(row.original.id)}
+          className="text-red-500"
+        >
+          {" "}
+          <CircleX /> Anular
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

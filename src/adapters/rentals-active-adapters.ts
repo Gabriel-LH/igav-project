@@ -46,7 +46,7 @@ export const mapRentalToTable = (
     const seller = USER_MOCK[0];
     return {
       // El ID técnico se usa para la "key" de React, pero no se muestra
-      id: `${item.operationId}-${item.productId}-${item.rentalId}`,
+      id: item.rentalId,
       branchName: branch?.name || "Principal",
       sellerName: seller?.name || "",
       outDate: parent?.outDate

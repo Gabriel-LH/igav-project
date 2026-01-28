@@ -2,7 +2,6 @@ import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
-import { RentalItem } from "../types/rentals/type.rentalsItem";
 
 interface ProcessReturnInput {
   rentalId: string;
@@ -25,34 +24,28 @@ export function processReturn(input: ProcessReturnInput) {
 
   // 1️⃣ Actualizar rental
   rentalStore.updateRental(rental.id, {
-    status: input.itemStatus,
+    status: "devuelto",
     totalPenalty: input.totalPenalty,
     actualReturnDate: now,
     notes: input.notes,
   });
-
   // 2️⃣ Inventario
-  const items = rentalStore.rentalItems.filter(
-    i => i.rentalId === rental.id
-  );
+  const items = rentalStore.rentalItems.filter((i) => i.rentalId === rental.id);
 
   items.forEach((item) => {
-    inventoryStore.updateStockStatus(
-      item.stockId,
-      input.stockTarget
-    );
+    inventoryStore.updateStockStatus(item.stockId, input.stockTarget);
   });
 
   // 3️⃣ Garantía
   if (rental.guaranteeId) {
     guaranteeStore.updateGuaranteeStatus(
       rental.guaranteeId,
-      input.guaranteeResult
+      input.guaranteeResult,
     );
   }
 
   // 4️⃣ Operación
   operationStore.updateOperation(rental.operationId, {
-    status: "finalizada",
+    status: "completado",
   });
 }

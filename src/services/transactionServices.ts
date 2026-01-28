@@ -240,7 +240,7 @@ export function processTransaction(dto: SaleDTO | RentalDTO | ReservationDTO) {
       },
     ]);
 
-    useRentalStore.getState().createDirectRental(rental, rentalItems);
+    useRentalStore.getState().addRental(rental, rentalItems);
 
     useInventoryStore.getState().updateStockStatus(dto.stockId, "alquilado");
   }
