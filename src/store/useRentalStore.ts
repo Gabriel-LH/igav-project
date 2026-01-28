@@ -50,6 +50,7 @@ export const useRentalStore = create<RentalStore>((set, get) => ({
               status: "anulado",
               notes: reason,
               updatedAt: new Date(),
+              cancelDate: new Date(),
             }
           : r,
       ),
@@ -71,11 +72,17 @@ export const useRentalStore = create<RentalStore>((set, get) => ({
               ...i,
               itemStatus: "devuelto" as any,
               conditionIn,
+
             }
           : i,
       );
 
-      const allReturned = updatedItems
+      const itemsOfRental = updatedItems.filter(
+        (i) => i.rentalId === item.rentalId
+      );
+
+
+      const allReturned = itemsOfRental
         .filter((i) => i.rentalId === item.rentalId)
         .every((i) => i.itemStatus === "devuelto");
 

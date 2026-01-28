@@ -18,6 +18,7 @@ import {
   HandCoins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GuaranteeSection } from "../reservation/GuaranteeSection";
 
 interface CashPaymentSummaryProps {
   type?: string;
@@ -27,47 +28,43 @@ interface CashPaymentSummaryProps {
   setReceivedAmount: (v: number) => void;
   changeAmount: number;
   setPaymentMethod: (v: PaymentMethod) => void;
+  guarantee: any;
+  setGuarantee: (v: any) => void;
+  guaranteeType: GuaranteeType;
+  setGuaranteeType: (v: GuaranteeType) => void;
 }
 
 export type PaymentMethod = "cash" | "card" | "transfer" | "yape" | "plin";
+export type GuaranteeType = "dinero" | "dni" | "joyas" | "otros";
 
 export function CashPaymentSummary({
+  type,
   totalToPay,
   paymentMethod,
   receivedAmount,
   setReceivedAmount,
   changeAmount,
   setPaymentMethod,
+  guarantee,
+  setGuarantee,
+  guaranteeType,
+  setGuaranteeType,
 }: CashPaymentSummaryProps) {
 
   return (
-    <Card className="p-4 space-y-4 shadow-sm">
+    <Card className="p-4 shadow-sm">
       {/* TOTAL A PAGAR HOY */}
-      <div className="flex justify-between items-center bg-primary/5 p-3 rounded border-l-4 border-primary">
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase font-bold text-muted-foreground">
-            Total a pagar hoy
-          </span>
-          <span className="text-[11px] text-muted-foreground">
-            Según método de pago
-          </span>
-        </div>
-        <span className="text-xl font-black text-primary">
-          {formatCurrency(totalToPay)}
-        </span>
-      </div>
-
       <div className="flex justify-between items-center">
-        <div className="space-y-2">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1">
+        <div className="space-y-1">
+          <Label className="text-[10px] font-bold uppercase  flex items-center gap-1">
             <Banknote className="w-3 h-3" /> Monto recibido
           </Label>
           <div className="relative">
-            <span className="absolute left-2.5 top-2 text-xs font-bold text-muted-foreground">
+            <span className="absolute left-2.5 top-2.5 text-xs font-bold">
               S/.
             </span>
             <Input
-              className="pl-8 h-9 font-bold"
+              className="pl-7 h-9 font-semibold"
               placeholder="0.00"
               value={receivedAmount}
               onChange={(e) => setReceivedAmount(Number(e.target.value))}
@@ -75,7 +72,7 @@ export function CashPaymentSummary({
           </div>
         </div>
         <div className="space-y-2">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+          <Label className="text-[10px] font-bold uppercase ">
             Método de pago
           </Label>
           <Select
@@ -106,10 +103,19 @@ export function CashPaymentSummary({
         </div>
       </div>
 
+        {type === "alquiler" && (
+            <GuaranteeSection
+              guarantee={guarantee}
+              setGuarantee={setGuarantee}
+              guaranteeType={guaranteeType}
+              setGuaranteeType={setGuaranteeType}
+            />
+          )}
+
       {/* VUELTO (SOLO EFECTIVO) */}
       {paymentMethod === "cash" && (
         <div className="flex justify-between items-center pt-2 border-t">
-          <Label className="text-[10px] font-bold uppercase flex items-center gap-1 text-blue-500">
+          <Label className="text-[10px] font-bold uppercase flex items-center gap-1">
             <HandCoins className="w-3 h-3" /> Vuelto
           </Label>
           <span
@@ -122,6 +128,20 @@ export function CashPaymentSummary({
           </span>
         </div>
       )}
+
+      <div className="flex justify-between items-center bg-primary/5 p-3 rounded border-l-2 border-primary">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold">
+            Total a pagar hoy
+          </span>
+          <span className="text-[11px]">
+            Según método de pago
+          </span>
+        </div>
+        <span className="text-xl font-black text-primary">
+          {formatCurrency(totalToPay)}
+        </span>
+      </div>
     </Card>
   );
 }

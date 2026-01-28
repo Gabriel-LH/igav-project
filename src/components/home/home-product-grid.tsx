@@ -29,7 +29,7 @@ import { toast } from "sonner";
 
 export function ProductGrid() {
   const { updateStatus } = useReservationStore();
-  const { createRentalFromReservation } = useRentalStore(); // NUEVO
+  const { addRental } = useRentalStore(); // NUEVO
   const { updateStockStatus } = useInventoryStore();
 
   const [activeTab, setActiveTab] = useState("todos");
@@ -71,8 +71,6 @@ export function ProductGrid() {
     });
   }, [activeTab, query, currentUser.branchId]);
 
-
-
   const { reservations } = useReservationStore();
 
   // --- 2. LÓGICA DE OPERACIONES (RESERVAS ACTIVAS) ---
@@ -94,13 +92,9 @@ export function ProductGrid() {
           .toLowerCase()
           .includes(query) || client?.dni?.includes(query);
 
-      const resItems = reservations.filter(
-        (i) => i.id === res.id,
-      );
+      const resItems = reservations.filter((i) => i.id === res.id);
       const matchesAnyProduct = resItems.some((item) => {
-        const p = PRODUCTS_MOCK.find(
-          (prod) => prod.id.toString() === item.id,
-        );
+        const p = PRODUCTS_MOCK.find((prod) => prod.id.toString() === item.id);
         return p?.name.toLowerCase().includes(query);
       });
 
@@ -110,7 +104,8 @@ export function ProductGrid() {
 
   const filteredLaundry = useMemo(() => {
     return stock.filter(
-      (s) => s.branchId === currentUser.branchId && s.status === "lavanderia",
+      (s) =>
+        s.branchId === currentUser.branchId && s.status === "en_lavanderia",
     );
   }, [stock, currentUser.branchId]);
 
@@ -119,33 +114,33 @@ export function ProductGrid() {
       // Usamos 'stock' de Zustand
       (s) =>
         s.branchId === currentUser.branchId &&
-        (s.status as string) === "mantenimiento",
+        (s.status as string) === "en_mantenimiento",
     );
   }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
 
-  // Función profesional de entrega
-  const handleDeliver = (reservation: any) => {
-    // 1. En un futuro aquí abrirás un Modal para elegir el stockId real.
-    // Por ahora, simulamos que elegimos el primer stock disponible del producto.
-    const mockSelectedItems = MOCK_RESERVATION_ITEM.filter(
-      (item) => item.reservationId === reservation.id,
-    ).map((item) => ({
-      ...item,
-      stockId: `STK-GENERIC-${item.productId}`, // Esto lo cambiaremos por el Selector
-    }));
+  // // Función profesional de entrega
+  // const handleDeliver = (reservation: any) => {
+  //   // 1. En un futuro aquí abrirás un Modal para elegir el stockId real.
+  //   // Por ahora, simulamos que elegimos el primer stock disponible del producto.
+  //   const mockSelectedItems = MOCK_RESERVATION_ITEM.filter(
+  //     (item) => item.reservationId === reservation.id,
+  //   ).map((item) => ({
+  //     ...item,
+  //     stockId: `STK-GENERIC-${item.productId}`, // Esto lo cambiaremos por el Selector
+  //   }));
 
-    // A) Creamos el Alquiler Activo
-    createRentalFromReservation(reservation, mockSelectedItems);
+  //   // A) Creamos el Alquiler Activo
+  //   addRental(reservation, mockSelectedItems);
 
-    // B) Marcamos los items de stock como "alquilado"
-    mockSelectedItems.forEach((item) => {
-      updateStockStatus(item.stockId, "alquilado");
-    });
+  //   // B) Marcamos los items de stock como "alquilado"
+  //   mockSelectedItems.forEach((item) => {
+  //     updateStockStatus(item.stockId, "alquilado");
+  //   });
 
-    // C) Cerramos la reserva (cambia de 'confirmada' a 'completada')
-    // Al cambiar a 'completada', desaparecerá de esta vista automáticamente
-    updateStatus(reservation.id, "convertida");
-  };
+  //   // C) Cerramos la reserva (cambia de 'confirmada' a 'completada')
+  //   // Al cambiar a 'completada', desaparecerá de esta vista automáticamente
+  //   updateStatus(reservation.id, "convertida");
+  // };
 
   // Decidir qué lista mostrar
   const displayList = showReserved ? filteredReservations : filteredCatalog;
@@ -179,7 +174,7 @@ export function ProductGrid() {
                 // 👈 RECIBE LOS ITEMS AQUÍ
 
                 // 1. Crear el Alquiler Activo
-                createRentalFromReservation(res, itemsWithStock);
+                // createRentalFromReservation(res, itemsWithStock);
 
                 // 2. Actualizar Inventario (Stock)
                 itemsWithStock.forEach((item) => {

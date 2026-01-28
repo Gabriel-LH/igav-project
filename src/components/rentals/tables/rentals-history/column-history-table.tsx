@@ -17,12 +17,18 @@ import {
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
 import { TableCellViewerHistory } from "./history-table-cell-viewer";
 import { rentalsHistorySchema } from "../type/type.history";
-import { BadgeCheck, BadgeX, CircleDashed, Clock, Clock10, OctagonMinus } from "lucide-react";
+import {
+  BadgeCheck,
+  BadgeX,
+  CircleDashed,
+  Clock,
+  Clock10,
+  OctagonMinus,
+} from "lucide-react";
 
 export const columnsRentalsHistory: ColumnDef<
   z.infer<typeof rentalsHistorySchema>
 >[] = [
-
   {
     id: "drag",
     header: () => null,
@@ -90,7 +96,9 @@ export const columnsRentalsHistory: ColumnDef<
   {
     accessorKey: "income",
     header: "Ingreso",
-    cell: ({ getValue }) => <div className="w-32">S/. {getValue<number>()}</div>,
+    cell: ({ getValue }) => (
+      <div className="w-32">S/. {getValue<number>()}</div>
+    ),
   },
   {
     accessorKey: "outDate",
@@ -103,7 +111,7 @@ export const columnsRentalsHistory: ColumnDef<
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
-    accessorKey: "returnDate",
+    accessorKey: "actualReturnDate",
     header: "Fecha de entrega",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
@@ -132,7 +140,7 @@ export const columnsRentalsHistory: ColumnDef<
       );
     },
   },
-   {
+  {
     accessorKey: "gurantee",
     header: "Garantia",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
@@ -140,7 +148,15 @@ export const columnsRentalsHistory: ColumnDef<
   {
     accessorKey: "guarantee_status",
     header: "Estado de garantia",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+    cell: ({ getValue }) => (
+      <div className="w-32">
+        {
+          <Badge variant="outline" className="text-muted-foreground px-1.5">
+            {getValue<string>().replace("_", " ").toUpperCase()}
+          </Badge>
+        }
+      </div>
+    ),
   },
   {
     accessorKey: "damage",
@@ -149,13 +165,11 @@ export const columnsRentalsHistory: ColumnDef<
   },
   {
     id: "actions",
-    cell: () => (
-     <ActionCell />
-    ),
+    cell: () => <ActionCell />,
   },
 ];
 
-function ActionCell () {
+function ActionCell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -4,9 +4,9 @@ import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 
 type StockStatus =
   | "disponible"
-  | "mantenimiento"
+  | "en_mantenimiento"
   | "alquilado"
-  | "lavanderia"
+  | "en_lavanderia"
   | "baja"
   | "agotado"
   | "vendido";

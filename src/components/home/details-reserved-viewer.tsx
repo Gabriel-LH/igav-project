@@ -22,12 +22,11 @@ import {
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Payment } from "@/src/types/payments/type.payments";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { toast } from "sonner";
@@ -54,6 +53,7 @@ import { Checkbox } from "@/components/checkbox";
 import { Label } from "@/components/label";
 import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
+import { deliverReservationUseCase } from "@/src/services/use-cases/deliverReservation.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -75,15 +75,11 @@ export function DetailsReservedViewer({
   const [isCancelOpen, setIsCancelOpen] = useState(false);
 
   const stock = useInventoryStore((state) => state.stock);
-  const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus,
-  );
 
-  const createRentalFromReservation = useRentalStore(
-    (state) => state.createRentalFromReservation,
-  );
-
-  //Store's en general
+  const [guarantee, setGuarantee] = React.useState("");
+  const [guaranteeType, setGuaranteeType] = React.useState<
+    "dinero" | "dni" | "joyas" | "otros"
+  >("dinero");
 
   const cancelReservation = useReservationStore(
     (state) => state.cancelReservation,
@@ -96,7 +92,7 @@ export function DetailsReservedViewer({
 
   const { payments: globalPayments } = usePaymentStore();
 
-  const { guarantees } = useGuaranteeStore();
+  const { products } = useInventoryStore();
 
   const { operations } = useOperationStore();
 
@@ -149,11 +145,6 @@ export function DetailsReservedViewer({
     ),
   ];
 
-  // 4. Garantía
-  const guaranteeRecord = guarantees.find(
-    (g) => g.operationId === operation?.id,
-  );
-
   const activeResItems = reservationItems.filter(
     (ri) => ri.reservationId === activeRes?.id,
   );
@@ -180,69 +171,47 @@ export function DetailsReservedViewer({
     allItemsAssigned;
 
   const handleDeliver = async () => {
-    if (!allItemsAssigned) {
+    if (!activeRes) return;
+
+    if (!isReadyToDeliver) {
       toast.error("Faltan requisitos para la entrega");
       return;
     }
 
-    const itemsWithStock = activeResItems.map((item) => ({
-      ...item,
-      stockId: selectedStocks[item.id], // El ID real que elegimos
-    }));
-
-    const currentClient = CLIENTS_MOCK.find(
-      (c) => c.id === activeRes?.customerId,
-    );
-
-    // 1. Mostramos un toast simple de carga o éxito inmediato
-    const toastId = toast.loading("Procesando entrega e impresión...");
+    const toastId = toast.loading("Procesando entrega...");
 
     try {
-      itemsWithStock.forEach((item) => {
-        // Usamos la nueva función que transfiere y alquila en un solo paso
-        useInventoryStore.getState().deliverAndTransfer(
-          item.stockId,
-          activeRes?.branchId!, // Sede destino
-          currentUser.id, // Quién lo autoriza
-        );
-      });
-      const currentItems = reservations.filter(
-        (item) => item.id === activeRes?.id,
-      );
-
-      const ticketHtml = buildDeliveryTicketHtml(
-        activeRes,
-        currentClient!,
-        currentItems,
-        guaranteeRecord,
-      );
-
-      createRentalFromReservation(activeRes, itemsWithStock);
-
-      // B. Actualizamos cada prenda en InventoryStore a "alquilado"
-      itemsWithStock.forEach((item) => {
-        updateStockStatus(item.stockId, "alquilado");
+      await deliverReservationUseCase({
+        reservation: activeRes,
+        reservationItems: activeResItems,
+        selectedStocks,
+        sellerId: currentUser.id,
+        financials: {
+          totalRent: totalCalculated,
+          paymentMethod: "cash",
+          receivedAmount: totalPaid,
+          keepAsCredit: isCredit,
+        },
       });
 
-      // C.
+      // 🔔 Notificamos a la UI padre
+      onDeliver(
+        activeResItems.map((item) => ({
+          ...item,
+          stockId: selectedStocks[item.id],
+        })),
+      );
 
-      //Logica de negocio
-      console.log("Cambiando estado de reserva a: ENTREGADO");
-      onDeliver(itemsWithStock);
+      const ticketHtml = buildDeliveryTicketHtml( activeRes, currentClient!, currentItems, guaranteeRecord, );
 
-      // 2. Cerramos el drawer y limpiamos checks ANTES de imprimir
-      // Esto asegura que la UI principal ya esté reseteada al volver
       setChecklist({ limpieza: false, garantia: false });
       setIsDrawerOpen(false);
 
-      // 3. Imprimimos (Esta parte bloquea el hilo)
       await printTicket(ticketHtml);
 
-      // 4. AL VOLVER: Cambiamos el toast a éxito y lo programamos para morir
-      toast.success("Entrega realizada correctamente", {
-        id: toastId, // Reemplaza el de carga
-      });
+      toast.success("Reserva entregada correctamente", { id: toastId });
     } catch (error) {
+      console.error(error);
       toast.error("Error al procesar la entrega", { id: toastId });
     }
   };
@@ -309,7 +278,7 @@ export function DetailsReservedViewer({
                 <div className="flex-2 pl-6">
                   <p className="text-sm font-bold">Retiro programado</p>
                   <p className="text-xs text-muted-foreground">
-                    Hora sugerida: {activeRes?.hour} HS
+                    Hora sugerida: {activeRes?.hour}
                   </p>
                 </div>
               </div>
@@ -439,32 +408,17 @@ export function DetailsReservedViewer({
               </span>
               <div>
                 {activeResItems.map((item) => {
-                  const prod = PRODUCTS_MOCK.find(
-                    (p) => p.id.toString() === item.id,
+                  const prod = products.find(
+                    (p) => p.id.toString() === item.productId,
                   );
 
-                  const availableStock = stock.filter(
+                  const allMatchingStock = stock.filter(
                     (s) =>
                       String(s.productId) === String(item.productId) &&
                       s.size === item.size &&
+                      s.color?.toLowerCase() === item.color?.toLowerCase() &&
                       s.status === "disponible",
                   );
-
-                  const allMatchingStock = availableStock.filter((s) => {
-                    const matchProduct =
-                      String(s.productId).trim() === String(item.id).trim();
-                    const matchSize =
-                      String(s.size).trim().toUpperCase() ===
-                      String(item.size).trim().toUpperCase();
-                    const matchColor =
-                      String(s.color).trim().toLowerCase() ===
-                      String(item.color).trim().toLowerCase();
-                    const isAvailable = s.status === "disponible";
-
-                    return (
-                      matchProduct && matchSize && matchColor && isAvailable
-                    );
-                  });
 
                   // 2. Lo dividimos en dos grupos para la UI
                   const localOptions = allMatchingStock.filter(
@@ -719,6 +673,10 @@ export function DetailsReservedViewer({
         calculatedIsCredit={isCredit}
         onAddPayment={handleAddPayment}
         customerName={cliente?.firstName + " " + cliente?.lastName}
+        guarantee={guarantee}
+        guaranteeType={guaranteeType}
+        setGuarantee={setGuarantee}
+        setGuaranteeType={setGuaranteeType}
       />
     </>
   );

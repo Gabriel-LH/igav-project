@@ -1,5 +1,5 @@
 import { RentalDTO } from "../interfaces/RentalDTO";
-import { ReservationDTO } from "../interfaces/ReservationDTO"; 
+import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
 import { useInventoryStore } from "../store/useInventoryStore";
@@ -16,8 +16,9 @@ import { useReservationStore } from "../store/useReservationStore";
 import { reservationItemSchema } from "../types/reservation/type.reservationItem";
 import { usePaymentStore } from "../store/usePaymentStore";
 import { useOperationStore } from "../store/useOperationStore";
+import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
 
-function getFinancials(dto: SaleDTO | RentalDTO | ReservationDTO) {
+function getFinancials(dto: SaleDTO | RentalDTO | ReservationDTO | RentalFromReservationDTO) {
   if (dto.type === "venta") {
     return {
       totalAmount: dto.totalPrice,
@@ -49,12 +50,29 @@ function getFinancials(dto: SaleDTO | RentalDTO | ReservationDTO) {
   };
 }
 
-// Firma correcta (sin any)
-export function processTransaction(dto: SaleDTO | RentalDTO | ReservationDTO) {
+function isRentalFromReservation(
+  dto: RentalDTO | RentalFromReservationDTO,
+): dto is RentalFromReservationDTO {
+  return (
+    dto.type === "alquiler" &&
+    "reservationId" in dto &&
+    Array.isArray((dto as any).reservationItems)
+  );
+}
+
+export function processTransaction(
+  dto: SaleDTO | RentalDTO | ReservationDTO | RentalFromReservationDTO,
+) {
   const now = new Date();
-  const operationId = `OP-${Math.random().toString(36).toUpperCase().substring(2, 9)}`;
+  const operationId = `OP-${Math.random()
+    .toString(36)
+    .toUpperCase()
+    .substring(2, 9)}`;
   const gId = `GUA-${Math.random().toString(36).toUpperCase().substring(2, 9)}`;
   const rentalId = `RENT-${operationId}`;
+
+  const reservationStore = useReservationStore.getState();
+
 
   const {
     totalAmount,
@@ -170,6 +188,8 @@ export function processTransaction(dto: SaleDTO | RentalDTO | ReservationDTO) {
   }
 
   if (dto.type === "alquiler") {
+    const fromReservation = isRentalFromReservation(dto);
+
     if (
       dto.financials.guarantee &&
       dto.financials.guarantee.type !== "no_aplica"
@@ -190,27 +210,24 @@ export function processTransaction(dto: SaleDTO | RentalDTO | ReservationDTO) {
       useGuaranteeStore.getState().addGuarantee(guaranteeData);
     }
 
-    specificData = rentalSchema.parse({
-      id: `RENT-${operationId}`,
-      operationId: String(operationId),
+    // 🔁 Reserva → convertida (solo si viene de reserva)
+    if (fromReservation) {
+      const reservationStore = useReservationStore.getState();
 
-      customerId: dto.customerId,
-      branchId: dto.branchId,
+      reservationStore.updateStatus(dto.reservationId, "convertida");
 
-      outDate: dto.startDate,
-      expectedReturnDate: dto.endDate,
-
-      status: "en_curso",
-      guaranteeId: guaranteeData?.id,
-
-      createdAt: now,
-      updatedAt: now,
-    });
+      dto.reservationItems.forEach((item) => {
+        reservationStore.updateReservationItemStatus(
+          item.reservationItemId,
+          "convertida",
+        );
+      });
+    }
 
     const rental = rentalSchema.parse({
       id: rentalId,
       operationId: String(operationId),
-      reservationId: dto.id,
+      reservationId: fromReservation ? dto.reservationId : null,
       customerId: dto.customerId,
       branchId: dto.branchId,
       outDate: dto.startDate,
@@ -220,29 +237,70 @@ export function processTransaction(dto: SaleDTO | RentalDTO | ReservationDTO) {
       totalPenalty: 0,
       createdAt: now,
       updatedAt: now,
-      notes: dto.notes ?? "",
+      notes: !fromReservation ? (dto.notes ?? "") : "",
     });
 
-    const rentalItems = rentalItemSchema.array().parse([
+    const rentalItems = fromReservation
+  ? rentalItemSchema.array().parse(
+      dto.reservationItems.map((item) => {
+        const reservationItem = reservationStore.reservationItems.find(
+          (ri) => ri.id === item.reservationItemId,
+        );
+
+        if (!reservationItem) {
+          throw new Error(
+            `ReservationItem no encontrado: ${item.reservationItemId}`,
+          );
+        }
+
+        return {
+          id: `RITEM-${item.reservationItemId}`,
+          rentalId,
+          operationId: String(operationId),
+          productId: reservationItem.productId,
+          stockId: item.stockId,
+          quantity: reservationItem.quantity ?? 1,
+          size: reservationItem.size,
+          color: reservationItem.color,
+          priceAtMoment: dto.financials.totalRent,
+          conditionOut: "Excelente",
+          itemStatus: "alquilado",
+          notes: "",
+        };
+      }),
+    )
+  : rentalItemSchema.array().parse([
       {
         id: `RITEM-${operationId}`,
         rentalId,
         operationId: String(operationId),
         productId: dto.productId,
         stockId: dto.stockId,
+        quantity: dto.quantity ?? 1,
         size: dto.size,
         color: dto.color,
         priceAtMoment: dto.financials.totalRent,
-        quantity: dto.quantity ?? 1,
         conditionOut: "Excelente",
         itemStatus: "alquilado",
         notes: dto.notes ?? "",
       },
     ]);
 
+
     useRentalStore.getState().addRental(rental, rentalItems);
 
-    useInventoryStore.getState().updateStockStatus(dto.stockId, "alquilado");
+    // 🔄 Inventario
+    if (fromReservation) {
+      rentalItems.forEach((item) => {
+        useInventoryStore
+          .getState()
+          .updateStockStatus(item.stockId, "alquilado");
+      });
+    } else {
+      useInventoryStore.getState().updateStockStatus(dto.stockId, "alquilado");
+    }
+
+    specificData = rental;
   }
 
   return {

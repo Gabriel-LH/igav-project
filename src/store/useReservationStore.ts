@@ -4,14 +4,20 @@ import { Reservation } from "../types/reservation/type.reservation";
 import { ReservationItem } from "../types/reservation/type.reservationItem";
 
 interface ReservationStore {
+  // state
   reservations: Reservation[];
   reservationItems: ReservationItem[];
 
+  // actions
   addReservation: (
     reservation: Reservation,
     reservationItems: ReservationItem[],
   ) => void;
-  updateStatus: (id: string, status: Reservation["status"]) => void;
+
+  updateStatus: (
+    id: string,
+    status: Reservation["status"],
+  ) => void;
 
   cancelReservation: (id: string) => void;
 
@@ -20,29 +26,50 @@ interface ReservationStore {
     newStartDate: Date,
     newEndDate: Date,
   ) => void;
+
+  updateReservationItemStatus: (
+    id: string,
+    status: ReservationItem["itemStatus"],
+  ) => void;
 }
 
 export const useReservationStore = create<ReservationStore>((set) => ({
+  // =========================
+  // STATE
+  // =========================
   reservations: [],
   reservationItems: [],
 
-  addReservation: (reservation, reservationItems) =>
-    set((state) => {
-      console.log("🔵 [addReservation] Nueva reserva:", reservation);
-      console.log("🔵 [addReservation] Nuevos items:", reservationItems);
-      return {
-        reservations: [reservation, ...state.reservations],
-        reservationItems: [...reservationItems, ...state.reservationItems],
-      };
-    }),
+  // =========================
+  // ACTIONS
+  // =========================
 
+  /**
+   * Crear una reserva con sus items
+   * (se usa en processTransaction cuando type === "reserva")
+   */
+  addReservation: (reservation, reservationItems) =>
+    set((state) => ({
+      reservations: [reservation, ...state.reservations],
+      reservationItems: [...reservationItems, ...state.reservationItems],
+    })),
+
+  /**
+   * Actualiza el estado general de la reserva
+   * Ej: confirmada → convertida / cancelada
+   */
   updateStatus: (id, status) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
-        res.id === id ? { ...res, status, updatedAt: new Date() } : res,
+        res.id === id
+          ? { ...res, status, updatedAt: new Date() }
+          : res,
       ),
     })),
 
+  /**
+   * Cancela una reserva
+   */
   cancelReservation: (id) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
@@ -52,6 +79,9 @@ export const useReservationStore = create<ReservationStore>((set) => ({
       ),
     })),
 
+  /**
+   * Reprograma fechas de la reserva
+   */
   rearrangeReservation: (id, newStartDate, newEndDate) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
@@ -63,6 +93,19 @@ export const useReservationStore = create<ReservationStore>((set) => ({
               updatedAt: new Date(),
             }
           : res,
+      ),
+    })),
+
+  /**
+   * Actualiza el estado de un item de reserva
+   * Ej: confirmada → convertida
+   */
+  updateReservationItemStatus: (id, status) =>
+    set((state) => ({
+      reservationItems: state.reservationItems.map((item) =>
+        item.id === id
+          ? { ...item, itemStatus: status }
+          : item,
       ),
     })),
 }));

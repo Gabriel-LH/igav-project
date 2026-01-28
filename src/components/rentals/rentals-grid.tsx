@@ -3,26 +3,27 @@
 import { useMemo } from "react";
 import { RentalsDataTable } from "./rentals-data-table";
 import { RentalsTab } from "./rentals-tab";
-import { useRentalStore } from "@/src/store/useRentalStore"; 
+import { useRentalStore } from "@/src/store/useRentalStore";
 import { mapRentalToTable } from "@/src/adapters/rentals-active-adapters";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 
 export const RentalsGrid = () => {
-
   const { rentals, rentalItems } = useRentalStore();
   const { products } = useInventoryStore();
   const { customers } = useCustomerStore();
   const { guarantees } = useGuaranteeStore();
 
-  const allData = useMemo(() => mapRentalToTable(customers, rentals, guarantees, rentalItems, products), [rentals, rentalItems, products, customers, guarantees]);
+  const allData = useMemo(
+    () =>
+      mapRentalToTable(customers, rentals, guarantees, rentalItems, products),
+    [rentals, rentalItems, products, customers, guarantees],
+  );
 
-  const active = allData.filter(i => i.status === "alquilado");
-
-  console.log("Informacion completa del rental activo", allData);
-  const dataRentalCanceled = [];
-  const dataRentalHistory = [];
+  const active = allData.filter((i) => i.status === "en_curso");
+  const canceled = allData.filter((i) => i.status === "anulado");
+  const history = allData.filter((i) => i.status === "devuelto");
 
   return (
     <div className="flex flex-1 flex-col">
@@ -31,8 +32,8 @@ export const RentalsGrid = () => {
           <RentalsTab />
           <RentalsDataTable
             dataRentalActive={active}
-            dataRentalCanceled={dataRentalCanceled}
-            dataRentalHistory={dataRentalHistory}
+            dataRentalCanceled={canceled}
+            dataRentalHistory={history}
           />
         </div>
       </div>

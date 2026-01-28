@@ -15,9 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
-import { TableCellViewerPopular } from "@/src/components/dashboard/data-table/most-popular/table-cell-viewer";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CircleDashed, RepeatIcon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 import { rentalsCanceledSchema } from "../type/type.canceled";
 import { BadgeX } from "lucide-react";
 import { TableCellViewerCanceled } from "./cancel-table-cell-viewer";
@@ -28,7 +25,7 @@ export const columnsRentalCanceled: ColumnDef<
   {
     id: "drag",
     header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
+    cell: ({ row }) => <DragHandle id={Number(row.original.id)} />,
   },
   {
     id: "select",
@@ -57,75 +54,83 @@ export const columnsRentalCanceled: ColumnDef<
     enableHiding: false,
   },
   {
-     accessorKey: "nameCustomer",
-     header: "Cliente",
-     cell: ({ row }) => {
-       return <TableCellViewerCanceled item={row.original} />;
-     },
-     enableHiding: false,
-   },
-   {
-     accessorKey: "sellerName",
-     header: "Vendedor",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "branchName",
-     header: "Sucursal",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "product",
-     header: "Producto",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "count",
-     header: "Cantidad",
-     cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
-   },
-   {
-     accessorKey: "income",
-     header: "Ingreso",
-     cell: ({ getValue }) => <div className="w-32">S/. {getValue<number>()}</div>,
-   },
-   {
-     accessorKey: "outDate",
-     header: "Fecha de registro",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "cancelDate",
-     header: "Fecha de anulacion",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "status",
-     header: "Estado",
-     cell: ({ getValue }) => {
-       const type = getValue() as string;
-       return (
-         <div className="w-32">
-           <Badge variant="outline" className="text-muted-foreground px-1.5">
-             {type === "anulada" &&
-               <BadgeX />
-             }
-             {type.replace("_", " ").toUpperCase()}
-           </Badge>
-         </div>
-       );
-     },
-   },
-    {
-     accessorKey: "gurantee",
-     header: "Garantia",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
-   {
-     accessorKey: "guarantee_status",
-     header: "Estado de garantia",
-     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-   },
+    accessorKey: "nameCustomer",
+    header: "Cliente",
+    cell: ({ row }) => {
+      return <TableCellViewerCanceled item={row.original} />;
+    },
+    enableHiding: false,
+  },
+  {
+    accessorKey: "sellerName",
+    header: "Vendedor",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "branchName",
+    header: "Sucursal",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "product",
+    header: "Producto",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "count",
+    header: "Cantidad",
+    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+  },
+  {
+    accessorKey: "income",
+    header: "Ingreso",
+    cell: ({ getValue }) => (
+      <div className="w-32">S/. {getValue<number>()}</div>
+    ),
+  },
+  {
+    accessorKey: "outDate",
+    header: "Fecha de registro",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "cancelDate",
+    header: "Fecha de anulacion",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: "Estado",
+    cell: ({ getValue }) => {
+      const type = getValue() as string;
+      return (
+        <div className="w-32">
+          <Badge variant="outline" className="text-muted-foreground px-1.5">
+            {type === "anulado" && <BadgeX />}
+            {type.replace("_", " ").toUpperCase()}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "gurantee",
+    header: "Garantia",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
+    accessorKey: "guarantee_status",
+    header: "Estado de garantia",
+    cell: ({ getValue }) => (
+      <div className="w-32">
+        {
+          <Badge variant="outline" className="text-muted-foreground px-1.5">
+            {getValue<string>().replace("_", " ").toUpperCase()}
+          </Badge>
+        }
+      </div>
+    ),
+  },
   {
     id: "actions",
     cell: () => <ActionCell />,

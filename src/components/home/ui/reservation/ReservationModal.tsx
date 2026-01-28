@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/reservationDTO";
+import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -168,18 +168,18 @@ export function ReservationModal({
         <DialogHeader>
           <DialogTitle className="uppercase text-sm font-black">
             {operationType === "alquiler" ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-blue-500">
                 <HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
                 Reserva de Alquiler
               </span>
             ) : (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-orange-500">
                 <HugeiconsIcon icon={ShoppingBag01Icon} strokeWidth={2} />
                 Separación de Venta
               </span>
             )}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground text-xs">
             Completa el formulario para crear una reserva
           </DialogDescription>
         </DialogHeader>
@@ -232,10 +232,11 @@ export function ReservationModal({
             <Button
               onClick={handleConfirm}
               className={`w-full h-12 font-bold ${
-                isVenta ? "bg-orange-600" : "bg-emerald-600"
+                !isVenta ?  "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
               }`}
             >
-              Confirmar {isVenta ? "Venta" : "Reserva"}
+              RESERVAR {isVenta ? "VENTA" : "ALQUILER"}
             </Button>
           )}
         </div>

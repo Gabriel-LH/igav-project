@@ -63,7 +63,7 @@ export const buildReturnTicketHtml = (
       <p><strong>GARANTÍA:</strong> ${
         guarantee
           ? guarantee.type === "dinero"
-            ? formatCurrency(guarantee.value)
+            ? formatCurrency(Number(guarantee.value))
             : guarantee.description
           : "NO REGISTRADA"
       }</p>
@@ -109,8 +109,8 @@ export const buildReturnTicketHtml = (
       <div style="border-top:1px solid #000;margin-top:4px;padding-top:4px;font-weight:bold;">
         ${
           financials.isCash
-            ? `A DEVOLVER: ${formatCurrency(financials.refundAmount)}`
-            : `TOTAL A COBRAR: ${formatCurrency(financials.totalToPay)}`
+            ? `A DEVOLVER: ${formatCurrency(Number(financials.refundAmount))}`
+            : `TOTAL A COBRAR: ${formatCurrency(Number(financials.totalToPay))}`
         }
       </div>
     </div>

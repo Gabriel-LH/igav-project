@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
+import { Wallet, CreditCard, Smartphone, Banknote, HandCoins } from "lucide-react";
 import { PaymentMethod } from "../direct-transaction/CashPaymentSummary";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
@@ -42,7 +42,8 @@ export function ReservationPaymentSummary({
     <Card className="p-4 space-y-1 shadow-sm">
       <div className="flex justify-between">
         <div className="space-y-2">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+          <Label className="text-[10px] font-bold uppercase">
+            <Banknote className="w-3 h-3" />
             Adelanto
           </Label>
           <div className="relative">
@@ -60,7 +61,7 @@ export function ReservationPaymentSummary({
 
         {/* MÉTODO DE PAGO */}
         <div className="space-y-2">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+          <Label className="text-[10px] font-bold uppercase">
             Método de pago
           </Label>
           <Select
@@ -94,7 +95,8 @@ export function ReservationPaymentSummary({
       {/* MONTO ENTREGADO */}
       <div className="flex justify-between">
         <div className="space-y-2">
-          <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+          <Label className="text-[10px] font-bold uppercase">
+            <Banknote className="w-3 h-3" />
             Monto entregado
           </Label>
           <div className="relative">
@@ -111,8 +113,9 @@ export function ReservationPaymentSummary({
         </div>
         <div className="space-y-2">
           {paymentMethod === "cash" && (
-            <div className="flex flex-col justify-end gap-2 text-muted-foreground text-sm font-bold">
-              <Label className="text-[10px] font-bold uppercase text-muted-foreground">
+            <div className="flex flex-col justify-end gap-2 text-sm font-bold">
+              <Label className="text-[10px] font-bold uppercase">
+                <HandCoins className="w-3 h-3" />
                 Vuelto
               </Label>
               <div

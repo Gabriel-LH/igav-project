@@ -23,9 +23,9 @@ export function GuaranteeSection({
   setGuaranteeType,
 }: GuaranteeSectionProps) {
   return (
-    <div className="space-y-2 pb-2 border-t border-dashed">
+    <div className="space-y-2 border-t pt-2">
       <div className="flex justify-between items-center">
-        <Label className="text-[10px] font-bold uppercase text-amber-600 flex items-center gap-1">
+        <Label className="text-[10px] font-bold uppercase  flex items-center gap-1">
           <PackageCheck className="w-3 h-3" /> Garantía
         </Label>
 

@@ -434,9 +434,9 @@ export function DetailsProductViewer({
             >
               <Button
                 disabled={localStock === 0}
-                className="bg-blue-600 text-white"
+                className="bg-blue-600 text-white hover:bg-blue-700"
               >
-                <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 mr-2" />
+                <HugeiconsIcon icon={Calendar03Icon} strokeWidth={2} className="w-4 h-4 mr-2" />
                 Alquilar hoy
               </Button>
             </DirectTransactionModal>
@@ -452,9 +452,9 @@ export function DetailsProductViewer({
             >
               <Button
                 disabled={localStock === 0}
-                className="bg-orange-600 text-white"
+                className="bg-orange-600 text-white hover:bg-orange-700"
               >
-                <HugeiconsIcon icon={SaleTag02Icon} className="w-4 h-4 mr-2" />
+                <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2} className="w-4 h-4 mr-2" />
                 Vender
               </Button>
             </DirectTransactionModal>
@@ -474,6 +474,7 @@ export function DetailsProductViewer({
               >
                 <HugeiconsIcon
                   icon={CalendarLock01Icon}
+                  strokeWidth={2}
                   className="w-4 h-4 mr-2"
                 />
                 {localStock > 0

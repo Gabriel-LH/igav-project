@@ -101,12 +101,14 @@ export const ReturnGrid = () => {
               totalRent: item.priceAtMoment, // Guardado en el RentalItem
               paymentMethod: "cash", // Como no se guarda en el Rental, puedes poner un default o extender el Rental type
               guarantee: {
-                id: realGuarantee?.id || parent.guaranteeId || "",
                 type: (realGuarantee?.type as any) || "otros",
                 value: String(realGuarantee?.value || "0"),
                 description: realGuarantee?.description || "Sin descripción",
               },
+              receivedAmount: 0,
+              keepAsCredit: false
             },
+            sku: ""
           };
 
           return (

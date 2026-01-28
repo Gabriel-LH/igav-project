@@ -28,8 +28,8 @@ export function CustomerSelector({
   const [value, setValue] = React.useState("");
 
   return (
-    <div className="space-y-3">
-      <Label className="text-[10px] uppercase font-black text-muted-foreground">
+    <div>
+      <Label className="text-[11px] mb-0.5 font-bold uppercase">
         Asociar Cliente
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
@@ -37,7 +37,7 @@ export function CustomerSelector({
           <Button
             variant="outline"
             role="combobox"
-            className="w-full justify-between h-12"
+            className="w-full font-normal justify-between h-12"
           >
             {value
               ? selected?.firstName + " " + selected?.lastName

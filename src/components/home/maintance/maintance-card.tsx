@@ -7,17 +7,20 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import Image from "next/image";
 import { Badge } from "@/components/badge";
+import { Product } from "@/src/types/product/type.product"; 
 
 export function MaintenanceActionCard({ item }: { item: any }) {
   const updateStockStatus = useInventoryStore(
     (state) => state.updateStockStatus
   );
 
-  const productName = PRODUCTS_MOCK.find(
-    (product: any) => product.id === item.productId
+  const { products } = useInventoryStore();
+
+  const productName = products.find(
+    (product: Product) => product.id === item.productId
   )?.name;
-  const sku = PRODUCTS_MOCK.find(
-    (product: any) => product.id === item.productId
+  const sku = products.find(
+    (product: Product) => product.id === item.productId
   )?.sku;
 
   return (
@@ -86,7 +89,7 @@ export function MaintenanceActionCard({ item }: { item: any }) {
         Listo
       </Button>
       <Button
-        onClick={() => updateStockStatus(item.id, "lavanderia")}
+        onClick={() => updateStockStatus(item.id, "en_lavanderia")}
         variant="outline"
         className="border-blue-500 uppercase tracking-wider text-blue-600 hover:bg-blue-500 hover:text-blue-500 font-black text-[10px] "
       >

@@ -24,7 +24,7 @@ export function PriceBreakdownBase({
     <Card className="px-4 py-2 shadow-sm">
       {/* HEADER */}
       <div className="flex justify-between items-center border-b pb-2">
-        <span className="text-[11px] font-black uppercase tracking-wide text-muted-foreground">
+        <span className="text-[11px] font-bold uppercase tracking-wide">
           {title}
         </span>
       </div>

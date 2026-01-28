@@ -8,7 +8,6 @@ import {
   WashingMachineIcon,
 } from "@hugeicons/core-free-icons";
 import Image from "next/image";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Badge } from "@/components/badge";
 
@@ -17,10 +16,12 @@ export function LaundryActionCard({ item }: { item: any }) {
     (state) => state.updateStockStatus
   );
 
-  const productName = PRODUCTS_MOCK.find(
+  const { products } = useInventoryStore();
+
+  const productName = products.find(
     (product: any) => product.id === item.productId
   )?.name;
-  const sku = PRODUCTS_MOCK.find(
+  const sku = products.find(
     (product: any) => product.id === item.productId
   )?.sku;
 
@@ -78,7 +79,7 @@ export function LaundryActionCard({ item }: { item: any }) {
           </span>
         </Button>
         <Button
-          onClick={() => updateStockStatus(item.id, "mantenimiento")}
+          onClick={() => updateStockStatus(item.id, "en_mantenimiento")}
           variant="outline"
           className="border-amber-500 border text-amber-600 hover:bg-amber-500 hover:text-amber-500 font-black text-[10px] uppercase flex gap-0 group"
         >

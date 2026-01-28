@@ -98,7 +98,7 @@ export function ReservationFormContent({
 
       {/* 2. CALENDARIO */}
       <div className="space-y-3">
-        <Label className="text-[10px] uppercase font-black text-muted-foreground">
+        <Label className="text-[11px] uppercase font-bold">
           Fechas del Evento
         </Label>
         <ReservationCalendar
@@ -118,7 +118,7 @@ export function ReservationFormContent({
       />
 
       <div className="space-y-2">
-        <Label className="text-[10px] uppercase font-black text-muted-foreground flex items-center gap-2">
+        <Label className="text-[10px] uppercase font-bold flex items-center">
           <MessageSquarePlus className="w-3 h-3" /> Notas y Ajustes
         </Label>
         <Textarea

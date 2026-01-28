@@ -33,7 +33,12 @@ interface PaymentHistoryModalProps {
   calculatedIsCredit: boolean;
   customerName: string;
   onAddPayment: (paymentData: any) => Payment;
+  guarantee: string;
+  guaranteeType: GuaranteeType;
+  setGuarantee: (value: string) => void;
+  setGuaranteeType: (value: GuaranteeType) => void;
 }
+export type GuaranteeType = "dinero" | "dni" | "joyas" | "otros";
 
 export function PaymentHistoryModal({
   open,
@@ -45,6 +50,10 @@ export function PaymentHistoryModal({
   calculatedIsCredit,
   customerName,
   onAddPayment,
+  guarantee,
+  guaranteeType,
+  setGuarantee,
+  setGuaranteeType,
 }: PaymentHistoryModalProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [confirmPrintOpen, setConfirmPrintOpen] = useState(false);

@@ -13,6 +13,7 @@ export interface RentalTableRow {
   sellerName: string;
   outDate: string;
   expectedReturnDate: string;
+  cancelDate: string;
   nameCustomer: string;
   product: string;
   rent_unit: string;
@@ -30,10 +31,12 @@ export const mapRentalToTable = (
   rentalItems: RentalItem[],
   products: Product[],
 ): RentalTableRow[] => {
-  return rentalItems.map((item) => {
-    const parent = rentals.find((r) => r.id === item.rentalId);
+  return rentals.map((item) => {
+    const parent = rentals.find((r) => r.id === item.id);
 
-    const product = products.find((p) => p.id === item.productId);
+    const rentalItem = rentalItems.find((r) => r.rentalId === item.id);
+
+    const product = products.find((p) => p.id === rentalItem?.productId);
 
     const branch = BRANCH_MOCKS.find((b) => b.id === parent?.branchId);
 
@@ -46,7 +49,7 @@ export const mapRentalToTable = (
     const seller = USER_MOCK[0];
     return {
       // El ID técnico se usa para la "key" de React, pero no se muestra
-      id: item.rentalId,
+      id: item.id,
       branchName: branch?.name || "Principal",
       sellerName: seller?.name || "",
       outDate: parent?.outDate
@@ -55,14 +58,20 @@ export const mapRentalToTable = (
       expectedReturnDate: parent?.expectedReturnDate
         ? new Date(parent.expectedReturnDate).toLocaleDateString()
         : "---",
+      cancelDate: parent?.cancelDate
+        ? new Date(parent.cancelDate).toLocaleDateString()
+        : "---",
+      actualReturnDate: parent?.actualReturnDate
+        ? new Date(parent.actualReturnDate).toLocaleDateString()
+        : "---",
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
-      product: product?.name || `ID: ${item.productId}`,
+      product: product?.name || `ID: ${rentalItem?. productId}`,
       rent_unit: product?.rent_unit || "---",
-      count: item.quantity,
-      income: item.priceAtMoment,
+      count: rentalItem?.quantity || 0,
+      income: rentalItem?.priceAtMoment || 0,
       gurantee: guarantee ? guarantee.value.toString() : "---",
       guarantee_status: guarantee?.status || "---",
-      status: item.itemStatus,
+      status: item.status,
     };
   });
 };

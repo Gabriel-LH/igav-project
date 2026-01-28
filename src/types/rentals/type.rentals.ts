@@ -11,6 +11,7 @@ export const rentalSchema = z.object({
   outDate: z.date(),            // Cuándo salió físicamente de tienda
   expectedReturnDate: z.date(), // Cuándo prometió volver
   actualReturnDate: z.date().optional(), // Se llena al recibir la prenda
+  cancelDate: z.date().optional(), // Se llena al cancelar la prenda
   
   // Estado del Alquiler
   status: z.enum([

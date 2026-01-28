@@ -22,9 +22,9 @@ export const stockSchema = z.object({
   condition: z.enum(["Nuevo", "Usado", "Vintage"]),
   status: z.enum([
     "disponible",
-    "mantenimiento",
+    "en_mantenimiento",
     "alquilado",
-    "lavanderia",
+    "en_lavanderia",
     "baja",
     "agotado",
     "vendido",

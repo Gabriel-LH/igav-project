@@ -13,7 +13,7 @@ import { addDays, format } from "date-fns";
 import { Label } from "@/components/label";
 import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar02Icon, Tag02Icon } from "@hugeicons/core-free-icons";
+import { Calendar02Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
@@ -186,23 +186,22 @@ export function DirectTransactionModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="uppercase text-sm font-black">
             {type === "alquiler" ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-blue-500">
                 <HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
                 Alquiler Inmediato
               </span>
             ) : (
-              <span className="flex items-center gap-2">
-                <HugeiconsIcon icon={Tag02Icon} strokeWidth={2} />
+              <span className="flex items-center gap-2 text-orange-500">
+                <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2} />
                 Venta Directa
               </span>
             )}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs text-muted-foreground">
             Completa el formulario para realizar la operación
           </DialogDescription>
         </DialogHeader>
@@ -233,8 +232,8 @@ export function DirectTransactionModal({
 
           {/* Fecha devolución */}
           {type === "alquiler" && (
-            <div className="space-y-2 p-3 rounded-lg border">
-              <Label className="text-[12px] font-black uppercase text-blue-600">
+            <div>
+              <Label className="text-[11px] mb-3 font-bold uppercase">
                 Fecha de Devolución
               </Label>
               <ReservationCalendar
@@ -247,7 +246,7 @@ export function DirectTransactionModal({
                 currentBranchId=""
                 rules=""
               />
-              <p className="text-[10px] text-blue-400 italic">
+              <p className="text-[10px] text-blue-300 italic">
                 * El alquiler inicia hoy {format(new Date(), "dd/MM")}
               </p>
             </div>
@@ -278,16 +277,11 @@ export function DirectTransactionModal({
             receivedAmount={receivedAmount}
             setReceivedAmount={setReceivedAmount}
             changeAmount={changeAmount}
+            guarantee={guarantee}
+            setGuarantee={setGuarantee}
+            guaranteeType={guaranteeType}
+            setGuaranteeType={setGuaranteeType}
           />
-
-          {type === "alquiler" && (
-            <GuaranteeSection
-              guarantee={guarantee}
-              setGuarantee={setGuarantee}
-              guaranteeType={guaranteeType}
-              setGuaranteeType={setGuaranteeType}
-            />
-          )}
         </div>
 
         {!isAvailable ? (
@@ -298,7 +292,9 @@ export function DirectTransactionModal({
           <Button
             onClick={handleConfirm}
             className={`w-full h-12 font-black ${
-              type === "alquiler" ? "bg-blue-600" : "bg-orange-600"
+              type === "alquiler"
+                ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
             }`}
           >
             {type === "alquiler" ? "ENTREGAR Y COBRAR" : "FINALIZAR VENTA"}

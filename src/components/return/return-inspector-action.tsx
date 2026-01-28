@@ -21,20 +21,16 @@ import {
 } from "@/components/drawer";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Badge } from "@/components/badge";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { useRentalStore } from "@/src/store/useRentalStore"; // CAMBIADO: Usar RentalStore para devoluciones
-import { useGuaranteeStore } from "@/src/store/useGuaranteeStore"; // AÑADIDO: Para liberar garantía
 import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
 import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { RentalDTO } from "@/src/interfaces/RentalDTO";
+import { processReturn } from "@/src/services/processReturn";
+import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
-type StockStatus =
-  | "disponible"
-  | "mantenimiento"
-  | "alquilado"
-  | "lavanderia"
-  | "baja";
+type StockTarget = "disponible" | "en_lavanderia" | "en_mantenimiento" | "baja";
 
 export function ReturnInspectionDrawer({
   rental,
@@ -58,14 +54,11 @@ export function ReturnInspectionDrawer({
     noPhysicalDamage: true,
   });
 
-  // STORES
-  const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus,
-  );
-  const processReturn = useRentalStore((state) => state.processReturn); // Lógica de devolución de ítem
-  const updateGuaranteeStatus = useGuaranteeStore(
-    (state) => state.updateGuaranteeStatus,
-  );
+  const { rentalItems } = useRentalStore();
+  const { products } = useInventoryStore();
+
+  console.log("Informacion completa del rental activo", rentalItems);
+  console.log("Informacion completa del producto", products);
 
   const itemsToInspect = useMemo(() => {
     return [
@@ -78,12 +71,19 @@ export function ReturnInspectionDrawer({
     ];
   }, [rental]);
 
-  // Estado de destino
+  const itemsToInspects = useMemo(
+    () => (rentalItems ?? []).filter((i) => i.rentalId === rental.id),
+    [rentalItems, rental.id],
+  );
+
   const [itemsInspection, setItemsInspection] = useState<
-    Record<string, StockStatus>
-  >(
+    Record<string, StockTarget>
+  >(() =>
     Object.fromEntries(
-      itemsToInspect.map((item) => [String(item.id), "lavanderia"]),
+      itemsToInspects.map((item) => [
+        String(item.id), // 👈 rentalItem.id
+        "en_lavanderia",
+      ]),
     ),
   );
 
@@ -119,22 +119,25 @@ export function ReturnInspectionDrawer({
   const handleCompleteReturn = async () => {
     if (!rental.stockId) return;
 
-    const targetStatus =
-      itemsInspection[String(rental.id)] || "lavanderia";
+    const targetStatus = itemsInspection[String(rental.id)] || "en_lavanderia";
 
-    // 1. Actualizar Inventario físico
-    updateStockStatus(rental.stockId, targetStatus, damageNotes);
+    processReturn({
+      rentalId: rental.id,
 
-    // 2. Finalizar el ítem en el RentalStore (Esto cambia el itemStatus a 'devuelto')
-    processReturn(rental.id!, targetStatus, Number(summary.totalToPay));
+      rentalStatus: !itemsStatus.noPhysicalDamage ? "con_daños" : "devuelto",
 
-    // 3. Actualizar estado de la garantía en el store si existe
-    if (rental.financials.guarantee?.id) {
-      updateGuaranteeStatus(
-        rental.financials.guarantee.id,
+      items: itemsToInspects.map((item) => ({
+        rentalItemId: item.id,
+        itemStatus: "devuelto",
+        stockTarget: targetStatus,
+      })),
+
+      totalPenalty: summary.totalToPay,
+      guaranteeResult:
         summary.refundAmount > 0 || !summary.isCash ? "devuelta" : "retenida",
-      );
-    }
+
+      notes: damageNotes,
+    });
 
     const ticketHtml = buildReturnTicketHtml(
       rental,
@@ -144,8 +147,6 @@ export function ReturnInspectionDrawer({
       { itemsInspection, damageNotes: damageNotes || undefined },
       { ...summary, extraDamageCharge },
     );
-
-    console.log(ticketHtml);
 
     setDrawerOpen(false);
     await printTicket(ticketHtml);
@@ -159,12 +160,6 @@ export function ReturnInspectionDrawer({
     return stats;
   }, [itemsInspection]);
 
-  // ... (Resto del JSX se mantiene igual hasta el botón de selección de estado)
-
-  // NOTA: En el mapeo de botones de estado, asegúrate de que el onClick use reservation.id:
-  // onClick={() => {
-  //   setItemsInspection(prev => ({ ...prev, [String(reservation.id)]: opt.id }));
-  // }}
   return (
     <>
       <Drawer
@@ -204,74 +199,88 @@ export function ReturnInspectionDrawer({
               <h3 className="text-[12px] font-semibold uppercase tracking-widest">
                 Inspección por prenda
               </h3>
-              <div
-                key={rental.id}
-                className="p-3 border rounded-xl bg-accent/50 space-y-3 mb-3"
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold">
-                    {rental?.productName} ({rental?.size})
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  {[
-                    {
-                      id: "lavanderia",
-                      label: "Enviar a Lavar",
-                      icon: (
-                        <WashingMachine size={16} className="text-blue-600" />
-                      ),
-                      activeColor: "bg-blue-100/10  text-blue-600",
-                    },
-                    {
-                      id: "mantenimiento",
-                      label: "Reparación",
-                      icon: (
-                        <Icon
-                          iconNode={iron}
-                          size={16}
-                          className="text-amber-600"
-                        />
-                      ),
-                      activeColor: "bg-amber-100/10  text-amber-600",
-                    },
-                    {
-                      id: "baja",
-                      label: "Dar de Baja",
-                      icon: <Trash2 size={16} className="text-red-600" />,
-                      activeColor: "bg-red-100/10  text-red-600",
-                    },
-                  ].map((opt) => {
-                    const isSelected =
-                      itemsInspection[rental.productId] === opt.id;
+              {itemsToInspects.map((item) => {
+                // 1. Buscamos el producto/item en el store o en el array de items del rental
+                const product = products.find((i) => i.id === item.productId);
+                const isSelectedStatus = itemsInspection[String(item.id)];
 
-                    return (
-                      <button
-                        key={opt.id}
-                        onClick={() => {
-                          const newStatus = (
-                            isSelected ? "disponible" : opt.id
-                          ) as StockStatus;
-                          setItemsInspection((prev) => ({
-                            ...prev,
-                            [String(rental.id)]: newStatus,
-                          }));
-                        }}
-                        className={`flex-1 flex flex-col items-center p-2 cursor-pointer rounded-xl border transition-all ${
-                          isSelected
-                            ? opt.activeColor
-                            : "opacity-50 hover:opacity-100 border"
-                        }`}
-                      >
-                        <span className="text-lg">{opt.icon}</span>
-                        <span className="text-[9px] pt-1 uppercase font-bold leading-tight">
-                          {opt.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                // 2. RETORNAMOS el JSX explícitamente usando 'return'
+                return (
+                  <div
+                    key={item.id}
+                    className="p-3 border rounded-xl bg-accent/50 space-y-3 mb-3"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold">
+                        {/* Si no lo encuentra en rentalItems, usamos los datos del item del map */}
+                        {product?.name} ({item.size})
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {[
+                        {
+                          id: "lavanderia",
+                          label: "Enviar a Lavar",
+                          icon: (
+                            <WashingMachine
+                              size={16}
+                              className="text-blue-600"
+                            />
+                          ),
+                          activeColor: "bg-blue-100/10 text-blue-600",
+                        },
+                        {
+                          id: "mantenimiento",
+                          label: "Reparación",
+                          icon: (
+                            <Icon
+                              iconNode={iron}
+                              size={16}
+                              className="text-amber-600"
+                            />
+                          ),
+                          activeColor: "bg-amber-100/10 text-amber-600",
+                        },
+                        {
+                          id: "baja",
+                          label: "Dar de Baja",
+                          icon: <Trash2 size={16} className="text-red-600" />,
+                          activeColor: "bg-red-100/10 text-red-600",
+                        },
+                      ].map((opt) => {
+                        const isSelected = isSelectedStatus === opt.id;
+
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button" // Evita disparar submits accidentales
+                            onClick={() => {
+                              const newStatus = (
+                                isSelected ? "disponible" : opt.id
+                              ) as StockTarget;
+                              setItemsInspection((prev) => ({
+                                ...prev,
+                                [String(item.id)]: newStatus,
+                              }));
+                            }}
+                            className={`flex-1 flex flex-col items-center p-2 cursor-pointer rounded-xl border transition-all ${
+                              isSelected
+                                ? opt.activeColor
+                                : "opacity-50 hover:opacity-100 border-transparent"
+                            }`}
+                          >
+                            <span className="text-lg">{opt.icon}</span>
+                            <span className="text-[9px] pt-1 uppercase font-bold leading-tight">
+                              {opt.label}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </section>
 
             <section className="border rounded-2xl px-2 py-2 mb-3">

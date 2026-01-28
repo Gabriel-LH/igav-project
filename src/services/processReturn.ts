@@ -5,12 +5,21 @@ import { useOperationStore } from "@/src/store/useOperationStore";
 
 interface ProcessReturnInput {
   rentalId: string;
-  itemStatus: "devuelto" | "con_daños" | "perdido";
-  stockTarget: "lavanderia" | "mantenimiento" | "baja" | "disponible";
+
+  rentalStatus: "devuelto" | "con_daños" | "perdido";
+
+  items: {
+    rentalItemId: string;
+    itemStatus: "devuelto" | "en_lavanderia" | "en_mantenimiento" | "baja";
+    stockTarget: "disponible" | "en_lavanderia" | "en_mantenimiento" | "baja";
+  }[];
+
   totalPenalty: number;
   guaranteeResult: "devuelta" | "retenida";
   notes?: string;
 }
+
+
 export function processReturn(input: ProcessReturnInput) {
   const now = new Date();
 
@@ -22,18 +31,24 @@ export function processReturn(input: ProcessReturnInput) {
   const rental = rentalStore.getRentalById(input.rentalId);
   if (!rental) throw new Error("Rental no encontrado");
 
-  // 1️⃣ Actualizar rental
+  // 1️⃣ Rental (contrato)
   rentalStore.updateRental(rental.id, {
-    status: "devuelto",
+    status: input.rentalStatus,
     totalPenalty: input.totalPenalty,
     actualReturnDate: now,
     notes: input.notes,
   });
-  // 2️⃣ Inventario
-  const items = rentalStore.rentalItems.filter((i) => i.rentalId === rental.id);
 
-  items.forEach((item) => {
-    inventoryStore.updateStockStatus(item.stockId, input.stockTarget);
+  // 2️⃣ Items + Stock
+  input.items.forEach((item) => {
+    rentalStore.processReturnItem(item.rentalItemId, item.itemStatus);
+
+    const rentalItem = rentalStore.rentalItems.find(
+      (i) => i.id === item.rentalItemId,
+    );
+    if (!rentalItem) return;
+
+    inventoryStore.updateStockStatus(rentalItem.stockId, item.stockTarget);
   });
 
   // 3️⃣ Garantía

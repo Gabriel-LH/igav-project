@@ -126,7 +126,7 @@ export function RentalsActiveTable({
                     colSpan={columnsRentalsActive.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    No hay resultados.
                   </TableCell>
                 </TableRow>
               )}
@@ -136,13 +136,13 @@ export function RentalsActiveTable({
       </div>
       <div className="flex items-center justify-between px-4 pt-4">
         <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} de{" "}
+          {table.getFilteredRowModel().rows.length} filas seleccionadas.
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
-              Rows per page
+              Filas por pagina
             </Label>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -165,7 +165,7 @@ export function RentalsActiveTable({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            Pagina {table.getState().pagination.pageIndex + 1} de{" "}
             {table.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
@@ -175,7 +175,7 @@ export function RentalsActiveTable({
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">Ir a la primera pagina</span>
               <IconChevronsLeft />
             </Button>
             <Button
@@ -185,7 +185,7 @@ export function RentalsActiveTable({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">Ir a la pagina anterior</span>
               <IconChevronLeft />
             </Button>
             <Button
@@ -195,7 +195,7 @@ export function RentalsActiveTable({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">Ir a la pagina siguiente</span>
               <IconChevronRight />
             </Button>
             <Button
@@ -205,7 +205,7 @@ export function RentalsActiveTable({
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">Ir a la ultima pagina</span>
               <IconChevronsRight />
             </Button>
           </div>
