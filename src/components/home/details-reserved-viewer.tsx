@@ -28,7 +28,7 @@ import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { Payment } from "@/src/types/payments/type.payments";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { USER_MOCK} from "@/src/mocks/mock.user";
 import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
@@ -54,6 +54,8 @@ import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { deliverReservationUseCase } from "@/src/services/use-cases/deliverReservation.usecase";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import Image from "next/image";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -96,11 +98,11 @@ export function DetailsReservedViewer({
 
   const { operations } = useOperationStore();
 
-  console.log("activeRes", activeRes);
-  console.log("reservationItems", reservationItems);
-  console.log("reservations", reservations);
+  const { customers } = useCustomerStore();
 
-  //
+  const currentClient = customers.find((c) => c.id === activeRes?.customerId);
+
+  const seller = USER_MOCK[0];
 
   const [checklist, setChecklist] = useState({
     limpieza: false,
@@ -208,10 +210,12 @@ export function DetailsReservedViewer({
       );
 
       const ticketHtml = buildDeliveryTicketHtml(
+        seller,
         activeRes,
         currentClient!,
-        currentItems,
-        guaranteeRecord,
+        activeResItems,
+        guaranteeType,
+        guarantee,
       );
 
       setChecklist({ limpieza: false, garantia: false });

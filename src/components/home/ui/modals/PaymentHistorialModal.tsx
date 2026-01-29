@@ -22,6 +22,7 @@ import { ConfirmPrintModal } from "./ConfirmPrintModal";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+import { buildPaymentTicketHtml } from "@/src/components/ticket/build-payment-ticket";
 
 interface PaymentHistoryModalProps {
   open: boolean;
@@ -75,39 +76,8 @@ export function PaymentHistoryModal({
 
   const currentUser = USER_MOCK[0];
 
-  const buildTicketHtml = (p: Payment) => `
-  <div style="width: 280px; font-family: monospace; font-size: 12px;">
-    <h2 style="text-align: center; font-weight: bold;">${
-      p.type === "cuota"
-        ? "TICKET DE CUOTA"
-        : p.type === "adelanto"
-          ? "TICKET DE ADELANTO"
-          : "TICKET DE PAGO"
-    }</h2>
-    <hr style="border-style: dashed;" />
-    <p> ID: ${p.id}</p>
-    <p>RECIBIDO POR: ${currentUser.name || ""}</p>
-    <p>CLIENTE: ${customerName}</p>
-    <p>FECHA: ${p.date.toLocaleString("es-PE")}</p>
-    <p>METODO: ${p.method.toUpperCase()}</p>
-    <hr style="border-style: dashed;" />
-    <div style="display: flex; justify-content: space-between; font-weight: bold;">
-      <span>MONTO ABONADO:</span>
-      <span>${formatCurrency(p.amount)}</span>
-    </div>
-    ${
-      p.changeAmount && p.changeAmount > 0
-        ? `
-      <p>RECIBIDO: ${formatCurrency(p.receivedAmount || 0)}</p>
-      <p>VUELTO: ${formatCurrency(p.changeAmount)}</p>
-    `
-        : ""
-    }
-    <hr style="border-style: dashed;" />
-    <p style="text-align: center;">¡Gracias por su preferencia!</p>
-    <p style="text-align: center;">Este no es un comprobante fiscal </p>
-  </div>
-`;
+  const buildTicketHtml = (p: Payment) => buildPaymentTicketHtml(p, currentUser, customerName);
+  
   const fullHistoryTicket = payments.map(buildTicketHtml).join("");
 
   return (
@@ -282,7 +252,7 @@ export function PaymentHistoryModal({
                   <div className="flex text-amber-500 justify-between items-center text-sm font-bold">
                     <span>
                       {guaranteeData.type === "dinero"
-                        ? formatCurrency(guaranteeData.value)
+                        ? formatCurrency(Number(guaranteeData.value))
                         : guaranteeData.description}
                     </span>
                     <Badge

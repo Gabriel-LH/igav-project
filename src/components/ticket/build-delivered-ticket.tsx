@@ -4,10 +4,13 @@ import { Guarantee } from "@/src/types/guarantee/type.guarantee";
 import { formatCurrency } from "@/src/utils/currency-format";
 
 export const buildDeliveryTicketHtml = (
+  seller: any,
   reservation: any,
   client: any,
   items: any[],
-  guaranteeRecord: Guarantee | undefined
+  guaranteeType: string,
+  guarantee: string,
+
 ) => {
   const productsList = items
     .map((item) => {
@@ -80,7 +83,11 @@ export const buildDeliveryTicketHtml = (
 </div>
 
       <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 5px 0; margin-bottom: 10px; font-size: 11px;">
-        <p style="margin: 2px 0;"><strong>CLIENTE:</strong> ${
+        <p style="margin: 2px 0;"><strong>VENDEDOR:</strong>
+       ${seller.name} 
+
+        <p style="margin: 2px 0;"><strong>CLIENTE:</strong>
+        ${
           client.firstName
         } ${client.lastName}</p>
         <p style="margin: 2px 0;"><strong>DNI:</strong> ${client.dni}</p>
@@ -89,10 +96,10 @@ export const buildDeliveryTicketHtml = (
 
       <div style="margin-bottom: 10px; font-size: 11px;">
        <p style="margin: 2px 0;"><strong>GARANTIA:</strong> ${
-         guaranteeRecord // 👈 Si existe el registro...
-           ? guaranteeRecord.type === "efectivo"
-             ? formatCurrency(guaranteeRecord.value) // Muestra $ si es efectivo
-             : guaranteeRecord.description // Muestra "DNI", "Pasaporte", etc.
+         guarantee 
+           ? guaranteeType === "dinero"
+             ? formatCurrency(Number(guarantee)) 
+             : guarantee 
            : "FALTA GARANTÍA"
        }</p>
         <p style="margin: 2px 0;"><strong>FECHA SALIDA:</strong> ${reservation.startDate.toLocaleDateString(
