@@ -5,6 +5,8 @@ import { RentalDTO } from "@/src/interfaces/RentalDTO";
 import { processTransaction } from "../transactionServices";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
+import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+import { guaranteeSchema } from "@/src/types/guarantee/type.guarantee";
 
 interface DeliverReservationInput {
   reservation: Reservation;
@@ -21,14 +23,14 @@ export async function deliverReservationUseCase({
   sellerId,
   financials,
 }: DeliverReservationInput) {
-  // 1️⃣ Validación
+  // Validación
   reservationItems.forEach((item) => {
     if (!selectedStocks[item.id]) {
       throw new Error("Item sin stock asignado");
     }
   });
 
-  // 2️⃣ DTO CORRECTO (RentalFromReservationDTO)
+  // DTO CORRECTO (RentalFromReservationDTO)
   const rentalDTO: RentalFromReservationDTO = {
     type: "alquiler",
     customerId: reservation.customerId,
@@ -48,10 +50,30 @@ export async function deliverReservationUseCase({
     status: "en_curso",
   };
 
-  // 3️⃣ Transacción
+  if (
+  financials.guarantee &&
+  financials.guarantee.type !== "no_aplica"
+) {
+  const guarantee = guaranteeSchema.parse({
+    id: `GUA-${crypto.randomUUID()}`,
+    operationId: reservation.operationId,
+    branchId: reservation.branchId,
+    receivedById: sellerId,
+    type: financials.guarantee.type,
+    value: financials.guarantee.value ?? 0,
+    description:
+      financials.guarantee.description ?? "Garantía de alquiler",
+    status: "custodia",
+    createdAt: new Date(),
+  });
+
+  useGuaranteeStore.getState().addGuarantee(guarantee);
+}
+
+  // Transacción
   const result = processTransaction(rentalDTO);
 
-  // 4️⃣ Movimiento físico
+  // Movimiento físico
   reservationItems.forEach((item) => {
     useInventoryStore.getState().deliverAndTransfer(
       selectedStocks[item.id],
@@ -60,7 +82,7 @@ export async function deliverReservationUseCase({
     );
   });
 
-  // 5️⃣ Reserva → convertida
+  // Reserva → convertida
   useReservationStore
     .getState()
     .updateStatus(reservation.id, "convertida");

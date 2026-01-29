@@ -13,7 +13,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Payment } from "../../../../types/payments/type.payments";
 import { USER_MOCK } from "../../../../mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { MOCK_GUARANTEE } from "../../../../mocks/mock.guarantee";
 import { Badge } from "@/components/badge";
 import { useState } from "react";
 import { Button } from "@/components/button";
@@ -23,6 +22,7 @@ import { ConfirmPrintModal } from "./ConfirmPrintModal";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+
 interface PaymentHistoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,14 +33,10 @@ interface PaymentHistoryModalProps {
   calculatedIsCredit: boolean;
   customerName: string;
   onAddPayment: (paymentData: any) => Payment;
-  guarantee: string;
-  guaranteeType: GuaranteeType;
-  setGuarantee: (value: string) => void;
-  setGuaranteeType: (value: GuaranteeType) => void;
 }
-export type GuaranteeType = "dinero" | "dni" | "joyas" | "otros";
 
 export function PaymentHistoryModal({
+
   open,
   onOpenChange,
   payments,
@@ -50,10 +46,6 @@ export function PaymentHistoryModal({
   calculatedIsCredit,
   customerName,
   onAddPayment,
-  guarantee,
-  guaranteeType,
-  setGuarantee,
-  setGuaranteeType,
 }: PaymentHistoryModalProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [confirmPrintOpen, setConfirmPrintOpen] = useState(false);

@@ -42,10 +42,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { useRentalStore } from "@/src/store/useRentalStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
-import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
 import { registerPayment } from "@/src/services/paymentService";
 import { Field, FieldGroup } from "@/components/ui/field";
@@ -54,6 +52,8 @@ import { Label } from "@/components/label";
 import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { deliverReservationUseCase } from "@/src/services/use-cases/deliverReservation.usecase";
+import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
+import Image from "next/image";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -191,6 +191,11 @@ export function DetailsReservedViewer({
           paymentMethod: "cash",
           receivedAmount: totalPaid,
           keepAsCredit: isCredit,
+          guarantee: {
+            type: guaranteeType,
+            value: guaranteeType === "dinero" ? guarantee : undefined,
+            description: guaranteeType !== "dinero" ? guarantee : undefined,
+          },
         },
       });
 
@@ -202,7 +207,12 @@ export function DetailsReservedViewer({
         })),
       );
 
-      const ticketHtml = buildDeliveryTicketHtml( activeRes, currentClient!, currentItems, guaranteeRecord, );
+      const ticketHtml = buildDeliveryTicketHtml(
+        activeRes,
+        currentClient!,
+        currentItems,
+        guaranteeRecord,
+      );
 
       setChecklist({ limpieza: false, garantia: false });
       setIsDrawerOpen(false);
@@ -434,8 +444,11 @@ export function DetailsReservedViewer({
                     >
                       <div className="flex">
                         <div className="h-12 w-10 rounded overflow-hidden">
-                          <img
-                            src={prod?.image}
+                          <Image
+                            src={prod?.image || "/placeholder.jpg"}
+                            alt={prod?.name || ""}
+                            width={40}
+                            height={40}
                             className="object-cover h-full w-full"
                           />
                         </div>
@@ -528,6 +541,21 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
+            {/* 3. SECCIÓN DE GARANTÍA (Solo para alquiler) */}
+            {activeRes?.operationType === "alquiler" && (
+              <div className="space-y-3">
+                <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                  Garantía
+                </h4>
+                <GuaranteeSection
+                  guarantee={guarantee}
+                  setGuarantee={setGuarantee}
+                  guaranteeType={guaranteeType}
+                  setGuaranteeType={setGuaranteeType}
+                />
+              </div>
+            )}
+
             {/* 4. CHECKLIST DE SALIDA (Corregido con el balance real) */}
             <div className="space-y-3">
               <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
@@ -543,7 +571,7 @@ export function DetailsReservedViewer({
                   </label>
                 )}
 
-                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
+                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <FieldGroup>
                     <Field orientation="horizontal">
                       <Checkbox
@@ -564,7 +592,7 @@ export function DetailsReservedViewer({
                       </Label>
                     </Field>
                   </FieldGroup>
-                </label>
+                </Label>
 
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <FieldGroup>
@@ -673,10 +701,6 @@ export function DetailsReservedViewer({
         calculatedIsCredit={isCredit}
         onAddPayment={handleAddPayment}
         customerName={cliente?.firstName + " " + cliente?.lastName}
-        guarantee={guarantee}
-        guaranteeType={guaranteeType}
-        setGuarantee={setGuarantee}
-        setGuaranteeType={setGuaranteeType}
       />
     </>
   );
