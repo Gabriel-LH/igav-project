@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Ya se puede entregar reservas y se puede crear garantias en reservas para alquileres, ahora falta analizar los errores que da al crear la garantia y al intentar imprimir el ticket de entrega
+//Ya se puede entregar un alquiler, se puede crear una garantia y se puede imprimir el ticket de entrega y ademas se esta modificando y cambiando de lugar para mayor limpieza el ticket de pagos, ahi se quedo
