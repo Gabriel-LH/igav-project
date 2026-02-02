@@ -47,11 +47,12 @@ import Link from "next/link";
 import { NavOperation } from "../nav-bar/nav-operation";
 import { NavRRHH } from "../nav-bar/nav-rrhh";
 import { NavAdmin } from "../nav-bar/nav-admin";
+import { ShoppingBasket } from "lucide-react";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Juan",
+    email: "[EMAIL_ADDRESS]",
     avatar: "/avatars/shadcn.jpg",
   },
 
@@ -194,8 +195,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5! hover:cursor-pointer"
             >
               <Link href="/home">
-                <IconInnerShadowTop className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <ShoppingBasket className="size-5!" />
+                <span className="text-base font-semibold italic">AZRAEL SHOP</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
