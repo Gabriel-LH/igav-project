@@ -7,4 +7,11 @@ export const saleItemSchema = z.object({
   stockId: z.string(), // La prenda específica que se llevó
   priceAtMoment: z.number(),
   quantity: z.number(),
+
+  // Campos "Pro" para devoluciones:
+  isReturned: z.boolean().default(false),
+  returnCondition: z.enum(["perfecto", "dañado", "manchado"]).optional(),
+  restockingFee: z.number().default(0), // Cobro extra por devolverlo dañado
 });
+
+export type SaleItem = z.infer<typeof saleItemSchema>;

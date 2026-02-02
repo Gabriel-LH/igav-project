@@ -45,16 +45,16 @@ import {
 } from "@/components/table";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { DraggableRowCancel} from "./dragable-row-cancel";
-import { rentalsCanceledSchema } from "../type/type.canceled";
-import { columnsRentalCanceled } from "./column-cancel-table";
+import { DraggableRowPending} from "./dragable-row-pending";
+import { salesPendingSchema } from "../type/type.pending";
+import { columnsSalesPending } from "./column-pending-table";
 
-export function RentalsCanceledTable({
+export function SalesPendingTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof rentalsCanceledSchema>[];
-  table: TanstackTable<z.infer<typeof rentalsCanceledSchema>>;
+  data: z.infer<typeof salesPendingSchema>[];
+  table: TanstackTable<z.infer<typeof salesPendingSchema>>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -117,13 +117,13 @@ export function RentalsCanceledTable({
                   strategy={verticalListSortingStrategy}
                 >
                   {table.getRowModel().rows.map((row) => (
-                    <DraggableRowCancel key={row.id} row={row} />
+                    <DraggableRowPending key={row.id} row={row} />
                   ))}
                 </SortableContext>
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columnsRentalCanceled.length}
+                    colSpan={columnsSalesPending.length}
                     className="h-24 text-center"
                   >
                     No results.

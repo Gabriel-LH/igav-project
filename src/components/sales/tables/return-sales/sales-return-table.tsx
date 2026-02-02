@@ -45,16 +45,16 @@ import {
 } from "@/components/table";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { DraggableRowCancel} from "./dragable-row-cancel";
-import { rentalsCanceledSchema } from "../type/type.canceled";
-import { columnsRentalCanceled } from "./column-cancel-table";
+import { DraggableRowReturn} from "./dragable-row-return";
+import { salesReturnSchema } from "../type/type.return";
+import { columnsSalesReturn } from "./column-return-table";
 
-export function RentalsCanceledTable({
+export function SalesReturnTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof rentalsCanceledSchema>[];
-  table: TanstackTable<z.infer<typeof rentalsCanceledSchema>>;
+  data: z.infer<typeof salesReturnSchema>[];
+  table: TanstackTable<z.infer<typeof salesReturnSchema>>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -117,13 +117,13 @@ export function RentalsCanceledTable({
                   strategy={verticalListSortingStrategy}
                 >
                   {table.getRowModel().rows.map((row) => (
-                    <DraggableRowCancel key={row.id} row={row} />
+                    <DraggableRowReturn key={row.id} row={row} />
                   ))}
                 </SortableContext>
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columnsRentalCanceled.length}
+                    colSpan={columnsSalesReturn.length}
                     className="h-24 text-center"
                   >
                     No results.

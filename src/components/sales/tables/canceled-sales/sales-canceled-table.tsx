@@ -46,15 +46,15 @@ import {
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
 import { DraggableRowCancel} from "./dragable-row-cancel";
-import { rentalsCanceledSchema } from "../type/type.canceled";
-import { columnsRentalCanceled } from "./column-cancel-table";
+import { salesCanceledSchema } from "../type/type.canceled";
+import { columnsSalesCanceled } from "./column-cancel-table";
 
-export function RentalsCanceledTable({
+export function SalesCanceledTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof rentalsCanceledSchema>[];
-  table: TanstackTable<z.infer<typeof rentalsCanceledSchema>>;
+  data: z.infer<typeof salesCanceledSchema>[];
+  table: TanstackTable<z.infer<typeof salesCanceledSchema>>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -123,7 +123,7 @@ export function RentalsCanceledTable({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columnsRentalCanceled.length}
+                    colSpan={columnsSalesCanceled.length}
                     className="h-24 text-center"
                   >
                     No results.

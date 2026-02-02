@@ -22,6 +22,8 @@ export interface RentalTableRow {
   gurantee: string;
   guarantee_status: string;
   status: string;
+  damage: string;
+  returnDate: string;
 }
 
 export const mapRentalToTable = (
@@ -61,17 +63,18 @@ export const mapRentalToTable = (
       cancelDate: parent?.cancelDate
         ? new Date(parent.cancelDate).toLocaleDateString()
         : "---",
-      actualReturnDate: parent?.actualReturnDate
+      returnDate: parent?.actualReturnDate
         ? new Date(parent.actualReturnDate).toLocaleDateString()
         : "---",
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
-      product: product?.name || `ID: ${rentalItem?. productId}`,
+      product: product?.name || `ID: ${rentalItem?.productId}`,
       rent_unit: product?.rent_unit || "---",
       count: rentalItem?.quantity || 0,
       income: rentalItem?.priceAtMoment || 0,
       gurantee: guarantee ? guarantee.value.toString() : "---",
       guarantee_status: guarantee?.status || "---",
       status: item.status,
+      damage: rentalItem?.conditionIn || "---",
     };
   });
 };

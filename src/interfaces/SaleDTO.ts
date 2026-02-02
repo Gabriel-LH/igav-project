@@ -3,7 +3,27 @@ import { BaseOperation } from "./BaseOperation";
 export interface SaleDTO extends BaseOperation {
   type: "venta";
   status: "vendido";
-  quantity: number;
-  totalPrice: number;
-  paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
+  customerId: string;
+  customerName: string;
+  sellerId: string;
+  branchId: string;
+
+  items: {
+    productId: string;
+    productName: string;
+    stockId: string;
+    quantity: number;
+    size: string;
+    color: string;
+    priceAtMoment: number;
+  }[];
+
+  financials: {
+    totalAmount: number;
+    receivedAmount: number;
+    keepAsCredit: boolean;
+    totalPrice: number;
+    paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
+  };
+  notes?: string;
 }

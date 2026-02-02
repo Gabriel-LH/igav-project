@@ -114,17 +114,17 @@ export function ReservationModal({
 
     const newReservation: ReservationDTO = {
       branchId: currentBranchId,
-      productId: item.id,
-      productName: item.name,
-      sku: item.sku,
+      // productId: item.id,
+      // productName: item.name,
+      // sku: item.sku,
       createdAt: new Date(),
-      size,
-      color,
+      // size,
+      // color,
       type: "reserva",
       operationType,
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
-      quantity,
+      // quantity,
       status: "confirmada",
       notes,
       financials: {
@@ -135,7 +135,7 @@ export function ReservationModal({
         paymentMethod,
         pendingAmount: totalOperacion - Number(downPayment),
       },
-      stockId,
+      // stockId,
       sellerId,
       reservationDateRange: {
         from: dateRange.from || new Date(),
@@ -143,6 +143,18 @@ export function ReservationModal({
       },
       id: "",
       operationId: "",
+      items: [
+        {
+          productId: item.id,
+          productName: item.name,
+          size,
+          color,
+          quantity,
+          priceAtMoment: unitPrice,
+          stockId: stockId 
+        }
+      ],
+      updatedAt: new Date()
     };
 
     try {

@@ -1,7 +1,13 @@
+import { SalesHeader } from "@/src/components/sales/sale-header";
+import { SalesGrid } from "@/src/components/sales/sales-grid";
+
 export default function SalesPage() {
   return (
     <>
-      <h1>Sales</h1>
+      <div className="flex flex-col gap-6 p-6">
+        <SalesHeader />
+        <SalesGrid />
+      </div>
     </>
   );
 }

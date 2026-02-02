@@ -22,7 +22,6 @@ import { SaleDTO } from "@/src/interfaces/SaleDTO";
 
 import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
-import { GuaranteeSection } from "../reservation/GuaranteeSection";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { processTransaction } from "@/src/services/transactionServices";
 import { DialogDescription } from "@radix-ui/react-dialog";
@@ -126,19 +125,19 @@ export function DirectTransactionModal({
       return toast.error("No hay stock disponible físicamente.");
 
     const baseData = {
-      productId: item.id,
-      productName: item.name,
-      sku: item.sku,
-      size,
-      color,
-      quantity,
+      // productId: item.id,
+      // productName: item.name,
+      // sku: item.sku,
+      // size,
+      // color,
+      // quantity,
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
       sellerId,
       branchId: currentBranchId,
       notes,
       createdAt: new Date(),
-      stockId,
+      // stockId,
     };
 
     if (type === "alquiler") {
@@ -161,26 +160,75 @@ export function DirectTransactionModal({
         status: "en_curso",
         id: "",
         operationId: "",
+        items: [
+          {
+            productId: item.id,
+            productName: item.name,
+            stockId: stockId,
+            quantity: quantity,
+            size: size,
+            color: color,
+            priceAtMoment: item.price_rent,
+          },
+        ],
+        updatedAt: new Date(),
       };
 
       processTransaction(rentalData);
       toast.success("Alquiler realizado correctamente");
-    } else {
-      const saleData: SaleDTO = {
-        ...baseData,
-        type: "venta",
-        totalPrice: totalOperacion,
-        paymentMethod,
-        status: "vendido",
-        id: "",
-      };
-
-      updateStockStatus(stockId, "vendido");
-      toast.success("Venta realizada correctamente");
+      setOpen(false);
+      onSuccess?.();
     }
 
-    onSuccess();
-    setOpen(false);
+    if (type === "venta") {
+        if (!selectedCustomer) return toast.error("Seleccione un cliente");
+
+        if (!isAvailable || !stockId)
+          return toast.error("No hay stock disponible físicamente.");
+
+        const saleData: SaleDTO = {
+          type: "venta",
+          customerId: selectedCustomer.id,
+          customerName: selectedCustomer.name,
+          sellerId,
+          branchId: currentBranchId,
+
+          items: [
+            {
+              productId: item.id,
+              stockId,
+              quantity,
+              size,
+              color,
+              priceAtMoment: item.price_sell,
+              productName: item.name
+            },
+          ],
+          financials: {
+            totalAmount: totalOperacion,
+            paymentMethod,
+            receivedAmount,
+            keepAsCredit: false,
+            totalPrice: totalOperacion,
+          },
+
+          notes,
+          status: "vendido",
+          id: "",
+          operationId: "",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        console.log("saleData", saleData);
+
+        processTransaction(saleData);
+
+        toast.success("Venta realizada correctamente");
+        setOpen(false);
+
+        onSuccess?.();
+      }
   };
 
   return (

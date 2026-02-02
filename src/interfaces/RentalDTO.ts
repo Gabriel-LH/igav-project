@@ -6,7 +6,15 @@ export interface RentalDTO extends BaseOperation {
   startDate: Date;
   endDate: Date;
   actualReturnDate?: Date;
-
+  items: {
+    productId: string;
+    productName: string;
+    stockId: string;
+    quantity: number;
+    size: string;
+    color: string;
+    priceAtMoment: number;
+  }[];
   financials: {
     totalRent: number;
     receivedAmount: number;
