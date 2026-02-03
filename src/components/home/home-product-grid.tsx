@@ -170,22 +170,6 @@ export function ProductGrid() {
             <ReservationProductCard
               key={res.id}
               reservation={res}
-              onDeliver={(itemsWithStock) => {
-                // 👈 RECIBE LOS ITEMS AQUÍ
-
-                // 1. Crear el Alquiler Activo
-                // createRentalFromReservation(res, itemsWithStock);
-
-                // 2. Actualizar Inventario (Stock)
-                itemsWithStock.forEach((item) => {
-                  updateStockStatus(item.stockId, "alquilado");
-                });
-
-                // 3. Marcar Reserva como completada para que desaparezca del Home
-                updateStatus(res.id, "convertida");
-
-                toast.success("Alquiler iniciado correctamente");
-              }}
             />
           ))}
 

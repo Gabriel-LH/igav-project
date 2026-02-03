@@ -161,8 +161,8 @@ export function ReservationModal({
       processTransaction(newReservation);
       toast.success(
         operationType === "venta"
-          ? "Venta registrada correctamente"
-          : "Reserva creada con éxito",
+          ? "Reserva de venta creada con éxito"
+          : "Reserva de alquiler creada con éxito",
       );
     } catch (err) {
       console.error(err);

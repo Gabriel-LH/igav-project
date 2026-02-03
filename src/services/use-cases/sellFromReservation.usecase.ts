@@ -8,24 +8,23 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 
 interface SellFromReservationInput {
+  status: "completado" | "cancelado" | "pendiente_entrega" | "devuelto";
   reservation: Reservation;
   reservationItems: ReservationItem[];
+  customerId: string;
   selectedStocks: Record<string, string>;
   sellerId: string;
   financials: SaleFromReservationDTO["financials"];
-  paymentMethod: SaleFromReservationDTO["paymentMethod"];
-  receivedAmount: number;
   notes?: string;
 }
 
 export async function sellFromReservationUseCase({
+  status,
   reservation,
   reservationItems,
   selectedStocks,
   sellerId,
   financials,
-  paymentMethod,
-  receivedAmount,
   notes,
 }: SellFromReservationInput) {
   // 1️⃣ Validaciones
@@ -42,8 +41,10 @@ export async function sellFromReservationUseCase({
   // 2️⃣ DTO
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
+    status,
 
     reservationId: reservation.id,
+    customerId: reservation.customerId,
 
     reservationItems: reservationItems.map((item) => ({
       reservationItemId: item.id,
@@ -52,9 +53,6 @@ export async function sellFromReservationUseCase({
 
     sellerId,
     branchId: reservation.branchId,
-
-    paymentMethod,
-    receivedAmount,
 
     financials,
 

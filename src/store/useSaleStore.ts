@@ -25,21 +25,20 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
   sales: [],
   saleItems: [],
 
-  addSale: (sale, items) =>
+  addSale: (sale, items) => {
+    console.log("RECIBIENDO EN STORE:", sale);
     set((state) => ({
       sales: [...state.sales, sale],
       saleItems: [...state.saleItems, ...items],
-    })),
+    }));
+  },
 
-  getSaleById: (id) =>
-    get().sales.find((s) => s.id === id),
+  getSaleById: (id) => get().sales.find((s) => s.id === id),
 
   updateSale: (id, data) =>
     set((state) => ({
       sales: state.sales.map((s) =>
-        s.id === id
-          ? { ...s, ...data, updatedAt: new Date() }
-          : s,
+        s.id === id ? { ...s, ...data, updatedAt: new Date() } : s,
       ),
     })),
 
@@ -74,9 +73,7 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
           : i,
       );
 
-      const itemsOfSale = updatedItems.filter(
-        (i) => i.saleId === item.saleId,
-      );
+      const itemsOfSale = updatedItems.filter((i) => i.saleId === item.saleId);
 
       const allReturned = itemsOfSale.every((i) => i.isReturned);
 
@@ -87,8 +84,7 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
             ? {
                 ...s,
                 status: allReturned ? "devuelto" : s.status,
-                amountRefunded:
-                  (s.amountRefunded || 0) + restockingFee,
+                amountRefunded: (s.amountRefunded || 0) + restockingFee,
                 updatedAt: new Date(),
               }
             : s,

@@ -15,10 +15,9 @@ import { useReservationStore } from "@/src/store/useReservationStore";
 interface Props {
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
   reservation: Reservation;
-  onDeliver: (itemsWithStock: any[]) => void;
 }
 
-export function ReservationProductCard({ reservation, onDeliver }: Props) {
+export function ReservationProductCard({ reservation }: Props) {
 
   const { reservationItems } = useReservationStore();
 
@@ -117,7 +116,7 @@ export function ReservationProductCard({ reservation, onDeliver }: Props) {
       {/* FOOTER: Botón de acción */}
       <div className="pt-2">
         {/* Pasamos el primer producto como referencia o ajustamos el viewer para recibir la reserva completa */}
-        <DetailsReservedViewer reservation={reservation} onDeliver={(itemsWithStock) => onDeliver(itemsWithStock)} />
+        <DetailsReservedViewer reservation={reservation} />
       </div>
     </Card>
   );

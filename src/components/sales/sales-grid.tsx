@@ -11,9 +11,6 @@ export const SalesGrid = () => {
 
   const { sales, saleItems } = useSaleStore();
 
-  console.log("Ventas que llega a sales grid", sales);
-  console.log("Items que llega a sales grid", saleItems);
-
   const { products } = useInventoryStore();
   const { customers } = useCustomerStore();
 
@@ -21,8 +18,6 @@ export const SalesGrid = () => {
     () => mapSaleToTable(customers, sales, saleItems, products),
     [sales, saleItems, products, customers],
   );
-
-  console.log("Data que llega a sales grid", allData);
 
   const pending = allData.filter((i) => i.status === "pendiente");
   const canceled = allData.filter((i) => i.status === "cancelado");

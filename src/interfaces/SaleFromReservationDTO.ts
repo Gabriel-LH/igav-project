@@ -3,7 +3,9 @@ import { SaleDTO } from "./SaleDTO";
 export interface SaleFromReservationDTO {
   type: "venta";
 
+  status: "completado" | "cancelado" | "pendiente_entrega" | "devuelto";
   reservationId: string;
+  customerId: string;
 
   reservationItems: {
     reservationItemId: string;
@@ -12,9 +14,6 @@ export interface SaleFromReservationDTO {
 
   sellerId: string;
   branchId: string;
-
-  paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
-  receivedAmount: number;
 
   financials: SaleDTO["financials"]
 

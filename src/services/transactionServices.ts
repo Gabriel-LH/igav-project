@@ -156,6 +156,22 @@ export function processTransaction(
   if (dto.type === "venta") {
     const fromReservation = isSaleFromReservation(dto);
 
+    specificData = saleSchema.parse({
+      id: `SALE-${operationId}`,
+      operationId: String(operationId),
+      customerId: dto.customerId,
+      branchId: dto.branchId,
+      sellerId: dto.sellerId,
+      totalAmount: totalAmount,
+      saleDate: now,
+      status: dto.status || "completado", // O el estado que manejes
+      paymentMethod: paymentMethod,
+      amountRefunded: 0,
+      notes: (dto as any).notes || "",
+      createdAt: now,
+      updatedAt: now,
+    });
+
     const saleItems = fromReservation
       ? dto.reservationItems.map((item) => {
           const reservationItem = reservationStore.reservationItems.find(
@@ -170,32 +186,26 @@ export function processTransaction(
 
           return {
             id: `SITEM-${item.reservationItemId}`,
-            saleId: specificData.id,
+            saleId: specificData.id, // Ahora sí tiene ID
             operationId: String(operationId),
             productId: reservationItem.productId,
             stockId: item.stockId,
             quantity: reservationItem.quantity ?? 1,
-            size: reservationItem.size,
-            color: reservationItem.color,
             priceAtMoment: reservationItem.priceAtMoment,
-            itemStatus: "vendido",
-            isReturned: false,
             restockingFee: 0,
+            isReturned: false,
           };
         })
-      : dto.items.map((item) => ({
+      : (dto as SaleDTO).items.map((item) => ({
           id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
           saleId: specificData.id,
           operationId: String(operationId),
           productId: item.productId,
           stockId: item.stockId,
           quantity: item.quantity ?? 1,
-          size: item.size,
-          color: item.color,
           priceAtMoment: item.priceAtMoment,
-          itemStatus: "vendido",
-          isReturned: false,
           restockingFee: 0,
+          isReturned: false,
         }));
 
     useSaleStore.getState().addSale(specificData, saleItems);

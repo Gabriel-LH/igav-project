@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Ya se puede entregar un alquiler, se puede crear una garantia y se puede imprimir el ticket de entrega y ademas se esta modificando y cambiando de lugar para mayor limpieza el ticket de pagos, ahi se quedo
+//Estoy haciendo que se pueda cambiar el estado de la reserva a pendiente cuando el cliente ya pago todo del precio de la ropa, para luego mostrar en la tabla de pendientes de entrega de venta, hasta ahora solo logre hacer que se pueda enviar el estado desde la ui pero me falta que automaticamente cambie a pendiente cuando el cliente pague todo el precio de la ropa, ademas de que me falta que se pueda mostrar en la tabla de pendientes de entrega de venta

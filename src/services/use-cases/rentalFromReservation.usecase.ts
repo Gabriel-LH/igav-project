@@ -16,7 +16,7 @@ interface DeliverReservationInput {
   financials: RentalDTO["financials"];
 }
 
-export async function deliverReservationUseCase({
+export async function rentalFromReservationUseCase({
   reservation,
   reservationItems,
   selectedStocks,
@@ -50,37 +50,35 @@ export async function deliverReservationUseCase({
     status: "en_curso",
   };
 
-  if (
-  financials.guarantee &&
-  financials.guarantee.type !== "no_aplica"
-) {
-  const guarantee = guaranteeSchema.parse({
-    id: `GUA-${crypto.randomUUID()}`,
-    operationId: reservation.operationId,
-    branchId: reservation.branchId,
-    receivedById: sellerId,
-    type: financials.guarantee.type,
-    value: financials.guarantee.value ?? 0,
-    description:
-      financials.guarantee.description ?? "Garantía de alquiler",
-    status: "custodia",
-    createdAt: new Date(),
-  });
+  if (financials.guarantee && financials.guarantee.type !== "no_aplica") {
+    const guarantee = guaranteeSchema.parse({
+      id: `GUA-${crypto.randomUUID()}`,
+      operationId: reservation.operationId,
+      branchId: reservation.branchId,
+      receivedById: sellerId,
+      type: financials.guarantee.type,
+      value: financials.guarantee.value ?? 0,
+      description: financials.guarantee.description ?? "Garantía de alquiler",
+      status: "custodia",
+      createdAt: new Date(),
+    });
 
-  useGuaranteeStore.getState().addGuarantee(guarantee);
-}
+    useGuaranteeStore.getState().addGuarantee(guarantee);
+  }
 
   // Transacción
   const result = processTransaction(rentalDTO);
 
   // Movimiento físico
   reservationItems.forEach((item) => {
-    useInventoryStore.getState().deliverAndTransfer(
-      selectedStocks[item.id],
-      "alquilado",
-      reservation.branchId,
-      sellerId,
-    );
+    useInventoryStore
+      .getState()
+      .deliverAndTransfer(
+        selectedStocks[item.id],
+        "alquilado",
+        reservation.branchId,
+        sellerId,
+      );
   });
 
   // Reserva → convertida

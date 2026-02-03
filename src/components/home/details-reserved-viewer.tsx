@@ -28,7 +28,7 @@ import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { Payment } from "@/src/types/payments/type.payments";
-import { USER_MOCK} from "@/src/mocks/mock.user";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
@@ -51,18 +51,15 @@ import { Checkbox } from "@/components/checkbox";
 import { Label } from "@/components/label";
 import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
-import { deliverReservationUseCase } from "@/src/services/use-cases/deliverReservation.usecase";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
-  onDeliver,
 }: {
   reservation?: z.infer<typeof reservationSchema>;
-  onDeliver: (itemsWithStock: any[]) => void;
 }) {
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -180,35 +177,31 @@ export function DetailsReservedViewer({
       return;
     }
 
-    const toastId = toast.loading("Procesando entrega...");
-
     try {
-      await deliverReservationUseCase({
+      setChecklist({ limpieza: false, garantia: false });
+      setIsDrawerOpen(false);
+
+      // Usamos el orquestador en lugar del caso de uso individual
+      await convertReservationUseCase({
+        status: "completado",
         reservation: activeRes,
         reservationItems: activeResItems,
         selectedStocks,
         sellerId: currentUser.id,
-        financials: {
-          totalRent: totalCalculated,
-          paymentMethod: "cash",
-          receivedAmount: totalPaid,
-          keepAsCredit: isCredit,
-          guarantee: {
-            type: guaranteeType,
-            value: guaranteeType === "dinero" ? guarantee : undefined,
-            description: guaranteeType !== "dinero" ? guarantee : undefined,
-          },
+        totalCalculated,
+        totalPaid,
+        isCredit,
+        // Los datos de garantía se pasan siempre,
+        // el orquestador decidirá si usarlos basándose en operationType
+        guarantee: {
+          type: guaranteeType as any,
+          value: guaranteeType === "dinero" ? guarantee : undefined,
+          description: guaranteeType !== "dinero" ? guarantee : undefined,
         },
+        notes: "Entrega realizada desde el visor de detalles",
       });
 
-      // 🔔 Notificamos a la UI padre
-      onDeliver(
-        activeResItems.map((item) => ({
-          ...item,
-          stockId: selectedStocks[item.id],
-        })),
-      );
-
+      // Generación de Ticket (Mantenemos tu lógica de impresión)
       const ticketHtml = buildDeliveryTicketHtml(
         seller,
         activeRes,
@@ -218,15 +211,19 @@ export function DetailsReservedViewer({
         guarantee,
       );
 
-      setChecklist({ limpieza: false, garantia: false });
-      setIsDrawerOpen(false);
+      printTicket(ticketHtml);
 
-      await printTicket(ticketHtml);
-
-      toast.success("Reserva entregada correctamente", { id: toastId });
+      setTimeout(() => {
+        toast.success(
+          activeRes.operationType === "venta"
+            ? "¡Venta finalizada con éxito!"
+            : "¡Alquiler entregado correctamente!",
+          { duration: 3000 },
+        );
+      }, 500);
     } catch (error) {
       console.error(error);
-      toast.error("Error al procesar la entrega", { id: toastId });
+      toast.error("Error al procesar la operación");
     }
   };
 
@@ -646,7 +643,9 @@ export function DetailsReservedViewer({
                 ? `FALTA COBRO: ${formatCurrency(balance)}`
                 : !isReadyToDeliver
                   ? "COMPLETE EL CHECKLIST"
-                  : "CONFIRMAR ENTREGA Y SALIDA"}
+                  : activeRes?.operationType === "venta"
+                    ? "FINALIZAR VENTA Y ENTREGAR"
+                    : "CONFIRMAR ENTREGA Y SALIDA"}
             </Button>
             <div className="flex justify-between gap-2 w-full ">
               <Button
