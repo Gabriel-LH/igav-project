@@ -86,14 +86,17 @@ export const ReturnGrid = () => {
             createdAt: new Date(parent.createdAt),
             operationId: parent.operationId || "",
             sellerId: "",
-
-            // 2. Datos del Hijo (RentalItem)
-            productId: item.productId,
-            stockId: item.stockId,
-            productName: productInfo?.name || "Vestido",
-            size: item.size,
-            color: item.color,
-            quantity: item.quantity,
+            items: [
+              {
+                productId: item.productId,
+                stockId: item.stockId,
+                size: item.size,
+                color: item.color,
+                quantity: item.quantity,
+                priceAtMoment: item.priceAtMoment,
+                productName: productInfo?.name || "Vestido",
+              },
+            ],
             type: "alquiler",
 
             // 3. Reconstrucción de Financials (Lo que faltaba)
@@ -108,7 +111,7 @@ export const ReturnGrid = () => {
               receivedAmount: 0,
               keepAsCredit: false
             },
-            sku: ""
+            updatedAt: new Date(),
           };
 
           return (

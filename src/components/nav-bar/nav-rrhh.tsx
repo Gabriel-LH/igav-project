@@ -6,7 +6,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/sidebar";
 import Link from "next/link";
 import React from "react";
@@ -20,7 +19,7 @@ export function NavRRHH({
     icon?: React.ElementType | React.ReactElement;
   }[];
 }) {
-  const { isMobile } = useSidebar();
+  // const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">

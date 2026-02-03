@@ -77,6 +77,7 @@ export async function deliverReservationUseCase({
   reservationItems.forEach((item) => {
     useInventoryStore.getState().deliverAndTransfer(
       selectedStocks[item.id],
+      "alquilado",
       reservation.branchId,
       sellerId,
     );
@@ -85,7 +86,7 @@ export async function deliverReservationUseCase({
   // Reserva → convertida
   useReservationStore
     .getState()
-    .updateStatus(reservation.id, "convertida");
+    .updateStatus(reservation.id, "alquiler", "convertida");
 
   return result;
 }

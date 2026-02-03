@@ -21,7 +21,12 @@ import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
 import { useSaleStore } from "../store/useSaleStore";
 
 function getFinancials(
-  dto: SaleDTO | RentalDTO | ReservationDTO | RentalFromReservationDTO,
+  dto:
+    | SaleDTO
+    | RentalDTO
+    | ReservationDTO
+    | RentalFromReservationDTO
+    | SaleFromReservationDTO,
 ) {
   if (dto.type === "venta") {
     return {
@@ -75,7 +80,12 @@ function isSaleFromReservation(
 }
 
 export function processTransaction(
-  dto: SaleDTO | RentalDTO | ReservationDTO | RentalFromReservationDTO,
+  dto:
+    | SaleDTO
+    | RentalDTO
+    | ReservationDTO
+    | RentalFromReservationDTO
+    | SaleFromReservationDTO,
 ) {
   const now = new Date();
   const operationId = `OP-${Math.random()
@@ -144,46 +154,61 @@ export function processTransaction(
 
   // 3️⃣ LÓGICA POR TIPO
   if (dto.type === "venta") {
-    specificData = saleSchema.parse({
-      id: `SALE-${operationId}`,
-      branchId: dto.branchId,
-      sellerId: dto.sellerId,
-      operationId: String(operationId),
-      customerId: dto.customerId,
-      totalAmount: dto.financials.totalAmount,
-      financials: {
-        totalAmount: dto.financials.totalAmount,
-        receivedAmount: dto.financials.receivedAmount,
-        keepAsCredit: dto.financials.keepAsCredit,
-        paymentMethod: dto.financials.paymentMethod,
-      },
+    const fromReservation = isSaleFromReservation(dto);
 
-      saleDate: now,
-      status: "completado",
-      createdAt: now,
-      updatedAt: now,
-    });
+    const saleItems = fromReservation
+      ? dto.reservationItems.map((item) => {
+          const reservationItem = reservationStore.reservationItems.find(
+            (ri) => ri.id === item.reservationItemId,
+          );
 
-    useInventoryStore
-      .getState()
-      .updateStockStatus(dto.items[0].stockId, "vendido");
+          if (!reservationItem) {
+            throw new Error(
+              `ReservationItem no encontrado: ${item.reservationItemId}`,
+            );
+          }
 
-    const saleItems = dto.items.map((item) => ({
-      id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
-      saleId: specificData.id,
-      operationId: String(operationId),
-      productId: item.productId,
-      stockId: item.stockId,
-      quantity: item.quantity ?? 1,
-      size: item.size,
-      color: item.color,
-      priceAtMoment: item.priceAtMoment,
-      itemStatus: "vendido",
-      isReturned: false,
-      restockingFee: 0,
-    }));
+          return {
+            id: `SITEM-${item.reservationItemId}`,
+            saleId: specificData.id,
+            operationId: String(operationId),
+            productId: reservationItem.productId,
+            stockId: item.stockId,
+            quantity: reservationItem.quantity ?? 1,
+            size: reservationItem.size,
+            color: reservationItem.color,
+            priceAtMoment: reservationItem.priceAtMoment,
+            itemStatus: "vendido",
+            isReturned: false,
+            restockingFee: 0,
+          };
+        })
+      : dto.items.map((item) => ({
+          id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
+          saleId: specificData.id,
+          operationId: String(operationId),
+          productId: item.productId,
+          stockId: item.stockId,
+          quantity: item.quantity ?? 1,
+          size: item.size,
+          color: item.color,
+          priceAtMoment: item.priceAtMoment,
+          itemStatus: "vendido",
+          isReturned: false,
+          restockingFee: 0,
+        }));
 
     useSaleStore.getState().addSale(specificData, saleItems);
+
+    if (fromReservation) {
+      dto.reservationItems.forEach((item) => {
+        useInventoryStore.getState().updateStockStatus(item.stockId, "vendido");
+      });
+    } else {
+      useInventoryStore
+        .getState()
+        .updateStockStatus(dto.items[0].stockId, "vendido");
+    }
   }
 
   if (dto.type === "reserva") {
@@ -257,7 +282,11 @@ export function processTransaction(
     if (fromReservation) {
       const reservationStore = useReservationStore.getState();
 
-      reservationStore.updateStatus(dto.reservationId, "convertida");
+      reservationStore.updateStatus(
+        dto.reservationId,
+        "alquiler",
+        "convertida",
+      );
 
       dto.reservationItems.forEach((item) => {
         reservationStore.updateReservationItemStatus(

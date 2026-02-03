@@ -32,6 +32,7 @@ interface InventoryStore {
   // Esta es la función profesional de "Mudanza + Alquiler"
   deliverAndTransfer: (
     stockId: string,
+    status: StockStatus,
     targetBranchId: string,
     adminId: string,
   ) => void;
@@ -72,7 +73,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       ),
     })),
 
-  deliverAndTransfer: (stockId, targetBranchId, adminId) =>
+  deliverAndTransfer: (stockId, status, targetBranchId, adminId) =>
     set((state) => {
       const item = state.stock.find(
         (s) => s.id.toString() === stockId.toString(),
@@ -98,7 +99,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
           s.id.toString() === stockId.toString()
             ? {
                 ...s,
-                status: "alquilado",
+                status: status,
                 branchId: targetBranchId,
                 updatedAt: new Date(),
               }

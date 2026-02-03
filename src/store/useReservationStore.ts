@@ -16,6 +16,7 @@ interface ReservationStore {
 
   updateStatus: (
     id: string,
+    operationType: "alquiler" | "venta",
     status: Reservation["status"],
   ) => void;
 
@@ -58,11 +59,11 @@ export const useReservationStore = create<ReservationStore>((set) => ({
    * Actualiza el estado general de la reserva
    * Ej: confirmada → convertida / cancelada
    */
-  updateStatus: (id, status) =>
+  updateStatus: (id, operationType, status) =>
     set((state) => ({
       reservations: state.reservations.map((res) =>
         res.id === id
-          ? { ...res, status, updatedAt: new Date() }
+          ? { ...res, operationType, status, updatedAt: new Date() }
           : res,
       ),
     })),

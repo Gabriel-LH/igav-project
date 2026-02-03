@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   IconCreditCard,
   IconHelp,
-  IconInnerShadowTop,
   IconSearch,
   IconSettings,
 } from "@tabler/icons-react";
