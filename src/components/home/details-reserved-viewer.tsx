@@ -22,7 +22,7 @@ import {
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
@@ -55,6 +55,7 @@ import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
+import { markSaleAsPendingDeliveryUseCase } from "@/src/services/use-cases/markSaleAsPendingDelivery.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -183,7 +184,6 @@ export function DetailsReservedViewer({
 
       // Usamos el orquestador en lugar del caso de uso individual
       await convertReservationUseCase({
-        status: "completado",
         reservation: activeRes,
         reservationItems: activeResItems,
         selectedStocks,

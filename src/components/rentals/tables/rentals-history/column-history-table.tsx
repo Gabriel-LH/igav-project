@@ -32,7 +32,7 @@ export const columnsRentalsHistory: ColumnDef<
   {
     id: "drag",
     header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
+    cell: ({ row }) => <DragHandle id={Number(row.original.id)} />,
   },
   {
     id: "select",

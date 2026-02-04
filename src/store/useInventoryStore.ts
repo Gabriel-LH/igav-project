@@ -59,7 +59,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     );
   },
 
-  updateStockStatus: (stockId, newStatus, damageNotes) =>
+  updateStockStatus: (stockId, newStatus, damageNotes) => {
+    if (!stockId) return;
     set((state) => ({
       stock: state.stock.map((item) =>
         item.id.toString() === stockId.toString()
@@ -71,7 +72,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
             }
           : item,
       ),
-    })),
+    }));
+  },
 
   deliverAndTransfer: (stockId, status, targetBranchId, adminId) =>
     set((state) => {

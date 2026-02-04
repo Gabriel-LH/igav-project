@@ -3,7 +3,7 @@ import { SaleDTO } from "./SaleDTO";
 export interface SaleFromReservationDTO {
   type: "venta";
 
-  status: "completado" | "cancelado" | "pendiente_entrega" | "devuelto";
+  status: "vendido" | "cancelado" | "pendiente_entrega" | "devuelto";
   reservationId: string;
   customerId: string;
 

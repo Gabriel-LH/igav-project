@@ -5,7 +5,7 @@ export const salesPendingSchema = z.object({
   branchName: z.string(), // Sucursal
   sellerName: z.string(), // Vendedor
   outDate: z.string(), // Fecha de salida
-  registerDate: z.string(), // Fecha de registro
+  createdAt: z.string(), // Fecha de registro
   nameCustomer: z.string(), // Nombre del cliente
   product: z.string(), // Producto
   count: z.number(), // Cantidad

@@ -8,7 +8,7 @@ import { useReservationStore } from "@/src/store/useReservationStore";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { guaranteeSchema } from "@/src/types/guarantee/type.guarantee";
 
-interface DeliverReservationInput {
+interface RentalFromReservationInput {
   reservation: Reservation;
   reservationItems: ReservationItem[];
   selectedStocks: Record<string, string>;
@@ -22,7 +22,7 @@ export async function rentalFromReservationUseCase({
   selectedStocks,
   sellerId,
   financials,
-}: DeliverReservationInput) {
+}: RentalFromReservationInput) {
   // Validación
   reservationItems.forEach((item) => {
     if (!selectedStocks[item.id]) {

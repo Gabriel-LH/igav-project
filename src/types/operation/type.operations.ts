@@ -1,5 +1,6 @@
 import z from "zod";
-import {paymentSchema } from "../payments/type.payments";
+import { paymentSchema } from "../payments/type.payments";
+import { operationUpdateSchema } from "./type.operationUpdate";
 
 //Qué se debía y qué se pagó para ESA operación
 export const operationSchema = z.object({
@@ -22,7 +23,7 @@ export const operationWithDetailsSchema = operationSchema.extend({
   calculated: z.object({
     totalPaid: z.number(),
     remainingBalance: z.number(),
-  })
+  }),
 });
 
 export type OperationWithDetails = z.infer<typeof operationWithDetailsSchema>;

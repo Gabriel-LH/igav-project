@@ -213,7 +213,7 @@ export function DirectTransactionModal({
           },
 
           notes,
-          status: "vendido",
+          status: "completado",
           id: "",
           operationId: "",
           createdAt: new Date(),

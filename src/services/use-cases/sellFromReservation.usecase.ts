@@ -7,8 +7,9 @@ import { processTransaction } from "../transactionServices";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 
+type SellFromReservationStatus = "pendiente_entrega";
+
 interface SellFromReservationInput {
-  status: "completado" | "cancelado" | "pendiente_entrega" | "devuelto";
   reservation: Reservation;
   reservationItems: ReservationItem[];
   customerId: string;
@@ -19,7 +20,6 @@ interface SellFromReservationInput {
 }
 
 export async function sellFromReservationUseCase({
-  status,
   reservation,
   reservationItems,
   selectedStocks,
@@ -27,6 +27,7 @@ export async function sellFromReservationUseCase({
   financials,
   notes,
 }: SellFromReservationInput) {
+
   // 1️⃣ Validaciones
   reservationItems.forEach((item) => {
     if (!selectedStocks[item.id]) {
@@ -41,7 +42,7 @@ export async function sellFromReservationUseCase({
   // 2️⃣ DTO
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
-    status,
+    status: "vendido",
 
     reservationId: reservation.id,
     customerId: reservation.customerId,
@@ -64,16 +65,20 @@ export async function sellFromReservationUseCase({
 
   // 4️⃣ Movimiento físico (stock → vendido)
   reservationItems.forEach((item) => {
-    useInventoryStore.getState().deliverAndTransfer(
-      selectedStocks[item.id],
-      "vendido",
-      reservation.branchId,
-      sellerId,
-    );
+    useInventoryStore
+      .getState()
+      .deliverAndTransfer(
+        selectedStocks[item.id],
+        "vendido",
+        reservation.branchId,
+        sellerId,
+      );
   });
 
   // 5️⃣ Reserva → convertida (venta)
-  useReservationStore.getState().updateStatus(reservation.id, "venta", "convertida");
+  useReservationStore
+    .getState()
+    .updateStatus(reservation.id, "venta", "convertida");
 
   return result;
 }

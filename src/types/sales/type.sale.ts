@@ -15,7 +15,7 @@ export const saleSchema = z.object({
   // 'pendiente_entrega': Bloquea stock pero no ha salido.
   // 'completado': Dinero recibido y prenda entregada.
   // 'devuelto': Reingreso de prenda después de la venta.
-  status: z.enum(["completado", "cancelado", "pendiente_entrega", "devuelto"]),
+  status: z.enum(["vendido", "cancelado", "pendiente_entrega", "pendiente_pago", "devuelto"]),
   notes: z.string().optional(),
   createdAt: z.date(),
 
@@ -29,6 +29,7 @@ export const saleSchema = z.object({
   amountRefunded: z.number().default(0), // Dinero que se le regresó al cliente
 
   updatedAt: z.date(), // Crucial para auditoría
+  updatedBy: z.string().optional(),
 });
 
 export type Sale = z.infer<typeof saleSchema>;

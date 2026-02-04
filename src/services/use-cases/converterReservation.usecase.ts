@@ -8,7 +8,7 @@ interface ConvertReservationInput {
   reservationItems: ReservationItem[];
   selectedStocks: Record<string, string>;
   sellerId: string;
-  status: "completado" | "cancelado" | "pendiente_entrega" | "devuelto";
+
 
   // financieros genéricos
   totalCalculated: number;
@@ -51,7 +51,6 @@ export async function convertReservationUseCase(
 
   if (reservation.operationType === "venta") {
     return sellFromReservationUseCase({
-      status: input.status,
       reservation,
       customerId: reservation.customerId,
       reservationItems: input.reservationItems,

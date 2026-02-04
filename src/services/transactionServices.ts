@@ -156,6 +156,17 @@ export function processTransaction(
   if (dto.type === "venta") {
     const fromReservation = isSaleFromReservation(dto);
 
+    let saleStatus: "pendiente_pago" | "pendiente_entrega" | "vendido";
+
+    if (!fromReservation) {
+      // venta directa → ya se entrega
+      saleStatus = "vendido";
+    } else {
+      // viene de reserva
+      const isFullyPaid = totalAmount - downPayment <= 0;
+      saleStatus = isFullyPaid ? "pendiente_entrega" : "pendiente_pago";
+    }
+
     specificData = saleSchema.parse({
       id: `SALE-${operationId}`,
       operationId: String(operationId),
@@ -164,7 +175,7 @@ export function processTransaction(
       sellerId: dto.sellerId,
       totalAmount: totalAmount,
       saleDate: now,
-      status: dto.status || "completado", // O el estado que manejes
+      status: saleStatus,
       paymentMethod: paymentMethod,
       amountRefunded: 0,
       notes: (dto as any).notes || "",
@@ -186,7 +197,7 @@ export function processTransaction(
 
           return {
             id: `SITEM-${item.reservationItemId}`,
-            saleId: specificData.id, // Ahora sí tiene ID
+            saleId: specificData.id,
             operationId: String(operationId),
             productId: reservationItem.productId,
             stockId: item.stockId,
@@ -209,16 +220,6 @@ export function processTransaction(
         }));
 
     useSaleStore.getState().addSale(specificData, saleItems);
-
-    if (fromReservation) {
-      dto.reservationItems.forEach((item) => {
-        useInventoryStore.getState().updateStockStatus(item.stockId, "vendido");
-      });
-    } else {
-      useInventoryStore
-        .getState()
-        .updateStockStatus(dto.items[0].stockId, "vendido");
-    }
   }
 
   if (dto.type === "reserva") {

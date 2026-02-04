@@ -18,6 +18,10 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { salesPendingSchema } from "../type/type.pending";
 import { BadgeX } from "lucide-react";
 import { TableCellViewerPending } from "./pending-table-cell-viewer";
+import { Sale } from "@/src/types/sales/type.sale";
+import { useState } from "react";
+import { CancelSaleModal } from "../../ui/modals/CancelSaleModal";
+import { useSaleStore } from "@/src/store/useSaleStore";
 
 export const columnsSalesPending: ColumnDef<
   z.infer<typeof salesPendingSchema>
@@ -89,7 +93,7 @@ export const columnsSalesPending: ColumnDef<
     ),
   },
   {
-    accessorKey: "registerDate",
+    accessorKey: "createdAt",
     header: "Fecha de registro",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
@@ -115,30 +119,77 @@ export const columnsSalesPending: ColumnDef<
   },
   {
     id: "actions",
-    cell: () => <ActionCell />,
+    cell: ({ row }) => <ActionCell row={row} />,
   },
 ];
 
-function ActionCell() {
+function ActionCell({
+  row,
+}: {
+  row: { original: z.infer<typeof salesPendingSchema> };
+}) {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const item = row.original;
+
+  const { sales } = useSaleStore(); // Asumiendo que tienes un store de ventas
+  const fullSaleData = sales.find((s) => s.id === item.id);
+
+  const handleCancelConfirm = async (id: string, reason: string) => {
+    try {
+      // Tu servicio de anulación
+      console.log("Anulando venta ID:", id, "Motivo:", reason);
+      setShowCancelModal(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (!fullSaleData) {
+    return null;
+  }
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-          size="icon"
-        >
-          <IconDotsVertical />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+            size="icon"
+          >
+            <IconDotsVertical />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem
+            onClick={() => {
+              /* Tu lógica de editar */
+            }}
+          >
+            Editar Venta
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Solo Anular en Pendientes */}
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setShowCancelModal(true)}
+          >
+            <BadgeX className="animate-pulse"/>
+            Anular Venta
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <CancelSaleModal
+        open={showCancelModal}
+        onOpenChange={setShowCancelModal}
+        sale={fullSaleData}
+        onConfirm={handleCancelConfirm}
+      />
+    </>
   );
 }

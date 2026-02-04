@@ -77,7 +77,7 @@ export function SalesDataTable({
     gurantee: "Garantía",
     status: "Estado",
     outDate: "Fecha de salida",
-    registerDate: "Fecha de registro",
+    createdAt: "Fecha de registro",
     expectedReturnDate: "Fecha de devolución",
     returnDate: "Fecha de retorno",
     cancelDate: "Fecha de cancelación",
