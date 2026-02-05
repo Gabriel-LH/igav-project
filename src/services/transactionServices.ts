@@ -31,8 +31,8 @@ function getFinancials(
   if (dto.type === "venta") {
     return {
       totalAmount: dto.financials.totalAmount,
-      downPayment: dto.financials.totalAmount,
       paymentMethod: dto.financials.paymentMethod,
+      downPayment: dto.financials.downPayment ?? 0,
       receivedAmount: dto.financials.receivedAmount,
       keepAsCredit: dto.financials.keepAsCredit,
     };
@@ -106,7 +106,7 @@ export function processTransaction(
   } = getFinancials(dto);
 
   const overpayment =
-    receivedAmount > downPayment ? receivedAmount - downPayment : 0;
+    receivedAmount > totalAmount ? receivedAmount - totalAmount : 0;
 
   let specificData: any = {};
   let guaranteeData: any = null;
@@ -123,6 +123,8 @@ export function processTransaction(
   }
 
   // 1️⃣ OPERACIÓN MADRE
+
+  const isPaid = dto.type === "venta" && receivedAmount >= totalAmount;
   const operationData = operationSchema.parse({
     id: String(operationId),
     branchId: dto.branchId,
@@ -130,7 +132,7 @@ export function processTransaction(
     customerId: dto.customerId,
     type: dto.type,
     status: "en_progreso",
-    paymentStatus: totalAmount - downPayment <= 0 ? "pagado" : "parcial",
+    paymentStatus: isPaid ? "pagado" : "parcial",
     totalAmount,
     date: now,
     createdAt: now,
@@ -138,39 +140,38 @@ export function processTransaction(
 
   useOperationStore.getState().addOperation(operationData);
 
-  // 2️⃣ PAGO INICIAL
-  const paymentData = paymentSchema.parse({
-    id: `PAY-${Math.random().toString(36).toUpperCase().substring(2, 9)}`,
-    operationId: String(operationId),
-    branchId: dto.branchId,
-    receivedById: dto.sellerId,
-    amount: downPayment,
-    method: paymentMethod,
-    type: dto.type === "reserva" ? "adelanto" : "saldo_total",
-    date: now,
-  });
+  let paymentData: any = null;
+  // 2️⃣ PAGO INICIAL (solo si hay algo que pagar)
+  if (downPayment > 0) {
+    paymentData = paymentSchema.parse({
+      id: `PAY-${Math.random().toString(36).toUpperCase().substring(2, 9)}`,
+      operationId: String(operationId),
+      branchId: dto.branchId,
+      receivedById: dto.sellerId,
+      amount: downPayment,
+      method: paymentMethod,
+      type: dto.type === "reserva" ? "adelanto" : "saldo_total",
+      date: now,
+    });
 
-  usePaymentStore.getState().addPayment(paymentData);
-
+    usePaymentStore.getState().addPayment(paymentData);
+  }
   // 3️⃣ LÓGICA POR TIPO
   if (dto.type === "venta") {
     const fromReservation = isSaleFromReservation(dto);
 
-    let saleStatus: "pendiente_pago" | "pendiente_entrega" | "vendido";
-
-    if (!fromReservation) {
-      // venta directa → ya se entrega
-      saleStatus = "vendido";
-    } else {
-      // viene de reserva
-      const isFullyPaid = totalAmount - downPayment <= 0;
-      saleStatus = isFullyPaid ? "pendiente_entrega" : "pendiente_pago";
-    }
+    const saleStatus: "pendiente_pago" | "pendiente_entrega" | "vendido" =
+      !fromReservation
+        ? "vendido"
+        : totalAmount - downPayment! <= 0
+          ? "pendiente_entrega"
+          : "pendiente_pago";
 
     specificData = saleSchema.parse({
       id: `SALE-${operationId}`,
       operationId: String(operationId),
       customerId: dto.customerId,
+      reservationId: fromReservation ? dto.reservationId : undefined,
       branchId: dto.branchId,
       sellerId: dto.sellerId,
       totalAmount: totalAmount,

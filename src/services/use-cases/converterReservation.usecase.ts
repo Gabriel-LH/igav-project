@@ -1,7 +1,7 @@
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { rentalFromReservationUseCase } from "./rentalFromReservation.usecase";
-import { sellFromReservationUseCase } from "./sellFromReservation.usecase";
+import { createSaleFromReservationUseCase } from "./sellFromReservation.usecase";
 
 interface ConvertReservationInput {
   reservation: Reservation;
@@ -9,11 +9,11 @@ interface ConvertReservationInput {
   selectedStocks: Record<string, string>;
   sellerId: string;
 
-
   // financieros genéricos
   totalCalculated: number;
   totalPaid: number;
   isCredit: boolean;
+  downPayment: number;
 
   guarantee?: {
     type: "dinero" | "dni" | "joyas" | "reloj" | "otros" | "no_aplica";
@@ -24,11 +24,30 @@ interface ConvertReservationInput {
   notes?: string;
 }
 
+function resolveInitialSaleStatus(params: {
+  totalCalculated: number;
+  totalPaid: number;
+  isCredit: boolean;
+}) {
+  const { totalCalculated, totalPaid, isCredit } = params;
+
+  if (isCredit) return "pendiente_entrega";
+
+  if (totalPaid >= totalCalculated) {
+    return "pendiente_entrega";
+  }
+
+  return "pendiente_pago";
+}
+
 export async function convertReservationUseCase(
   input: ConvertReservationInput,
-) {
+): Promise<{
+  saleId?: string;
+  operationId?: string;
+  rentalId?: string;
+}> {
   const { reservation } = input;
-
   if (reservation.operationType === "alquiler") {
     return rentalFromReservationUseCase({
       reservation,
@@ -50,15 +69,22 @@ export async function convertReservationUseCase(
   }
 
   if (reservation.operationType === "venta") {
-    return sellFromReservationUseCase({
+    const saleStatus = resolveInitialSaleStatus({
+      totalCalculated: input.totalCalculated,
+      totalPaid: input.totalPaid,
+      isCredit: input.isCredit,
+    });
+    return createSaleFromReservationUseCase({
       reservation,
       customerId: reservation.customerId,
       reservationItems: input.reservationItems,
       selectedStocks: input.selectedStocks,
       sellerId: input.sellerId,
+      initialStatus: saleStatus,
       financials: {
         totalAmount: input.totalCalculated,
         paymentMethod: "cash",
+        downPayment: input.downPayment,
         receivedAmount: input.totalPaid,
         keepAsCredit: input.isCredit,
         totalPrice: 0,

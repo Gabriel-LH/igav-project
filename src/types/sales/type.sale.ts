@@ -7,7 +7,7 @@ export const saleSchema = z.object({
   customerId: z.string(),
   branchId: z.string(),
   sellerId: z.string(),
-
+  reservationId: z.string().optional(), // Opcional: si viene de una reserva y no tenga duplicados fantasmas
   totalAmount: z.number(),
   saleDate: z.date(),
 

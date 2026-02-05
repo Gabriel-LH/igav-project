@@ -86,5 +86,9 @@ export async function rentalFromReservationUseCase({
     .getState()
     .updateStatus(reservation.id, "alquiler", "convertida");
 
-  return result;
+  return {
+    result,
+    operationId: result.operation.id,
+    rentalId: result.details.id,
+  };
 }

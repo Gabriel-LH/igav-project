@@ -22,7 +22,7 @@ import {
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
@@ -55,7 +55,7 @@ import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
-import { markSaleAsPendingDeliveryUseCase } from "@/src/services/use-cases/markSaleAsPendingDelivery.usecase";
+import { deliverSaleUseCase } from "@/src/services/use-cases/deliverSale.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -182,8 +182,7 @@ export function DetailsReservedViewer({
       setChecklist({ limpieza: false, garantia: false });
       setIsDrawerOpen(false);
 
-      // Usamos el orquestador en lugar del caso de uso individual
-      await convertReservationUseCase({
+      const result = await convertReservationUseCase({
         reservation: activeRes,
         reservationItems: activeResItems,
         selectedStocks,
@@ -191,15 +190,19 @@ export function DetailsReservedViewer({
         totalCalculated,
         totalPaid,
         isCredit,
-        // Los datos de garantía se pasan siempre,
-        // el orquestador decidirá si usarlos basándose en operationType
         guarantee: {
           type: guaranteeType as any,
-          value: guaranteeType === "dinero" ? guarantee : undefined,
-          description: guaranteeType !== "dinero" ? guarantee : undefined,
+          value: guarantee,
         },
-        notes: "Entrega realizada desde el visor de detalles",
+        notes: "Conversión desde reserva",
       });
+
+      // 2️⃣ entregar (solo si es venta)
+      if (activeRes.operationType === "venta" && "saleId" in result) {
+        await deliverSaleUseCase(result.saleId!);
+      }
+
+      toast.success("Entrega realizada correctamente");
 
       // Generación de Ticket (Mantenemos tu lógica de impresión)
       const ticketHtml = buildDeliveryTicketHtml(
