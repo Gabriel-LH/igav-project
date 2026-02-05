@@ -8,10 +8,12 @@ import { SaleItem } from "../types/sales/type.saleItem";
 // Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface SaleTableRow {
   id: string;
+  amountRefunded: number;
   branchName: string;
   sellerName: string;
   outDate: string;
   realOutDate: string;
+  createdAt: string;
   cancelDate: string;
   returnDate: string;
   nameCustomer: string;
@@ -50,6 +52,7 @@ export const mapSaleToTable = (
       id: item.id,
       branchName: branch?.name || "Principal",
       sellerName: seller?.name || "",
+
       createdAt: parent?.createdAt
         ? new Date(parent.createdAt).toLocaleDateString()
         : "---",
@@ -68,7 +71,9 @@ export const mapSaleToTable = (
       returnDate: parent?.returnedAt
         ? new Date(parent.returnedAt).toLocaleDateString()
         : "---",
+      amountRefunded: parent?.amountRefunded || 0,
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
+      restockingFee: saleItem?.restockingFee || 0,
       product: product?.name || `ID: ${saleItem?.productId}`,
       count: saleItem?.quantity || 0,
       income: saleItem?.priceAtMoment || 0,

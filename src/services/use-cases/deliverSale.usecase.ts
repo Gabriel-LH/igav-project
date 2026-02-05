@@ -15,6 +15,8 @@ export function deliverSaleUseCase(saleId: string) {
 
   const sale = saleStore.sales.find((s) => s.id === saleId);
 
+  console.log("sale en deliverSaleUseCase", sale);
+
   if (!sale) {
     throw new Error("Venta no encontrada");
   }

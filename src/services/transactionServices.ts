@@ -160,13 +160,6 @@ export function processTransaction(
   if (dto.type === "venta") {
     const fromReservation = isSaleFromReservation(dto);
 
-    const saleStatus: "pendiente_pago" | "pendiente_entrega" | "vendido" =
-      !fromReservation
-        ? "vendido"
-        : totalAmount - downPayment! <= 0
-          ? "pendiente_entrega"
-          : "pendiente_pago";
-
     specificData = saleSchema.parse({
       id: `SALE-${operationId}`,
       operationId: String(operationId),
@@ -176,7 +169,7 @@ export function processTransaction(
       sellerId: dto.sellerId,
       totalAmount: totalAmount,
       saleDate: now,
-      status: saleStatus,
+      status: dto.status,
       paymentMethod: paymentMethod,
       amountRefunded: 0,
       notes: (dto as any).notes || "",

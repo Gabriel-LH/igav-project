@@ -3,6 +3,7 @@ import { USER_MOCK } from "../mocks/mock.user";
 import { useClientCreditStore } from "../store/useClientCreditStore";
 import { useOperationStore } from "../store/useOperationStore";
 import { usePaymentStore } from "../store/usePaymentStore";
+import { useSaleStore } from "../store/useSaleStore";
 import { paymentSchema } from "../types/payments/type.payments";
 import { getOperationBalances } from "../utils/payment-helpers";
 
@@ -69,6 +70,20 @@ export function registerPayment({
       operationId,
       createdAt: now,
     });
+  }
+
+  if (operation.type === "venta" && balance === 0) {
+    const saleStore = useSaleStore.getState();
+
+    const sale = saleStore.sales.find((s) => s.operationId === operationId);
+
+    if (sale && sale.status === "pendiente_pago") {
+      saleStore.updateSale(sale.id, {
+        status: "pendiente_entrega",
+        updatedAt: now,
+        updatedBy: user.id,
+      });
+    }
   }
 
   return payment;

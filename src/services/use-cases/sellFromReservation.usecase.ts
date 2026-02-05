@@ -13,7 +13,6 @@ interface SellFromReservationInput {
   selectedStocks: Record<string, string>;
   sellerId: string;
   financials: SaleFromReservationDTO["financials"];
-  initialStatus: "pendiente_pago" | "pendiente_entrega";
   notes?: string;
 }
 
@@ -23,12 +22,11 @@ export function createSaleFromReservationUseCase({
   selectedStocks,
   sellerId,
   financials,
-  initialStatus,
   notes,
 }: SellFromReservationInput) {
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
-    status: initialStatus,
+    status: "pendiente_pago", // 🔒 SIEMPRE
     reservationId: reservation.id,
     customerId: reservation.customerId,
     reservationItems: reservationItems.map((item) => ({
@@ -48,8 +46,7 @@ export function createSaleFromReservationUseCase({
     .updateStatus(reservation.id, "venta", "convertida");
 
   return {
-    result,
-    saleId: result.details.id, // 👈 CLAVE
+    saleId: result.details.id,
     operationId: result.operation.id,
   };
 }

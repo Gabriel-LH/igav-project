@@ -18,6 +18,7 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { salesReturnSchema } from "../type/type.return";
 import { BadgeX } from "lucide-react";
 import { TableCellViewerReturn } from "./return-table-cell-viewer";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 export const columnsSalesReturn: ColumnDef<
   z.infer<typeof salesReturnSchema>
@@ -89,13 +90,13 @@ export const columnsSalesReturn: ColumnDef<
     ),
   },
   {
-    accessorKey: "registerDate",
+    accessorKey: "createdAt",
     header: "Fecha de registro",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
-    accessorKey: "realOutDate",
-    header: "Fecha de salida",
+    accessorKey: "saleDate",
+    header: "Fecha de venta",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
@@ -114,19 +115,19 @@ export const columnsSalesReturn: ColumnDef<
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
-    accessorKey: "returnValue",
-    header: "Valor de la devolucion",
-    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+    accessorKey: "amountRefunded",
+    header: "Valor de reembolso",
+    cell: ({ getValue }) => <div className="w-32">{formatCurrency(getValue<number>())}</div>,
   },
   {
     accessorKey: "damage",
     header: "Daño",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+    cell: ({ getValue }) => <div className="w-32">{<Badge variant="outline" className="text-muted-foreground px-1.5">{getValue<string>().toUpperCase()}</Badge>}</div>,
   },
   {
-    accessorKey: "damageValue",
-    header: "Valor del daño",
-    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+    accessorKey: "restockingFee",
+    header: "Cargo por devolucion",
+    cell: ({ getValue }) => <div className="w-32">{formatCurrency(getValue<number>())}</div>,
   },
   {
     accessorKey: "status",

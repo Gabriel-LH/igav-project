@@ -11,11 +11,13 @@ export const saleSchema = z.object({
   totalAmount: z.number(),
   saleDate: z.date(),
 
-  // Estados profesionales para flujo de retail:
-  // 'pendiente_entrega': Bloquea stock pero no ha salido.
-  // 'completado': Dinero recibido y prenda entregada.
-  // 'devuelto': Reingreso de prenda después de la venta.
-  status: z.enum(["vendido", "cancelado", "pendiente_entrega", "pendiente_pago", "devuelto"]),
+  status: z.enum([
+    "pendiente_pago",
+    "pendiente_entrega",
+    "vendido",
+    "cancelado",
+    "devuelto",
+  ]),
   notes: z.string().optional(),
   createdAt: z.date(),
 

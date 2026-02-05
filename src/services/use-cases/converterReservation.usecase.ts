@@ -2,6 +2,7 @@ import { Reservation } from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { rentalFromReservationUseCase } from "./rentalFromReservation.usecase";
 import { createSaleFromReservationUseCase } from "./sellFromReservation.usecase";
+import { syncSaleWithOperationUseCase } from "./syncSaleWithOperation.usecase";
 
 interface ConvertReservationInput {
   reservation: Reservation;
@@ -22,22 +23,6 @@ interface ConvertReservationInput {
   };
 
   notes?: string;
-}
-
-function resolveInitialSaleStatus(params: {
-  totalCalculated: number;
-  totalPaid: number;
-  isCredit: boolean;
-}) {
-  const { totalCalculated, totalPaid, isCredit } = params;
-
-  if (isCredit) return "pendiente_entrega";
-
-  if (totalPaid >= totalCalculated) {
-    return "pendiente_entrega";
-  }
-
-  return "pendiente_pago";
 }
 
 export async function convertReservationUseCase(
@@ -69,18 +54,12 @@ export async function convertReservationUseCase(
   }
 
   if (reservation.operationType === "venta") {
-    const saleStatus = resolveInitialSaleStatus({
-      totalCalculated: input.totalCalculated,
-      totalPaid: input.totalPaid,
-      isCredit: input.isCredit,
-    });
-    return createSaleFromReservationUseCase({
+    createSaleFromReservationUseCase({
       reservation,
       customerId: reservation.customerId,
       reservationItems: input.reservationItems,
       selectedStocks: input.selectedStocks,
       sellerId: input.sellerId,
-      initialStatus: saleStatus,
       financials: {
         totalAmount: input.totalCalculated,
         paymentMethod: "cash",
@@ -91,6 +70,7 @@ export async function convertReservationUseCase(
       },
       notes: input.notes,
     });
+
   }
 
   throw new Error("Tipo de reserva no soportado");

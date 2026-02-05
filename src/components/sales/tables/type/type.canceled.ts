@@ -7,7 +7,7 @@ export const salesCanceledSchema = z.object({
   id: z.string(),
   branchName: z.string(), // Sucursal
   sellerName: z.string(), // Vendedor
-  registerDate: z.string(), // Fecha de registro
+  createdAt: z.string(), // Fecha de registro
   outDate: z.string(), // Fecha de salida
   realOutDate: z.string().optional(), // Fecha real de salida
   cancelDate: z.string(), // Fecha de cancelacion

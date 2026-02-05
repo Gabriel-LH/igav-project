@@ -210,17 +210,16 @@ export function DirectTransactionModal({
             receivedAmount,
             keepAsCredit: false,
             totalPrice: totalOperacion,
+            downPayment: 0
           },
 
           notes,
-          status: "completado",
+          status: "vendido",
           id: "",
           operationId: "",
           createdAt: new Date(),
           updatedAt: new Date()
         };
-
-        console.log("saleData", saleData);
 
         processTransaction(saleData);
 

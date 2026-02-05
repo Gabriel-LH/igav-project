@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Sale } from "@/src/types/sales/type.sale";
+import { Sale, SaleWithItems } from "@/src/types/sales/type.sale";
 import { SaleItem } from "@/src/types/sales/type.saleItem";
 
 interface SaleStore {
@@ -9,16 +9,13 @@ interface SaleStore {
   addSale: (sale: Sale, items: SaleItem[]) => void;
 
   getSaleById: (id: string) => Sale | undefined;
+  getSaleWithItems: (id: string) => SaleWithItems;
 
   updateSale: (id: string, data: Partial<Sale>) => void;
 
   cancelSale: (saleId: string, reason?: string) => void;
 
-  returnSaleItem: (
-    saleItemId: string,
-    condition: "perfecto" | "dañado" | "manchado",
-    restockingFee?: number,
-  ) => void;
+  updateSaleItem: (saleItemId: string, data: Partial<SaleItem>) => void;
 }
 
 export const useSaleStore = create<SaleStore>((set, get) => ({
@@ -29,10 +26,15 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
     console.log("RECIBIENDO EN STORE:", sale);
     set((state) => ({
       sales: [...state.sales, sale],
-      saleItems: [...state.saleItems, ...items],
+      saleItems: [
+        ...state.saleItems,
+        ...items.map((i) => ({
+          ...i,
+          isReturned: false, // 👈 CRUCIAL
+        })),
+      ],
     }));
   },
-
   getSaleById: (id) => get().sales.find((s) => s.id === id),
 
   updateSale: (id, data) =>
@@ -57,38 +59,24 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
       ),
     })),
 
-  returnSaleItem: (saleItemId, condition, restockingFee = 0) =>
-    set((state) => {
-      const item = state.saleItems.find((i) => i.id === saleItemId);
-      if (!item) return state;
+  getSaleWithItems: (id) => {
+    const sale = get().sales.find((s) => s.id === id);
+    if (!sale) {
+      throw new Error("Venta no encontrada");
+    }
 
-      const updatedItems = state.saleItems.map((i) =>
-        i.id === saleItemId
-          ? {
-              ...i,
-              isReturned: true,
-              returnCondition: condition,
-              restockingFee,
-            }
-          : i,
-      );
+    const items = get().saleItems.filter((item) => item.saleId === id);
 
-      const itemsOfSale = updatedItems.filter((i) => i.saleId === item.saleId);
+    return {
+      ...sale,
+      items,
+    };
+  },
 
-      const allReturned = itemsOfSale.every((i) => i.isReturned);
-
-      return {
-        saleItems: updatedItems,
-        sales: state.sales.map((s) =>
-          s.id === item.saleId
-            ? {
-                ...s,
-                status: allReturned ? "devuelto" : s.status,
-                amountRefunded: (s.amountRefunded || 0) + restockingFee,
-                updatedAt: new Date(),
-              }
-            : s,
-        ),
-      };
-    }),
+  updateSaleItem: (saleItemId, data) =>
+    set((state) => ({
+      saleItems: state.saleItems.map((item) =>
+        item.id === saleItemId ? { ...item, ...data } : item,
+      ),
+    })),
 }));

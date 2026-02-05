@@ -10,6 +10,7 @@ export const saleItemSchema = z.object({
 
   // Campos "Pro" para devoluciones:
   isReturned: z.boolean().default(false),
+  returnedAt: z.date().optional(),
   returnCondition: z.enum(["perfecto", "dañado", "manchado"]).optional(),
   restockingFee: z.number().default(0), // Cobro extra por devolverlo dañado
 });

@@ -188,6 +188,7 @@ export function DetailsReservedViewer({
         selectedStocks,
         sellerId: currentUser.id,
         totalCalculated,
+        downPayment: 0,
         totalPaid,
         isCredit,
         guarantee: {
@@ -202,7 +203,7 @@ export function DetailsReservedViewer({
         await deliverSaleUseCase(result.saleId!);
       }
 
-      toast.success("Entrega realizada correctamente");
+ 
 
       // Generación de Ticket (Mantenemos tu lógica de impresión)
       const ticketHtml = buildDeliveryTicketHtml(

@@ -23,6 +23,11 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useState } from "react";
 import { ReturnProductModal } from "../../ui/modals/ReturProductModal";
 import { SaleWithItems } from "@/src/types/sales/type.sale";
+import { cancelSaleUseCase } from "@/src/services/use-cases/cancelSale.usecase";
+import { toast } from "sonner";
+import { USER_MOCK } from "@/src/mocks/mock.user";
+import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
+import { returnSaleItemsUseCase } from "@/src/services/use-cases/returnSaleItems.usecase";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>
@@ -136,6 +141,8 @@ function ActionCell({
 
   const { sales, saleItems } = useSaleStore(); // Asumiendo que tienes un store de ventas
 
+  const user = USER_MOCK[0];
+
   // 1. Buscamos la venta base
   const baseSale = sales.find((s) => s.id === item.id);
 
@@ -149,11 +156,50 @@ function ActionCell({
 
   const handleCancelConfirm = async (id: string, reason: string) => {
     try {
-      // Tu servicio de anulación
-      console.log("Anulando venta ID:", id, "Motivo:", reason);
+      await cancelSaleUseCase({
+        saleId: id,
+        reason,
+        userId: user.id,
+      });
+
+      toast.success("Venta anulada", {
+        description: "La venta fue anulada correctamente",
+      });
+
       setShowCancelModal(false);
     } catch (error) {
-      console.error(error);
+      toast.error("No se pudo anular", {
+        description: (error as Error).message,
+      });
+    }
+  };
+
+  const handleReturnConfirm = (
+    saleId: string,
+    reason: string,
+    items: {
+      saleItemId: string;
+      condition?: "perfecto" | "dañado" | "manchado";
+      restockingFee: number;
+    }[],
+  ) => {
+    try {
+      returnSaleItemsUseCase({
+        saleId,
+        reason,
+        items,
+        userId: user.id,
+      });
+
+      toast.success("Devolución registrada", {
+        description: "Los productos fueron devueltos correctamente",
+      });
+
+      setShowReturnModal(false);
+    } catch (error) {
+      toast.error("No se pudo devolver", {
+        description: (error as Error).message,
+      });
     }
   };
 
@@ -175,22 +221,25 @@ function ActionCell({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={() => setShowReturnModal(true)}>
-
-            <Undo2 className="animate-pulse"/>
-            Realizar Retorno
-          </DropdownMenuItem>
+          {canReturnSale(fullSaleData) && (
+            <DropdownMenuItem onClick={() => setShowReturnModal(true)}>
+              <Undo2 className="animate-pulse" />
+              Realizar Retorno
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuSeparator />
 
           {/* Solo Anular en Pendientes */}
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => setShowCancelModal(true)}
-          >
-            <BadgeX className="animate-pulse" />
-            Anular Venta
-          </DropdownMenuItem>
+          {canAnnulSale(fullSaleData) && (
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setShowCancelModal(true)}
+            >
+              <BadgeX className="animate-pulse" />
+              Anular Venta
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -205,6 +254,7 @@ function ActionCell({
         open={showReturnModal}
         onOpenChange={setShowReturnModal}
         sale={fullSaleData}
+        onConfirm={handleReturnConfirm}
       />
     </>
   );

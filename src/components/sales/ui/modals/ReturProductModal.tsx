@@ -26,10 +26,20 @@ export function ReturnProductModal({
   open,
   onOpenChange,
   sale,
+  onConfirm,
 }: {
   open: boolean;
   onOpenChange: any;
   sale: SaleWithItems;
+  onConfirm: (
+    saleId: string,
+    reason: string,
+    items: {
+      saleItemId: string;
+      condition?: "perfecto" | "dañado" | "manchado";
+      restockingFee: number;
+    }[],
+  ) => void;
 }) {
   // Estado para manejar qué items se están devolviendo y sus condiciones
   const [returnItems, setReturnItems] = useState<
@@ -48,6 +58,8 @@ export function ReturnProductModal({
     ),
   );
 
+  const [reason, setReason] = useState("");
+
   const handleToggleItem = (id: string) => {
     setReturnItems((prev) => ({
       ...prev,
@@ -62,9 +74,17 @@ export function ReturnProductModal({
     return acc + (item?.priceAtMoment || 0) - (config.restockingFee || 0);
   }, 0);
 
+  const itemsToReturn = Object.entries(returnItems)
+    .filter(([, config]) => config.isReturned)
+    .map(([saleItemId, config]) => ({
+      saleItemId,
+      condition: config.returnCondition,
+      restockingFee: config.restockingFee ?? 0,
+    }));
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent aria-hidden={!open} className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Procesar Devolución de Mercadería</DialogTitle>
         </DialogHeader>
@@ -177,13 +197,20 @@ export function ReturnProductModal({
           </div>
         </div>
 
+        <div className="space-y-2">
+          <Label>Motivo de la devolución</Label>
+          <Input
+            placeholder="Ej: No le quedó, defecto, cambio de opinión"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        </div>
+
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
           <Button
-            disabled={totalToRefund <= 0}
-            className=" text-white bg-emerald-600 hover:bg-emerald-700"
+            onClick={() => onConfirm(sale.id, reason, itemsToReturn)}
+            disabled={itemsToReturn.length === 0 || !reason.trim()}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             Confirmar Reingreso y Devolución
           </Button>

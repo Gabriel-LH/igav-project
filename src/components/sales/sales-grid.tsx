@@ -37,8 +37,8 @@ export const SalesGrid = () => {
           {/* <RentalsTab /> */}
           <SalesDataTable
             dataSalesPending={pending}
-            dataSalesCanceled={[]}
-            dataSalesReturn={[]}
+            dataSalesCanceled={canceled}
+            dataSalesReturn={returned}
             dataSalesHistory={history}
           />
         </div>
