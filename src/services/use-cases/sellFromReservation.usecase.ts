@@ -14,6 +14,7 @@ interface SellFromReservationInput {
   sellerId: string;
   financials: SaleFromReservationDTO["financials"];
   notes?: string;
+  status?: string;
 }
 
 export function createSaleFromReservationUseCase({
@@ -23,10 +24,11 @@ export function createSaleFromReservationUseCase({
   sellerId,
   financials,
   notes,
+  status = "pendiente_entrega",
 }: SellFromReservationInput) {
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
-    status: "vendido", // 🔒 SIEMPRE
+    status: status as SaleFromReservationDTO["status"],
     reservationId: reservation.id,
     customerId: reservation.customerId,
     reservationItems: reservationItems.map((item) => ({

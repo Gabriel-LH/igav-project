@@ -151,10 +151,10 @@ export function ReservationModal({
           color,
           quantity,
           priceAtMoment: unitPrice,
-          stockId: stockId 
-        }
+          stockId: stockId,
+        },
       ],
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     try {
@@ -173,7 +173,11 @@ export function ReservationModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      aria-hidden={open ? "false" : "true"}
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
@@ -244,8 +248,9 @@ export function ReservationModal({
             <Button
               onClick={handleConfirm}
               className={`w-full h-12 font-bold ${
-                !isVenta ?  "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
-                : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                !isVenta
+                  ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                  : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
               }`}
             >
               RESERVAR {isVenta ? "VENTA" : "ALQUILER"}

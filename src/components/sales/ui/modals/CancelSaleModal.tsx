@@ -17,7 +17,7 @@ export function CancelSaleModal({ open, onOpenChange, sale, onConfirm }: CancelS
   const [reason, setReason] = useState("");
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog aria-hidden="false" open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-2 text-destructive">

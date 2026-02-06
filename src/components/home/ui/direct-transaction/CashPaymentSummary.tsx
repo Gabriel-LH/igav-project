@@ -24,8 +24,8 @@ interface CashPaymentSummaryProps {
   type?: string;
   totalToPay: number;
   paymentMethod: PaymentMethod;
-  receivedAmount: number;
-  setReceivedAmount: (v: number) => void;
+  receivedAmount: string;
+  setReceivedAmount: (v: string) => void;
   changeAmount: number;
   setPaymentMethod: (v: PaymentMethod) => void;
   guarantee: any;
@@ -67,7 +67,7 @@ export function CashPaymentSummary({
               className="pl-7 h-9 font-semibold"
               placeholder="0.00"
               value={receivedAmount}
-              onChange={(e) => setReceivedAmount(Number(e.target.value))}
+              onChange={(e) => setReceivedAmount(e.target.value)}
             />
           </div>
         </div>

@@ -23,7 +23,9 @@ export const stockSchema = z.object({
   status: z.enum([
     "disponible",
     "en_mantenimiento",
-    "alquilado",
+    "alquilado", // Alquiler activo (fuera de tienda)
+    "reservado", // Tiene un adelanto, pero no se ha procesado venta/alquiler aún
+    "vendido_pendiente_entrega", // PAGADO, pero físicamente en la tienda (Estante de recojo)
     "en_lavanderia",
     "baja",
     "agotado",

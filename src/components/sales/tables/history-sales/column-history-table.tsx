@@ -72,16 +72,6 @@ export const columnsSalesHistory: ColumnDef<
     enableHiding: false,
   },
   {
-    accessorKey: "sellerName",
-    header: "Vendedor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "branchName",
-    header: "Sucursal",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
     accessorKey: "product",
     header: "Producto",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,

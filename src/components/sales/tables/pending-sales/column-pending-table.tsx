@@ -16,12 +16,16 @@ import {
 } from "@/components/dropdown-menu";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
 import { salesPendingSchema } from "../type/type.pending";
-import { BadgeX } from "lucide-react";
+import { BadgeX, Handbag } from "lucide-react";
 import { TableCellViewerPending } from "./pending-table-cell-viewer";
-import { Sale } from "@/src/types/sales/type.sale";
 import { useState } from "react";
 import { CancelSaleModal } from "../../ui/modals/CancelSaleModal";
 import { useSaleStore } from "@/src/store/useSaleStore";
+import { cancelSaleUseCase } from "@/src/services/use-cases/cancelSale.usecase";
+import { toast } from "sonner";
+import { USER_MOCK } from "@/src/mocks/mock.user";
+import { deliverSaleUseCase } from "@/src/services/use-cases/deliverSale.usecase";
+import { DeliverSaleModal } from "../../ui/modals/DeliverSaleModal";
 
 export const columnsSalesPending: ColumnDef<
   z.infer<typeof salesPendingSchema>
@@ -66,16 +70,6 @@ export const columnsSalesPending: ColumnDef<
     enableHiding: false,
   },
   {
-    accessorKey: "sellerName",
-    header: "Vendedor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "branchName",
-    header: "Sucursal",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
     accessorKey: "product",
     header: "Producto",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
@@ -95,11 +89,6 @@ export const columnsSalesPending: ColumnDef<
   {
     accessorKey: "createdAt",
     header: "Fecha de registro",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "outDate",
-    header: "Fecha de salida",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
@@ -129,24 +118,51 @@ function ActionCell({
   row: { original: z.infer<typeof salesPendingSchema> };
 }) {
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showDeliverModal, setShowDeliverModal] = useState(false);
+
+  const user = USER_MOCK[0]
 
   const item = row.original;
 
   const { sales } = useSaleStore(); // Asumiendo que tienes un store de ventas
   const fullSaleData = sales.find((s) => s.id === item.id);
 
-  const handleCancelConfirm = async (id: string, reason: string) => {
-    try {
-      // Tu servicio de anulación
-      console.log("Anulando venta ID:", id, "Motivo:", reason);
-      setShowCancelModal(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+   const handleCancelConfirm = async (id: string, reason: string) => {
+      try {
+        await cancelSaleUseCase({
+          saleId: id,
+          reason,
+          userId: user.id,
+        });
+  
+        toast.success("Venta anulada", {
+          description: "La venta fue anulada correctamente",
+        });
+  
+        setShowCancelModal(false);
+      } catch (error) {
+        toast.error("No se pudo anular", {
+          description: (error as Error).message,
+        });
+      }
+    };
+  
   if (!fullSaleData) {
     return null;
+  }
+
+  const handleDeliverSale = async (id: string) => {
+    try {
+      await deliverSaleUseCase(id);
+
+      toast.success("Venta entregada", {
+        description: "La venta fue entregada correctamente",
+      });
+    } catch (error) {
+      toast.error("No se pudo entregar", {
+        description: (error as Error).message,
+      });
+    }
   }
 
   return (
@@ -165,10 +181,11 @@ function ActionCell({
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuItem
             onClick={() => {
-              /* Tu lógica de editar */
+              setShowDeliverModal(true);
             }}
           >
-            Editar Venta
+            <Handbag className="animate-pulse"/>
+            Entregar Venta
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
@@ -189,6 +206,13 @@ function ActionCell({
         onOpenChange={setShowCancelModal}
         sale={fullSaleData}
         onConfirm={handleCancelConfirm}
+      />
+
+      <DeliverSaleModal
+        open={showDeliverModal}
+        onOpenChange={setShowDeliverModal}
+        sale={fullSaleData }
+        onConfirm={handleDeliverSale}
       />
     </>
   );

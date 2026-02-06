@@ -2,7 +2,7 @@ import { RentalDTO } from "../interfaces/RentalDTO";
 import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
-import { useInventoryStore } from "../store/useInventoryStore";
+import { StockStatus, useInventoryStore } from "../store/useInventoryStore";
 import { useRentalStore } from "../store/useRentalStore";
 import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { operationSchema } from "../types/operation/type.operations";
@@ -214,6 +214,22 @@ export function processTransaction(
         }));
 
     useSaleStore.getState().addSale(specificData, saleItems);
+
+    saleItems.forEach((item) => {
+      // Si la venta nace como 'vendido', el stock es 'vendido'
+      // Si la venta nace como 'pendiente_entrega', el stock es 'vendido_pendiente_entrega'
+      const finalStockStatus =
+        dto.status === "vendido" ? "vendido" : "vendido_pendiente_entrega";
+
+      useInventoryStore
+        .getState()
+        .deliverAndTransfer(
+          item.stockId,
+          finalStockStatus as StockStatus,
+          dto.branchId,
+          dto.sellerId,
+        );
+    });
   }
 
   if (dto.type === "reserva") {

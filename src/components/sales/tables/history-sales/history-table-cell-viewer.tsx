@@ -61,12 +61,10 @@ export function TableCellViewerHistory({
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>{item.product}</DrawerTitle>
-          <DrawerDescription>
-            Showing total visitors for the last 6 months
-          </DrawerDescription>
+          <DrawerDescription>Todos los detalles de la venta</DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          {!isMobile && (
+          {/* {!isMobile && (
             <>
               <ChartContainer config={chartConfig}>
                 <AreaChart
@@ -122,22 +120,46 @@ export function TableCellViewerHistory({
               </div>
               <Separator />
             </>
-          )}
+          )} */}
           <form className="flex flex-col gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Nombre</Label>
-              <Input id="name" defaultValue={item.product} />
+              <Label htmlFor="name">Producto</Label>
+              <Input id="name" defaultValue={item.product} disabled />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="count">Cantidad de veces</Label>
-                <Input id="count" defaultValue={item.count.toString()} />
+                <Label htmlFor="count">Cantidad vendido</Label>
+                <Input
+                  id="count"
+                  defaultValue={item.count.toString()}
+                  disabled
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="income">Ingreso generado</Label>
+                <Input
+                  id="income"
+                  defaultValue={item.income.toString()}
+                  disabled
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Ingreso generado</Label>
-                <Input id="income" defaultValue={item.income.toString()} />
+                <Label htmlFor="income">Vendedor</Label>
+                <Input
+                  id="income"
+                  defaultValue={item.sellerName}
+                  disabled
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="income">Punto de venta</Label>
+                <Input
+                  id="income"
+                  defaultValue={item.branchName}
+                  disabled
+                />
               </div>
             </div>
           </form>

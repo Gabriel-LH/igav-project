@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Intente eliminar el deliver y dejar que haga todo sellFromReservationUseCase pero ambos se complementan, el deliver se encarga de entregar la ropa y el sellFromReservationUseCase se encarga de mover estados de la ropa y la reserva, ambos son necesarios, continuare con eso mañana tratando de conectarlos con  mayor logica que la actual
+//Se logro hacer que se pueda entregar desde una reserva y marcar como pendiente de entrega con otras tecnicas, ademas de lograr informacion en el drawer y enrenderlo, para hacer que su pedido del cliente pase a estado pendiente de entrega desde que el primer momento paga completo, se estara usando otras tecnicas

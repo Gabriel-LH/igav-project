@@ -57,7 +57,7 @@ export function DirectTransactionModal({
     "cash" | "card" | "transfer" | "yape" | "plin"
   >("cash");
 
-  const [receivedAmount, setReceivedAmount] = React.useState<number>(0);
+  const [receivedAmount, setReceivedAmount] = React.useState<string>("");
 
   const [guarantee, setGuarantee] = React.useState("");
   const [guaranteeType, setGuaranteeType] = React.useState<
@@ -111,9 +111,9 @@ export function DirectTransactionModal({
 
   const changeAmount = useMemo(() => {
     if (paymentMethod !== "cash") return 0;
-    if (receivedAmount <= 0) return 0;
-    if (receivedAmount < totalACobrarHoy) return 0;
-    return receivedAmount - totalACobrarHoy;
+    if (Number(receivedAmount) <= 0) return 0;
+    if (Number(receivedAmount) < totalACobrarHoy) return 0;
+    return Number(receivedAmount) - totalACobrarHoy;
   }, [receivedAmount, totalACobrarHoy, paymentMethod]);
 
   // --------------------
@@ -154,7 +154,7 @@ export function DirectTransactionModal({
             description: guaranteeType !== "dinero" ? guarantee : undefined,
           },
           paymentMethod,
-          receivedAmount: receivedAmount,
+          receivedAmount: Number(receivedAmount),
           keepAsCredit: false,
         },
         status: "en_curso",
@@ -207,7 +207,7 @@ export function DirectTransactionModal({
           financials: {
             totalAmount: totalOperacion,
             paymentMethod,
-            receivedAmount,
+            receivedAmount: Number(receivedAmount),
             keepAsCredit: false,
             totalPrice: totalOperacion,
             downPayment: 0

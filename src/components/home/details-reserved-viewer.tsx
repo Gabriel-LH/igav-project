@@ -170,7 +170,7 @@ export function DetailsReservedViewer({
     checklist.garantia &&
     allItemsAssigned;
 
-  const handleDeliver = async () => {
+  const handleDeliver = async (deliverImmediately: boolean) => {
     if (!activeRes) return;
 
     if (!isReadyToDeliver) {
@@ -196,14 +196,8 @@ export function DetailsReservedViewer({
           value: guarantee,
         },
         notes: "Conversión desde reserva",
+        shouldDeliverImmediately: deliverImmediately,
       });
-
-      // // 2️⃣ entregar (solo si es venta)
-      // if (activeRes.operationType === "venta" && "saleId" in result) {
-      //   await deliverSaleUseCase(result.saleId!);
-      // }
-
- 
 
       // Generación de Ticket (Mantenemos tu lógica de impresión)
       const ticketHtml = buildDeliveryTicketHtml(
@@ -220,7 +214,9 @@ export function DetailsReservedViewer({
       setTimeout(() => {
         toast.success(
           activeRes.operationType === "venta"
-            ? "¡Venta finalizada con éxito!"
+            ? deliverImmediately
+              ? "¡Venta finalizada y entregada!"
+              : "¡Venta guardada! Pendiente de recojo."
             : "¡Alquiler entregado correctamente!",
           { duration: 3000 },
         );
@@ -626,31 +622,47 @@ export function DetailsReservedViewer({
           </div>
 
           <DrawerFooter className="border-t bg-muted/20">
-            <Button
-              // El botón se deshabilita si NO está listo para entregar
-              disabled={!isReadyToDeliver}
-              onClick={() => {
-                handleDeliver();
-              }}
-              className={`w-full text-white font-bold py-6 text-md shadow-lg transition-all ${
-                isReadyToDeliver
-                  ? "bg-emerald-600 hover:bg-emerald-700 active:scale-95"
-                  : "bg-slate-400 cursor-not-allowed opacity-70"
-              }`}
-            >
-              <HugeiconsIcon
-                icon={CheckmarkBadge03Icon}
-                strokeWidth={3}
-                className="mr-2"
-              />
-              {balance > 0 && !isCredit
-                ? `FALTA COBRO: ${formatCurrency(balance)}`
-                : !isReadyToDeliver
-                  ? "COMPLETE EL CHECKLIST"
-                  : activeRes?.operationType === "venta"
-                    ? "FINALIZAR VENTA Y ENTREGAR"
-                    : "CONFIRMAR ENTREGA Y SALIDA"}
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button
+                // El botón se deshabilita si NO está listo para entregar
+                disabled={!isReadyToDeliver}
+                onClick={() => {
+                  handleDeliver(true);
+                }}
+                className={`w-full text-white font-black py-5 text-[12px] shadow-lg transition-all ${
+                  isReadyToDeliver
+                    ? "bg-emerald-600 hover:bg-emerald-700 active:scale-95"
+                    : "bg-slate-400 cursor-not-allowed opacity-70"
+                }`}
+              >
+                <HugeiconsIcon icon={CheckmarkBadge03Icon} strokeWidth={3} />
+                {balance > 0 && !isCredit
+                  ? `FALTA COBRO: ${formatCurrency(balance)}`
+                  : !isReadyToDeliver
+                    ? "COMPLETE EL CHECKLIST"
+                    : activeRes?.operationType === "venta"
+                      ? "FINALIZAR VENTA Y ENTREGAR"
+                      : "CONFIRMAR ENTREGA Y SALIDA"}
+              </Button>
+
+              {/* Botón 2: Acción Diferida (Pendiente de recoger) */}
+              {activeRes?.operationType === "venta" && (
+                <Button
+                  disabled={!isReadyToDeliver}
+                  onClick={() => {
+                    handleDeliver(false);
+                  }}
+                  className="w-full bg-amber-400 text-white hover:bg-amber-500 py-5"
+                >
+                  <HugeiconsIcon icon={Calendar03Icon} strokeWidth={3} />
+                  <span className="text-[12px] font-black">
+                    {balance > 0 && !isCredit ? "" : "PAGADO - "}
+                    GUARDAR COMO PENDIENTE DE RECOJO
+                  </span>
+                </Button>
+              )}
+            </div>
+
             <div className="flex justify-between gap-2 w-full ">
               <Button
                 variant="outline"

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { STOCK_MOCK } from "../mocks/mock.stock";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 
-type StockStatus =
+export type StockStatus =
   | "disponible"
   | "en_mantenimiento"
   | "alquilado"

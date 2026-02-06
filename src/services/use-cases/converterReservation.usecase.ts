@@ -23,6 +23,8 @@ interface ConvertReservationInput {
   };
 
   notes?: string;
+
+  shouldDeliverImmediately: boolean;
 }
 
 export async function convertReservationUseCase(
@@ -33,7 +35,7 @@ export async function convertReservationUseCase(
   rentalId?: string;
 }> {
   const { reservation } = input;
-  console.log("reservation", reservation);
+
   if (reservation.operationType === "alquiler") {
     return rentalFromReservationUseCase({
       reservation,
@@ -55,7 +57,7 @@ export async function convertReservationUseCase(
   }
 
   if (reservation.operationType === "venta") {
-    createSaleFromReservationUseCase({
+    return await createSaleFromReservationUseCase({
       reservation,
       customerId: reservation.customerId,
       reservationItems: input.reservationItems,
@@ -70,9 +72,9 @@ export async function convertReservationUseCase(
         totalPrice: 0,
       },
       notes: input.notes,
+      status: input.shouldDeliverImmediately ? "vendido" : "pendiente_entrega",
     });
-
   }
-
-  // throw new Error("Tipo de reserva no soportado");
+  
+  throw new Error("Tipo de reserva no soportado");
 }
