@@ -106,20 +106,17 @@ export function ReturnProductModal({
                       <p className="text-sm font-bold">
                         Stock ID: {item.stockId}
                       </p>
+                      {returnItems[item.id].isReturned && (
+                        <div className="flex flex-col justify-between">
+                          <p className="text-sm">
+                            {formatCurrency(item.priceAtMoment)}
+                          </p>
+                        </div>
+                      )}
                       {isAlreadyReturned && (
                         <Badge variant="secondary">Ya devuelto</Badge>
                       )}
                     </div>
-                    {returnItems[item.id].isReturned && (
-                      <div className="flex justify-between">
-                        <p className="text-sm font-bold">
-                          Stock ID: {item.stockId}
-                        </p>
-                        <p className="text-sm">
-                          {formatCurrency(item.priceAtMoment)}
-                        </p>
-                      </div>
-                    )}
 
                     {returnItems[item.id].isReturned && (
                       <div className="flex gap-4 animate-in fade-in slide-in-from-top-2">
@@ -146,19 +143,17 @@ export function ReturnProductModal({
                               <SelectItem value="perfecto">
                                 Perfecto Estado
                               </SelectItem>
-                              <SelectItem value="dañado">
-                                Dañado (Penalidad)
-                              </SelectItem>
-                              <SelectItem value="manchado">
-                                Manchado (Penalidad)
-                              </SelectItem>
+                              {/* <SelectItem value="defectuoso">
+                                Defecto minimo (+ Cargo de penalidad)
+                              </SelectItem> */}{" "}
+                              {/* mas adelante se implementara */}
                             </SelectContent>
                           </Select>
                         </div>
 
                         <div className="w-32">
                           <Label className="text-[10px] uppercase text-muted-foreground">
-                            Penalidad (S/.)
+                            Cargo devolución (S/.)
                           </Label>
                           <Input
                             className="h-8 text-xs"

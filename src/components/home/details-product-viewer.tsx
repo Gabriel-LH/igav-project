@@ -24,7 +24,6 @@ import { productSchema } from "../../types/product/type.product";
 import { Label } from "@/components/label";
 import { cn } from "@/lib/utils";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
@@ -32,6 +31,7 @@ import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function DetailsProductViewer({
   item,
@@ -44,16 +44,18 @@ export function DetailsProductViewer({
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const { stock } = useInventoryStore();
+
   // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
   const allProductStock = useMemo(
     () =>
-      STOCK_MOCK.filter(
+      stock.filter(
         (s) =>
           s.productId.toString() === item.id.toString() &&
           s.status === "disponible",
       ),
 
-    [item.id],
+    [item.id, stock],
   );
 
   // 2. TALLAS ÚNICAS DISPONIBLES
@@ -417,7 +419,7 @@ export function DetailsProductViewer({
             </h4>
 
             <p className="text-muted-foreground leading-relaxed italic border-l-2 pl-3">
-              "{item.description}"
+              &quot;{item.description}&quot;
             </p>
           </div>
         </div>
@@ -436,7 +438,11 @@ export function DetailsProductViewer({
                 disabled={localStock === 0}
                 className="bg-blue-600 text-white hover:bg-blue-700"
               >
-                <HugeiconsIcon icon={Calendar03Icon} strokeWidth={2} className="w-4 h-4 mr-2" />
+                <HugeiconsIcon
+                  icon={Calendar03Icon}
+                  strokeWidth={2}
+                  className="w-4 h-4 mr-2"
+                />
                 Alquilar hoy
               </Button>
             </DirectTransactionModal>
@@ -454,7 +460,11 @@ export function DetailsProductViewer({
                 disabled={localStock === 0}
                 className="bg-orange-600 text-white hover:bg-orange-700"
               >
-                <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2} className="w-4 h-4 mr-2" />
+                <HugeiconsIcon
+                  icon={SaleTag02Icon}
+                  strokeWidth={2}
+                  className="w-4 h-4 mr-2"
+                />
                 Vender
               </Button>
             </DirectTransactionModal>

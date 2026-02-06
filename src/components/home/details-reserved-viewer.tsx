@@ -198,10 +198,10 @@ export function DetailsReservedViewer({
         notes: "Conversión desde reserva",
       });
 
-      // 2️⃣ entregar (solo si es venta)
-      if (activeRes.operationType === "venta" && "saleId" in result) {
-        await deliverSaleUseCase(result.saleId!);
-      }
+      // // 2️⃣ entregar (solo si es venta)
+      // if (activeRes.operationType === "venta" && "saleId" in result) {
+      //   await deliverSaleUseCase(result.saleId!);
+      // }
 
  
 

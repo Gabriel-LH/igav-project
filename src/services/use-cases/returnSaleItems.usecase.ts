@@ -1,5 +1,6 @@
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { useSaleReversalStore } from "@/src/store/useSaleReversalStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function returnSaleItemsUseCase({
   saleId,
@@ -83,5 +84,19 @@ export function returnSaleItemsUseCase({
     updatedBy: userId,
   });
 
+  reversalItems.forEach((ri) => {
+  const saleItem = saleWithItems.items.find(
+    (i) => i.id === ri.saleItemId
+  )!;
+
+  // Regla de venta: solo perfecto vuelve a stock, mas adelante se implementara cosas como de reacondicionamiento
+  if (ri.condition !== "perfecto") {
+    throw new Error("No se aceptan devoluciones en este estado");
+  }
+
+  useInventoryStore.getState().updateStockStatus(saleItem.stockId, "disponible");
+});
+
+  
   
 }

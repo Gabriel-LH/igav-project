@@ -26,7 +26,7 @@ export function createSaleFromReservationUseCase({
 }: SellFromReservationInput) {
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
-    status: "pendiente_pago", // 🔒 SIEMPRE
+    status: "vendido", // 🔒 SIEMPRE
     reservationId: reservation.id,
     customerId: reservation.customerId,
     reservationItems: reservationItems.map((item) => ({

@@ -1,6 +1,7 @@
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { useSaleReversalStore } from "@/src/store/useSaleReversalStore";
 import { differenceInHours } from "date-fns";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function cancelSaleUseCase({
   saleId,
@@ -13,6 +14,7 @@ export function cancelSaleUseCase({
 }) {
   const saleStore = useSaleStore.getState();
   const reversalStore = useSaleReversalStore.getState();
+  const inventory = useInventoryStore.getState();
 
   const sale = saleStore.sales.find((s) => s.id === saleId);
   if (!sale) throw new Error("Venta no encontrada");
@@ -30,6 +32,8 @@ export function cancelSaleUseCase({
     throw new Error("Solo se puede anular ventas dentro de las 24h");
   }
 
+   const saleWithItems = saleStore.getSaleWithItems(saleId);
+
   const reversal = {
     id: `REV-${crypto.randomUUID()}`,
     saleId: sale.id,
@@ -42,6 +46,12 @@ export function cancelSaleUseCase({
 
   reversalStore.addReversal(reversal);
 
+    // 2️⃣ Stock vuelve a disponible (por item)
+  saleWithItems.items.forEach((item) => {
+    inventory.updateStockStatus(item.stockId, "disponible");
+  });
+
+
   saleStore.updateSale(sale.id, {
     status: "cancelado",
     canceledAt: new Date(),
@@ -49,4 +59,6 @@ export function cancelSaleUseCase({
     updatedAt: new Date(),
     updatedBy: userId,
   });
+
+
 }

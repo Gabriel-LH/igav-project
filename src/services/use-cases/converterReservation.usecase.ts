@@ -33,6 +33,7 @@ export async function convertReservationUseCase(
   rentalId?: string;
 }> {
   const { reservation } = input;
+  console.log("reservation", reservation);
   if (reservation.operationType === "alquiler") {
     return rentalFromReservationUseCase({
       reservation,
@@ -73,5 +74,5 @@ export async function convertReservationUseCase(
 
   }
 
-  throw new Error("Tipo de reserva no soportado");
+  // throw new Error("Tipo de reserva no soportado");
 }
