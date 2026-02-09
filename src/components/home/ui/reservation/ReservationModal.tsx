@@ -19,6 +19,9 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
+import { OperationType } from "@/src/utils/status-type/OperationType";
 
 interface ReservationModalProps {
   item: any;
@@ -45,19 +48,13 @@ export function ReservationModal({
   const [dateRange, setDateRange] = React.useState<any>(undefined);
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
-  const [operationType, setOperationType] = React.useState<
-    "venta" | "alquiler"
-  >("alquiler");
+  const [operationType, setOperationType] = React.useState<OperationType>("alquiler");
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
   const [guarantee, setGuarantee] = React.useState("");
-  const [paymentMethod, setPaymentMethod] = React.useState<
-    "cash" | "card" | "transfer" | "yape" | "plin"
-  >("cash");
-  const [guaranteeType, setGuaranteeType] = React.useState<
-    "dinero" | "dni" | "joyas" | "reloj" | "otros"
-  >("dinero");
+  const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethodType>("cash");
+  const [guaranteeType, setGuaranteeType] = React.useState<GuaranteeType>("dinero");
 
   const [keepAsCredit, setKeepAsCredit] = React.useState(false);
   const [amountPaid, setAmountPaid] = React.useState("");
@@ -114,17 +111,11 @@ export function ReservationModal({
 
     const newReservation: ReservationDTO = {
       branchId: currentBranchId,
-      // productId: item.id,
-      // productName: item.name,
-      // sku: item.sku,
       createdAt: new Date(),
-      // size,
-      // color,
       type: "reserva",
       operationType,
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
-      // quantity,
       status: "confirmada",
       notes,
       financials: {
@@ -135,7 +126,6 @@ export function ReservationModal({
         paymentMethod,
         pendingAmount: totalOperacion - Number(downPayment),
       },
-      // stockId,
       sellerId,
       reservationDateRange: {
         from: dateRange.from || new Date(),
@@ -156,6 +146,7 @@ export function ReservationModal({
       ],
       updatedAt: new Date(),
     };
+
 
     try {
       processTransaction(newReservation);
@@ -191,12 +182,12 @@ export function ReservationModal({
             ) : (
               <span className="flex items-center gap-2 text-orange-500">
                 <HugeiconsIcon icon={ShoppingBag01Icon} strokeWidth={2} />
-                Separación de Venta
+                Reserva de Venta
               </span>
             )}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-xs">
-            Completa el formulario para crear una reserva
+            Completa el formulario para crear una reserva o separación
           </DialogDescription>
         </DialogHeader>
 
@@ -253,7 +244,8 @@ export function ReservationModal({
                   : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
               }`}
             >
-              RESERVAR {isVenta ? "VENTA" : "ALQUILER"}
+              RESERVAR
+              {isVenta ? "VENTA" : "ALQUILER"}
             </Button>
           )}
         </div>

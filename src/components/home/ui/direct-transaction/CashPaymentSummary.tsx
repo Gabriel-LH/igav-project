@@ -19,23 +19,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuaranteeSection } from "../reservation/GuaranteeSection";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
+import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 
 interface CashPaymentSummaryProps {
   type?: string;
   totalToPay: number;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethodType;
   receivedAmount: string;
   setReceivedAmount: (v: string) => void;
   changeAmount: number;
-  setPaymentMethod: (v: PaymentMethod) => void;
-  guarantee: any;
-  setGuarantee: (v: any) => void;
+  setPaymentMethod: (v: PaymentMethodType) => void;
+  guarantee: string;
+  setGuarantee: (v: string) => void;
   guaranteeType: GuaranteeType;
   setGuaranteeType: (v: GuaranteeType) => void;
 }
-
-export type PaymentMethod = "cash" | "card" | "transfer" | "yape" | "plin";
-export type GuaranteeType = "dinero" | "dni" | "joyas" | "otros";
 
 export function CashPaymentSummary({
   type,
@@ -50,7 +49,6 @@ export function CashPaymentSummary({
   guaranteeType,
   setGuaranteeType,
 }: CashPaymentSummaryProps) {
-
   return (
     <Card className="p-4 shadow-sm">
       {/* TOTAL A PAGAR HOY */}
@@ -77,7 +75,7 @@ export function CashPaymentSummary({
           </Label>
           <Select
             value={paymentMethod}
-            onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
+            onValueChange={(val) => setPaymentMethod(val as PaymentMethodType)}
           >
             <SelectTrigger className="h-9 text-[11px] font-bold">
               <SelectValue placeholder="Seleccionar..." />
@@ -103,14 +101,14 @@ export function CashPaymentSummary({
         </div>
       </div>
 
-        {type === "alquiler" && (
-            <GuaranteeSection
-              guarantee={guarantee}
-              setGuarantee={setGuarantee}
-              guaranteeType={guaranteeType}
-              setGuaranteeType={setGuaranteeType}
-            />
-          )}
+      {type === "alquiler" && (
+        <GuaranteeSection
+          guarantee={guarantee}
+          setGuarantee={setGuarantee}
+          guaranteeType={guaranteeType}
+          setGuaranteeType={setGuaranteeType}
+        />
+      )}
 
       {/* VUELTO (SOLO EFECTIVO) */}
       {paymentMethod === "cash" && (
@@ -134,9 +132,7 @@ export function CashPaymentSummary({
           <span className="text-[10px] uppercase font-bold">
             Total a pagar hoy
           </span>
-          <span className="text-[11px]">
-            Según método de pago
-          </span>
+          <span className="text-[11px]">Según método de pago</span>
         </div>
         <span className="text-xl font-black text-primary">
           {formatCurrency(totalToPay)}

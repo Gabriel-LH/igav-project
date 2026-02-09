@@ -1,0 +1,1 @@
+export type PaymentMethodType = "cash" | "card" | "transfer" | "yape" | "plin";

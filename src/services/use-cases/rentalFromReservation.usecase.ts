@@ -30,7 +30,6 @@ export async function rentalFromReservationUseCase({
     }
   });
 
-  // DTO CORRECTO (RentalFromReservationDTO)
   const rentalDTO: RentalFromReservationDTO = {
     type: "alquiler",
     customerId: reservation.customerId,
@@ -47,7 +46,7 @@ export async function rentalFromReservationUseCase({
     })),
 
     financials,
-    status: "en_curso",
+    status: "alquilado",
   };
 
   if (financials.guarantee && financials.guarantee.type !== "no_aplica") {

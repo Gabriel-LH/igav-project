@@ -1,4 +1,4 @@
-import { format, addDays } from "date-fns";
+import { format, addDays, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon, InfoIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -7,14 +7,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { useState } from "react";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/label";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules";
 import type { DateRange } from "react-day-picker";
+import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { useMemo } from "react";
 
 // ... dentro de tu lógica de reserva o un nuevo componente ...
 
@@ -25,6 +25,9 @@ export function ReservationCalendar({
   rules,
   dateRange,
   setDateRange,
+  productId,
+  size,
+  color,
 }: {
   mode: "single" | "range";
   originBranchId: string;
@@ -32,7 +35,24 @@ export function ReservationCalendar({
   rules: BusinessRules | any;
   dateRange: DateRange | undefined;
   setDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  productId: string;
+  size: string;
+  color: string;
 }) {
+  const { totalPhysicalStock, activeReservations } = useMemo(
+    () => getAvailabilityByAttributes(productId, size, color),
+    [productId, size, color],
+  );
+
+  const isDayFull = (date: Date) => {
+    // Contamos cuántas reservas hay activas en este día específico
+    const reservationsThatDay = activeReservations.filter((range) =>
+      isWithinInterval(date, { start: range.start, end: range.end }),
+    ).length;
+
+    // Si las reservas ocupan todo el stock físico, bloqueamos el día
+    return reservationsThatDay >= totalPhysicalStock;
+  };
   const isLocal = originBranchId === currentBranchId;
 
   const transferDays = isLocal
@@ -98,7 +118,12 @@ export function ReservationCalendar({
               onSelect={(range) => setDateRange(range)}
               numberOfMonths={isMobile ? 1 : 2}
               required={true} // <--- IMPORTANTE para PropsRangeRequired
-              disabled={(date) => date < minAvailableDate}
+              disabled={(date) => {
+                const isPast = date < minAvailableDate;
+                if (isPast) return true;
+
+                return isDayFull(date);
+              }}
             />
           )}
         </PopoverContent>

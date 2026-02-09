@@ -28,7 +28,7 @@ export function checkReservationValidity(reservation: Reservation, payments: Pay
   const diffInHours = (now.getTime() - reservation.createdAt.getTime()) / (1000 * 60 * 60);
   const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
 
-  // REGLA 1: Si no hay un centavo de adelanto y pasaron 12 horas -> EXPIRAR
+  // REGLA 1: Si no hay un centimo de adelanto y pasaron 12 horas -> EXPIRAR
   if (totalPaid === 0 && diffInHours >= 12) {
     return "expirada";
   }

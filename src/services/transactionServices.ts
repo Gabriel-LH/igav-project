@@ -289,7 +289,7 @@ export function processTransaction(
         branchId: dto.branchId,
         receivedById: dto.sellerId,
         type: dto.financials.guarantee.type,
-        value: dto.financials.guarantee.value,
+        value: dto.financials.guarantee.value || "",
         description:
           dto.financials.guarantee.description || "Garantía de alquiler",
         status: "custodia",

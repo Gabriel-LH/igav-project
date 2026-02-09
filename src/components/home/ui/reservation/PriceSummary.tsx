@@ -1,7 +1,6 @@
 import { formatCurrency } from "@/src/utils/currency-format";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
-import { GuaranteeSection } from "./GuaranteeSection";
 import { cn } from "@/lib/utils";
 import { ReservationPaymentSummary } from "./ReservationPaymentSummary";
 
@@ -22,9 +21,6 @@ export function PriceSummary({
   setDownPayment,
   paymentMethod,
   setPaymentMethod,
-
-  setGuarantee,
-  setGuaranteeType,
 }: any) {
   const { isVenta, isEvent, days, totalOperacion, totalHoy, pending } =
     usePriceCalculation({

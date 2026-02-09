@@ -11,7 +11,6 @@ import { CustomerSelector } from "../reservation/CustomerSelector";
 import { toast } from "sonner";
 import { addDays, format } from "date-fns";
 import { Label } from "@/components/label";
-import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar02Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 import { USER_MOCK } from "@/src/mocks/mock.user";
@@ -25,6 +24,8 @@ import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { processTransaction } from "@/src/services/transactionServices";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
 
 export function DirectTransactionModal({
   item,
@@ -60,16 +61,8 @@ export function DirectTransactionModal({
   const [receivedAmount, setReceivedAmount] = React.useState<string>("");
 
   const [guarantee, setGuarantee] = React.useState("");
-  const [guaranteeType, setGuaranteeType] = React.useState<
-    "dinero" | "dni" | "joyas" | "otros"
-  >("dinero");
-
-  // --------------------
-  // Stores
-  // --------------------
-  const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus,
-  );
+  const [guaranteeType, setGuaranteeType] =
+    React.useState<GuaranteeType>("dinero");
 
   const sellerId = USER_MOCK[0].id;
 
@@ -119,26 +112,22 @@ export function DirectTransactionModal({
   // --------------------
   // Confirmar operación
   // --------------------
-  const handleConfirm = () => {
+  const handleConfirm = (deliverInmediatly: boolean) => {
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
     if (!isAvailable || !stockId)
       return toast.error("No hay stock disponible físicamente.");
 
     const baseData = {
-      // productId: item.id,
-      // productName: item.name,
-      // sku: item.sku,
-      // size,
-      // color,
-      // quantity,
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
       sellerId,
       branchId: currentBranchId,
       notes,
       createdAt: new Date(),
-      // stockId,
     };
+
+    console.log("Tipo de garantia", guaranteeType);
+    console.log("Valor de garantia", guarantee);
 
     if (type === "alquiler") {
       const rentalData: RentalDTO = {
@@ -157,7 +146,7 @@ export function DirectTransactionModal({
           receivedAmount: Number(receivedAmount),
           keepAsCredit: false,
         },
-        status: "en_curso",
+        status: deliverInmediatly ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
         items: [
@@ -181,53 +170,57 @@ export function DirectTransactionModal({
     }
 
     if (type === "venta") {
-        if (!selectedCustomer) return toast.error("Seleccione un cliente");
+      if (!selectedCustomer) return toast.error("Seleccione un cliente");
 
-        if (!isAvailable || !stockId)
-          return toast.error("No hay stock disponible físicamente.");
+      if (!isAvailable || !stockId)
+        return toast.error("No hay stock disponible físicamente.");
 
-        const saleData: SaleDTO = {
-          type: "venta",
-          customerId: selectedCustomer.id,
-          customerName: selectedCustomer.name,
-          sellerId,
-          branchId: currentBranchId,
+      const saleData: SaleDTO = {
+        type: "venta",
+        customerId: selectedCustomer.id,
+        customerName: selectedCustomer.name,
+        sellerId,
+        branchId: currentBranchId,
 
-          items: [
-            {
-              productId: item.id,
-              stockId,
-              quantity,
-              size,
-              color,
-              priceAtMoment: item.price_sell,
-              productName: item.name
-            },
-          ],
-          financials: {
-            totalAmount: totalOperacion,
-            paymentMethod,
-            receivedAmount: Number(receivedAmount),
-            keepAsCredit: false,
-            totalPrice: totalOperacion,
-            downPayment: 0
+        items: [
+          {
+            productId: item.id,
+            stockId,
+            quantity,
+            size,
+            color,
+            priceAtMoment: item.price_sell,
+            productName: item.name,
           },
+        ],
+        financials: {
+          totalAmount: totalOperacion,
+          paymentMethod,
+          receivedAmount: Number(receivedAmount),
+          keepAsCredit: false,
+          totalPrice: totalOperacion,
+          downPayment: 0,
+        },
 
-          notes,
-          status: "vendido",
-          id: "",
-          operationId: "",
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
+        notes,
+        status: deliverInmediatly ? "vendido" : "pendiente_entrega",
+        id: "",
+        operationId: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-        processTransaction(saleData);
+      processTransaction(saleData);
 
+      if (deliverInmediatly) {
         toast.success("Venta realizada correctamente");
-        setOpen(false);
-
-        onSuccess?.();
+      } else {
+        toast.success("Registro para entrega posterior exitoso");
       }
+      setOpen(false);
+
+      onSuccess?.();
+    }
   };
 
   return (
@@ -277,24 +270,45 @@ export function DirectTransactionModal({
             </div>
           </div>
 
-          {/* Fecha devolución */}
+          {/* Bloque de Fechas */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* FECHA DE INICIO / RECOJO */}
+            <div>
+              <Label className="text-[11px] font-bold uppercase">
+                {type === "venta"
+                  ? "Fecha de Recojo"
+                  : "Fecha de Inicio Alquiler"}
+              </Label>
+              <DirectTransactionCalendar
+                mode="pickup"
+                selectedDate={dateRange.from}
+                onSelect={(date) => setDateRange({ ...dateRange, from: date })}
+                label="¿Cuándo viene?"
+              />
+            </div>
+            {/* FECHA DE DEVOLUCIÓN */}
+            {type === "alquiler" && (
+              <div>
+                <Label className="text-[11px] font-bold uppercase">
+                  Fecha de Devolución
+                </Label>
+                <DirectTransactionCalendar
+                  mode="return"
+                  minDate={dateRange.from} // No puede devolverlo antes de recogerlo
+                  selectedDate={dateRange.to}
+                  onSelect={(date) => setDateRange({ ...dateRange, to: date })}
+                  label="¿Cuándo entrega?"
+                />
+              </div>
+            )}
+          </div>
+
           {type === "alquiler" && (
             <div>
-              <Label className="text-[11px] mb-3 font-bold uppercase">
-                Fecha de Devolución
-              </Label>
-              <ReservationCalendar
-                mode="single"
-                dateRange={{ from: dateRange.to, to: dateRange.to }}
-                setDateRange={(val: any) =>
-                  setDateRange({ ...dateRange, to: val?.from })
-                }
-                originBranchId=""
-                currentBranchId=""
-                rules=""
-              />
-              <p className="text-[10px] text-blue-300 italic">
-                * El alquiler inicia hoy {format(new Date(), "dd/MM")}
+              <p className="text-[10px] text-muted-foreground leading-tight">
+                <strong>Nota:</strong> Al ser transacción directa con pago
+                total, la prenda se apartará físicamente. El recojo debe ser
+                entre hoy y el {format(addDays(new Date(), 2), "dd/MM")}.
               </p>
             </div>
           )}
@@ -336,16 +350,28 @@ export function DirectTransactionModal({
             STOCK NO DISPONIBLE
           </Button>
         ) : (
-          <Button
-            onClick={handleConfirm}
-            className={`w-full h-12 font-black ${
-              type === "alquiler"
-                ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
-                : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
-            }`}
-          >
-            {type === "alquiler" ? "ENTREGAR Y COBRAR" : "FINALIZAR VENTA"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleConfirm(false)}
+              className={`flex-1 h-12 font-black ${
+                type === "alquiler"
+                  ? "text-white bg-linear-to-r from-blue-400 via-blue-500 to-blue-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-700 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                  : "text-white bg-linear-to-r from-orange-400 via-orange-500 to-orange-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-700 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+              }`}
+            >
+              {type === "alquiler" ? "ENTREGAR DESPUES" : "ENTREGAR DESPUES"}
+            </Button>
+            <Button
+              onClick={() => handleConfirm(true)}
+              className={`flex-1 h-12 font-black ${
+                type === "alquiler"
+                  ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                  : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+              }`}
+            >
+              {type === "alquiler" ? "ENTREGAR AHORA" : "ENTREGAR AHORA"}
+            </Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>

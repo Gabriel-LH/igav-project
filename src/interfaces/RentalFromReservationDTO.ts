@@ -16,7 +16,7 @@ export interface RentalFromReservationDTO {
 
   startDate: Date;
   endDate: Date;
-  status: "en_curso" | "devuelto" | "atrasado" | "con_daños" | "perdido" | "anulado";
+  status: "alquilado" | "devuelto" | "atrasado" | "con_daños" | "reservado_fisico" | "perdido" | "anulado";
 
   financials: RentalDTO["financials"];
 }

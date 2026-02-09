@@ -7,13 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { PackageCheck, HandCoins, IdCard, Gem, Gift } from "lucide-react";
+import { PackageCheck, HandCoins, IdCard, Gem, Gift, Watch } from "lucide-react";
+import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType"; 
 
 interface GuaranteeSectionProps {
   guarantee: string;
   setGuarantee: (v: string) => void;
-  guaranteeType: "dinero" | "dni" | "joyas" | "otros";
-  setGuaranteeType: (v: "dinero" | "dni" | "joyas" | "otros") => void;
+  guaranteeType: GuaranteeType;
+  setGuaranteeType: (v: GuaranteeType) => void;
 }
 
 export function GuaranteeSection({
@@ -22,6 +23,9 @@ export function GuaranteeSection({
   guaranteeType,
   setGuaranteeType,
 }: GuaranteeSectionProps) {
+
+  console.log("guaranteeType",guaranteeType)
+  console.log("guarantee",guarantee)
   return (
     <div className="space-y-2 border-t pt-2">
       <div className="flex justify-between items-center">
@@ -42,6 +46,9 @@ export function GuaranteeSection({
             </SelectItem>
             <SelectItem value="joyas">
               <Gem className="w-3 h-3 mr-1 inline" /> Joyas
+            </SelectItem>
+            <SelectItem value="reloj">
+              <Watch className="w-3 h-3 mr-1 inline" /> Reloj
             </SelectItem>
             <SelectItem value="otros">
               <Gift className="w-3 h-3 mr-1 inline" /> Otros

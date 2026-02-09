@@ -2,7 +2,7 @@ import { BaseOperation } from "./BaseOperation";
 
 export interface RentalDTO extends BaseOperation {
   type: "alquiler";
-  status: "en_curso" | "devuelto" | "atrasado";
+  status: "alquilado" | "devuelto" | "atrasado" | "reservado_fisico";
   startDate: Date;
   endDate: Date;
   actualReturnDate?: Date;

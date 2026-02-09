@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Se logro hacer que se pueda entregar desde una reserva y marcar como pendiente de entrega con otras tecnicas, ademas de lograr informacion en el drawer y enrenderlo, para hacer que su pedido del cliente pase a estado pendiente de entrega desde que el primer momento paga completo, se estara usando otras tecnicas
+//Esta para corregir sobre las reservas en el transactiondirectmodal, porque se quiere guardar como si fuese una reserva cuando no lo es, debemos de guiarnos de la logica de la venta directa y hacerlo igual al de alquiler, se ira directo a revisar eso.

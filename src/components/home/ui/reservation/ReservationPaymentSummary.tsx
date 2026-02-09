@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Wallet, CreditCard, Smartphone, Banknote, HandCoins } from "lucide-react";
-import { PaymentMethod } from "../direct-transaction/CashPaymentSummary";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType"; 
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 
@@ -18,8 +18,8 @@ interface Props {
   setAmountPaid: (v: string) => void;
   downPayment: number | string;
   setDownPayment: (v: string) => void;
-  paymentMethod: PaymentMethod;
-  setPaymentMethod: (v: PaymentMethod) => void;
+  paymentMethod: PaymentMethodType;
+  setPaymentMethod: (v: PaymentMethodType) => void;
   keepAsCredit: boolean;
   setKeepAsCredit: (v: boolean) => void;
 }
@@ -66,7 +66,7 @@ export function ReservationPaymentSummary({
           </Label>
           <Select
             value={paymentMethod}
-            onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
+            onValueChange={(val) => setPaymentMethod(val as PaymentMethodType)}
           >
             <SelectTrigger className="h-9 text-[11px] font-bold">
               <SelectValue placeholder="Seleccionar..." />

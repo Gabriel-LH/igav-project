@@ -2,7 +2,6 @@ import { Reservation } from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { rentalFromReservationUseCase } from "./rentalFromReservation.usecase";
 import { createSaleFromReservationUseCase } from "./sellFromReservation.usecase";
-import { syncSaleWithOperationUseCase } from "./syncSaleWithOperation.usecase";
 
 interface ConvertReservationInput {
   reservation: Reservation;

@@ -15,8 +15,9 @@ export const rentalSchema = z.object({
   
   // Estado del Alquiler
   status: z.enum([
-    "en_curso",      // El cliente tiene la ropa
+    "alquilado",      // El cliente tiene la ropa
     "devuelto",      // Ya regresó (pasó por inspección)
+    "reservado_fisico",
     "atrasado",      // Ya pasó la fecha de devolución
     "con_daños",     // Regresó pero hubo problemas
     "perdido",        // El cliente nunca volvió

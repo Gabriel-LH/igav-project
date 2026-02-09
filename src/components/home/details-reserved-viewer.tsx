@@ -55,7 +55,8 @@ import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
-import { deliverSaleUseCase } from "@/src/services/use-cases/deliverSale.usecase";
+import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -76,10 +77,8 @@ export function DetailsReservedViewer({
 
   const stock = useInventoryStore((state) => state.stock);
 
-  const [guarantee, setGuarantee] = React.useState("");
-  const [guaranteeType, setGuaranteeType] = React.useState<
-    "dinero" | "dni" | "joyas" | "otros"
-  >("dinero");
+  const [guarantee, setGuarantee] = React.useState<G>("");
+  const [guaranteeType, setGuaranteeType] = React.useState<GuaranteeType>("dinero");
 
   const cancelReservation = useReservationStore(
     (state) => state.cancelReservation,
@@ -88,7 +87,7 @@ export function DetailsReservedViewer({
     (state) => state.rearrangeReservation,
   );
 
-  const { reservations, reservationItems } = useReservationStore();
+  const { reservationItems } = useReservationStore();
 
   const { payments: globalPayments } = usePaymentStore();
 
@@ -182,7 +181,7 @@ export function DetailsReservedViewer({
       setChecklist({ limpieza: false, garantia: false });
       setIsDrawerOpen(false);
 
-      const result = await convertReservationUseCase({
+      await convertReservationUseCase({
         reservation: activeRes,
         reservationItems: activeResItems,
         selectedStocks,
@@ -192,7 +191,7 @@ export function DetailsReservedViewer({
         totalPaid,
         isCredit,
         guarantee: {
-          type: guaranteeType as any,
+          type: guaranteeType as GuaranteeType,
           value: guarantee,
         },
         notes: "Conversión desde reserva",

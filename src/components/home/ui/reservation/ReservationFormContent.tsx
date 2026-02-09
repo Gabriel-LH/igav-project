@@ -99,7 +99,7 @@ export function ReservationFormContent({
       {/* 2. CALENDARIO */}
       <div className="space-y-3">
         <Label className="text-[11px] uppercase font-bold">
-          Fechas del Evento
+          {operationType === "venta" ? "Fecha de Venta" : "Fechas del Evento"}
         </Label>
         <ReservationCalendar
           mode={operationType === "venta" ? "single" : "range"}
@@ -108,6 +108,9 @@ export function ReservationFormContent({
           dateRange={dateRange}
           setDateRange={setDateRange}
           rules={BUSINESS_RULES_MOCK}
+          productId={item.id}
+          size={size}
+          color={color}
         />
       </div>
 

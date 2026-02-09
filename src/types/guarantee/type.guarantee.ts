@@ -7,7 +7,7 @@ export const guaranteeSchema = z.object({
   
   type: z.enum(["dinero", "dni", "joyas", "reloj", "otros", "no_aplica"]),
   
-  // Si es efectivo, el monto. Si es objeto, el valor estimado.
+  // Si es dinero, el monto. Si es objeto, el valor estimado.
   value: z.string(), 
   
   // Descripción: "DNI original de Juan Pérez" o "Reloj marca X"
