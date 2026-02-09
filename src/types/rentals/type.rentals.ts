@@ -1,4 +1,5 @@
 import z from "zod";
+import { rentalItemSchema } from "./type.rentalsItem";
 
 export const rentalSchema = z.object({
   id: z.string(),
@@ -31,6 +32,13 @@ export const rentalSchema = z.object({
   notes: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  updatedBy: z.string().optional(),
 });
 
 export type Rental = z.infer<typeof rentalSchema>;
+
+export const rentalWithItemsSchema = rentalSchema.extend({
+  items: z.array(rentalItemSchema),
+});
+
+export type RentalWithItems = z.infer<typeof rentalWithItemsSchema>;

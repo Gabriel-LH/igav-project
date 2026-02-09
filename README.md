@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Esta para corregir sobre las reservas en el transactiondirectmodal, porque se quiere guardar como si fuese una reserva cuando no lo es, debemos de guiarnos de la logica de la venta directa y hacerlo igual al de alquiler, se ira directo a revisar eso.
+//En alquiler se aumento la seccion de pendientes, ahora en el direct transaction modal esta para agregar unos check box para manejar estados y si es para entregar despues o no, depende de eso tambien cobrar la garantia o no, esta para quitar ambos botones y solo dejar uno, la desicion de tomara mediante el check box

@@ -21,9 +21,12 @@ export const RentalsGrid = () => {
     [rentals, rentalItems, products, customers, guarantees],
   );
 
-  const active = allData.filter((i) => i.status === "en_curso");
+
+  
+  const active = allData.filter((i) => i.status === "alquilado");
   const canceled = allData.filter((i) => i.status === "anulado");
   const history = allData.filter((i) => i.status === "devuelto");
+  const pending = allData.filter((i) => i.status === "reservado_fisico");
 
   return (
     <div className="flex flex-1 flex-col">
@@ -31,6 +34,7 @@ export const RentalsGrid = () => {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <RentalsTab />
           <RentalsDataTable
+            dataRentalPending={pending}
             dataRentalActive={active}
             dataRentalCanceled={canceled}
             dataRentalHistory={history}

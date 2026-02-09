@@ -19,7 +19,8 @@ export interface RentalTableRow {
   rent_unit: string;
   count: number;
   income: number;
-  gurantee: string;
+  gurantee_type: string;
+  gurantee_value: string;
   guarantee_status: string;
   status: string;
   damage: string;
@@ -71,7 +72,8 @@ export const mapRentalToTable = (
       rent_unit: product?.rent_unit || "---",
       count: rentalItem?.quantity || 0,
       income: rentalItem?.priceAtMoment || 0,
-      gurantee: guarantee ? guarantee.value.toString() : "---",
+      gurantee_type: guarantee ? guarantee.type.toString() : "---",
+      gurantee_value: guarantee ? guarantee.value.toString() : "---",
       guarantee_status: guarantee?.status || "---",
       status: item.status,
       damage: rentalItem?.conditionIn || "---",

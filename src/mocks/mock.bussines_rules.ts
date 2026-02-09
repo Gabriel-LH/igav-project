@@ -8,6 +8,8 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
   lostHangerPenalty: 2.00,
   currency: "PEN",
   taxRate: 0.18,
+  maxDaysRental: 2,
+  maxDaysSale: 7,
   
   transferRoutes: [
     {

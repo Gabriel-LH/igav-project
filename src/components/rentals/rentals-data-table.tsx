@@ -40,12 +40,17 @@ import { rentalsCanceledSchema } from "./tables/type/type.canceled";
 import { rentalsHistorySchema } from "./tables/type/type.history";
 import { RentalsCanceledTable } from "./tables/canceled-rentals/rental-canceled-table";
 import { RentalsHistoryTable } from "./tables/rentals-history/rentals-history-table";
+import { rentalsPendingSchema } from "./tables/type/type.pending";
+import { columnsRentalsPending } from "./tables/pending-rentals/column-pending-table";
+import { RentalsPendingTable } from "./tables/pending-rentals/rentals-pending-table";
 
 export function RentalsDataTable({
+  dataRentalPending,
   dataRentalActive,
   dataRentalCanceled,
   dataRentalHistory,
 }: {
+  dataRentalPending: z.infer<typeof rentalsPendingSchema>[];
   dataRentalActive: z.infer<typeof rentalsActiveSchema>[];
   dataRentalCanceled: z.infer<typeof rentalsCanceledSchema>[];
   dataRentalHistory: z.infer<typeof rentalsHistorySchema>[];
@@ -84,6 +89,31 @@ export function RentalsDataTable({
   const tableRentalActive = useReactTable({
     data: dataRentalActive,
     columns: columnsRentalsActive,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+      pagination,
+    },
+    getRowId: (row) => row.id.toString(),
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  });
+
+  const tableRentalPending = useReactTable({
+    data: dataRentalPending,
+    columns: columnsRentalsPending,
     state: {
       sorting,
       columnVisibility,
@@ -169,6 +199,7 @@ export function RentalsDataTable({
             <SelectValue placeholder="Seleccionar vista" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="pending">Pendientes</SelectItem>
             <SelectItem value="active">Activos</SelectItem>
             <SelectItem value="canceled">Anulados</SelectItem>
             <SelectItem value="history">Historial</SelectItem>
@@ -177,6 +208,7 @@ export function RentalsDataTable({
 
         {/* TABS (Se ve en pantallas grandes lg:flex) */}
         <TabsList className="hidden lg:flex">
+          <TabsTrigger value="pending">Pendientes</TabsTrigger>
           <TabsTrigger value="active">Activos</TabsTrigger>
           <TabsTrigger value="canceled">Anulados</TabsTrigger>
           <TabsTrigger value="history">Historial</TabsTrigger>
@@ -197,7 +229,9 @@ export function RentalsDataTable({
                 ? tableRentalActive
                 : activeTab === "canceled"
                   ? tableRentalCanceled
-                  : tableRentalHistory
+                  : activeTab === "history"
+                    ? tableRentalHistory
+                    : tableRentalPending
               )
                 .getAllColumns()
                 .filter(
@@ -231,6 +265,13 @@ export function RentalsDataTable({
         className="relative flex flex-col gap-4 overflow-auto"
       >
         <RentalsActiveTable data={dataRentalActive} table={tableRentalActive} />
+      </TabsContent>
+
+      <TabsContent value="pending" className="w-full">
+        <RentalsPendingTable
+          data={dataRentalPending}
+          table={tableRentalPending}
+        />
       </TabsContent>
 
       <TabsContent value="canceled">

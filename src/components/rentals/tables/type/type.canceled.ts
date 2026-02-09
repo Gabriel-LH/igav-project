@@ -12,7 +12,8 @@ export const rentalsCanceledSchema = z.object({
   rent_unit: z.string(), // Evento o dia
   count: z.number(), // Cantidad
   income: z.number(), // Ingreso
-  gurantee: z.string(), // Garantia
+  gurantee_type: z.string(), // Garantia
+  gurantee_value: z.string(), // Garantia
   guarantee_status: z.string(), // Estado de garantia
   status: z.string(), // Estado
 });

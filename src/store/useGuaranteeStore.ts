@@ -5,6 +5,7 @@ import { Guarantee } from "../types/guarantee/type.guarantee";
 interface GuaranteeStore {
   guarantees: Guarantee[];
   addGuarantee: (guarantee: Guarantee) => void;
+  updateGuarantee: (guarantee: Partial<Guarantee>) => void;
   updateGuaranteeStatus: (id: string, status: Guarantee["status"]) => void;
   releaseGuarantee: (id: string) => void;
 }
@@ -16,6 +17,15 @@ export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
       console.log("🔵 [addGuarantee] Nueva garantía:", guarantee);
       return {
         guarantees: [...state.guarantees, guarantee],
+      };
+    }),
+  updateGuarantee: (guarantee) =>
+    set((state) => {
+      console.log("🔵 [updateGuarantee] Actualizando garantía:", guarantee);
+      return {
+        guarantees: state.guarantees.map((g) =>
+          g.id === guarantee.id ? { ...g, ...guarantee } : g,
+        ),
       };
     }),
   updateGuaranteeStatus: (id, status) =>

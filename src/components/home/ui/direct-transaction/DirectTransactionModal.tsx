@@ -26,6 +26,7 @@ import { processTransaction } from "@/src/services/transactionServices";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 
 export function DirectTransactionModal({
   item,
@@ -65,6 +66,8 @@ export function DirectTransactionModal({
     React.useState<GuaranteeType>("dinero");
 
   const sellerId = USER_MOCK[0].id;
+
+  const businessRules = BUSINESS_RULES_MOCK
 
   // --------------------
   // Stock exacto
@@ -280,6 +283,7 @@ export function DirectTransactionModal({
                   : "Fecha de Inicio Alquiler"}
               </Label>
               <DirectTransactionCalendar
+                maxDays={type === "venta" ? businessRules.maxDaysSale : businessRules.maxDaysRental}
                 mode="pickup"
                 selectedDate={dateRange.from}
                 onSelect={(date) => setDateRange({ ...dateRange, from: date })}

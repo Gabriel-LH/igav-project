@@ -7,6 +7,10 @@ defaultTransferTime: z.number(),
   
   // Reglas de multas (Moras)
   penaltyPerDay: z.number(),
+
+  // Reglas de tiempo para una un pendiente_entrega
+  maxDaysRental: z.number(),
+  maxDaysSale: z.number(),
   
   // Reglas de daños (Penalizaciones)
   stainPenalty: z.number(),

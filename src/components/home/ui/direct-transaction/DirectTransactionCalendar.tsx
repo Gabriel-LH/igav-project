@@ -17,6 +17,8 @@ interface DirectCalendarProps {
   mode: "pickup" | "return"; // pickup: restringido a 3 días, return: libre a futuro
   minDate?: Date; // Para la devolución, la fecha mínima es el día de recojo
   label?: string;
+  type?: string;
+  maxDays?: number;
 }
 
 export function DirectTransactionCalendar({
@@ -25,11 +27,14 @@ export function DirectTransactionCalendar({
   mode,
   minDate,
   label = "Seleccionar fecha",
+  maxDays,
 }: DirectCalendarProps) {
   const today = new Date();
   
+  console.log("Dias maximos",maxDays);
+
   // Regla de negocio: Máximo 2 días adicionales para "Apartado Físico"
-  const maxPickupDate = addDays(today, 2);
+  const maxPickupDate = addDays(today, maxDays || 2);
 
   const isDisabled = (date: Date) => {
     const day = startOfDay(date);
@@ -69,7 +74,7 @@ export function DirectTransactionCalendar({
             selected={selectedDate}
             onSelect={onSelect}
             disabled={isDisabled}
-            initialFocus
+            autoFocus
             locale={es}
           />
         </PopoverContent>

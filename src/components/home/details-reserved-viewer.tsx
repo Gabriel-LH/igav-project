@@ -77,7 +77,7 @@ export function DetailsReservedViewer({
 
   const stock = useInventoryStore((state) => state.stock);
 
-  const [guarantee, setGuarantee] = React.useState<G>("");
+  const [guarantee, setGuarantee] = React.useState("");
   const [guaranteeType, setGuaranteeType] = React.useState<GuaranteeType>("dinero");
 
   const cancelReservation = useReservationStore(
