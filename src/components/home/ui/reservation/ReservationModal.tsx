@@ -245,7 +245,7 @@ export function ReservationModal({
               }`}
             >
               RESERVAR
-              {isVenta ? "VENTA" : "ALQUILER"}
+              {isVenta ? " VENTA" : " ALQUILER"}
             </Button>
           )}
         </div>

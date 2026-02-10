@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/label";
-import { Input } from "@/components/input";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarAdd01Icon, Clock01Icon } from "@hugeicons/core-free-icons";
 import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { TimePicker } from "../reservation/TimePicker";
 
 export function RescheduleModal({
   open,
@@ -32,12 +32,14 @@ export function RescheduleModal({
     to: currentEndDate,
   });
 
-  const [hour, setHour] = useState("10:00");
+  const [pickupHour, setPickupHour] = useState("10:00");
+
+  console.log("Hora que se establece",pickupHour);
 
   const handleConfirm = () => {
     if (dateRange?.from && dateRange?.to) {
       // Pasamos las nuevas fechas al store
-      onConfirm(dateRange.from, dateRange.to, hour);
+      onConfirm(dateRange.from, dateRange.to, pickupHour);
     }
   };
 
@@ -67,20 +69,19 @@ export function RescheduleModal({
             rules={{}} // Pasa tus reglas de negocio aquí
             dateRange={dateRange}
             setDateRange={setDateRange}
+            productId={""}
+            size={""}
+            color={""}
           />
-
           {/* SELECTOR DE HORA (Input simple pero funcional) */}
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase flex items-center gap-1">
-              <HugeiconsIcon icon={Clock01Icon} size={14} strokeWidth={2} />
-              Hora de Retiro Sugerida
-            </Label>
-            <Input
-              type="time"
-              value={hour}
-              onChange={(e) => setHour(e.target.value)}
-              className="h-12"
-            />
+            {dateRange?.from && (
+              <TimePicker
+                label="Hora de retiro sugerida"
+                value={pickupHour}
+                onChange={setPickupHour}
+              />
+            )}
           </div>
 
           {/* RESUMEN VISUAL EN ESPAÑOL */}

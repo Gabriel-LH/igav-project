@@ -57,7 +57,6 @@ import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 
-
 export function DetailsReservedViewer({
   reservation: activeRes,
 }: {
@@ -78,7 +77,8 @@ export function DetailsReservedViewer({
   const stock = useInventoryStore((state) => state.stock);
 
   const [guarantee, setGuarantee] = React.useState("");
-  const [guaranteeType, setGuaranteeType] = React.useState<GuaranteeType>("dinero");
+  const [guaranteeType, setGuaranteeType] =
+    React.useState<GuaranteeType>("dinero");
 
   const cancelReservation = useReservationStore(
     (state) => state.cancelReservation,
@@ -562,15 +562,6 @@ export function DetailsReservedViewer({
                 Checklist de salida
               </h4>
               <div className="space-y-2">
-                {/* Solo mostramos el check de cobro si realmente falta dinero */}
-                {balance > 0 && !isCredit && (
-                  <label className="flex items-center gap-3 p-3 border  rounded-lg cursor-pointer animate-in fade-in slide-in-from-top-1">
-                    <span className="text-sm font-medium text-orange-800">
-                      Cobrar saldo pendiente: {formatCurrency(balance)}
-                    </span>
-                  </label>
-                )}
-
                 <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <FieldGroup>
                     <Field orientation="horizontal">

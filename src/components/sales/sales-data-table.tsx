@@ -31,10 +31,10 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
-import { columnsSalesPending } from "./tables/pending-sales/column-pending-table"; 
-import { columnsSalesCanceled } from "./tables/canceled-sales/column-cancel-table"; 
-import { columnsSalesReturn } from "./tables/return-sales/column-return-table"; 
-import { columnsSalesHistory } from "./tables/history-sales/column-history-table"; 
+import { columnsSalesPending } from "./tables/pending-sales/column-pending-table";
+import { columnsSalesCanceled } from "./tables/canceled-sales/column-cancel-table";
+import { columnsSalesReturn } from "./tables/return-sales/column-return-table";
+import { columnsSalesHistory } from "./tables/history-sales/column-history-table";
 import { salesPendingSchema } from "./tables/type/type.pending";
 import { salesCanceledSchema } from "./tables/type/type.canceled";
 import { salesReturnSchema } from "./tables/type/type.return";
@@ -162,7 +162,7 @@ export function SalesDataTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-   const tableSalesHistory = useReactTable({
+  const tableSalesHistory = useReactTable({
     data: dataSalesHistory,
     columns: columnsSalesHistory,
     state: {
@@ -201,18 +201,18 @@ export function SalesDataTable({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="pending">Pendientes</SelectItem>
+            <SelectItem value="history">Historial</SelectItem>
             <SelectItem value="canceled">Anulados</SelectItem>
             <SelectItem value="return">Devoluciones</SelectItem>
-            <SelectItem value="history">Historial</SelectItem>
           </SelectContent>
         </Select>
 
         {/* TABS (Se ve en pantallas grandes lg:flex) */}
         <TabsList className="hidden lg:flex">
           <TabsTrigger value="pending">Pendientes</TabsTrigger>
+          <TabsTrigger value="history">Historial</TabsTrigger>
           <TabsTrigger value="canceled">Anulados</TabsTrigger>
           <TabsTrigger value="return">Devoluciones</TabsTrigger>
-          <TabsTrigger value="history">Historial</TabsTrigger>
         </TabsList>
 
         <div className="flex items-center gap-2">
@@ -276,17 +276,11 @@ export function SalesDataTable({
       </TabsContent>
 
       <TabsContent value="return">
-        <SalesReturnTable
-          data={dataSalesReturn}
-          table={tableSalesReturn}
-        />
+        <SalesReturnTable data={dataSalesReturn} table={tableSalesReturn} />
       </TabsContent>
 
       <TabsContent value="history" className="w-full">
-        <SalesHistoryTable
-          data={dataSalesHistory}
-          table={tableSalesHistory}
-        />
+        <SalesHistoryTable data={dataSalesHistory} table={tableSalesHistory} />
       </TabsContent>
     </Tabs>
   );

@@ -29,6 +29,8 @@ import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
+import { TimePicker } from "../reservation/TimePicker";
+import { setHours, setMinutes } from "date-fns";
 
 export function DirectTransactionModal({
   item,
@@ -49,8 +51,8 @@ export function DirectTransactionModal({
   const [notes, setNotes] = React.useState("");
 
   const [checklist, setChecklist] = React.useState({
-    deliverInmediatly: false,
-    guarantee: false,
+    deliverAfter: false,
+    guaranteeAfter: false,
   });
 
   // Fechas
@@ -58,6 +60,14 @@ export function DirectTransactionModal({
     from: new Date(),
     to: type === "alquiler" ? addDays(new Date(), 3) : new Date(),
   });
+
+  const shouldShowPickupTime =
+    !!dateRange.from && (type === "alquiler" || checklist.deliverAfter);
+
+  const withTime = (date: Date, time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    return setMinutes(setHours(date, h), m);
+  };
 
   // --------------------
   // Estados financieros
@@ -71,6 +81,9 @@ export function DirectTransactionModal({
   const [guarantee, setGuarantee] = React.useState("");
   const [guaranteeType, setGuaranteeType] =
     React.useState<GuaranteeType>("dinero");
+
+  const [pickupTime, setPickupTime] = React.useState("09:00");
+  const [returnTime, setReturnTime] = React.useState("18:00");
 
   const sellerId = USER_MOCK[0].id;
 
@@ -97,8 +110,9 @@ export function DirectTransactionModal({
     priceSell: item.price_sell,
     priceRent: item.price_rent,
     quantity,
-    startDate: dateRange?.from,
-    endDate: dateRange?.to,
+    startDate: withTime(dateRange.from, pickupTime),
+    endDate:
+      type === "alquiler" ? withTime(dateRange.to, returnTime) : undefined,
     rentUnit: item.rent_unit,
     receivedAmount: Number(receivedAmount),
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
@@ -148,7 +162,7 @@ export function DirectTransactionModal({
         financials: {
           totalRent: totalOperacion,
           guarantee: {
-            type: !checklist.guarantee ? guaranteeType : "por_cobrar",
+            type: !checklist.guaranteeAfter ? guaranteeType : "por_cobrar",
             value: guaranteeType === "dinero" ? guarantee : undefined,
             description: guaranteeType !== "dinero" ? guarantee : undefined,
           },
@@ -156,7 +170,7 @@ export function DirectTransactionModal({
           receivedAmount: Number(receivedAmount),
           keepAsCredit: false,
         },
-        status: !checklist.deliverInmediatly ? "alquilado" : "reservado_fisico",
+        status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
         items: [
@@ -217,7 +231,7 @@ export function DirectTransactionModal({
         },
 
         notes,
-        status: deliverInmediatly ? "vendido" : "pendiente_entrega",
+        status: !checklist.deliverAfter ? "vendido" : "pendiente_entrega",
         id: "",
         operationId: "",
         createdAt: new Date(),
@@ -226,7 +240,7 @@ export function DirectTransactionModal({
 
       processTransaction(saleData);
 
-      if (deliverInmediatly) {
+      if (!checklist.deliverAfter) {
         toast.success("Venta realizada correctamente");
       } else {
         toast.success("Registro para entrega posterior exitoso");
@@ -260,7 +274,7 @@ export function DirectTransactionModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
+        <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
           {/* Producto */}
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
             <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
@@ -284,42 +298,115 @@ export function DirectTransactionModal({
             </div>
           </div>
 
+          {/* Checkbox Entregar despues */}
+          <div className="flex flex-col gap-2 p-2 bg-muted/10 rounded-lg">
+            <FieldGroup>
+              <Field orientation="horizontal">
+                <Checkbox
+                  disabled={checklist.guaranteeAfter}
+                  id="deliver-check"
+                  checked={checklist.deliverAfter}
+                  onCheckedChange={(checked) =>
+                    setChecklist({
+                      ...checklist,
+                      deliverAfter: checked as boolean,
+                    })
+                  }
+                />
+                <Label
+                  htmlFor="deliver-check"
+                  className="text-[11px] font-medium"
+                >
+                  Entregar despues
+                </Label>
+              </Field>
+            </FieldGroup>
+
+            {type === "alquiler" && checklist.deliverAfter && (
+              <FieldGroup>
+                <Field orientation="horizontal">
+                  <Checkbox
+                    id="guarantee-check"
+                    checked={checklist.guaranteeAfter}
+                    onCheckedChange={(checked) =>
+                      setChecklist({
+                        ...checklist,
+                        guaranteeAfter: checked as boolean,
+                      })
+                    }
+                  />
+                  <Label
+                    htmlFor="guarantee-check"
+                    className="text-[11px] font-medium"
+                  >
+                    Cobrar garantia al entregar
+                  </Label>
+                </Field>
+              </FieldGroup>
+            )}
+          </div>
+
           {/* Bloque de Fechas */}
           <div className="grid grid-cols-2 gap-4">
             {/* FECHA DE INICIO / RECOJO */}
-            <div>
-              <Label className="text-[11px] font-bold uppercase">
-                {type === "venta"
-                  ? "Fecha de Recojo"
-                  : "Fecha de Inicio Alquiler"}
-              </Label>
-              <DirectTransactionCalendar
-                maxDays={
-                  type === "venta"
-                    ? businessRules.maxDaysSale
-                    : businessRules.maxDaysRental
-                }
-                mode="pickup"
-                selectedDate={dateRange.from}
-                onSelect={(date) => setDateRange({ ...dateRange, from: date })}
-                label="¿Cuándo viene?"
-              />
-            </div>
-            {/* FECHA DE DEVOLUCIÓN */}
-            {type === "alquiler" && (
+            <div className="flex flex-col gap-2">
               <div>
                 <Label className="text-[11px] font-bold uppercase">
-                  Fecha de Devolución
+                  {type === "venta"
+                    ? "Fecha de Recojo"
+                    : "Fecha de Inicio Alquiler"}
                 </Label>
                 <DirectTransactionCalendar
-                  mode="return"
-                  minDate={dateRange.from} // No puede devolverlo antes de recogerlo
-                  selectedDate={dateRange.to}
-                  onSelect={(date) => setDateRange({ ...dateRange, to: date })}
-                  label="¿Cuándo entrega?"
+                  maxDays={
+                    type === "venta"
+                      ? businessRules.maxDaysSale
+                      : businessRules.maxDaysRental
+                  }
+                  mode="pickup"
+                  selectedDate={dateRange.from}
+                  onSelect={(date) =>
+                    setDateRange({ ...dateRange, from: date })
+                  }
+                  label="¿Cuándo viene?"
                 />
               </div>
-            )}
+
+              {(type === "alquiler" || checklist.deliverAfter) &&
+                dateRange.from && (
+                  <TimePicker
+                    label="Hora de recojo"
+                    value={pickupTime}
+                    onChange={setPickupTime}
+                  />
+                )}
+            </div>
+
+            {/* FECHA DE DEVOLUCIÓN */}
+            <div className="flex flex-col gap-2">
+              {type === "alquiler" && (
+                <div>
+                  <Label className="text-[11px] font-bold uppercase">
+                    Fecha de Devolución
+                  </Label>
+                  <DirectTransactionCalendar
+                    mode="return"
+                    minDate={dateRange.from} // No puede devolverlo antes de recogerlo
+                    selectedDate={dateRange.to}
+                    onSelect={(date) =>
+                      setDateRange({ ...dateRange, to: date })
+                    }
+                    label="¿Cuándo entrega?"
+                  />
+                </div>
+              )}
+              {dateRange.to && (
+                <TimePicker
+                  label="Hora de devolución"
+                  value={returnTime}
+                  onChange={setReturnTime}
+                />
+              )}
+            </div>
           </div>
 
           {type === "alquiler" && (
@@ -349,52 +436,6 @@ export function DirectTransactionModal({
             />
           </div>
 
-          <div className="flex  w-full justify-between -mt-3 mb-3 bg-card py-1 px-2 rounded-md ">
-            <FieldGroup>
-              <Field orientation="horizontal">
-                <Checkbox
-                  id="deliver-check"
-                  checked={checklist.deliverInmediatly}
-                  onCheckedChange={(checked) =>
-                    setChecklist({
-                      ...checklist,
-                      deliverInmediatly: checked as boolean,
-                    })
-                  }
-                />
-                <Label
-                  htmlFor="deliver-check"
-                  className="text-[11px] font-medium"
-                >
-                  Entregar despues
-                </Label>
-              </Field>
-            </FieldGroup>
-
-            {type === "alquiler" && checklist.deliverInmediatly && (
-              <FieldGroup>
-                <Field orientation="horizontal">
-                  <Checkbox
-                    id="guarantee-check"
-                    checked={checklist.guarantee}
-                  onCheckedChange={(checked) =>
-                    setChecklist({
-                      ...checklist,
-                      guarantee: checked as boolean,
-                    })
-                  }
-                />
-                <Label
-                  htmlFor="guarantee-check"
-                  className="text-[11px] font-medium"
-                >
-                  Cobrar garantia al entregar
-                </Label>
-              </Field>
-            </FieldGroup>
-            )}
-          </div>
-
           <CashPaymentSummary
             checklist={checklist}
             type={type}
@@ -416,17 +457,18 @@ export function DirectTransactionModal({
             STOCK NO DISPONIBLE
           </Button>
         ) : (
-         
-            <Button
-              onClick={() => handleConfirm()}
-              className={`flex-1 h-12 font-black ${
-                type === "alquiler"
-                  ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
-                  : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
-              }`}
-            >
-             CONFIRMAR OPERACIÓN
-            </Button>
+          <Button
+            onClick={() => handleConfirm()}
+            className={`flex-1 h-12 font-black ${
+              type === "alquiler"
+                ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+            }`}
+          >
+            {checklist.deliverAfter
+              ? "GUARDAR Y ENTREGAR DESPUES"
+              : "ENTREGAR AHORA"}
+          </Button>
         )}
       </DialogContent>
     </Dialog>

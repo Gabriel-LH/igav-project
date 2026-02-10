@@ -30,8 +30,6 @@ export function DirectTransactionCalendar({
   maxDays,
 }: DirectCalendarProps) {
   const today = new Date();
-  
-  console.log("Dias maximos",maxDays);
 
   // Regla de negocio: Máximo 2 días adicionales para "Apartado Físico"
   const maxPickupDate = addDays(today, maxDays || 2);

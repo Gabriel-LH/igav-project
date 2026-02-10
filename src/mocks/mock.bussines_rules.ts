@@ -10,6 +10,10 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
   taxRate: 0.18,
   maxDaysRental: 2,
   maxDaysSale: 7,
+  openHours: {
+    open: 9,
+    close: 20
+  },
   
   transferRoutes: [
     {

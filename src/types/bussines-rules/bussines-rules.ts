@@ -11,6 +11,10 @@ defaultTransferTime: z.number(),
   // Reglas de tiempo para una un pendiente_entrega
   maxDaysRental: z.number(),
   maxDaysSale: z.number(),
+  openHours: z.object({
+    open: z.number(),
+    close: z.number(),
+  }),
   
   // Reglas de daños (Penalizaciones)
   stainPenalty: z.number(),

@@ -24,8 +24,8 @@ import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 
 interface CashPaymentSummaryProps {
   checklist: {
-    deliverInmediatly: boolean;
-    guarantee: boolean;
+    deliverAfter: boolean;
+    guaranteeAfter: boolean;
   };
   type?: string;
   totalToPay: number;
@@ -106,7 +106,7 @@ export function CashPaymentSummary({
         </div>
       </div>
 
-      {type === "alquiler" && !checklist.guarantee && (
+      {type === "alquiler" && !checklist.guaranteeAfter && (
         <GuaranteeSection
           guarantee={guarantee}
           setGuarantee={setGuarantee}

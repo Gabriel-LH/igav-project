@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Ya se logro poner los checkbox y que modifiquen el estado de la reserva y la garantia, ahora esta para probar en ventas y si funciona pasar al siguiente paso que podria ser pulir su interfaz aunque mejor se vera las funcionalidades.
+//Estamos modificando las horas del direct transaction modal y ademas su ruido.
