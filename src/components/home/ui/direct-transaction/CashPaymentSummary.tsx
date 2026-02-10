@@ -23,6 +23,10 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 
 interface CashPaymentSummaryProps {
+  checklist: {
+    deliverInmediatly: boolean;
+    guarantee: boolean;
+  };
   type?: string;
   totalToPay: number;
   paymentMethod: PaymentMethodType;
@@ -37,6 +41,7 @@ interface CashPaymentSummaryProps {
 }
 
 export function CashPaymentSummary({
+  checklist,
   type,
   totalToPay,
   paymentMethod,
@@ -101,7 +106,7 @@ export function CashPaymentSummary({
         </div>
       </div>
 
-      {type === "alquiler" && (
+      {type === "alquiler" && !checklist.guarantee && (
         <GuaranteeSection
           guarantee={guarantee}
           setGuarantee={setGuarantee}

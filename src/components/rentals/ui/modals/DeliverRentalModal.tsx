@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { useState } from "react";
-import { z } from "zod";
 import { Rental } from "@/src/types/rentals/type.rentals";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
@@ -43,10 +42,12 @@ export const DeliverRentalModal = ({
 
 
   const [guarantee, setGuarantee] = useState(
-    guaranteeStore?.value || "",
+    guaranteeStore?.value === "" ? guaranteeStore?.description : guaranteeStore?.value,
   );
+
+
   const [guaranteeType, setGuaranteeType] = useState<GuaranteeType>(
-    guaranteeStore?.type || "dinero",
+    guaranteeStore?.type === "por_cobrar" ? "dinero" : guaranteeStore?.type || "dinero",
   );
 
   const { products } = useInventoryStore();
@@ -69,7 +70,7 @@ export const DeliverRentalModal = ({
     setLoading(true);
     try {
       await onConfirm(rental.id, {
-        value: guarantee,
+        value: guarantee!,
         type: guaranteeType,
       });
     } finally {
@@ -123,7 +124,7 @@ export const DeliverRentalModal = ({
           </div>
         </div>
         <GuaranteeSection
-          guarantee={guarantee}
+          guarantee={guarantee!}
           setGuarantee={setGuarantee}
           guaranteeType={guaranteeType}
           setGuaranteeType={setGuaranteeType}

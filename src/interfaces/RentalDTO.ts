@@ -21,7 +21,7 @@ export interface RentalDTO extends BaseOperation {
     keepAsCredit: boolean;
     paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
     guarantee: {
-      type: "dinero" | "dni" | "joyas" | "reloj" | "otros" | "no_aplica";
+      type?: "dinero" | "dni" | "joyas" | "reloj" | "otros" | "no_aplica" | "por_cobrar";
       value?: string;
       description?: string;
     };

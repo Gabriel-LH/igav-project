@@ -5,7 +5,7 @@ export const guaranteeSchema = z.object({
   operationId: z.string(), // Conecta con la venta/alquiler
   branchId: z.string(), // Dónde está físicamente el objeto/dinero
   
-  type: z.enum(["dinero", "dni", "joyas", "reloj", "otros", "no_aplica"]),
+  type: z.enum(["dinero", "dni", "joyas", "reloj", "otros", "no_aplica", "por_cobrar"]),
   
   // Si es dinero, el monto. Si es objeto, el valor estimado.
   value: z.string(), 

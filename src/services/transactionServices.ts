@@ -292,7 +292,7 @@ export function processTransaction(
         value: dto.financials.guarantee.value || "",
         description:
           dto.financials.guarantee.description || "Garantía de alquiler",
-        status: "custodia",
+        status: dto.financials.guarantee.type === "por_cobrar" ? "pendiente" : "custodia",
         createdAt: now,
       });
 

@@ -146,7 +146,10 @@ export function DetailsProductViewer({
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent aria-hidden="false" className={isMobile ? "" : "max-w-md ml-auto h-full"}>
+      <DrawerContent
+        aria-hidden="false"
+        className={isMobile ? "" : "max-w-md ml-auto h-full"}
+      >
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
 
