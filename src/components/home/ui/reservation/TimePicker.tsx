@@ -18,27 +18,42 @@ import {
 type Period = "AM" | "PM";
 
 type TimePicker12hProps = {
+  triggerRef?: React.RefObject<HTMLButtonElement | null>;
   value: string; // "HH:mm"
   onChange: (value: string) => void;
   label?: string;
 };
 
-export function TimePicker({ value, onChange, label }: TimePicker12hProps) {
+export function TimePicker({
+  triggerRef,
+  value,
+  onChange,
+  label,
+}: TimePicker12hProps) {
   const [hour24Current, minuteCurrent] = value.split(":").map(Number);
 
   // recalcula dinámicamente
   const { hour12, period } = to12Hour(hour24Current);
 
   const allowedHours = getAllowedHours(period); // horas permitidas para este período
-  const allowedMinutes = getAllowedMinutes();
+  const allowedMinutes = getAllowedMinutes(hour24Current);
 
   const setHour = (h12: number) => {
     const h24 = to24Hour(h12, period);
     if (!isHourAllowed(h24)) return;
-    onChange(
-      `${h24.toString().padStart(2, "0")}:${minuteCurrent.toString().padStart(2, "0")}`,
-    );
+
+    // OBTENER MINUTOS VÁLIDOS PARA LA NUEVA HORA
+    const validMinutesForNewHour = getAllowedMinutes(h24);
+    const currentMinStr = minuteCurrent.toString().padStart(2, "0");
+
+    // Si el minuto actual no es válido para la hora elegida, usa el primero disponible
+    const finalMinute = validMinutesForNewHour.includes(currentMinStr)
+      ? currentMinStr
+      : validMinutesForNewHour[0];
+
+    onChange(`${h24.toString().padStart(2, "0")}:${finalMinute}`);
   };
+
 
   const setMinute = (m: string) => {
     onChange(`${hour24Current.toString().padStart(2, "0")}:${m}`);
@@ -46,9 +61,16 @@ export function TimePicker({ value, onChange, label }: TimePicker12hProps) {
 
   const setPeriod = (p: Period) => {
     const newHour24 = to24Hour(hour12, p);
-    onChange(
-      `${newHour24.toString().padStart(2, "0")}:${minuteCurrent.toString().padStart(2, "0")}`,
-    );
+
+    // Verificamos minutos para el nuevo periodo/hora
+    const validMinutesForNewHour = getAllowedMinutes(newHour24);
+    const currentMinStr = minuteCurrent.toString().padStart(2, "0");
+
+    const finalMinute = validMinutesForNewHour.includes(currentMinStr)
+      ? currentMinStr
+      : validMinutesForNewHour[0];
+
+    onChange(`${newHour24.toString().padStart(2, "0")}:${finalMinute}`);
   };
 
   return (
@@ -63,6 +85,7 @@ export function TimePicker({ value, onChange, label }: TimePicker12hProps) {
       <Popover modal={false} aria-hidden={false}>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             className="h-10 w-full justify-start font-normal"
           >
@@ -83,7 +106,7 @@ export function TimePicker({ value, onChange, label }: TimePicker12hProps) {
                   key={h}
                   disabled={!allowedHours.includes(h)}
                   variant="ghost"
-                  className="w-full justify-center"
+                  className={`w-full justify-center ${h === hour24Current ? "bg-primary text-primary-foreground" : h === hour12 ? "bg-primary text-primary-foreground" : ""}`}
                   onClick={() => setHour(h)}
                 >
                   {h.toString().padStart(2, "0")}
@@ -97,7 +120,7 @@ export function TimePicker({ value, onChange, label }: TimePicker12hProps) {
                 <Button
                   key={m}
                   variant="ghost"
-                  className="w-full justify-center"
+                  className={`w-full justify-center ${Number(m) === minuteCurrent ? "bg-primary text-primary-foreground" : ""}`}
                   onClick={() => setMinute(m)}
                 >
                   {m}

@@ -12,8 +12,8 @@ defaultTransferTime: z.number(),
   maxDaysRental: z.number(),
   maxDaysSale: z.number(),
   openHours: z.object({
-    open: z.number(),
-    close: z.number(),
+    open: z.string(),
+    close: z.string(),
   }),
   
   // Reglas de daños (Penalizaciones)
@@ -22,7 +22,7 @@ defaultTransferTime: z.number(),
   lostHangerPenalty: z.number(),
   
   // Puedes agregar más reglas como:
-  currency: z.string().default("USD"),
+  currency: z.string().default("PEN"),
   taxRate: z.number().default(0.18), // Ejemplo: IGV/IVA
 });
 

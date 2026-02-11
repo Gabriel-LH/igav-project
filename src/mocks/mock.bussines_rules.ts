@@ -11,8 +11,8 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
   maxDaysRental: 2,
   maxDaysSale: 7,
   openHours: {
-    open: 9,
-    close: 20
+    open: "08:30",
+    close: "20:00"
   },
   
   transferRoutes: [

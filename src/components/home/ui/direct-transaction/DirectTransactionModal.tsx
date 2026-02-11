@@ -31,6 +31,7 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { TimePicker } from "../reservation/TimePicker";
 import { setHours, setMinutes } from "date-fns";
+import { DateTimeContainer } from "../reservation/DataTimeContainer";
 
 export function DirectTransactionModal({
   item,
@@ -42,6 +43,14 @@ export function DirectTransactionModal({
   onSuccess,
 }: any) {
   const [open, setOpen] = React.useState(false);
+
+  // 1. Creamos referencias para "disparar" los clics
+  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
+  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
+  const returnDateRef = React.useRef<HTMLButtonElement>(null);
+  const returnTimeRef = React.useRef<HTMLButtonElement>(null);
+
+  const businessRules = BUSINESS_RULES_MOCK;
 
   // --------------------
   // Estados base
@@ -61,9 +70,6 @@ export function DirectTransactionModal({
     to: type === "alquiler" ? addDays(new Date(), 3) : new Date(),
   });
 
-  const shouldShowPickupTime =
-    !!dateRange.from && (type === "alquiler" || checklist.deliverAfter);
-
   const withTime = (date: Date, time: string) => {
     const [h, m] = time.split(":").map(Number);
     return setMinutes(setHours(date, h), m);
@@ -82,12 +88,10 @@ export function DirectTransactionModal({
   const [guaranteeType, setGuaranteeType] =
     React.useState<GuaranteeType>("dinero");
 
-  const [pickupTime, setPickupTime] = React.useState("09:00");
-  const [returnTime, setReturnTime] = React.useState("18:00");
+  const [pickupTime, setPickupTime] = React.useState(businessRules.openHours.open);
+  const [returnTime, setReturnTime] = React.useState(businessRules.openHours.close);
 
   const sellerId = USER_MOCK[0].id;
-
-  const businessRules = BUSINESS_RULES_MOCK;
 
   // --------------------
   // Stock exacto
@@ -349,64 +353,57 @@ export function DirectTransactionModal({
           {/* Bloque de Fechas */}
           <div className="grid grid-cols-2 gap-4">
             {/* FECHA DE INICIO / RECOJO */}
-            <div className="flex flex-col gap-2">
-              <div>
-                <Label className="text-[11px] font-bold uppercase">
-                  {type === "venta"
-                    ? "Fecha de Recojo"
-                    : "Fecha de Inicio Alquiler"}
-                </Label>
+           <div className="relative">
+              <DateTimeContainer
+                label={type === "venta" ? "Fecha de Recojo" : "Inicio Alquiler"}
+                date={dateRange.from}
+                time={pickupTime}
+                onDateClick={() => pickupDateRef.current?.click()}
+                onTimeClick={() => pickupTimeRef.current?.click()}
+              />
+              {/* Componentes ocultos que hacen el trabajo sucio */}
+              <div className="absolute opacity-0 pointer-events-none top-0">
                 <DirectTransactionCalendar
-                  maxDays={
-                    type === "venta"
-                      ? businessRules.maxDaysSale
-                      : businessRules.maxDaysRental
-                  }
-                  mode="pickup"
+                  triggerRef={pickupDateRef} // Necesitas pasar la ref al botón interno
                   selectedDate={dateRange.from}
-                  onSelect={(date) =>
-                    setDateRange({ ...dateRange, from: date })
-                  }
-                  label="¿Cuándo viene?"
+                  onSelect={(date) => setDateRange({ ...dateRange, from: date })}
+                  mode="pickup"
+                />
+                <TimePicker
+                  triggerRef={pickupTimeRef} // Necesitas pasar la ref al botón interno
+                  value={pickupTime}
+                  onChange={setPickupTime}
                 />
               </div>
-
-              {(type === "alquiler" || checklist.deliverAfter) &&
-                dateRange.from && (
-                  <TimePicker
-                    label="Hora de recojo"
-                    value={pickupTime}
-                    onChange={setPickupTime}
-                  />
-                )}
             </div>
 
-            {/* FECHA DE DEVOLUCIÓN */}
-            <div className="flex flex-col gap-2">
-              {type === "alquiler" && (
-                <div>
-                  <Label className="text-[11px] font-bold uppercase">
-                    Fecha de Devolución
-                  </Label>
+            {/* DEVOLUCIÓN */}
+            {type === "alquiler" && (
+              <div className="relative">
+                <DateTimeContainer
+                  label="Fecha de Devolución"
+                  date={dateRange.to}
+                  time={returnTime}
+                  onDateClick={() => returnDateRef.current?.click()}
+                  onTimeClick={() => returnTimeRef.current?.click()}
+                />
+                <div className="absolute opacity-0 pointer-events-none top-0">
                   <DirectTransactionCalendar
-                    mode="return"
-                    minDate={dateRange.from} // No puede devolverlo antes de recogerlo
+                    triggerRef={returnDateRef}
+                    minDate={dateRange.from}
                     selectedDate={dateRange.to}
-                    onSelect={(date) =>
-                      setDateRange({ ...dateRange, to: date })
-                    }
-                    label="¿Cuándo entrega?"
+                    onSelect={(date) => setDateRange({ ...dateRange, to: date })}
+                    mode="return"
+                  />
+                  <TimePicker
+
+                    triggerRef={returnTimeRef}
+                    value={returnTime}
+                    onChange={setReturnTime}
                   />
                 </div>
-              )}
-              {dateRange.to && (
-                <TimePicker
-                  label="Hora de devolución"
-                  value={returnTime}
-                  onChange={setReturnTime}
-                />
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {type === "alquiler" && (

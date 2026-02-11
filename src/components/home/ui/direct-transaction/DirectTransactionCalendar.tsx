@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface DirectCalendarProps {
+  triggerRef?: React.RefObject<HTMLButtonElement | null>;
   selectedDate: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   mode: "pickup" | "return"; // pickup: restringido a 3 días, return: libre a futuro
@@ -22,6 +23,7 @@ interface DirectCalendarProps {
 }
 
 export function DirectTransactionCalendar({
+  triggerRef,
   selectedDate,
   onSelect,
   mode,
@@ -52,6 +54,7 @@ export function DirectTransactionCalendar({
       <Popover>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal h-10 border-dashed",
