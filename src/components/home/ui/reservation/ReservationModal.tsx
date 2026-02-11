@@ -22,6 +22,9 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { OperationType } from "@/src/utils/status-type/OperationType";
+import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { endOfDay, startOfDay } from "date-fns";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 
 interface ReservationModalProps {
   item: any;
@@ -44,17 +47,28 @@ export function ReservationModal({
 }: ReservationModalProps) {
   const [open, setOpen] = React.useState(false);
 
+  const businessRules = BUSINESS_RULES_MOCK;
+
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [dateRange, setDateRange] = React.useState<any>(undefined);
+  const [pickupTime, setPickupTime] = React.useState<string>(
+    businessRules.openHours.open,
+  );
+  const [returnTime, setReturnTime] = React.useState<string>(
+    businessRules.openHours.close,
+  );
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
-  const [operationType, setOperationType] = React.useState<OperationType>("alquiler");
+  const [operationType, setOperationType] =
+    React.useState<OperationType>("alquiler");
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
   const [guarantee, setGuarantee] = React.useState("");
-  const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethodType>("cash");
-  const [guaranteeType, setGuaranteeType] = React.useState<GuaranteeType>("dinero");
+  const [paymentMethod, setPaymentMethod] =
+    React.useState<PaymentMethodType>("cash");
+  const [guaranteeType, setGuaranteeType] =
+    React.useState<GuaranteeType>("dinero");
 
   const [keepAsCredit, setKeepAsCredit] = React.useState(false);
   const [amountPaid, setAmountPaid] = React.useState("");
@@ -73,6 +87,35 @@ export function ReservationModal({
         s.status === "disponible",
     ),
   );
+  const availabilityCheck = getAvailabilityByAttributes(
+    item.id,
+    size,
+    color,
+    dateRange?.from,
+    dateRange?.to,
+  );
+
+  if (!availabilityCheck.available) {
+    // El mensaje detallado: "Solo tienes 3 unidades y hay 3 reservas..."
+    return toast.error(availabilityCheck.reason);
+  }
+
+  const hasStockForType = useInventoryStore
+    .getState()
+    .stock.some(
+      (s) =>
+        s.productId === item.id &&
+        s.size === size &&
+        s.color === color &&
+        s.status === "disponible" &&
+        (operationType === "venta" ? s.isForSale : s.isForRent),
+    );
+
+  if (!hasStockForType) {
+    return toast.error(
+      `No hay inventario habilitado para ${operationType} con estas características.`,
+    );
+  }
 
   const balance = useClientCreditStore((s) =>
     s.getBalance(selectedCustomer?.id),
@@ -128,8 +171,9 @@ export function ReservationModal({
       },
       sellerId,
       reservationDateRange: {
-        from: dateRange.from || new Date(),
-        to: dateRange.to,
+        from: startOfDay(dateRange.from) || new Date(),
+        to: endOfDay(dateRange.to || dateRange.from),
+        hourFrom: pickupTime,
       },
       id: "",
       operationId: "",
@@ -146,7 +190,6 @@ export function ReservationModal({
       ],
       updatedAt: new Date(),
     };
-
 
     try {
       processTransaction(newReservation);
@@ -203,6 +246,10 @@ export function ReservationModal({
             currentBranchId={currentBranchId}
             dateRange={dateRange}
             setDateRange={setDateRange}
+            pickupTime={pickupTime}
+            setPickupTime={setPickupTime}
+            returnTime={returnTime}
+            setReturnTime={setReturnTime}
             selectedCustomer={selectedCustomer}
             setSelectedCustomer={setSelectedCustomer}
             quantity={quantity}

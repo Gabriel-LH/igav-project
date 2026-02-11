@@ -106,6 +106,29 @@ export function DetailsProductViewer({
     0,
   );
 
+  const totalStockSale = variantLocations
+    .filter((l) => l.branchId !== currentBranchId)
+    .filter((s) => s.isForSale === true);
+
+  const totalStockRent = variantLocations
+    .filter((l) => l.branchId !== currentBranchId)
+    .filter((s) => s.isForRent === true);
+
+  const stockSale = variantLocations
+    .filter((l) => l.branchId === currentBranchId)
+    .filter((s) => s.isForSale === true);
+
+  const stockRent = variantLocations
+    .filter((l) => l.branchId === currentBranchId)
+    .filter((s) => s.isForRent === true);
+
+  console.log(
+    "totalStockSale",
+    totalStockSale,
+    "totalStockRent",
+    totalStockRent,
+  );
+
   const maxTransferTime = useMemo(() => {
     const externalBranches = variantLocations.filter(
       (s) => s.branchId !== currentBranchId,
@@ -269,7 +292,7 @@ export function DetailsProductViewer({
                 </div>
                 <div className="flex w-full justify-between">
                   <div className="flex w-full justify-between px-2 py-1">
-                    <p
+                    <span
                       className={cn(
                         "text-2xl font-black",
                         localStock > 0 ? "text-emerald-500" : "text-slate-400",
@@ -277,10 +300,38 @@ export function DetailsProductViewer({
                     >
                       {localStock}{" "}
                       <span className="text-xs font-medium">unid.</span>
-                    </p>
-                    <p className="text-xl font-bold text-violet-700">
+                      <div className="flex gap-2">
+                        {stockSale.length > 0 && (
+                          <div>
+                            <span className="text-xs text-emerald-500">
+                              {" "}
+                              Venta:{" "}
+                            </span>{" "}
+                            <span className="text-xs text-white">
+                              {" "}
+                              {stockSale.length}
+                            </span>
+                          </div>
+                        )}
+
+                        {stockRent.length > 0 && (
+                          <div>
+                            <span className="text-xs text-emerald-500">
+                              {" "}
+                              Alquiler:{" "}
+                            </span>{" "}
+                            <span className="text-xs text-white">
+                              {" "}
+                              {stockRent.length}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </span>
+
+                    <span className="text-xl font-bold text-violet-700">
                       +{otherBranchStock}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </div>

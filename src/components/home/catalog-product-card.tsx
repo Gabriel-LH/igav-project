@@ -18,6 +18,8 @@ import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useReservationStore } from "@/src/store/useReservationStore";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -27,8 +29,11 @@ export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
+  const { reservations } = useReservationStore();
+  const { stock } = useInventoryStore();
+
   // 1. Stock en esta sede (Entrega inmediata)
-  const localStock = STOCK_MOCK.filter(
+  const localStock = stock.filter(
     (s) =>
       s.productId.toString() === product.id.toString() &&
       s.branchId === currentBranchId &&
@@ -36,14 +41,14 @@ export function CatalogProductCard({ product }: Props) {
   );
 
   // 2. Stock en otras sedes (Disponible para traslado)
-  const remoteStock = STOCK_MOCK.filter(
+  const remoteStock = stock.filter(
     (s) =>
       s.productId.toString() === product.id.toString() &&
       s.branchId !== currentBranchId &&
       s.status === "disponible",
   );
 
-  const productStock = STOCK_MOCK.filter(
+  const productStock = stock.filter(
     (s) =>
       s.productId.toString() === product.id.toString() &&
       s.status === "disponible", // 👈 Solo lo que realmente se puede usar

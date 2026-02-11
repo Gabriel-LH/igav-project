@@ -13,12 +13,13 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules";
 import type { DateRange } from "react-day-picker";
-import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { getReservationDataByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { useMemo } from "react";
 
 // ... dentro de tu lógica de reserva o un nuevo componente ...
 
 export function ReservationCalendar({
+  triggerRef,
   mode,
   originBranchId,
   currentBranchId,
@@ -28,117 +29,82 @@ export function ReservationCalendar({
   productId,
   size,
   color,
-}: {
-  mode: "single" | "range";
-  originBranchId: string;
-  currentBranchId: string;
-  rules: BusinessRules | any;
-  dateRange: DateRange | undefined;
-  setDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
-  productId: string;
-  size: string;
-  color: string;
-}) {
-  const { totalPhysicalStock, activeReservations } = useMemo(
-    () => getAvailabilityByAttributes(productId, size, color),
-    [productId, size, color],
-  );
+}: any) {
+  const availabilityData = useMemo(() => {
+    if (!productId || !size || !color) {
+      return { totalPhysicalStock: 0, activeReservations: [] };
+    }
+    return getReservationDataByAttributes(productId, size, color);
+  }, [productId, size, color]);
+
+  const { totalPhysicalStock, activeReservations } = availabilityData;
 
   const isDayFull = (date: Date) => {
-    // Contamos cuántas reservas hay activas en este día específico
+    if (totalPhysicalStock === 0) return false; // Si no hay stock físico, no bloqueamos calendario por reservas, sino por stock 0 global (que deberías validar fuera)
+
     const reservationsThatDay = activeReservations.filter((range) =>
       isWithinInterval(date, { start: range.start, end: range.end }),
     ).length;
-
-    // Si las reservas ocupan todo el stock físico, bloqueamos el día
     return reservationsThatDay >= totalPhysicalStock;
   };
-  const isLocal = originBranchId === currentBranchId;
 
+  const isLocal = originBranchId === currentBranchId;
   const transferDays = isLocal
     ? 0
     : getEstimatedTransferTime(originBranchId, currentBranchId, rules);
 
+  // Usamos startOfDay para evitar problemas con horas
   const minAvailableDate = addDays(new Date(), isLocal ? 0 : transferDays + 1);
+  minAvailableDate.setHours(0, 0, 0, 0);
 
   const isMobile = useIsMobile();
-
-  // --- Función para mostrar la fecha en el botón ---
-  const formatButtonDate = () => {
-    if (!dateRange?.from) return "Seleccionar fecha/rango";
-
-    if (mode === "single") {
-      // Solo mostramos la fecha "from"
-      return format(dateRange.from, "dd 'de' LLLL 'de' y", { locale: es });
-    }
-
-    // Rango
-    if (dateRange.to) {
-      return `${format(dateRange.from, "dd 'de' LLLL 'de' y", { locale: es })} - ${format(dateRange.to, "dd 'de' LLLL 'de' y", { locale: es })}`;
-    }
-
-    return format(dateRange.from, "dd 'de' LLLL 'de' y", { locale: es });
-  };
-
+  // --- EL RENDERIZADO AHORA ES MINIMALISTA ---
   return (
-    <div>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left font-normal -mt-2 h-12",
-              !dateRange && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {formatButtonDate()}
-          </Button>
-        </PopoverTrigger>
-
-        <PopoverContent className="w-auto p-0" align="center">
-          {mode === "single" ? (
-            <Calendar
-              mode="single"
-              locale={es}
-              defaultMonth={minAvailableDate}
-              selected={dateRange?.from}
-              onSelect={(date) =>
-                setDateRange(date ? { from: date, to: date } : undefined)
-              }
-              numberOfMonths={1}
-              disabled={(date) => date < minAvailableDate}
-            />
-          ) : (
-            <Calendar
-              mode="range"
-              locale={es}
-              defaultMonth={minAvailableDate}
-              selected={dateRange}
-              onSelect={(range) => setDateRange(range)}
-              numberOfMonths={isMobile ? 1 : 2}
-              required={true} // <--- IMPORTANTE para PropsRangeRequired
-              disabled={(date) => {
-                const isPast = date < minAvailableDate;
-                if (isPast) return true;
-
-                return isDayFull(date);
-              }}
-            />
+    <Popover>
+      <PopoverTrigger asChild>
+        {/* ESTA ES LA CLAVE: 
+            Si existe triggerRef, el botón debe ser un área invisible 
+            que cubra exactamente el contenedor relativo de afuera.
+        */}
+        <button
+          ref={triggerRef}
+          type="button"
+          className={cn(
+            "focus:outline-none",
+            triggerRef
+              ? "absolute inset-0 w-full h-full opacity-0 z-0 cursor-default"
+              : "flex w-full items-center justify-start border p-2 rounded-md",
           )}
-        </PopoverContent>
-      </Popover>
+        >
+          {/* Solo mostramos iconos/texto si NO es el modo compacto */}
+          {!triggerRef && <CalendarIcon className="mr-2 h-4 w-4" />}
+          {!triggerRef && "Seleccionar fecha"}
+        </button>
+      </PopoverTrigger>
 
-      {originBranchId !== currentBranchId && (
-        <div className="bg-blue-50 p-3 rounded-lg flex gap-2 items-start">
-          <InfoIcon className="w-4 h-4 text-blue-600 mt-0.5" />
-          <p className="text-[11px] text-blue-700 leading-tight">
-            Este artículo requiere traslado desde otra sede. La fecha más
-            próxima de entrega es el{" "}
-            <strong>{format(minAvailableDate, "dd/MM/yyyy")}</strong>.
-          </p>
-        </div>
-      )}
-    </div>
+      <PopoverContent
+        className="w-auto p-0"
+        align="center"
+        side="bottom"
+        sideOffset={5}
+      >
+        <Calendar
+          mode={mode as any}
+          locale={es}
+          defaultMonth={minAvailableDate}
+          selected={mode === "single" ? dateRange?.from : dateRange}
+          onSelect={(val: any) => {
+            if (mode === "single") {
+              setDateRange(val ? { from: val, to: val } : undefined);
+            } else {
+              setDateRange(val);
+            }
+          }}
+          numberOfMonths={mode === "range" && !isMobile ? 2 : 1}
+          disabled={(date) => date < minAvailableDate || isDayFull(date)}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

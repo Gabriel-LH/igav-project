@@ -30,15 +30,17 @@ export const DateTimeContainer = ({
             <> </>
           )}
           <span className="truncate">
-            {date ? (
+            {date instanceof Date ? (
               format(date, "dd/MM/yy")
+            ) : date?.from ? ( // Si accidentalmente pasas el objeto del rango
+              format(date.from, "dd/MM/yy")
             ) : (
               <span className="text-muted-foreground">{placeholderDate}</span>
             )}
           </span>
         </div>
 
-        <div className="w-px h-4 bg-border mx-2" />
+        <div className=" h-5  border border-neutral-700 mx-2 "  />
 
         <div
           className="flex items-center gap-2 cursor-pointer hover:bg-accent hover:text-accent-foreground p-1 rounded transition-colors flex-1"

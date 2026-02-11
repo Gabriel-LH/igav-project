@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +29,10 @@ import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
-import { TimePicker } from "../reservation/TimePicker";
+import { TimePicker } from "./TimePicker";
 import { setHours, setMinutes } from "date-fns";
-import { DateTimeContainer } from "../reservation/DataTimeContainer";
+import { DateTimeContainer } from "./DataTimeContainer";
+import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 
 export function DirectTransactionModal({
   item,
@@ -88,26 +89,61 @@ export function DirectTransactionModal({
   const [guaranteeType, setGuaranteeType] =
     React.useState<GuaranteeType>("dinero");
 
-  const [pickupTime, setPickupTime] = React.useState(businessRules.openHours.open);
-  const [returnTime, setReturnTime] = React.useState(businessRules.openHours.close);
+  const [pickupTime, setPickupTime] = React.useState(
+    businessRules.openHours.open,
+  );
+  const [returnTime, setReturnTime] = React.useState(
+    businessRules.openHours.close,
+  );
 
   const sellerId = USER_MOCK[0].id;
 
   // --------------------
   // Stock exacto
   // --------------------
-  const exactStockItem = useInventoryStore((state) =>
-    state.stock.find(
-      (s) =>
+  const allStock = useInventoryStore((state) => state.stock);
+
+  console.log("Cantidad a llevar", quantity);
+
+  // 2️⃣ Paso 2: Filtramos localmente usando useMemo (Solo se recalcula si cambia el stock o los filtros)
+  const validStockCandidates = useMemo(() => {
+    return allStock.filter((s) => {
+      // A. Filtros base de coincidencia física
+      const isBaseMatch =
         String(s.productId) === String(item.id) &&
         s.size === size &&
         s.color === color &&
-        s.status === "disponible",
-    ),
-  );
+        s.status === "disponible";
 
-  const stockId = exactStockItem?.id;
-  const isAvailable = !!exactStockItem;
+      if (!isBaseMatch) return false;
+
+      // B. Filtro por Propósito (Regla de Negocio)
+      if (type === "venta") {
+        // Si el campo no existe (undefined), asumimos false para seguridad
+        return s.isForSale === true;
+      } else {
+        return s.isForRent === true;
+      }
+    });
+  }, [allStock, item.id, size, color, type]); // Dependencias: si algo de esto cambia, re-filtramos.
+
+  // 3. Seleccionamos el mejor candidato (el primero de la lista para transacciones directas)
+  const selectedStockId = validStockCandidates[0]?.id;
+
+  const stockCount = validStockCandidates.length;
+
+  const hasStock = stockCount >= quantity;
+
+  useEffect(() => {
+    if (!hasStock) {
+      toast.error(`Solo hay ${stockCount} unidades disponibles para ${type}.`);
+    }
+  }, [hasStock, stockCount, type]);
+
+  // 2. SELECCIONAR MÚLTIPLES STOCKS (La Clave)
+  const selectedStockIds = validStockCandidates
+    .slice(0, quantity) // Tomas los primeros 2, 3, 4...
+    .map((s) => s.id);
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType: type,
@@ -137,13 +173,34 @@ export function DirectTransactionModal({
     return Number(receivedAmount) - totalACobrarHoy;
   }, [receivedAmount, totalACobrarHoy, paymentMethod]);
 
+  const validateTransaction = () => {
+    const check = getAvailabilityByAttributes(
+      item.id,
+      size,
+      color,
+      dateRange.from,
+      dateRange.to || dateRange.from,
+    );
+
+    if (!check.available) {
+      toast.error("No se puede realizar la operación", {
+        description: check.reason, // "Solo tienes 3 unidades y hay 3 reservas..."
+      });
+      return false;
+    }
+
+    return true;
+  };
   // --------------------
   // Confirmar operación
   // --------------------
   const handleConfirm = () => {
+    if (!validateTransaction()) return;
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
-    if (!isAvailable || !stockId)
-      return toast.error("No hay stock disponible físicamente.");
+    if (!hasStock || !selectedStockId)
+      return toast.error(
+        `Solo hay ${stockCount} unidades disponibles para ${type}.`,
+      );
 
     const baseData = {
       customerId: selectedCustomer.id,
@@ -177,17 +234,15 @@ export function DirectTransactionModal({
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
-        items: [
-          {
-            productId: item.id,
-            productName: item.name,
-            stockId: stockId,
-            quantity: quantity,
-            size: size,
-            color: color,
-            priceAtMoment: item.price_rent,
-          },
-        ],
+        items: selectedStockIds.map((stockId) => ({
+          productId: item.id,
+          productName: item.name,
+          stockId: stockId,
+          quantity: 1,
+          size: size,
+          color: color,
+          priceAtMoment: item.price_rent,
+        })),
         updatedAt: new Date(),
       };
 
@@ -204,7 +259,7 @@ export function DirectTransactionModal({
     if (type === "venta") {
       if (!selectedCustomer) return toast.error("Seleccione un cliente");
 
-      if (!isAvailable || !stockId)
+      if (!hasStock || !selectedStockId)
         return toast.error("No hay stock disponible físicamente.");
 
       const saleData: SaleDTO = {
@@ -214,17 +269,16 @@ export function DirectTransactionModal({
         sellerId,
         branchId: currentBranchId,
 
-        items: [
-          {
-            productId: item.id,
-            stockId,
-            quantity,
-            size,
-            color,
-            priceAtMoment: item.price_sell,
-            productName: item.name,
-          },
-        ],
+        items: selectedStockIds.map((stockId) => ({
+          productId: item.id,
+          stockId: stockId,
+          quantity,
+          size,
+          color,
+          priceAtMoment: item.price_sell,
+          productName: item.name,
+        })),
+
         financials: {
           totalAmount: totalOperacion,
           paymentMethod,
@@ -353,7 +407,7 @@ export function DirectTransactionModal({
           {/* Bloque de Fechas */}
           <div className="grid grid-cols-2 gap-4">
             {/* FECHA DE INICIO / RECOJO */}
-           <div className="relative">
+            <div className="relative">
               <DateTimeContainer
                 label={type === "venta" ? "Fecha de Recojo" : "Inicio Alquiler"}
                 date={dateRange.from}
@@ -366,7 +420,9 @@ export function DirectTransactionModal({
                 <DirectTransactionCalendar
                   triggerRef={pickupDateRef} // Necesitas pasar la ref al botón interno
                   selectedDate={dateRange.from}
-                  onSelect={(date) => setDateRange({ ...dateRange, from: date })}
+                  onSelect={(date) =>
+                    setDateRange({ ...dateRange, from: date })
+                  }
                   mode="pickup"
                 />
                 <TimePicker
@@ -392,11 +448,12 @@ export function DirectTransactionModal({
                     triggerRef={returnDateRef}
                     minDate={dateRange.from}
                     selectedDate={dateRange.to}
-                    onSelect={(date) => setDateRange({ ...dateRange, to: date })}
+                    onSelect={(date) =>
+                      setDateRange({ ...dateRange, to: date })
+                    }
                     mode="return"
                   />
                   <TimePicker
-
                     triggerRef={returnTimeRef}
                     value={returnTime}
                     onChange={setReturnTime}
@@ -449,7 +506,7 @@ export function DirectTransactionModal({
           />
         </div>
 
-        {!isAvailable ? (
+        {!hasStock ? (
           <Button disabled className="bg-red-600">
             STOCK NO DISPONIBLE
           </Button>

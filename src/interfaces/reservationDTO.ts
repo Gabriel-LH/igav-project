@@ -16,6 +16,7 @@ export interface ReservationDTO extends BaseOperation {
   reservationDateRange: {
     from: Date;
     to: Date;
+    hourFrom: string;
   };
   financials: {
     receivedAmount?: number;

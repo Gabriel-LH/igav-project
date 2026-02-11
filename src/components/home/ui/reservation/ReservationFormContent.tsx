@@ -4,15 +4,30 @@ import { CustomerSelector } from "./CustomerSelector";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { PriceSummary } from "./PriceSummary";
 import { Input } from "@/components/input";
-import { CalendarDays, MessageSquarePlus, ShoppingBag } from "lucide-react";
+import {
+  CalendarDays,
+  InfoIcon,
+  MessageSquarePlus,
+  ShoppingBag,
+} from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
+import { DateTimeContainer } from "../direct-transaction/DataTimeContainer";
+import React from "react";
+import { TimePicker } from "../direct-transaction/TimePicker";
+import { addDays, format } from "date-fns";
+import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
+import { DateRangePickerContainer } from "./DateRangePickerContainer";
 
 export function ReservationFormContent({
   item,
   size,
   color,
+  pickupTime,
+  setPickupTime,
+  returnTime,
+  setReturnTime,
   originBranchId,
   currentBranchId,
   dateRange,
@@ -39,7 +54,16 @@ export function ReservationFormContent({
   setNotes,
 }: any) {
 
-    useEffect(() => {
+  const businessRules = BUSINESS_RULES_MOCK;
+
+
+  // 1. Creamos referencias para "disparar" los clics
+  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
+  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
+  const returnDateRef = React.useRef<HTMLButtonElement>(null);
+  const returnTimeRef = React.useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
     if (item.can_rent && !item.can_sell && operationType !== "alquiler") {
       setOperationType("alquiler");
     } else if (item.can_sell && !item.can_rent && operationType !== "venta") {
@@ -96,23 +120,107 @@ export function ReservationFormContent({
         </div>
       </div>
 
-      {/* 2. CALENDARIO */}
-      <div className="space-y-3">
-        <Label className="text-[11px] uppercase font-bold">
-          {operationType === "venta" ? "Fecha de Venta" : "Fechas del Evento"}
-        </Label>
-        <ReservationCalendar
-          mode={operationType === "venta" ? "single" : "range"}
-          originBranchId={originBranchId}
-          currentBranchId={currentBranchId}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          rules={BUSINESS_RULES_MOCK}
-          productId={item.id}
-          size={size}
-          color={color}
-        />
+      {/* 2. CALENDARIO Y TIEMPO */}
+      <div className="relative">
+        {operationType === "alquiler" ? (
+          <div className="relative">
+            <DateRangePickerContainer
+              label="Periodo de Alquiler y Horas"
+              fromDate={dateRange?.from}
+              toDate={dateRange?.to}
+              fromTime={pickupTime}
+              toTime={returnTime}
+              onDateClick={() => pickupDateRef.current?.click()}
+              onFromTimeClick={() => pickupTimeRef.current?.click()}
+              onToTimeClick={() => returnTimeRef.current?.click()}
+            />
+            {/* MOTORES ESPECÍFICOS PARA ALQUILER */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {/* Calendario cubre todo el área para la fecha */}
+              <ReservationCalendar
+                triggerRef={pickupDateRef}
+                mode="range"
+                originBranchId={originBranchId}
+                currentBranchId={currentBranchId}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                rules={businessRules}
+                productId={item.id}
+                size={size}
+                color={color}
+              />
+              {/* Estos botones invisibles se posicionan en los extremos para las horas */}
+              <div className="absolute left-0 bottom-0 w-1/2 h-1/2">
+                <TimePicker
+                  triggerRef={pickupTimeRef}
+                  value={pickupTime}
+                  onChange={setPickupTime}
+                />
+              </div>
+              <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
+                <TimePicker
+                  triggerRef={returnTimeRef}
+                  value={returnTime}
+                  onChange={setReturnTime}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="relative">
+            <DateTimeContainer
+              label="Fecha de Entrega"
+              date={dateRange?.from}
+              time={pickupTime}
+              onDateClick={() => pickupDateRef.current?.click()}
+              onTimeClick={() => pickupTimeRef.current?.click()}
+            />
+            {/* MOTORES PARA VENTA */}
+            <div className="absolute inset-0 pointer-events-none">
+              <ReservationCalendar
+                triggerRef={pickupDateRef}
+                mode="single"
+                originBranchId={originBranchId}
+                currentBranchId={currentBranchId}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                rules={businessRules}
+                productId={item.id}
+                size={size}
+                color={color}
+              />
+              <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
+                <TimePicker
+                  triggerRef={pickupTimeRef}
+                  value={pickupTime}
+                  onChange={setPickupTime}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      {originBranchId !== currentBranchId && (
+        <div className="bg-blue-50/50 p-2 rounded-md flex gap-2 items-center border border-blue-100">
+          <InfoIcon className="w-3 h-3 text-blue-600" />
+          <p className="text-[10px] text-blue-700">
+            Disponible para traslado desde el:{" "}
+            <strong>
+              {format(
+                addDays(
+                  new Date(),
+                  getEstimatedTransferTime(
+                    originBranchId,
+                    currentBranchId,
+                    businessRules,
+                  ) + 1,
+                ),
+                "dd/MM/yy",
+              )}
+            </strong>
+          </p>
+        </div>
+      )}
 
       {/* 3. CLIENTE */}
       <CustomerSelector

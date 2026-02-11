@@ -156,7 +156,11 @@ export function processTransaction(
 
     usePaymentStore.getState().addPayment(paymentData);
   }
+  // ==========================================
   // 3️⃣ LÓGICA POR TIPO
+  // ==========================================
+
+  // ---------------- VENTA -------------------
   if (dto.type === "venta") {
     const fromReservation = isSaleFromReservation(dto);
 
@@ -177,17 +181,14 @@ export function processTransaction(
       updatedAt: now,
     });
 
+    // CORRECCIÓN: Manejo unificado de items
     const saleItems = fromReservation
       ? dto.reservationItems.map((item) => {
           const reservationItem = reservationStore.reservationItems.find(
             (ri) => ri.id === item.reservationItemId,
           );
-
-          if (!reservationItem) {
-            throw new Error(
-              `ReservationItem no encontrado: ${item.reservationItemId}`,
-            );
-          }
+          if (!reservationItem)
+            throw new Error(`ReservationItem no encontrado`);
 
           return {
             id: `SITEM-${item.reservationItemId}`,
@@ -215,9 +216,8 @@ export function processTransaction(
 
     useSaleStore.getState().addSale(specificData, saleItems);
 
+    // Mover stock para TODOS los items
     saleItems.forEach((item) => {
-      // Si la venta nace como 'vendido', el stock es 'vendido'
-      // Si la venta nace como 'pendiente_entrega', el stock es 'vendido_pendiente_entrega'
       const finalStockStatus =
         dto.status === "vendido" ? "vendido" : "vendido_pendiente_entrega";
 
@@ -232,6 +232,7 @@ export function processTransaction(
     });
   }
 
+  // ---------------- RESERVA -------------------
   if (dto.type === "reserva") {
     const reservation = reservationSchema.parse({
       id: `RES-${operationId}`,
@@ -239,35 +240,33 @@ export function processTransaction(
       branchId: dto.branchId,
       customerId: dto.customerId,
       productId: dto.items[0].productId,
-      stockId: dto.items[0].stockId,
+      stockId: dto.items[0].stockId, // OJO: En reserva múltiple esto podría requerir ajuste futuro
       operationType: dto.operationType,
       startDate: dto.reservationDateRange.from,
       endDate: dto.reservationDateRange.to,
-      hour: new Date().toLocaleTimeString("es-PE", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      hour: dto.reservationDateRange.hourFrom,
       status: "confirmada",
       notes: dto.notes ?? "",
       createdAt: now,
       updatedAt: now,
     });
 
-    const reservationItems = reservationItemSchema.array().parse([
-      {
-        id: `RITEM-${operationId}`,
+    // Mapeamos todos los items de la reserva
+    const reservationItems = reservationItemSchema.array().parse(
+      dto.items.map((item) => ({
+        id: `RITEM-${Math.random().toString(36).substring(2, 9)}`, // ID único
         operationId: String(operationId),
         reservationId: reservation.id,
-        productId: dto.items[0].productId,
-        stockId: dto.items[0].stockId,
-        quantity: dto.items[0].quantity ?? 1,
-        size: dto.items[0].size,
-        color: dto.items[0].color,
-        priceAtMoment: dto.financials.totalPrice,
+        productId: item.productId,
+        stockId: item.stockId,
+        quantity: item.quantity ?? 1,
+        size: item.size,
+        color: item.color,
+        priceAtMoment: dto.financials.totalPrice, // O precio unitario si lo tienes
         itemStatus: "confirmada",
         notes: dto.notes ?? "",
-      },
-    ]);
+      })),
+    );
 
     useReservationStore
       .getState()
@@ -276,9 +275,11 @@ export function processTransaction(
     specificData = reservation;
   }
 
+  // ---------------- ALQUILER -------------------
   if (dto.type === "alquiler") {
     const fromReservation = isRentalFromReservation(dto);
 
+    // Garantía
     if (
       dto.financials.guarantee &&
       dto.financials.guarantee.type !== "no_aplica"
@@ -292,23 +293,24 @@ export function processTransaction(
         value: dto.financials.guarantee.value || "",
         description:
           dto.financials.guarantee.description || "Garantía de alquiler",
-        status: dto.financials.guarantee.type === "por_cobrar" ? "pendiente" : "custodia",
+        status:
+          dto.financials.guarantee.type === "por_cobrar"
+            ? "pendiente"
+            : "custodia",
         createdAt: now,
       });
 
       useGuaranteeStore.getState().addGuarantee(guaranteeData);
     }
 
-    // 🔁 Reserva → convertida (solo si viene de reserva)
+    // Convertir Reserva
     if (fromReservation) {
       const reservationStore = useReservationStore.getState();
-
       reservationStore.updateStatus(
         dto.reservationId,
         "alquiler",
         "convertida",
       );
-
       dto.reservationItems.forEach((item) => {
         reservationStore.updateReservationItemStatus(
           item.reservationItemId,
@@ -333,18 +335,15 @@ export function processTransaction(
       notes: !fromReservation ? (dto.notes ?? "") : "",
     });
 
+    // CORRECCIÓN: Mapeo masivo de items para alquiler directo
     const rentalItems = fromReservation
       ? rentalItemSchema.array().parse(
           dto.reservationItems.map((item) => {
             const reservationItem = reservationStore.reservationItems.find(
               (ri) => ri.id === item.reservationItemId,
             );
-
-            if (!reservationItem) {
-              throw new Error(
-                `ReservationItem no encontrado: ${item.reservationItemId}`,
-              );
-            }
+            if (!reservationItem)
+              throw new Error(`ReservationItem no encontrado`);
 
             return {
               id: `RITEM-${item.reservationItemId}`,
@@ -362,37 +361,39 @@ export function processTransaction(
             };
           }),
         )
-      : rentalItemSchema.array().parse([
-          {
-            id: `RITEM-${operationId}`,
+      : rentalItemSchema.array().parse(
+          (dto as RentalDTO).items.map((item) => ({
+            id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
             rentalId,
             operationId: String(operationId),
-            productId: dto.items[0].productId,
-            stockId: dto.items[0].stockId,
-            quantity: dto.items[0].quantity ?? 1,
-            size: dto.items[0].size,
-            color: dto.items[0].color,
-            priceAtMoment: dto.financials.totalRent,
+            productId: item.productId,
+            stockId: item.stockId,
+            quantity: item.quantity ?? 1, // Típicamente 1 por línea
+            size: item.size,
+            color: item.color,
+            priceAtMoment: item.priceAtMoment ?? dto.financials.totalRent, // Mejor precio unitario si existe
             conditionOut: "Excelente",
             itemStatus: "alquilado",
-            notes: dto.notes ?? "",
-          },
-        ]);
+            notes: (dto as any).notes ?? "",
+          })),
+        );
 
     useRentalStore.getState().addRental(rental, rentalItems);
 
-    // 🔄 Inventario
-    if (fromReservation) {
-      rentalItems.forEach((item) => {
-        useInventoryStore
-          .getState()
-          .updateStockStatus(item.stockId, "alquilado");
-      });
-    } else {
+    // 🔄 Inventario (Para TODOS los items)
+    const finalRentalStockStatus =
+      dto.status === "reservado_fisico" ? "reservado_fisico" : "alquilado";
+
+    rentalItems.forEach((item) => {
       useInventoryStore
         .getState()
-        .updateStockStatus(dto.items[0].stockId, "alquilado");
-    }
+        .deliverAndTransfer(
+          item.stockId,
+          finalRentalStockStatus as StockStatus,
+          dto.branchId,
+          dto.sellerId,
+        );
+    });
 
     specificData = rental;
   }

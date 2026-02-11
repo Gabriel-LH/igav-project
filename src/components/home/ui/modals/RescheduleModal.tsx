@@ -15,7 +15,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarAdd01Icon, Clock01Icon } from "@hugeicons/core-free-icons";
 import { ReservationCalendar } from "../reservation/ReservationCalendar";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { TimePicker } from "../reservation/TimePicker";
+import { TimePicker } from "../direct-transaction/TimePicker";
 
 export function RescheduleModal({
   open,
@@ -34,7 +34,7 @@ export function RescheduleModal({
 
   const [pickupHour, setPickupHour] = useState("10:00");
 
-  console.log("Hora que se establece",pickupHour);
+  console.log("Hora que se establece", pickupHour);
 
   const handleConfirm = () => {
     if (dateRange?.from && dateRange?.to) {

@@ -11,12 +11,12 @@ export const stockSchema = z.object({
   quantity: z.number().min(0),
 
   // CONTROL DE OPERACIÓN (Sobrescribe al producto si es necesario)
-  isForRent: true, // ¿Esta unidad específica se puede alquilar?
-  isForSale: false, // Quizás este ya está muy usado y solo lo dejamos para alquiler
+  isForRent: z.boolean(), // ¿Esta unidad específica se puede alquilar?
+  isForSale: z.boolean(), // Quizás este ya está muy usado y solo lo dejamos para alquiler
 
   // HISTORIAL INDIVIDUAL (Solo posible si el ítem es único)
-  usageCount: 15, // Cuántas veces se ha alquilado
-  lastMaintenance: "2026-01-10",
+  usageCount: z.number().min(0), // Cuántas veces se ha alquilado
+  lastMaintenance: z.string().optional(),
 
   // Estos campos están bien aquí porque definen el estado de la prenda física
   condition: z.enum(["Nuevo", "Usado", "Vintage"]),

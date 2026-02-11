@@ -54,7 +54,6 @@ export function TimePicker({
     onChange(`${h24.toString().padStart(2, "0")}:${finalMinute}`);
   };
 
-
   const setMinute = (m: string) => {
     onChange(`${hour24Current.toString().padStart(2, "0")}:${m}`);
   };
@@ -87,7 +86,8 @@ export function TimePicker({
           <Button
             ref={triggerRef}
             variant="outline"
-            className="h-10 w-full justify-start font-normal"
+            className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+            tabIndex={-1}
           >
             {hour12.toString().padStart(2, "0")}:
             {minuteCurrent.toString().padStart(2, "0")} {period}
