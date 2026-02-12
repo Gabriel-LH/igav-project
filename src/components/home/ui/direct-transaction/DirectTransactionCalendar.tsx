@@ -1,5 +1,5 @@
 // src/components/direct-transaction/DirectTransactionCalendar.tsx
-import { format, addDays, startOfDay, endOfDay } from "date-fns";
+import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getReservationDataByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { useMemo } from "react";
 
 interface DirectCalendarProps {
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
@@ -20,6 +22,10 @@ interface DirectCalendarProps {
   label?: string;
   type?: string;
   maxDays?: number;
+  productId: string;
+  size: string;
+  color: string;
+  quantity?: number;
 }
 
 export function DirectTransactionCalendar({
@@ -30,23 +36,63 @@ export function DirectTransactionCalendar({
   minDate,
   label = "Seleccionar fecha",
   maxDays,
+  productId,
+  size,
+  color,
+  quantity,
 }: DirectCalendarProps) {
   const today = new Date();
 
-  // Regla de negocio: Máximo 2 días adicionales para "Apartado Físico"
+    const availabilityData = useMemo(() => {
+      if (!productId || !size || !color) {
+        return { totalPhysicalStock: 0, activeReservations: [] };
+      }
+      return getReservationDataByAttributes(productId, size, color);
+    }, [productId, size, color]);
+  
+    const { totalPhysicalStock, activeReservations } = availabilityData;
+
+  // 2. FUNCIÓN PARA SABER SI UN DÍA ESTÁ LLENO
+  const isDayFull = (date: Date) => {
+    // Si no hay stock físico, bloqueamos todo
+    if (totalPhysicalStock === 0) return true;
+
+    // Sumar cuántos ya están ocupados en esa fecha
+    const reservedCount = activeReservations
+      .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
+      .reduce((sum, r) => sum + (r.quantity || 1), 0);
+
+    // Sumar los que yo quiero llevarme
+     const currentRequest = quantity || 1;
+    // Si la suma supera el total físico -> BLOQUEADO
+    return (reservedCount + currentRequest) > totalPhysicalStock;
+  };
+
+  // 3. REGLA DE PICKUP (Apartado Físico: Máximo 2 días)
   const maxPickupDate = addDays(today, maxDays || 2);
 
+  // 4. LÓGICA FINAL DE BLOQUEO
   const isDisabled = (date: Date) => {
     const day = startOfDay(date);
     
+    // A. Bloqueo por Reglas de Negocio (Tiempos)
+    let isRestrictedByRules = false;
+    
     if (mode === "pickup") {
       // Solo permite hoy, mañana y pasado mañana
-      return day < startOfDay(today) || day > endOfDay(maxPickupDate);
+      isRestrictedByRules = day < startOfDay(today) || day > endOfDay(maxPickupDate);
     } else {
-      // Para devolución: Solo permite fechas posteriores a la de recojo (minDate)
+      // Para devolución: Solo permite fechas posteriores a la de recojo
       const referenceDate = minDate ? startOfDay(minDate) : startOfDay(today);
-      return day < referenceDate;
+      isRestrictedByRules = day < referenceDate;
     }
+
+    // B. Bloqueo por Disponibilidad (Stock agotado ese día)
+    // Solo validamos ocupación si NO está ya bloqueado por reglas de fecha
+    // y si es Alquiler (o si quieres validar venta también)
+    const isRestrictedByStock = !isRestrictedByRules && isDayFull(day);
+
+    return isRestrictedByRules || isRestrictedByStock;
   };
 
   return (

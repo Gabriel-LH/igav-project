@@ -14,12 +14,10 @@ import { DetailsProductViewer } from "./details-product-viewer";
 import { productSchema } from "../../types/product/type.product";
 import { z } from "zod";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { useReservationStore } from "@/src/store/useReservationStore";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -29,7 +27,6 @@ export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
 
-  const { reservations } = useReservationStore();
   const { stock } = useInventoryStore();
 
   // 1. Stock en esta sede (Entrega inmediata)

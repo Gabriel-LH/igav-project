@@ -175,9 +175,7 @@ export function DetailsProductViewer({
       >
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
-
-          <DialogDescription>Detalles del producto</DialogDescription>
-          <div className="flex gap-2 mt-2">
+          <DialogDescription>
             <Badge
               variant="outline"
               className="font-mono text-blue-600 border-blue-500"
@@ -187,7 +185,7 @@ export function DetailsProductViewer({
             <Badge className="bg-muted text-primary border-gray-500">
               Existencia Total: {totalGlobalStock}
             </Badge>
-          </div>
+          </DialogDescription>
         </DrawerHeader>
 
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">

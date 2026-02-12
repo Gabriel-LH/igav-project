@@ -29,6 +29,7 @@ export function ReservationCalendar({
   productId,
   size,
   color,
+  quantityDesired,
 }: any) {
   const availabilityData = useMemo(() => {
     if (!productId || !size || !color) {
@@ -40,14 +41,18 @@ export function ReservationCalendar({
   const { totalPhysicalStock, activeReservations } = availabilityData;
 
   const isDayFull = (date: Date) => {
-    if (totalPhysicalStock === 0) return false; // Si no hay stock físico, no bloqueamos calendario por reservas, sino por stock 0 global (que deberías validar fuera)
+    if (totalPhysicalStock === 0) return true;
+    // 1. ¿Cuántos hay ocupados ese día?
+    const reservedCount = activeReservations
+      .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
+      .reduce((sum, r) => sum + (r.quantity || 1), 0); // <--- SUMAR CANTIDADES REALES
 
-    const reservationsThatDay = activeReservations.filter((range) =>
-      isWithinInterval(date, { start: range.start, end: range.end }),
-    ).length;
-    return reservationsThatDay >= totalPhysicalStock;
+    // B. Sumar lo que YO quiero llevarme ahora
+    const currentRequest = quantityDesired || 1; // Si es undefined o 0, asumimos 1 por seguridad
+
+    // C. Si la suma supera el stock físico total -> BLOQUEAR DÍA
+    return reservedCount + currentRequest > totalPhysicalStock;
   };
-
   const isLocal = originBranchId === currentBranchId;
   const transferDays = isLocal
     ? 0

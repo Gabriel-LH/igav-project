@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
+import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -77,16 +77,36 @@ export function ReservationModal({
 
   const sellerId = USER_MOCK[0].id;
 
+  const allStock = useInventoryStore((state) => state.stock);
+
   // Buscar stock físico exacto
-  const exactStockItem = useInventoryStore((state) =>
-    state.stock.find(
-      (s) =>
+  const validStockCandidates = useMemo(() => {
+    return allStock.filter((s) => {
+      // A. Filtros base de coincidencia física
+      const isBaseMatch =
         String(s.productId) === String(item.id) &&
         s.size === size &&
         s.color === color &&
-        s.status === "disponible",
-    ),
-  );
+        s.status === "disponible";
+
+      if (!isBaseMatch) return false;
+
+      // B. Filtro por Propósito (Regla de Negocio)
+      if (operationType === "venta") {
+        // Si el campo no existe (undefined), asumimos false para seguridad
+        return s.isForSale === true;
+      } else {
+        return s.isForRent === true;
+      }
+    });
+  }, [allStock, item.id, size, color, operationType]);
+
+  const selectedStockId = validStockCandidates[0]?.id;
+
+  const stockCount = validStockCandidates.length;
+
+  const hasStock = stockCount >= quantity;
+
   const availabilityCheck = getAvailabilityByAttributes(
     item.id,
     size,
@@ -94,11 +114,6 @@ export function ReservationModal({
     dateRange?.from,
     dateRange?.to,
   );
-
-  if (!availabilityCheck.available) {
-    // El mensaje detallado: "Solo tienes 3 unidades y hay 3 reservas..."
-    return toast.error(availabilityCheck.reason);
-  }
 
   const hasStockForType = useInventoryStore
     .getState()
@@ -111,20 +126,11 @@ export function ReservationModal({
         (operationType === "venta" ? s.isForSale : s.isForRent),
     );
 
-  if (!hasStockForType) {
-    return toast.error(
-      `No hay inventario habilitado para ${operationType} con estas características.`,
-    );
-  }
-
   const balance = useClientCreditStore((s) =>
     s.getBalance(selectedCustomer?.id),
   );
 
   console.log("balance", balance);
-
-  const stockId = exactStockItem?.id;
-  const isAvailable = !!exactStockItem;
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType,
@@ -138,8 +144,59 @@ export function ReservationModal({
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
   });
 
+  const toastIdRef = React.useRef<string | number | null>(null);
+
   // 💲 Precio unitario
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
+
+  useEffect(() => {
+    if (!hasStock) {
+      let message = "";
+      if (operationType === "venta") {
+        if (stockCount === 0) {
+          message = `No hay unidades disponibles para venta.`;
+        } else {
+          message = `Solo hay ${stockCount}  ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para venta.`;
+        }
+      } else {
+        if (stockCount === 0) {
+          message = `No hay unidades disponibles para alquiler.`;
+        } else {
+          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para alquiler.`;
+        }
+      }
+      // Si ya hay un toast activo con este mensaje, no crear otro
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+      }
+
+      toastIdRef.current = toast.error(message);
+    } else {
+      // Limpiar el toast cuando ya hay stock
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+        toastIdRef.current = null;
+      }
+    }
+
+    // Cleanup al desmontar
+    return () => {
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+      }
+    };
+  }, [hasStock, operationType, stockCount]);
+
+  if (!availabilityCheck.available) {
+    // El mensaje detallado: "Solo tienes 3 unidades y hay 3 reservas..."
+    return toast.error(availabilityCheck.reason);
+  }
+
+  if (!hasStockForType) {
+    return toast.error(
+      `No hay inventario habilitado para ${operationType} con estas características.`,
+    );
+  }
 
   const handleConfirm = () => {
     if (!selectedCustomer || !dateRange?.from) {
@@ -147,7 +204,7 @@ export function ReservationModal({
       return;
     }
 
-    if (!isAvailable || !stockId) {
+    if (!hasStock || !selectedStockId) {
       toast.error("Stock no disponible");
       return;
     }
@@ -185,7 +242,7 @@ export function ReservationModal({
           color,
           quantity,
           priceAtMoment: unitPrice,
-          stockId: stockId,
+          stockId: selectedStockId,
         },
       ],
       updatedAt: new Date(),
@@ -278,7 +335,7 @@ export function ReservationModal({
         </div>
 
         <div className="pt-4 border-t">
-          {!isAvailable ? (
+          {!hasStock ? (
             <Button disabled className="w-full h-12 bg-red-600 font-bold">
               Stock no disponible
             </Button>

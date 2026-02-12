@@ -1,6 +1,17 @@
-import { CalendarIcon, Clock, ArrowRight, Divide } from "lucide-react";
+import { CalendarIcon, Clock, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { Label } from "@/components/label";
+
+export interface DateRangePickerContainerProps {
+  label: string;
+  fromDate: Date | null;
+  toDate: Date | null;
+  fromTime: string | null;
+  toTime: string | null;
+  onDateClick: () => void;
+  onFromTimeClick: () => void;
+  onToTimeClick: () => void;
+}
 
 export const DateRangePickerContainer = ({
   label,
@@ -11,7 +22,7 @@ export const DateRangePickerContainer = ({
   onDateClick,
   onFromTimeClick,
   onToTimeClick,
-}: any) => (
+}: DateRangePickerContainerProps ) => (
   <div className="flex flex-col gap-1.5 w-full relative">
     <Label className="text-[10px] font-bold uppercase text-muted-foreground ml-1">
       {label}

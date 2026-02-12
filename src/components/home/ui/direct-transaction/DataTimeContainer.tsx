@@ -3,6 +3,16 @@ import { format } from "date-fns";
 import { Label } from "@/components/label";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 
+export interface DateTimeContainerProps {
+  label: string;
+  date: Date | { from?: Date } | undefined;
+  time: string;
+  onDateClick: () => void;
+  onTimeClick: () => void;
+  placeholderDate: string;
+  placeholderTime: string;
+}
+
 export const DateTimeContainer = ({
   label,
   date,
@@ -11,7 +21,7 @@ export const DateTimeContainer = ({
   onTimeClick,
   placeholderDate,
   placeholderTime,
-}: any) => {
+}: DateTimeContainerProps) => {
   const isMobile = useIsMobile();
   return (
     <div className="flex flex-col gap-1">
@@ -40,7 +50,7 @@ export const DateTimeContainer = ({
           </span>
         </div>
 
-        <div className=" h-5  border border-neutral-700 mx-2 "  />
+        <div className=" h-5  border border-neutral-700 mx-2 " />
 
         <div
           className="flex items-center gap-2 cursor-pointer hover:bg-accent hover:text-accent-foreground p-1 rounded transition-colors flex-1"

@@ -129,10 +129,11 @@ export function getReservationDataByAttributes(
       return {
         start: startOfDay(new Date(parent.startDate)),
         end: endOfDay(new Date(parent.endDate)),
+        quantity: item.quantity,
       };
     })
     // Filtrar nulls y asegurar tipo
-    .filter((r): r is { start: Date; end: Date } => r !== null);
+    .filter((r): r is { start: Date; end: Date; quantity: number } => r !== null);
 
   return { totalPhysicalStock, activeReservations };
 }

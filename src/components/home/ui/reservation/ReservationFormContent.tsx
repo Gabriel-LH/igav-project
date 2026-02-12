@@ -148,6 +148,7 @@ export function ReservationFormContent({
                 productId={item.id}
                 size={size}
                 color={color}
+                quantityDesired={quantity}
               />
               {/* Estos botones invisibles se posicionan en los extremos para las horas */}
               <div className="absolute left-0 bottom-0 w-1/2 h-1/2">

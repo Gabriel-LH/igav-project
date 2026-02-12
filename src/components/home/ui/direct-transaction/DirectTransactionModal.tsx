@@ -53,6 +53,8 @@ export function DirectTransactionModal({
 
   const businessRules = BUSINESS_RULES_MOCK;
 
+  const toastIdRef = React.useRef<string | number | null>(null);
+
   // --------------------
   // Estados base
   // --------------------
@@ -136,8 +138,41 @@ export function DirectTransactionModal({
 
   useEffect(() => {
     if (!hasStock) {
-      toast.error(`Solo hay ${stockCount} unidades disponibles para ${type}.`);
+      let message = "";
+      if (type === "venta") {
+        if (stockCount === 0) {
+          message = `No hay unidades disponibles para venta.`;
+        } else {
+          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para venta.`;
+        }
+      } else {
+        if (stockCount === 0) {
+          message = `No hay unidades disponibles para alquiler.`;
+        } else {
+          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para alquiler.`;
+        }
+      }
+
+      // Si ya hay un toast activo con este mensaje, no crear otro
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+      }
+
+      toastIdRef.current = toast.error(message);
+    } else {
+      // Limpiar el toast cuando ya hay stock
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+        toastIdRef.current = null;
+      }
     }
+
+    // Cleanup al desmontar
+    return () => {
+      if (toastIdRef.current) {
+        toast.dismiss(toastIdRef.current);
+      }
+    };
   }, [hasStock, stockCount, type]);
 
   // 2. SELECCIONAR MÚLTIPLES STOCKS (La Clave)
@@ -414,6 +449,8 @@ export function DirectTransactionModal({
                 time={pickupTime}
                 onDateClick={() => pickupDateRef.current?.click()}
                 onTimeClick={() => pickupTimeRef.current?.click()}
+                placeholderDate="Seleccionar fecha"
+                placeholderTime="Seleccionar hora"
               />
               {/* Componentes ocultos que hacen el trabajo sucio */}
               <div className="absolute opacity-0 pointer-events-none top-0">
@@ -424,6 +461,10 @@ export function DirectTransactionModal({
                     setDateRange({ ...dateRange, from: date })
                   }
                   mode="pickup"
+                  productId={item.id}
+                  size={size}
+                  color={color}
+                  quantity={quantity}
                 />
                 <TimePicker
                   triggerRef={pickupTimeRef} // Necesitas pasar la ref al botón interno
@@ -442,6 +483,8 @@ export function DirectTransactionModal({
                   time={returnTime}
                   onDateClick={() => returnDateRef.current?.click()}
                   onTimeClick={() => returnTimeRef.current?.click()}
+                  placeholderDate="Seleccionar fecha"
+                  placeholderTime="Seleccionar hora"
                 />
                 <div className="absolute opacity-0 pointer-events-none top-0">
                   <DirectTransactionCalendar
@@ -452,6 +495,10 @@ export function DirectTransactionModal({
                       setDateRange({ ...dateRange, to: date })
                     }
                     mode="return"
+                    productId={item.id}
+                    size={size}
+                    color={color}
+                    quantity={quantity}
                   />
                   <TimePicker
                     triggerRef={returnTimeRef}
