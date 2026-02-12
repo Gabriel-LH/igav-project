@@ -100,7 +100,7 @@ export const STOCK_MOCK: Stock[] = [
     updatedAt: new Date()
   },
   {
-    id: "STK-003",
+    id: "STK-003-F",
     productId: "1",
     branchId: "branch-002",
     size: "M",
@@ -148,5 +148,21 @@ export const STOCK_MOCK: Stock[] = [
     condition: "Nuevo",
     status: "disponible",
     updatedAt: new Date()
-  }
+  },
+    {
+    id: "STK-006",
+    productId: "2",
+    branchId: "branch-002",
+    size: "M",
+    color: "Negro",
+    colorHex: "#000000",
+    quantity: 1,
+    isForRent: true,
+    isForSale: false,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
+    condition: "Nuevo",
+    status: "disponible",
+    updatedAt: new Date()
+  },
 ];

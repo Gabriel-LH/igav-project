@@ -106,7 +106,7 @@ export function DetailsProductViewer({
     0,
   );
 
-  const totalStockSale = variantLocations
+  const totalStockSell = variantLocations
     .filter((l) => l.branchId !== currentBranchId)
     .filter((s) => s.isForSale === true);
 
@@ -114,7 +114,7 @@ export function DetailsProductViewer({
     .filter((l) => l.branchId !== currentBranchId)
     .filter((s) => s.isForRent === true);
 
-  const stockSale = variantLocations
+  const stockSell = variantLocations
     .filter((l) => l.branchId === currentBranchId)
     .filter((s) => s.isForSale === true);
 
@@ -123,8 +123,8 @@ export function DetailsProductViewer({
     .filter((s) => s.isForRent === true);
 
   console.log(
-    "totalStockSale",
-    totalStockSale,
+    "totalStockSell",
+    totalStockSell,
     "totalStockRent",
     totalStockRent,
   );
@@ -299,7 +299,7 @@ export function DetailsProductViewer({
                       {localStock}{" "}
                       <span className="text-xs font-medium">unid.</span>
                       <div className="flex gap-2">
-                        {stockSale.length > 0 && (
+                        {stockSell.length > 0 && (
                           <div>
                             <span className="text-xs text-emerald-500">
                               {" "}
@@ -307,7 +307,7 @@ export function DetailsProductViewer({
                             </span>{" "}
                             <span className="text-xs text-white">
                               {" "}
-                              {stockSale.length}
+                              {stockSell.length}
                             </span>
                           </div>
                         )}
@@ -444,7 +444,7 @@ export function DetailsProductViewer({
                   </p>
 
                   <p className="text-sm font-bold text-foreground">
-                    {allProductStock[0].condition}
+                    {allProductStock[0]?.condition ? allProductStock[0].condition : "Sin stock" }
                   </p>
                 </div>
 
@@ -454,7 +454,7 @@ export function DetailsProductViewer({
                   </p>
 
                   <p className="text-sm capitalize font-bold text-foreground">
-                    {allProductStock[0].status}
+                    {allProductStock[0]?.status ? allProductStock[0].status : "Sin stock" }
                   </p>
                 </div>
               </div>
@@ -487,7 +487,7 @@ export function DetailsProductViewer({
               onSuccess={() => setDrawerOpen(false)}
             >
               <Button
-                disabled={localStock === 0}
+                disabled={stockRent.length === 0}
                 className="bg-blue-600 text-white hover:bg-blue-700"
               >
                 <HugeiconsIcon
@@ -500,16 +500,17 @@ export function DetailsProductViewer({
             </DirectTransactionModal>
 
             {/* VENDER: Modal Directo */}
+
             <DirectTransactionModal
               item={item}
               size={selectedSize || ""}
-              color={selectedColor?.name || ""}
+              color={selectedColor?.name || ""} 
               type="venta"
               currentBranchId={currentBranchId}
               onSuccess={() => setDrawerOpen(false)}
             >
               <Button
-                disabled={localStock === 0}
+                disabled={stockSell.length === 0}
                 className="bg-orange-600 text-white hover:bg-orange-700"
               >
                 <HugeiconsIcon

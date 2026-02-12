@@ -1,6 +1,6 @@
 import { format, addDays, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar as CalendarIcon, InfoIcon } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -9,14 +9,10 @@ import {
 } from "@/components/ui/popover";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/src/hooks/use-mobile";
-import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules";
-import type { DateRange } from "react-day-picker";
+// Asegúrate de importar tu helper actualizado
 import { getReservationDataByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { useMemo } from "react";
-
-// ... dentro de tu lógica de reserva o un nuevo componente ...
 
 export function ReservationCalendar({
   triggerRef,
@@ -29,48 +25,53 @@ export function ReservationCalendar({
   productId,
   size,
   color,
-  quantityDesired,
+  type,
+  quantity, // <--- CORRECCIÓN: Usamos 'quantity' para coincidir con tu Formulario
 }: any) {
+  
+  // 1. Obtener datos unificados (Reservas + Alquileres + Lavandería)
   const availabilityData = useMemo(() => {
     if (!productId || !size || !color) {
       return { totalPhysicalStock: 0, activeReservations: [] };
     }
-    return getReservationDataByAttributes(productId, size, color);
-  }, [productId, size, color]);
+    return getReservationDataByAttributes(productId, size, color, type);
+  }, [productId, size, color, type]);
 
-  const { totalPhysicalStock, activeReservations } = availabilityData;
+  // 2. CORRECCIÓN CLAVE:
+  // Renombramos 'activeReservations' a 'occupiedIntervals' para que tenga sentido semántico
+  // y coincida con tu lógica de abajo.
+  const { totalPhysicalStock, activeReservations: occupiedIntervals } = availabilityData;
 
   const isDayFull = (date: Date) => {
+    // Si no hay stock físico en el mundo, bloqueamos
     if (totalPhysicalStock === 0) return true;
-    // 1. ¿Cuántos hay ocupados ese día?
-    const reservedCount = activeReservations
-      .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
-      .reduce((sum, r) => sum + (r.quantity || 1), 0); // <--- SUMAR CANTIDADES REALES
+
+    // A. Sumar ocupación existente en esa fecha
+    // (occupiedIntervals ya incluye: Reservas Futuras, Alquileres Activos y Lavandería)
+    const reservedCount = occupiedIntervals
+      .filter((r: any) => isWithinInterval(date, { start: r.start, end: r.end }))
+      .reduce((sum: number, r: any) => sum + (r.quantity || 1), 0);
 
     // B. Sumar lo que YO quiero llevarme ahora
-    const currentRequest = quantityDesired || 1; // Si es undefined o 0, asumimos 1 por seguridad
+    const currentRequest = quantity || 1; 
 
-    // C. Si la suma supera el stock físico total -> BLOQUEAR DÍA
-    return reservedCount + currentRequest > totalPhysicalStock;
+    // C. Comparar con el total físico
+    return (reservedCount + currentRequest) > totalPhysicalStock;
   };
+
   const isLocal = originBranchId === currentBranchId;
   const transferDays = isLocal
     ? 0
     : getEstimatedTransferTime(originBranchId, currentBranchId, rules);
 
-  // Usamos startOfDay para evitar problemas con horas
   const minAvailableDate = addDays(new Date(), isLocal ? 0 : transferDays + 1);
   minAvailableDate.setHours(0, 0, 0, 0);
 
   const isMobile = useIsMobile();
-  // --- EL RENDERIZADO AHORA ES MINIMALISTA ---
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        {/* ESTA ES LA CLAVE: 
-            Si existe triggerRef, el botón debe ser un área invisible 
-            que cubra exactamente el contenedor relativo de afuera.
-        */}
         <button
           ref={triggerRef}
           type="button"
@@ -81,7 +82,6 @@ export function ReservationCalendar({
               : "flex w-full items-center justify-start border p-2 rounded-md",
           )}
         >
-          {/* Solo mostramos iconos/texto si NO es el modo compacto */}
           {!triggerRef && <CalendarIcon className="mr-2 h-4 w-4" />}
           {!triggerRef && "Seleccionar fecha"}
         </button>
@@ -96,7 +96,7 @@ export function ReservationCalendar({
         <Calendar
           mode={mode as any}
           locale={es}
-          defaultMonth={minAvailableDate}
+          defaultMonth={mode === "single" ? dateRange?.from || minAvailableDate : dateRange?.from || minAvailableDate}
           selected={mode === "single" ? dateRange?.from : dateRange}
           onSelect={(val: any) => {
             if (mode === "single") {
@@ -106,6 +106,7 @@ export function ReservationCalendar({
             }
           }}
           numberOfMonths={mode === "range" && !isMobile ? 2 : 1}
+          // APLICAMOS EL BLOQUEO
           disabled={(date) => date < minAvailableDate || isDayFull(date)}
           initialFocus
         />

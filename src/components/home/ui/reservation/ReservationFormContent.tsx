@@ -53,9 +53,7 @@ export function ReservationFormContent({
   notes,
   setNotes,
 }: any) {
-
   const businessRules = BUSINESS_RULES_MOCK;
-
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -149,6 +147,7 @@ export function ReservationFormContent({
                 size={size}
                 color={color}
                 quantityDesired={quantity}
+                type={operationType}
               />
               {/* Estos botones invisibles se posicionan en los extremos para las horas */}
               <div className="absolute left-0 bottom-0 w-1/2 h-1/2">
@@ -175,6 +174,8 @@ export function ReservationFormContent({
               time={pickupTime}
               onDateClick={() => pickupDateRef.current?.click()}
               onTimeClick={() => pickupTimeRef.current?.click()}
+              placeholderDate="Seleccionar fecha"
+              placeholderTime="Seleccionar hora"
             />
             {/* MOTORES PARA VENTA */}
             <div className="absolute inset-0 pointer-events-none">
@@ -189,6 +190,7 @@ export function ReservationFormContent({
                 productId={item.id}
                 size={size}
                 color={color}
+                type={operationType}
               />
               <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
                 <TimePicker
@@ -202,9 +204,9 @@ export function ReservationFormContent({
         )}
       </div>
       {originBranchId !== currentBranchId && (
-        <div className="bg-blue-50/50 p-2 rounded-md flex gap-2 items-center border border-blue-100">
-          <InfoIcon className="w-3 h-3 text-blue-600" />
-          <p className="text-[10px] text-blue-700">
+        <div className="p-2 rounded-md flex gap-2 items-center border">
+          <InfoIcon className="w-3 h-3 text-blue-500" />
+          <p className="text-[10px] text-blue-400">
             Disponible para traslado desde el:{" "}
             <strong>
               {format(

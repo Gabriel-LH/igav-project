@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getReservationDataByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { getReservationDataByAttributes, OpType } from "@/src/utils/reservation/checkAvailability";
 import { useMemo } from "react";
 
 interface DirectCalendarProps {
@@ -20,16 +20,18 @@ interface DirectCalendarProps {
   mode: "pickup" | "return"; // pickup: restringido a 3 días, return: libre a futuro
   minDate?: Date; // Para la devolución, la fecha mínima es el día de recojo
   label?: string;
-  type?: string;
+  type?: OpType;
   maxDays?: number;
   productId: string;
   size: string;
   color: string;
   quantity?: number;
+  
 }
 
 export function DirectTransactionCalendar({
   triggerRef,
+  type,
   selectedDate,
   onSelect,
   mode,
@@ -47,8 +49,8 @@ export function DirectTransactionCalendar({
       if (!productId || !size || !color) {
         return { totalPhysicalStock: 0, activeReservations: [] };
       }
-      return getReservationDataByAttributes(productId, size, color);
-    }, [productId, size, color]);
+      return getReservationDataByAttributes(productId, size, color, type);
+    }, [productId, size, color, type]);
   
     const { totalPhysicalStock, activeReservations } = availabilityData;
 

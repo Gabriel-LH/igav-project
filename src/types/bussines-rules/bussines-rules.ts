@@ -15,7 +15,8 @@ defaultTransferTime: z.number(),
     open: z.string(),
     close: z.string(),
   }),
-  
+  daysInLaundry: z.number(), // Ej: 2 días lavando y secando
+  daysInMaintenance: z.number(), // Ej: 1 día cosiendo botones/bastas
   // Reglas de daños (Penalizaciones)
   stainPenalty: z.number(),
   lostButtonPenalty: z.number(),

@@ -5,7 +5,7 @@ export const USER_MOCK: User[] = [
     id: "550e8400-e29b-41d4-a716-446655440000",
     name: "Juan Pérez",
     email: "juan.perez@empresa.com",
-    role: "admin",
+    role: "vendedor",
     branchId: "branch-001",
     status: "active",
   },

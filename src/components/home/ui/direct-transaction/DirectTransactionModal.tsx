@@ -215,6 +215,7 @@ export function DirectTransactionModal({
       color,
       dateRange.from,
       dateRange.to || dateRange.from,
+      type
     );
 
     if (!check.available) {
@@ -465,6 +466,7 @@ export function DirectTransactionModal({
                   size={size}
                   color={color}
                   quantity={quantity}
+                  type={type}
                 />
                 <TimePicker
                   triggerRef={pickupTimeRef} // Necesitas pasar la ref al botón interno
@@ -495,6 +497,7 @@ export function DirectTransactionModal({
                       setDateRange({ ...dateRange, to: date })
                     }
                     mode="return"
+                    type={type}
                     productId={item.id}
                     size={size}
                     color={color}

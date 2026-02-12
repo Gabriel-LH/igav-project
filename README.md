@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Estamos arreglando la logica del modal de reservacion y en el gemini esta la continuacion de lo que haciamos 
+//Se hizo mas robusto el tema de los calendarios pero ahora falta ver como representar los item en la tabla y ademas el dar item en una reserva

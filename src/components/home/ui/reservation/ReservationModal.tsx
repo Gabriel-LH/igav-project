@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/reservationDTO";
+import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -86,17 +86,27 @@ export function ReservationModal({
       const isBaseMatch =
         String(s.productId) === String(item.id) &&
         s.size === size &&
-        s.color === color &&
-        s.status === "disponible";
+        s.color === color;
 
       if (!isBaseMatch) return false;
 
       // B. Filtro por Propósito (Regla de Negocio)
       if (operationType === "venta") {
-        // Si el campo no existe (undefined), asumimos false para seguridad
-        return s.isForSale === true;
+        // PARA VENTA: Debe ser para venta Y estar físicamente disponible hoy
+        return s.isForSale === true && s.status === "disponible";
       } else {
-        return s.isForRent === true;
+        // PARA ALQUILER:
+        // Debe ser para alquiler.
+        // Y debe EXISTIR (no estar vendido, ni dado de baja).
+        // NO IMPORTA si está "alquilado", "en_lavanderia" o "reservado_fisico" ahora mismo,
+        // porque la validación de fechas se encargará de ver si choca.
+        return (
+          s.isForRent === true &&
+          s.status !== "vendido" &&
+          s.status !== "baja" &&
+          s.status !== "vendido_pendiente_entrega" && // Ya se vendió, solo esperan recogerlo
+          s.status !== "agotado"
+        );
       }
     });
   }, [allStock, item.id, size, color, operationType]);
@@ -113,6 +123,7 @@ export function ReservationModal({
     color,
     dateRange?.from,
     dateRange?.to,
+    operationType,
   );
 
   const hasStockForType = useInventoryStore
@@ -129,8 +140,6 @@ export function ReservationModal({
   const balance = useClientCreditStore((s) =>
     s.getBalance(selectedCustomer?.id),
   );
-
-  console.log("balance", balance);
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType,
@@ -192,11 +201,6 @@ export function ReservationModal({
     return toast.error(availabilityCheck.reason);
   }
 
-  if (!hasStockForType) {
-    return toast.error(
-      `No hay inventario habilitado para ${operationType} con estas características.`,
-    );
-  }
 
   const handleConfirm = () => {
     if (!selectedCustomer || !dateRange?.from) {

@@ -14,7 +14,8 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
     open: "08:30",
     close: "20:00"
   },
-  
+  daysInLaundry: 2,
+  daysInMaintenance: 1,
   transferRoutes: [
     {
       originBranchId: "branch-001",
