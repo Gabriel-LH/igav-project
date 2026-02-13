@@ -8,6 +8,7 @@ export const productSchema = z.object({
   sku: z.string(), // SKU debe ser único
   category: z.string(),
   description: z.string(),
+  is_serial: z.boolean(),
   can_rent: z.boolean(),
   can_sell: z.boolean(),
   price_rent: z.number().min(0).optional(),

@@ -1,5 +1,7 @@
 import { differenceInDays } from "date-fns";
 
+type RentUnit = "evento" | "dia";
+
 interface UsePriceCalculationParams {
   operationType: "venta" | "alquiler";
   priceSell?: number;
@@ -8,8 +10,8 @@ interface UsePriceCalculationParams {
   startDate?: Date;
   endDate?: Date;
   rentUnit?: "evento" | "dia";
-  receivedAmount: number;     // adelanto o pago
-  guaranteeAmount?: number;   // garantía en dinero
+  receivedAmount: number; // adelanto o pago
+  guaranteeAmount?: number; // garantía en dinero
 }
 
 export function usePriceCalculation({
@@ -39,9 +41,7 @@ export function usePriceCalculation({
       : priceRent * quantity * days;
 
   // 💰 INGRESO DE HOY (caja)
-  const totalHoy = isVenta
-    ? receivedAmount
-    : receivedAmount + guaranteeAmount;
+  const totalHoy = isVenta ? receivedAmount : receivedAmount + guaranteeAmount;
 
   // ⏳ SALDO PENDIENTE (solo contra el adelanto)
   const pending = Math.max(totalOperacion - receivedAmount, 0);

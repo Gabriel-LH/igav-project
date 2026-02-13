@@ -18,6 +18,9 @@ import {
   CheckmarkBadge03Icon,
   CalendarAdd01Icon,
   CalendarRemove01Icon,
+  MagicWand01Icon,
+  Delete02Icon,
+  Location01Icon,
 } from "@hugeicons/core-free-icons";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
@@ -56,6 +59,7 @@ import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+import { autoAllocateStock } from "@/src/utils/reservation/autoAsignStock";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -148,10 +152,6 @@ export function DetailsReservedViewer({
     (ri) => ri.reservationId === activeRes?.id,
   );
 
-  const allItemsAssigned = activeResItems.every(
-    (item) => selectedStocks[item.id],
-  );
-
   const totalCalculated = activeResItems.reduce(
     (acc, item) => acc + item.priceAtMoment * item.quantity,
     0,
@@ -163,11 +163,31 @@ export function DetailsReservedViewer({
     totalCalculated,
   );
 
+  const totalUnitsNeeded = activeResItems.reduce(
+    (acc, item) => acc + item.quantity,
+    0,
+  );
+  const totalUnitsAssigned = Object.keys(selectedStocks).length;
+  const allItemsAssigned = totalUnitsAssigned >= totalUnitsNeeded;
+
   const isReadyToDeliver =
     (balance === 0 || isCredit) &&
     checklist.limpieza &&
     checklist.garantia &&
     allItemsAssigned;
+
+  const handleAutoAllocate = () => {
+    const result = autoAllocateStock({
+      activeRes,
+      reservationItems: activeResItems,
+      stock,
+      operationType: activeRes!.operationType,
+      currentSelections: selectedStocks,
+    });
+
+    setSelectedStocks(result!);
+    toast.info("Stock asignado automáticamente");
+  };
 
   const handleDeliver = async (deliverImmediately: boolean) => {
     if (!activeRes) return;
@@ -412,127 +432,233 @@ export function DetailsReservedViewer({
                 </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <span className="text-[10px] font-black uppercase text-muted-foreground">
-                Artículos en esta reserva ({activeResItems.length})
-              </span>
-              <div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-black uppercase text-muted-foreground">
+                  Artículos en esta reserva
+                </span>
+
+                {/* BOTÓN MÁGICO */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAutoAllocate}
+                  className="h-7 text-[10px] gap-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800"
+                >
+                  <HugeiconsIcon
+                    icon={MagicWand01Icon}
+                    strokeWidth={2}
+                    className="w-3 h-3"
+                  />
+                  Auto-asignar Stock
+                </Button>
+              </div>
+
+              <div className="flex flex-col gap-4">
                 {activeResItems.map((item) => {
                   const prod = products.find(
                     (p) => p.id.toString() === item.productId,
                   );
 
+                  // Candidatos posibles para este item (General)
                   const allMatchingStock = stock.filter(
                     (s) =>
                       String(s.productId) === String(item.productId) &&
                       s.size === item.size &&
-                      s.color?.toLowerCase() === item.color?.toLowerCase() &&
-                      s.status === "disponible",
+                      s.color === item.color &&
+                      s.status === "disponible" &&
+                      (activeRes?.operationType === "venta"
+                        ? s.isForSale
+                        : s.isForRent),
                   );
 
-                  // 2. Lo dividimos en dos grupos para la UI
                   const localOptions = allMatchingStock.filter(
                     (s) => s.branchId === activeRes?.branchId,
                   );
                   const remoteOptions = allMatchingStock.filter(
                     (s) => s.branchId !== activeRes?.branchId,
                   );
+
                   return (
                     <div
                       key={item.id}
-                      className="flex flex-col gap-3 p-3 border rounded-xl bg-muted/20"
+                      className="p-3 border rounded-xl bg-card shadow-sm"
                     >
-                      <div className="flex">
-                        <div className="h-12 w-10 rounded overflow-hidden">
+                      {/* INFO DEL PRODUCTO */}
+                      <div className="flex mb-3">
+                        <div className="h-12 w-10 rounded overflow-hidden bg-muted">
                           <Image
                             src={prod?.image || "/placeholder.jpg"}
-                            alt={prod?.name || ""}
+                            alt=""
                             width={40}
                             height={40}
                             className="object-cover h-full w-full"
                           />
                         </div>
-                        <div className="flex-1 pl-2">
+                        <div className="flex-1 pl-3">
                           <p className="text-sm font-bold leading-tight">
                             {prod?.name}
                           </p>
-                          <div className="flex gap-2 text-[10px]  font-semibold mt-1">
-                            <span className="px-1.5 rounded border">
-                              TALLA {item.size}
-                            </span>
-                            <span className="px-1.5 rounded border uppercase">
+                          <div className="flex gap-2 text-[10px] font-medium text-muted-foreground mt-1">
+                            <Badge
+                              variant="outline"
+                              className="h-5 px-1 rounded text-[9px]"
+                            >
+                              {item.size}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="h-5 px-1 rounded text-[9px] uppercase"
+                            >
                               {item.color}
-                            </span>
-                            <span>x{item.quantity}</span>
+                            </Badge>
+                            {item.quantity > 1 && (
+                              <Badge
+                                variant="outline"
+                                className="h-5 px-1 text-[9px] uppercase text-orange-400"
+                              >
+                                x{item.quantity} Unidades
+                              </Badge>
+                            )}
                           </div>
                         </div>
-                        <span className="font-bold text-sm">
-                          {formatCurrency(item.priceAtMoment)}
-                        </span>
                       </div>
 
-                      {/* NUEVO: Selector de Stock Físico */}
-                      <div className="mt-2 pt-2 border-t border-dashed">
-                        <p className="text-[10px] font-bold text-primary uppercase mb-1">
-                          Asignar Prenda Física:
-                        </p>
-                        <Select
-                          value={selectedStocks[item.id] || ""}
-                          onValueChange={(value) =>
-                            setSelectedStocks({
-                              ...selectedStocks,
-                              [item.id]: value,
-                            })
-                          }
-                        >
-                          <SelectTrigger className="w-full text-xs p-2 rounded border">
-                            <SelectValue placeholder="Seleccionar código de barra (Stock)..." />
-                          </SelectTrigger>
-                          <SelectContent aria-hidden="false">
-                            {/* GRUPO 1: Disponibles aquí mismo */}
-                            {localOptions.length > 0 && (
-                              <SelectGroup>
-                                <SelectLabel className="text-emerald-600 font-bold text-[10px]">
-                                  EN ESTA SEDE
-                                </SelectLabel>
-                                {localOptions.map((s) => (
-                                  <SelectItem key={s.id} value={s.id}>
-                                    {s.id} -{" "}
-                                    {s.damageNotes || "Excelente estado"}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            )}
+                      {/* SELECTORES DE STOCK (Uno por cada unidad de cantidad) */}
+                      <div className="space-y-2 pl-1">
+                        {Array.from({ length: item.quantity }).map(
+                          (_, index) => {
+                            // Clave única: ID del item + Índice (0, 1, 2...)
+                            const uniqueKey = `${item.id}-${index}`;
+                            const currentSelectionId =
+                              selectedStocks[uniqueKey];
+                            const currentStockDetails = stock.find(
+                              (s) => s.id === currentSelectionId,
+                            );
 
-                            {remoteOptions.length > 0 && (
-                              <SelectGroup>
-                                <SelectLabel className="text-orange-600 font-bold text-[10px] border-t mt-1 pt-1">
-                                  EN OTRA SEDE (Requiere traslado)
-                                </SelectLabel>
-                                {remoteOptions.map((s) => {
-                                  const otherBranch =
-                                    BRANCH_MOCKS.find(
-                                      (b) => b.id === s.branchId,
-                                    )?.name || "Otra Sede";
-                                  return (
-                                    <SelectItem
-                                      key={s.id}
-                                      value={s.id}
-                                      className="text-orange-700"
+                            // Determinar si es local o remoto para estilo visual
+                            const isLocal =
+                              currentStockDetails?.branchId ===
+                              activeRes?.branchId;
+
+                            return (
+                              <div key={index} className="flex flex-col gap-1">
+                                <p className="text-[9px] font-bold uppercase text-muted-foreground">
+                                  Unidad #{index + 1} de {item.quantity}
+                                </p>
+
+                                {!currentSelectionId ? (
+                                  // ESTADO 1: NO SELECCIONADO (Muestra el Select)
+                                  <Select
+                                    value=""
+                                    onValueChange={(val) => {
+                                      setSelectedStocks((prev) => ({
+                                        ...prev,
+                                        [uniqueKey]: val,
+                                      }));
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full h-9 text-xs">
+                                      <SelectValue placeholder="Seleccionar código / escanear..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {localOptions.length > 0 && (
+                                        <SelectGroup>
+                                          <SelectLabel className="text-[10px] text-emerald-600">
+                                            Sede Actual
+                                          </SelectLabel>
+                                          {localOptions.map((s) => (
+                                            // Deshabilitar si ya está seleccionado en otro input
+                                            <SelectItem
+                                              key={s.id}
+                                              value={s.id}
+                                              disabled={Object.values(
+                                                selectedStocks,
+                                              ).includes(s.id)}
+                                            >
+                                              {s.id} (Condición: {s.condition})
+                                            </SelectItem>
+                                          ))}
+                                        </SelectGroup>
+                                      )}
+                                      {remoteOptions.length > 0 && (
+                                        <SelectGroup>
+                                          <SelectLabel className="text-[10px] text-orange-600">
+                                            Otras Sedes
+                                          </SelectLabel>
+                                          {remoteOptions.map((s) => (
+                                            <SelectItem
+                                              key={s.id}
+                                              value={s.id}
+                                              disabled={Object.values(
+                                                selectedStocks,
+                                              ).includes(s.id)}
+                                            >
+                                              {s.id} (
+                                              {
+                                                BRANCH_MOCKS.find(
+                                                  (b) => b.id === s.branchId,
+                                                )?.name
+                                              }
+                                              )
+                                            </SelectItem>
+                                          ))}
+                                        </SelectGroup>
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  // ESTADO 2: YA SELECCIONADO (Muestra Tarjeta Bonita)
+                                  <div
+                                    className={`flex items-center justify-between p-2 rounded border border-l-4 ${isLocal ? "border-l-emerald-500 bg-transparent" : "border-l-orange-500 bg-transparent"}`}
+                                  >
+                                    <div className="flex flex-col">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-mono font-bold text-xs">
+                                          {currentStockDetails?.id}
+                                        </span>
+                                        {currentStockDetails?.condition !==
+                                          "Nuevo" && (
+                                          <span className="text-[9px] px-1 bg-white border rounded text-muted-foreground">
+                                            {currentStockDetails?.condition}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                        <HugeiconsIcon
+                                          icon={Location01Icon}
+                                          className="w-3 h-3"
+                                        />
+                                        {
+                                          BRANCH_MOCKS.find(
+                                            (b) =>
+                                              b.id ===
+                                              currentStockDetails?.branchId,
+                                          )?.name
+                                        }
+                                      </div>
+                                    </div>
+
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                                      onClick={() => {
+                                        const newSt = { ...selectedStocks };
+                                        delete newSt[uniqueKey];
+                                        setSelectedStocks(newSt);
+                                      }}
                                     >
-                                      {s.id} - Ubicado en: {otherBranch} -{" "}
-                                      {s.damageNotes || "Excelente estado"}
-                                    </SelectItem>
-                                  );
-                                })}
-                              </SelectGroup>
-                            )}
-                          </SelectContent>
-                        </Select>
-                        {allMatchingStock.length === 0 && (
-                          <p className="text-xs p-3 text-center text-muted-foreground">
-                            No hay stock disponible en ninguna sede.
-                          </p>
+                                      <HugeiconsIcon
+                                        icon={Delete02Icon}
+                                        className="w-4 h-4 text-red-500"
+                                      />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          },
                         )}
                       </div>
                     </div>

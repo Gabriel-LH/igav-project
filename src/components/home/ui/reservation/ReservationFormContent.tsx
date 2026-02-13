@@ -19,6 +19,10 @@ import { TimePicker } from "../direct-transaction/TimePicker";
 import { addDays, format } from "date-fns";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { DateRangePickerContainer } from "./DateRangePickerContainer";
+import { toast } from "sonner";
+import { StockAssignmentWidget } from "../widget/StockAssigmentWidget";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
 
 export function ReservationFormContent({
   item,
@@ -52,6 +56,8 @@ export function ReservationFormContent({
   setOperationType,
   notes,
   setNotes,
+  maxStock,
+  setAssignedStockIds,
 }: any) {
   const businessRules = BUSINESS_RULES_MOCK;
 
@@ -78,16 +84,16 @@ export function ReservationFormContent({
           onValueChange={(val: any) => setOperationType(val)}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 h-11">
+          <TabsList className="grid relative w-full grid-cols-2 bg-transparent border rounded-2xl p-1 h-11">
             <TabsTrigger
               value="alquiler"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white flex gap-2 items-center transition-all"
+              className="data-[state=active]:bg-blue-600/70  border-none backdrop-blur-lg rounded-r-2xl rounded-l-2xl data-[state=active]:text-white flex gap-2 items-center transition-all"
             >
               <CalendarDays className="w-4 h-4" /> Alquiler
             </TabsTrigger>
             <TabsTrigger
               value="venta"
-              className="data-[state=active]:bg-orange-600 data-[state=active]:text-white flex gap-2 items-center transition-all"
+              className="data-[state=active]:bg-orange-600/80  border-none backdrop-blur-lg rounded-r-2xl rounded-l-2xl data-[state=active]:text-white flex gap-2 items-center transition-all"
             >
               <ShoppingBag className="w-4 h-4" /> Venta
             </TabsTrigger>
@@ -111,10 +117,24 @@ export function ReservationFormContent({
           <Input
             type="number"
             min={1}
+            max={maxStock}
             value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="h-8 font-bold"
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              if (val > maxStock) {
+                // Bloqueo manual por si el navegador falla
+                setQuantity(maxStock);
+                toast.error(`Máximo disponible: ${maxStock}`);
+              } else {
+                setQuantity(val);
+              }
+            }}
+            className={`h-8 font-bold ${quantity > maxStock ? "border-red-500 text-red-500" : ""}`}
           />
+          {/* Feedback visual chiquito */}
+          <span className="text-[8px] text-muted-foreground">
+            Max: {maxStock}
+          </span>
         </div>
       </div>
 
@@ -264,6 +284,45 @@ export function ReservationFormContent({
           guaranteeType={guaranteeType}
           setGuaranteeType={setGuaranteeType}
         />
+      )}
+
+      {/* CONDICIONAL CLAVE */}
+      {operationType === "venta" ? (
+        // CASO VENTA: ASIGNACIÓN INMEDIATA OBLIGATORIA (HARD ALLOCATION)
+        // El cliente está apartando ESTE producto físico para que nadie más lo compre.
+        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+          <p className="text-[10px] font-bold text-orange-800 uppercase mb-2">
+            Selecciona la prenda a apartar (Venta):
+          </p>
+          <StockAssignmentWidget
+            isImmediate={true} // Debe estar disponible HOY
+            operationType="venta"
+            productId={item.id}
+            size={size}
+            color={color}
+            quantity={quantity}
+            dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
+            currentBranchId={currentBranchId}
+            onAssignmentChange={setAssignedStockIds} // <---
+            isSerial={item.is_serial}
+          />
+        </div>
+      ) : (
+        // CASO ALQUILER: SOLO INFORMACIÓN (SOFT ALLOCATION)
+        // No seleccionamos stock físico. Solo mostramos disponibilidad.
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+          <HugeiconsIcon
+            icon={CalendarCheckIn01Icon}
+            className="text-blue-600 w-5 h-5"
+          />
+          <div>
+            <p className="text-xs font-bold text-blue-800">Reserva por Cupo</p>
+            <p className="text-[10px] text-blue-600">
+              Se reservará {quantity} unidad del stock general. La prenda física se
+              asignará el día de la entrega.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

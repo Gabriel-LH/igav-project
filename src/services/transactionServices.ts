@@ -273,6 +273,7 @@ export function processTransaction(
       .addReservation(reservation, reservationItems);
 
     specificData = reservation;
+    
   }
 
   // ---------------- ALQUILER -------------------

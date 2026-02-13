@@ -33,6 +33,7 @@ import { TimePicker } from "./TimePicker";
 import { setHours, setMinutes } from "date-fns";
 import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { StockAssignmentWidget } from "../widget/StockAssigmentWidget";
 
 export function DirectTransactionModal({
   item,
@@ -61,6 +62,8 @@ export function DirectTransactionModal({
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
+
+  const [assignedStockIds, setAssignedStockIds] = React.useState<string[]>([]);
 
   const [checklist, setChecklist] = React.useState({
     deliverAfter: false,
@@ -175,11 +178,6 @@ export function DirectTransactionModal({
     };
   }, [hasStock, stockCount, type]);
 
-  // 2. SELECCIONAR MÚLTIPLES STOCKS (La Clave)
-  const selectedStockIds = validStockCandidates
-    .slice(0, quantity) // Tomas los primeros 2, 3, 4...
-    .map((s) => s.id);
-
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType: type,
     priceSell: item.price_sell,
@@ -215,7 +213,7 @@ export function DirectTransactionModal({
       color,
       dateRange.from,
       dateRange.to || dateRange.from,
-      type
+      type,
     );
 
     if (!check.available) {
@@ -237,6 +235,12 @@ export function DirectTransactionModal({
       return toast.error(
         `Solo hay ${stockCount} unidades disponibles para ${type}.`,
       );
+
+    if (assignedStockIds.length !== quantity) {
+      return toast.error(
+        `Debes asignar ${quantity} prendas físicas antes de continuar.`,
+      );
+    }
 
     const baseData = {
       customerId: selectedCustomer.id,
@@ -270,7 +274,7 @@ export function DirectTransactionModal({
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
-        items: selectedStockIds.map((stockId) => ({
+        items: assignedStockIds.map((stockId) => ({
           productId: item.id,
           productName: item.name,
           stockId: stockId,
@@ -305,16 +309,15 @@ export function DirectTransactionModal({
         sellerId,
         branchId: currentBranchId,
 
-        items: selectedStockIds.map((stockId) => ({
+        items: assignedStockIds.map((stockId) => ({
           productId: item.id,
-          stockId: stockId,
-          quantity,
-          size,
-          color,
-          priceAtMoment: item.price_sell,
           productName: item.name,
+          stockId: stockId, // <--- ID REAL SELECCIONADO EN EL WIDGET
+          quantity: 1,
+          size: size,
+          color: color,
+          priceAtMoment: item.price_rent,
         })),
-
         financials: {
           totalAmount: totalOperacion,
           paymentMethod,
@@ -554,6 +557,21 @@ export function DirectTransactionModal({
             guaranteeType={guaranteeType}
             setGuaranteeType={setGuaranteeType}
           />
+
+          <div className="mt-4">
+            <StockAssignmentWidget
+              productId={item.id}
+              size={size}
+              isImmediate={true}
+              color={color}
+              quantity={quantity}
+              operationType={type}
+              dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
+              currentBranchId={currentBranchId}
+              onAssignmentChange={setAssignedStockIds} // <--- Capturamos los IDs aquí
+              isSerial={item.is_serial}
+            />
+          </div>
         </div>
 
         {!hasStock ? (

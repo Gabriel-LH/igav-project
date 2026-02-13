@@ -25,9 +25,11 @@ import { OperationType } from "@/src/utils/status-type/OperationType";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { endOfDay, startOfDay } from "date-fns";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import z from "zod";
+import { productSchema } from "@/src/types/product/type.product";
 
 interface ReservationModalProps {
-  item: any;
+  item: z.infer<typeof productSchema>;
   size: string;
   color: string;
   children: React.ReactNode;
@@ -48,6 +50,8 @@ export function ReservationModal({
   const [open, setOpen] = React.useState(false);
 
   const businessRules = BUSINESS_RULES_MOCK;
+
+  const [assignedStockIds, setAssignedStockIds] = React.useState<string[]>([]);
 
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [dateRange, setDateRange] = React.useState<any>(undefined);
@@ -111,6 +115,56 @@ export function ReservationModal({
     });
   }, [allStock, item.id, size, color, operationType]);
 
+  const totalPhysicalStock = useMemo(() => {
+    return allStock.filter((s) => {
+      const isBaseMatch =
+        String(s.productId) === String(item.id) &&
+        s.size === size &&
+        s.color === color;
+
+      // Filtro importante que ya discutimos (Venta vs Alquiler)
+      if (operationType === "venta") {
+        return s.isForSale === true && s.status === "disponible";
+      } else {
+        return (
+          s.isForRent === true && s.status !== "baja" && s.status !== "vendido"
+        );
+      }
+    }).length;
+  }, [allStock, item.id, size, color, operationType]);
+
+  // 2. STOCK DISPONIBLE EN FECHAS (Dinámico)
+  // Esto dice: "Para las fechas que elegiste, ¿cuántos quedan?"
+  const availableInDates = useMemo(() => {
+    // Si no hay fechas seleccionadas, el límite es el total físico
+    if (!dateRange?.from || !dateRange?.to) return totalPhysicalStock;
+
+    // Si hay fechas, preguntamos al oráculo (tu helper)
+    const check = getAvailabilityByAttributes(
+      item.id,
+      size,
+      color,
+      dateRange.from,
+      dateRange.to,
+      operationType, // "alquiler"
+    );
+
+    // El helper nos devuelve 'availableCount'. Ese es nuestro nuevo máximo.
+    return check.availableCount;
+  }, [item.id, size, color, dateRange, operationType, totalPhysicalStock]);
+
+  // 3. VALIDACIÓN DE CANTIDAD SELECCIONADA
+  // Si el usuario tenía puesto "3" y cambia las fechas a unas donde solo hay "2",
+  // debemos avisarle o corregirlo.
+  useEffect(() => {
+    if (quantity > Number(availableInDates)) {
+      toast.warning(
+        `Solo hay ${availableInDates} unidades disponibles para esas fechas.`,
+      );
+      setQuantity(Number(availableInDates) > 0 ? Number(availableInDates) : 1); // Ajuste automático
+    }
+  }, [availableInDates, quantity]);
+
   const selectedStockId = validStockCandidates[0]?.id;
 
   const stockCount = validStockCandidates.length;
@@ -148,7 +202,7 @@ export function ReservationModal({
     quantity,
     startDate: dateRange?.from,
     endDate: dateRange?.to,
-    rentUnit: item.rent_unit,
+    rentUnit: item?.rent_unit,
     receivedAmount: Number(downPayment),
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
   });
@@ -201,16 +255,52 @@ export function ReservationModal({
     return toast.error(availabilityCheck.reason);
   }
 
-
   const handleConfirm = () => {
     if (!selectedCustomer || !dateRange?.from) {
-      toast.error("Faltan datos obligatorios (Fecha o Cliente)");
-      return;
+      return toast.error("Faltan datos obligatorios (Fecha o Cliente)");
     }
 
-    if (!hasStock || !selectedStockId) {
-      toast.error("Stock no disponible");
-      return;
+    // A. VALIDACIÓN ESPECÍFICA PARA VENTA (Apartado Físico)
+    if (operationType === "venta") {
+      if (assignedStockIds.length !== quantity) {
+        return toast.error(
+          `Debes asignar las ${quantity} prendas físicas para apartar la venta.`,
+        );
+      }
+    }
+    // B. VALIDACIÓN PARA ALQUILER (Stock Numérico)
+    else {
+      if (!hasStock)
+        return toast.error("Stock insuficiente para las fechas seleccionadas");
+    }
+
+    // CONSTRUCCIÓN DE LOS ITEMS (Aquí está la magia)
+    let transactionItems = [];
+
+    if (operationType === "venta") {
+      // VENTA: Creamos una línea por cada producto físico seleccionado
+      transactionItems = assignedStockIds.map((stockId) => ({
+        productId: item.id,
+        productName: item.name,
+        size,
+        color,
+        quantity: 1, // Siempre 1 porque es unitario
+        priceAtMoment: unitPrice,
+        stockId: stockId, // <--- ID REAL DEL WIDGET
+      }));
+    } else {
+      // ALQUILER: Creamos una línea genérica (Cupo)
+      transactionItems = [
+        {
+          productId: item.id,
+          productName: item.name,
+          size,
+          color,
+          quantity: quantity, // Cantidad total del cupo
+          priceAtMoment: unitPrice,
+          stockId: selectedStockId, // ID referencial (el primero disponible) o null si tu DB lo permite
+        },
+      ];
     }
 
     const newReservation: ReservationDTO = {
@@ -238,17 +328,7 @@ export function ReservationModal({
       },
       id: "",
       operationId: "",
-      items: [
-        {
-          productId: item.id,
-          productName: item.name,
-          size,
-          color,
-          quantity,
-          priceAtMoment: unitPrice,
-          stockId: selectedStockId,
-        },
-      ],
+      items: transactionItems,
       updatedAt: new Date(),
     };
 
@@ -335,6 +415,12 @@ export function ReservationModal({
             setNotes={setNotes}
             operationType={operationType}
             setOperationType={setOperationType}
+            maxStock={
+              dateRange?.from && dateRange?.to
+                ? availableInDates
+                : totalPhysicalStock
+            }
+            setAssignedStockIds={setAssignedStockIds}
           />
         </div>
 
@@ -348,7 +434,7 @@ export function ReservationModal({
               onClick={handleConfirm}
               className={`w-full h-12 font-bold ${
                 !isVenta
-                  ? "text-white bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                  ? "text-white bg-linear-to-r  from-blue-500 via-blue-600 to-blue-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
                   : "text-white bg-linear-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 rounded-base text-sm px-4 py-2.5 text-center leading-5"
               }`}
             >

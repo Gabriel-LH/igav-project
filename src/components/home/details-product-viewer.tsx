@@ -444,7 +444,9 @@ export function DetailsProductViewer({
                   </p>
 
                   <p className="text-sm font-bold text-foreground">
-                    {allProductStock[0]?.condition ? allProductStock[0].condition : "Sin stock" }
+                    {allProductStock[0]?.condition
+                      ? allProductStock[0].condition
+                      : "Sin stock"}
                   </p>
                 </div>
 
@@ -454,7 +456,9 @@ export function DetailsProductViewer({
                   </p>
 
                   <p className="text-sm capitalize font-bold text-foreground">
-                    {allProductStock[0]?.status ? allProductStock[0].status : "Sin stock" }
+                    {allProductStock[0]?.status
+                      ? allProductStock[0].status
+                      : "Sin stock"}
                   </p>
                 </div>
               </div>
@@ -504,7 +508,7 @@ export function DetailsProductViewer({
             <DirectTransactionModal
               item={item}
               size={selectedSize || ""}
-              color={selectedColor?.name || ""} 
+              color={selectedColor?.name || ""}
               type="venta"
               currentBranchId={currentBranchId}
               onSuccess={() => setDrawerOpen(false)}

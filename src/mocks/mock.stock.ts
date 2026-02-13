@@ -1,4 +1,4 @@
-import { Stock } from "../types/product/type.stock"; 
+import { Stock } from "../types/product/type.stock";
 
 export const STOCK_MOCK: Stock[] = [
   // Stock para el producto 1 (Vestido de Noche)
@@ -17,7 +17,7 @@ export const STOCK_MOCK: Stock[] = [
     condition: "Nuevo",
     damageNotes: "Sin daños",
     status: "en_lavanderia",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     id: "STK-002-A",
@@ -33,10 +33,10 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-      id: "STK-002-B",
+    id: "STK-002-B",
     productId: "1",
     branchId: "branch-001",
     size: "M",
@@ -49,10 +49,10 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-      id: "STK-002-C",
+    id: "STK-002-C",
     productId: "1",
     branchId: "branch-001",
     size: "M",
@@ -65,10 +65,10 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-      id: "STK-002-D",
+    id: "STK-002-D",
     productId: "1",
     branchId: "branch-001",
     size: "M",
@@ -81,10 +81,10 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-      id: "STK-002-E",
+    id: "STK-002-E",
     productId: "1",
     branchId: "branch-001",
     size: "M",
@@ -97,7 +97,7 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     id: "STK-003-F",
@@ -113,9 +113,9 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Usado", // Mira como aquí sí podemos decir que este lote es usado
     status: "en_mantenimiento", // Y este lote está en limpieza
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
-  
+
   // Stock para el producto 2 (Tuxedo)
   {
     id: "STK-004",
@@ -131,9 +131,9 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
-    {
+  {
     id: "STK-005",
     productId: "2",
     branchId: "branch-001",
@@ -147,9 +147,9 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
-    {
+  {
     id: "STK-006",
     productId: "2",
     branchId: "branch-002",
@@ -163,6 +163,56 @@ export const STOCK_MOCK: Stock[] = [
     lastMaintenance: "2026-01-10",
     condition: "Nuevo",
     status: "disponible",
-    updatedAt: new Date()
+    updatedAt: new Date(),
+  },
+
+  //Stock para el producto 3 (Traje Clásico)
+  {
+    id: "STK-007",
+    productId: "3",
+    branchId: "branch-001",
+    size: "L",
+    color: "Azul Marino",
+    colorHex: "#000080",
+    quantity: 1,
+    isForRent: false,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
+    condition: "Nuevo",
+    status: "disponible",
+    updatedAt: new Date(),
+  },
+  {
+    id: "STK-008",
+    productId: "3",
+    branchId: "branch-001",
+    size: "M",
+    color: "Negro",
+    colorHex: "#000000",
+    quantity: 1,
+    isForRent: false,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
+    condition: "Nuevo",
+    status: "disponible",
+    updatedAt: new Date(),
+  },
+  {
+    id: "STK-009",
+    productId: "3",
+    branchId: "branch-001",
+    size: "M",
+    color: "Negro",
+    colorHex: "#000000",
+    quantity: 1,
+    isForRent: false,
+    isForSale: true,
+    usageCount: 15,
+    lastMaintenance: "2026-01-10",
+    condition: "Nuevo",
+    status: "disponible",
+    updatedAt: new Date(),
   },
 ];

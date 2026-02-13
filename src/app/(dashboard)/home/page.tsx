@@ -6,7 +6,7 @@ export default function HomePage() {
     <>
       <div className="flex flex-col gap-6 p-6">
         <HomeHeader />
-        <ProductGrid />
+        <ProductGrid  />
       </div>
     </>
   );
