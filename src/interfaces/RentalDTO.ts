@@ -2,11 +2,18 @@ import { BaseOperation } from "./BaseOperation";
 
 export interface RentalDTO extends BaseOperation {
   type: "alquiler";
-  status: "alquilado" | "reservado" | "vendido_pendiente_entrega" | "devuelto" | "atrasado" | "reservado_fisico";
+  status:
+    | "alquilado"
+    | "reservado"
+    | "vendido_pendiente_entrega"
+    | "devuelto"
+    | "atrasado"
+    | "reservado_fisico";
   startDate: Date;
   endDate: Date;
   actualReturnDate?: Date;
   items: {
+    id?: string; // RentalItem ID
     productId: string;
     productName: string;
     stockId: string;
@@ -21,7 +28,14 @@ export interface RentalDTO extends BaseOperation {
     keepAsCredit: boolean;
     paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
     guarantee: {
-      type?: "dinero" | "dni" | "joyas" | "reloj" | "otros" | "no_aplica" | "por_cobrar";
+      type?:
+        | "dinero"
+        | "dni"
+        | "joyas"
+        | "reloj"
+        | "otros"
+        | "no_aplica"
+        | "por_cobrar";
       value?: string;
       description?: string;
     };

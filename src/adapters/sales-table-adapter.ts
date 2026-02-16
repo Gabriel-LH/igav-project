@@ -17,6 +17,7 @@ export interface SaleTableRow {
   cancelDate: string;
   returnDate: string;
   nameCustomer: string;
+  product: string;
 
   // Nuevos campos de agrupación
   summary: string;
@@ -24,7 +25,6 @@ export interface SaleTableRow {
   itemsDetail: SaleItem[];
 
   // Campos legacy
-  product: string; // Mapeado a summary
   count: number;
   income: number;
   status: string;
@@ -44,6 +44,7 @@ export const mapSaleToTable = (
 
     // 1. Buscamos TODOS los items de esta venta
     const currentItems = salesItems.filter((s) => s.saleId === sale.id);
+    const productName = products.find((p) => p.id === currentItems[0].productId)?.name;
 
     // 2. Enriquecemos con nombres
     const itemsWithNames = currentItems.map((item) => {
@@ -53,6 +54,7 @@ export const mapSaleToTable = (
 
     // 3. Generamos resumen y conteo
     const summary = generateProductsSummary(itemsWithNames);
+    
     const totalItems = currentItems.reduce(
       (acc, item) => acc + item.quantity,
       0,
@@ -88,9 +90,9 @@ export const mapSaleToTable = (
       summary,
       totalItems,
       itemsDetail: currentItems,
+      product: productName || "---",
 
       // Legacy
-      product: summary, // <--- COMPATIBILIDAD
       restockingFee: 0, // No hay un único fee
       count: totalItems,
       income: sale.totalAmount, // Usamos totalAmount directo de la venta

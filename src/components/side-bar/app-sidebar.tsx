@@ -28,6 +28,7 @@ import {
   CatalogueIcon,
   Chart02Icon,
   Clock01Icon,
+  ComputerIcon,
   CreditCardIcon,
   DashboardSquare02Icon,
   File02Icon,
@@ -36,6 +37,7 @@ import {
   SaleTag02Icon,
   Settings01Icon,
   ShieldUserIcon,
+  ShoppingBag03Icon,
   StoreLocation01Icon,
   Undo03Icon,
   UserGroupIcon,
@@ -60,6 +62,11 @@ const data = {
       title: "Principal",
       url: "/home",
       icon: <HugeiconsIcon icon={Home12Icon} strokeWidth={2.2} />,
+    },
+    {
+      title: "Punto de Venta (POS)",
+      url: "/pos",
+      icon: <HugeiconsIcon icon={ComputerIcon} strokeWidth={2.2} />,
     },
     {
       title: "Dashboard",

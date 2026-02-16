@@ -21,11 +21,18 @@ export const ReturnGrid = () => {
     (item) => item.itemStatus === "alquilado",
   );
 
-  console.log("Items en la calle que llega al return grid:", itemsInStreet);
-
-  console.log("Rentals que llega al return grid:", rentals);
-
-  console.log("Guarantees que llega al return grid:", guarantees);
+  // Group items by rentalId + productId + size + color
+  const groupedItems = itemsInStreet.reduce(
+    (acc, item) => {
+      const key = `${item.rentalId}-${item.productId}-${item.size}-${item.color}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(item);
+      return acc;
+    },
+    {} as Record<string, typeof itemsInStreet>,
+  );
 
   const today = new Date().setHours(0, 0, 0, 0);
 
@@ -51,13 +58,14 @@ export const ReturnGrid = () => {
       <ReturnStats dueToday={dueToday} overdue={overdue} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {itemsInStreet.length === 0 && (
+        {Object.values(groupedItems).length === 0 && (
           <div className="col-span-full py-10 text-center text-slate-400">
             No hay devoluciones pendientes.
           </div>
         )}
 
-        {itemsInStreet.map((item) => {
+        {Object.values(groupedItems).map((group) => {
+          const item = group[0]; // Representative item
           // Rental padre
           const parent = rentals.find((r) => r.id === item.rentalId);
 
@@ -86,22 +94,21 @@ export const ReturnGrid = () => {
             createdAt: new Date(parent.createdAt),
             operationId: parent.operationId || "",
             sellerId: "",
-            items: [
-              {
-                productId: item.productId,
-                stockId: item.stockId,
-                size: item.size,
-                color: item.color,
-                quantity: item.quantity,
-                priceAtMoment: item.priceAtMoment,
-                productName: productInfo?.name || "Vestido",
-              },
-            ],
+            items: group.map((gItem) => ({
+              id: gItem.id, // ID del RentalItem
+              productId: gItem.productId,
+              stockId: gItem.stockId,
+              size: gItem.size,
+              color: gItem.color,
+              quantity: gItem.quantity, // Should be 1 per item usually
+              priceAtMoment: gItem.priceAtMoment,
+              productName: productInfo?.name || "Vestido",
+            })),
             type: "alquiler",
 
             // 3. Reconstrucción de Financials (Lo que faltaba)
             financials: {
-              totalRent: item.priceAtMoment, // Guardado en el RentalItem
+              totalRent: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
               paymentMethod: "cash", // Como no se guarda en el Rental, puedes poner un default o extender el Rental type
               guarantee: {
                 type: (realGuarantee?.type as any) || "otros",
@@ -109,13 +116,13 @@ export const ReturnGrid = () => {
                 description: realGuarantee?.description || "Sin descripción",
               },
               receivedAmount: 0,
-              keepAsCredit: false
+              keepAsCredit: false,
             },
             updatedAt: new Date(),
           };
 
           return (
-            <div key={`grid-item-${item.id}`}>
+            <div key={`grid-group-${item.rentalId}-${item.productId}`}>
               <ReturnActionCard rental={rentalUnified as RentalDTO} />
             </div>
           );

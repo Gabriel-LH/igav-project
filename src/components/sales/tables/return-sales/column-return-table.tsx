@@ -63,16 +63,6 @@ export const columnsSalesReturn: ColumnDef<
     enableHiding: false,
   },
   {
-    accessorKey: "sellerName",
-    header: "Vendedor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "branchName",
-    header: "Sucursal",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
     accessorKey: "product",
     header: "Producto",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
@@ -105,24 +95,9 @@ export const columnsSalesReturn: ColumnDef<
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
-    accessorKey: "reason",
-    header: "Motivo",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "action",
-    header: "Accion tomada",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
     accessorKey: "amountRefunded",
     header: "Valor de reembolso",
     cell: ({ getValue }) => <div className="w-32">{formatCurrency(getValue<number>())}</div>,
-  },
-  {
-    accessorKey: "damage",
-    header: "Daño",
-    cell: ({ getValue }) => <div className="w-32">{<Badge variant="outline" className="text-muted-foreground px-1.5">{getValue<string>().toUpperCase()}</Badge>}</div>,
   },
   {
     accessorKey: "restockingFee",

@@ -323,7 +323,9 @@ export function DirectTransactionModal({
         },
 
         notes,
-        status: !checklist.deliverAfter ? "vendido" : "pendiente_entrega",
+        status: !checklist.deliverAfter
+          ? "vendido"
+          : "vendido_pendiente_entrega",
         id: "",
         operationId: "",
         createdAt: new Date(),

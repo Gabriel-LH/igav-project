@@ -36,4 +36,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-//Se esta implementando el is_serial en el modelo producto y se necesita propagar por todas las logicas de guardado y se esta buscando si sera en el processTransaction o en cada una de las transacciones o casos de usos ademas hacer validar ese estado al momento de presentar en la interfas UI 
+//

@@ -2,7 +2,12 @@ import { BaseOperation } from "./BaseOperation";
 
 export interface SaleDTO extends BaseOperation {
   type: "venta";
-  status: "vendido" | "cancelado" | "pendiente_entrega" | "devuelto";
+  status:
+    | "vendido"
+    | "cancelado"
+    | "pendiente_entrega"
+    | "devuelto"
+    | "vendido_pendiente_entrega";
   customerId: string;
   customerName: string;
   sellerId: string;

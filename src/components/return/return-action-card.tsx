@@ -134,20 +134,20 @@ export function ReturnActionCard({ rental }: Props) {
           <div className="flex items-center justify-between bg-accent/40 rounded-lg p-3 border border-border/40">
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase tracking-tight">
-                {rental.productName}
+                {rental.items?.[0]?.productName || "Producto"}
               </span>
               <span className="text-[10px] text-muted-foreground">
-                SKU: {rental.sku}
+                Total: {rental.items?.length || 0} unid.
               </span>
             </div>
             <div className="flex gap-2">
               <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
                 <HugeiconsIcon icon={Information} size={12} strokeWidth={2} />
-                Talla {rental.size}
+                Talla {rental.items?.[0]?.size}
               </span>
               <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
                 <HugeiconsIcon icon={ColorsIcon} size={12} strokeWidth={2} />
-                {rental.color}
+                {rental.items?.[0]?.color}
               </span>
             </div>
           </div>
