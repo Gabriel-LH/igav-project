@@ -3,8 +3,10 @@ import { STOCK_MOCK } from "../mocks/mock.stock";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 
 export type StockStatus =
+  | "reservado"
   | "disponible"
   | "en_mantenimiento"
+  | "vendido_pendiente_entrega"
   | "alquilado"
   | "en_lavanderia"
   | "baja"

@@ -15,8 +15,6 @@ export function PriceSummary({
   setAmountPaid,
   keepAsCredit,
   setKeepAsCredit,
-  guarantee,
-  guaranteeType,
   downPayment,
   setDownPayment,
   paymentMethod,
@@ -32,7 +30,6 @@ export function PriceSummary({
       endDate,
       rentUnit: item.rent_unit,
       receivedAmount: Number(downPayment) || 0,
-      guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) || 0 : 0,
     });
 
   return (

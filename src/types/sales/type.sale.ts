@@ -13,7 +13,8 @@ export const saleSchema = z.object({
 
   status: z.enum([
     "pendiente_pago",
-    "pendiente_entrega",
+    "reservado",
+    "vendido_pendiente_entrega",
     "vendido",
     "cancelado",
     "devuelto",

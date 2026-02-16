@@ -81,16 +81,6 @@ export function DetailsProductViewer({
     colorsForSelectedSize[0] || null,
   );
 
-  // 4. AUTO-CORRECCIÓN DE COLOR AL CAMBIAR TALLA
-  React.useEffect(() => {
-    const isColorAvailable = colorsForSelectedSize.some(
-      (c) => c.name === selectedColor?.name,
-    );
-    if (!isColorAvailable && colorsForSelectedSize.length > 0) {
-      setSelectedColor(colorsForSelectedSize[0]);
-    }
-  }, [selectedSize, colorsForSelectedSize, selectedColor?.name]);
-
   // 5. CÁLCULO DE STOCK (Local vs Global)
   // Filtramos el stock específico de la combinación Talla + Color
   const variantLocations = allProductStock.filter(
@@ -106,28 +96,29 @@ export function DetailsProductViewer({
     0,
   );
 
-  const totalStockSell = variantLocations
-    .filter((l) => l.branchId !== currentBranchId)
-    .filter((s) => s.isForSale === true);
-
-  const totalStockRent = variantLocations
-    .filter((l) => l.branchId !== currentBranchId)
-    .filter((s) => s.isForRent === true);
-
-  const stockSell = variantLocations
+const stockSellItems = variantLocations
     .filter((l) => l.branchId === currentBranchId)
     .filter((s) => s.isForSale === true);
 
-  const stockRent = variantLocations
-    .filter((l) => l.branchId === currentBranchId)
-    .filter((s) => s.isForRent === true);
+  // 2. Calculamos la CANTIDAD REAL sumando la propiedad 'quantity'
+  const stockSellQty = stockSellItems.reduce((acc, curr) => acc + curr.quantity, 0);
 
-  console.log(
-    "totalStockSell",
-    totalStockSell,
-    "totalStockRent",
-    totalStockRent,
-  );
+  // Hacemos lo mismo para Alquiler
+  const stockRentItems = variantLocations
+      .filter((l) => l.branchId === currentBranchId)
+      .filter((s) => s.isForRent === true);
+
+  const stockRentQty = stockRentItems.reduce((acc, curr) => acc + curr.quantity, 0);
+  const canReserveCurrentSelection = useMemo(() => {
+    if (!selectedSize || !selectedColor) return false;
+
+    return variantLocations.some(
+      (s) =>
+        s.status === "disponible" &&
+        // Si el producto puede ser alquilado O vendido
+        (s.isForRent === true || s.isForSale === true),
+    );
+  }, [variantLocations, selectedSize, selectedColor]);
 
   const maxTransferTime = useMemo(() => {
     const externalBranches = variantLocations.filter(
@@ -299,7 +290,7 @@ export function DetailsProductViewer({
                       {localStock}{" "}
                       <span className="text-xs font-medium">unid.</span>
                       <div className="flex gap-2">
-                        {stockSell.length > 0 && (
+                        {stockSellQty > 0 && (
                           <div>
                             <span className="text-xs text-emerald-500">
                               {" "}
@@ -307,12 +298,12 @@ export function DetailsProductViewer({
                             </span>{" "}
                             <span className="text-xs text-white">
                               {" "}
-                              {stockSell.length}
+                              {stockSellQty}
                             </span>
                           </div>
                         )}
 
-                        {stockRent.length > 0 && (
+                        {stockRentQty > 0 && (
                           <div>
                             <span className="text-xs text-emerald-500">
                               {" "}
@@ -320,7 +311,7 @@ export function DetailsProductViewer({
                             </span>{" "}
                             <span className="text-xs text-white">
                               {" "}
-                              {stockRent.length}
+                              {stockRentQty}
                             </span>
                           </div>
                         )}
@@ -480,75 +471,77 @@ export function DetailsProductViewer({
           </div>
         </div>
 
-        <DrawerFooter className="border-t bg-muted/30">
-          <div className="grid grid-cols-2 gap-2 w-full">
-            <DirectTransactionModal
-              item={item}
-              size={selectedSize || ""}
-              color={selectedColor?.name || ""}
-              type="alquiler"
-              currentBranchId={currentBranchId}
-              onSuccess={() => setDrawerOpen(false)}
-            >
-              <Button
-                disabled={stockRent.length === 0}
-                className="bg-blue-600 text-white hover:bg-blue-700"
+        <DrawerFooter className="border-t bg-muted/30 ">
+          <div className="flex flex-col gap-2 w-full">
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <DirectTransactionModal
+                item={item}
+                size={selectedSize || ""}
+                color={selectedColor?.name || ""}
+                type="alquiler"
+                currentBranchId={currentBranchId}
+                onSuccess={() => setDrawerOpen(false)}
               >
-                <HugeiconsIcon
-                  icon={Calendar03Icon}
-                  strokeWidth={2}
-                  className="w-4 h-4 mr-2"
-                />
-                Alquilar
-              </Button>
-            </DirectTransactionModal>
+                <Button
+                  disabled={stockRentQty === 0}
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  <HugeiconsIcon
+                    icon={Calendar03Icon}
+                    strokeWidth={2}
+                    className="w-4 h-4 mr-2"
+                  />
+                  Alquilar
+                </Button>
+              </DirectTransactionModal>
 
-            {/* VENDER: Modal Directo */}
+              {/* VENDER: Modal Directo */}
 
-            <DirectTransactionModal
-              item={item}
-              size={selectedSize || ""}
-              color={selectedColor?.name || ""}
-              type="venta"
-              currentBranchId={currentBranchId}
-              onSuccess={() => setDrawerOpen(false)}
-            >
-              <Button
-                disabled={stockSell.length === 0}
-                className="bg-orange-600 text-white hover:bg-orange-700"
+              <DirectTransactionModal
+                item={item}
+                size={selectedSize || ""}
+                color={selectedColor?.name || ""}
+                type="venta"
+                currentBranchId={currentBranchId}
+                onSuccess={() => setDrawerOpen(false)}
               >
-                <HugeiconsIcon
-                  icon={SaleTag02Icon}
-                  strokeWidth={2}
-                  className="w-4 h-4 mr-2"
-                />
-                Vender
-              </Button>
-            </DirectTransactionModal>
+                <Button
+                  disabled={stockSellQty === 0}
+                  className="bg-orange-600 text-white hover:bg-orange-700"
+                >
+                  <HugeiconsIcon
+                    icon={SaleTag02Icon}
+                    strokeWidth={2}
+                    className="w-4 h-4 mr-2"
+                  />
+                  Vender
+                </Button>
+              </DirectTransactionModal>
 
-            {/* RESERVAR: Habilitado si hay stock en CUALQUIER sede */}
-            <ReservationModal
-              item={item}
-              size={selectedSize || ""}
-              color={selectedColor?.name || ""}
-              currentBranchId={currentBranchId}
-              originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
-              onSuccess={() => setDrawerOpen(false)}
-            >
-              <Button
-                disabled={totalStockCombo === 0}
-                className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+              {/* RESERVAR: Habilitado si hay stock en CUALQUIER sede */}
+              <ReservationModal
+                item={item}
+                size={selectedSize || ""}
+                color={selectedColor?.name || ""}
+                currentBranchId={currentBranchId}
+                originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
+                onSuccess={() => setDrawerOpen(false)}
               >
-                <HugeiconsIcon
-                  icon={CalendarLock01Icon}
-                  strokeWidth={2}
-                  className="w-4 h-4 mr-2"
-                />
-                {localStock > 0
-                  ? "Realizar una reserva"
-                  : `Solicitar traslado y reservar (${maxTransferTime} días)`}
-              </Button>
-            </ReservationModal>
+                <Button
+                  disabled={!canReserveCurrentSelection}
+                  className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <HugeiconsIcon
+                    icon={CalendarLock01Icon}
+                    strokeWidth={2}
+                    className="w-4 h-4 mr-2"
+                  />
+                  {localStock > 0
+                    ? "Realizar una reserva"
+                    : `Solicitar traslado y reservar (${maxTransferTime} días)`}
+                </Button>
+              </ReservationModal>
+            </div>
           </div>
         </DrawerFooter>
       </DrawerContent>

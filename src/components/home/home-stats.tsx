@@ -2,8 +2,9 @@
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { PackageMoving01Icon, AlertCircleIcon, ContainerTruck02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Reservation } from "@/src/types/reservation/type.reservation";
 
-export function HomeStats({ reservations }: { reservations: any[] }) {
+export function HomeStats({ reservations }: { reservations: Reservation[] }) {
   const today = new Date().setHours(0,0,0,0);
 
   const isMobile = useIsMobile()
@@ -20,7 +21,7 @@ export function HomeStats({ reservations }: { reservations: any[] }) {
 
   // 3. Devoluciones esperadas para hoy
   const returnsToday = reservations.filter(r => 
-    r.status === "entregado" && new Date(r.endDate).setHours(0,0,0,0) === today
+    r.status === "convertida" && new Date(r.endDate).setHours(0,0,0,0) === today
   ).length;
 
   return (

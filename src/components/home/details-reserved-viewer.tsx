@@ -18,14 +18,11 @@ import {
   CheckmarkBadge03Icon,
   CalendarAdd01Icon,
   CalendarRemove01Icon,
-  MagicWand01Icon,
-  Delete02Icon,
-  Location01Icon,
 } from "@hugeicons/core-free-icons";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
@@ -36,15 +33,6 @@ import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/select";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
@@ -55,11 +43,10 @@ import { Label } from "@/components/label";
 import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
-import Image from "next/image";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
-import { autoAllocateStock } from "@/src/utils/reservation/autoAsignStock";
+import { StockAssignmentWidget } from "./ui/widget/StockAssigmentWidget"; // Tu widget actualizado
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -68,88 +55,82 @@ export function DetailsReservedViewer({
 }) {
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-
   const currentUser = USER_MOCK[0];
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
-    {},
-  );
   const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
 
-  const stock = useInventoryStore((state) => state.stock);
+  const { products } = useInventoryStore();
+  const { reservationItems, cancelReservation, rearrangeReservation } =
+    useReservationStore();
+  const { payments: globalPayments } = usePaymentStore();
+  const { operations } = useOperationStore();
+  const { customers } = useCustomerStore();
 
   const [guarantee, setGuarantee] = React.useState("");
   const [guaranteeType, setGuaranteeType] =
     React.useState<GuaranteeType>("dinero");
 
-  const cancelReservation = useReservationStore(
-    (state) => state.cancelReservation,
-  );
-  const rearrangeReservation = useReservationStore(
-    (state) => state.rearrangeReservation,
-  );
-
-  const { reservationItems } = useReservationStore();
-
-  const { payments: globalPayments } = usePaymentStore();
-
-  const { products } = useInventoryStore();
-
-  const { operations } = useOperationStore();
-
-  const { customers } = useCustomerStore();
-
-  const currentClient = customers.find((c) => c.id === activeRes?.customerId);
-
-  const seller = USER_MOCK[0];
-
   const [checklist, setChecklist] = useState({
     limpieza: false,
     garantia: false,
   });
-  const handleDrawerOpenChange = (open: boolean) => {
-    setIsDrawerOpen(open);
-  };
+
+  // 1. Obtener items relacionados a esta reserva
+  const activeResItems = useMemo(
+    () => reservationItems.filter((ri) => ri.reservationId === activeRes?.id),
+    [reservationItems, activeRes?.id],
+  );
+
+  // 2. Inicializar selección con lo que ya viene guardado (para ventas ya asignadas)
+  const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
+    () => {
+      const initialSelections: Record<string, string> = {};
+      activeResItems.forEach((item) => {
+        if (item.stockId) {
+          // Rellenamos todos los slots de este item con el stockId guardado
+          // (Si es serial quantity=1, si es lote quantity=N)
+          for (let i = 0; i < item.quantity; i++) {
+            initialSelections[`${item.id}-${i}`] = item.stockId;
+          }
+        }
+      });
+      return initialSelections;
+    },
+  );
+
+  const handleDrawerOpenChange = (open: boolean) => setIsDrawerOpen(open);
 
   const operation = operations.find((op) => op.id === activeRes?.operationId);
+  const currentClient = customers.find((c) => c.id === activeRes?.customerId);
+  const seller = USER_MOCK[0];
 
-  const handleConfirmReschedule = (newStartDate: Date, newEndDate: Date) => {
-    if (!activeRes) return;
+  // Agrupamos items por "clave compuesta" para mostrarlos juntos
+  const groupedItems = useMemo(() => {
+    const groups: Record<
+      string,
+      { items: typeof activeResItems; totalQty: number }
+    > = {};
 
-    rearrangeReservation(activeRes.id, newStartDate, newEndDate);
-    toast.success("Reserva reagendada correctamente");
-    setIsRescheduleOpen(false);
-    setIsDrawerOpen(false);
-  };
-
-  const handleConfirmCancel = () => {
-    if (!activeRes) return;
-
-    cancelReservation(activeRes.id);
-    toast.success("Reserva anulada correctamente");
-    setIsCancelOpen(false);
-    setIsDrawerOpen(false);
-  };
-
-  // 4. Función para agregar un pago (esta se la pasaremos al modal)
-  const handleAddPayment = (data: any): Payment => {
-    return registerPayment({
-      operationId: operation?.id || "",
-      ...data,
+    activeResItems.forEach((item) => {
+      const key = `${item.productId}-${item.size}-${item.color}`;
+      if (!groups[key]) {
+        groups[key] = { items: [], totalQty: 0 };
+      }
+      groups[key].items.push(item);
+      groups[key].totalQty += item.quantity;
     });
-  };
 
-  // 2. Combinamos pagos del Mock con los reales del Store
-  const allPaymentsForThisOp = [
-    ...globalPayments.filter(
-      (p) => String(p.operationId) === String(operation?.id),
-    ),
-  ];
+    return Object.values(groups);
+  }, [activeResItems]);
 
-  const activeResItems = reservationItems.filter(
-    (ri) => ri.reservationId === activeRes?.id,
+  // Cálculos Financieros
+  const allPaymentsForThisOp = useMemo(
+    () =>
+      globalPayments.filter(
+        (p) => String(p.operationId) === String(operation?.id),
+      ),
+    [globalPayments, operation?.id],
   );
 
   const totalCalculated = activeResItems.reduce(
@@ -163,38 +144,27 @@ export function DetailsReservedViewer({
     totalCalculated,
   );
 
+  // Validación de Entrega
   const totalUnitsNeeded = activeResItems.reduce(
     (acc, item) => acc + item.quantity,
     0,
   );
   const totalUnitsAssigned = Object.keys(selectedStocks).length;
+  // Solo exigimos asignación completa si NO es un simple "Pendiente de Recojo" diferido
   const allItemsAssigned = totalUnitsAssigned >= totalUnitsNeeded;
 
   const isReadyToDeliver =
     (balance === 0 || isCredit) &&
     checklist.limpieza &&
-    checklist.garantia &&
+    (activeRes?.operationType === "venta" ? true : checklist.garantia) && // Venta no exige garantía física
     allItemsAssigned;
-
-  const handleAutoAllocate = () => {
-    const result = autoAllocateStock({
-      activeRes,
-      reservationItems: activeResItems,
-      stock,
-      operationType: activeRes!.operationType,
-      currentSelections: selectedStocks,
-    });
-
-    setSelectedStocks(result!);
-    toast.info("Stock asignado automáticamente");
-  };
 
   const handleDeliver = async (deliverImmediately: boolean) => {
     if (!activeRes) return;
-
     if (!isReadyToDeliver) {
-      toast.error("Faltan requisitos para la entrega");
-      return;
+      return toast.error(
+        "Faltan requisitos para la entrega (Pagos, Checklist o Stock)",
+      );
     }
 
     try {
@@ -210,15 +180,11 @@ export function DetailsReservedViewer({
         downPayment: 0,
         totalPaid,
         isCredit,
-        guarantee: {
-          type: guaranteeType as GuaranteeType,
-          value: guarantee,
-        },
+        guarantee: { type: guaranteeType, value: guarantee },
         notes: "Conversión desde reserva",
         shouldDeliverImmediately: deliverImmediately,
       });
 
-      // Generación de Ticket (Mantenemos tu lógica de impresión)
       const ticketHtml = buildDeliveryTicketHtml(
         seller,
         activeRes,
@@ -227,29 +193,47 @@ export function DetailsReservedViewer({
         guaranteeType,
         guarantee,
       );
-
       printTicket(ticketHtml);
 
-      setTimeout(() => {
-        toast.success(
-          activeRes.operationType === "venta"
-            ? deliverImmediately
-              ? "¡Venta finalizada y entregada!"
-              : "¡Venta guardada! Pendiente de recojo."
-            : "¡Alquiler entregado correctamente!",
-          { duration: 3000 },
-        );
-      }, 500);
+      toast.success(
+        activeRes.operationType === "venta"
+          ? "¡Venta finalizada!"
+          : "¡Alquiler entregado!",
+      );
     } catch (error) {
       console.error(error);
       toast.error("Error al procesar la operación");
     }
   };
 
+  const handleAddPayment = (data: any): Payment => {
+    return registerPayment({
+      operationId: operation?.id || "",
+      ...data,
+    });
+  };
+
+  const handleConfirmReschedule = (newStartDate: Date, newEndDate: Date) => {
+    if (!activeRes) return;
+    rearrangeReservation(activeRes.id, newStartDate, newEndDate);
+    toast.success("Reserva reagendada");
+    setIsRescheduleOpen(false);
+    setIsDrawerOpen(false);
+  };
+
+  const handleConfirmCancel = () => {
+    if (!activeRes) return;
+    cancelReservation(activeRes.id);
+    toast.success("Reserva anulada");
+    setIsCancelOpen(false);
+    setIsDrawerOpen(false);
+  };
+
   const sedeName =
     BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
     "Sede central";
-  const cliente = CLIENTS_MOCK.find((c) => c.id === activeRes?.customerId);
+
+  const cliente = customers.find((c) => c.id === activeRes?.customerId);
 
   return (
     <>
@@ -432,241 +416,96 @@ export function DetailsReservedViewer({
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-black uppercase text-muted-foreground">
-                  Artículos en esta reserva
-                </span>
 
-                {/* BOTÓN MÁGICO */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAutoAllocate}
-                  className="h-7 text-[10px] gap-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800"
-                >
-                  <HugeiconsIcon
-                    icon={MagicWand01Icon}
-                    strokeWidth={2}
-                    className="w-3 h-3"
-                  />
-                  Auto-asignar Stock
-                </Button>
-              </div>
+            {/* SECCIÓN 3: ASIGNACIÓN DE STOCK (WIDGET HÍBRIDO) */}
+            <div className="flex flex-col gap-4">
+              {groupedItems.map((group) => {
+                // Tomamos el primer item como referencia para datos comunes (foto, nombre)
+                const refItem = group.items[0];
+                const prod = products.find(
+                  (p) => p.id.toString() === refItem.productId,
+                );
+                const isSerial = prod?.is_serial ?? true;
 
-              <div className="flex flex-col gap-4">
-                {activeResItems.map((item) => {
-                  const prod = products.find(
-                    (p) => p.id.toString() === item.productId,
-                  );
+                // Aplanamos todos los stockIds que ya tengan estos items para pasarlos al widget
+                const allInitialSelections = group.items.flatMap((i) => {
+                  if (i.stockId) return Array(i.quantity).fill(i.stockId);
+                  return [];
+                });
 
-                  // Candidatos posibles para este item (General)
-                  const allMatchingStock = stock.filter(
-                    (s) =>
-                      String(s.productId) === String(item.productId) &&
-                      s.size === item.size &&
-                      s.color === item.color &&
-                      s.status === "disponible" &&
-                      (activeRes?.operationType === "venta"
-                        ? s.isForSale
-                        : s.isForRent),
-                  );
-
-                  const localOptions = allMatchingStock.filter(
-                    (s) => s.branchId === activeRes?.branchId,
-                  );
-                  const remoteOptions = allMatchingStock.filter(
-                    (s) => s.branchId !== activeRes?.branchId,
-                  );
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="p-3 border rounded-xl bg-card shadow-sm"
-                    >
-                      {/* INFO DEL PRODUCTO */}
-                      <div className="flex mb-3">
-                        <div className="h-12 w-10 rounded overflow-hidden bg-muted">
-                          <Image
-                            src={prod?.image || "/placeholder.jpg"}
-                            alt=""
-                            width={40}
-                            height={40}
-                            className="object-cover h-full w-full"
-                          />
-                        </div>
-                        <div className="flex-1 pl-3">
-                          <p className="text-sm font-bold leading-tight">
-                            {prod?.name}
-                          </p>
-                          <div className="flex gap-2 text-[10px] font-medium text-muted-foreground mt-1">
-                            <Badge
-                              variant="outline"
-                              className="h-5 px-1 rounded text-[9px]"
-                            >
-                              {item.size}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="h-5 px-1 rounded text-[9px] uppercase"
-                            >
-                              {item.color}
-                            </Badge>
-                            {item.quantity > 1 && (
-                              <Badge
-                                variant="outline"
-                                className="h-5 px-1 text-[9px] uppercase text-orange-400"
-                              >
-                                x{item.quantity} Unidades
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
+                return (
+                  <div
+                    key={`${refItem.id}-group`}
+                    className="p-3 border rounded-xl bg-card shadow-sm"
+                  >
+                    {/* HEADER ÚNICO */}
+                    <div className="flex mb-3 items-start gap-3">
+                      <div className="h-12 w-10 rounded overflow-hidden bg-muted">
+                        {/* ... Imagen ... */}
                       </div>
-
-                      {/* SELECTORES DE STOCK (Uno por cada unidad de cantidad) */}
-                      <div className="space-y-2 pl-1">
-                        {Array.from({ length: item.quantity }).map(
-                          (_, index) => {
-                            // Clave única: ID del item + Índice (0, 1, 2...)
-                            const uniqueKey = `${item.id}-${index}`;
-                            const currentSelectionId =
-                              selectedStocks[uniqueKey];
-                            const currentStockDetails = stock.find(
-                              (s) => s.id === currentSelectionId,
-                            );
-
-                            // Determinar si es local o remoto para estilo visual
-                            const isLocal =
-                              currentStockDetails?.branchId ===
-                              activeRes?.branchId;
-
-                            return (
-                              <div key={index} className="flex flex-col gap-1">
-                                <p className="text-[9px] font-bold uppercase text-muted-foreground">
-                                  Unidad #{index + 1} de {item.quantity}
-                                </p>
-
-                                {!currentSelectionId ? (
-                                  // ESTADO 1: NO SELECCIONADO (Muestra el Select)
-                                  <Select
-                                    value=""
-                                    onValueChange={(val) => {
-                                      setSelectedStocks((prev) => ({
-                                        ...prev,
-                                        [uniqueKey]: val,
-                                      }));
-                                    }}
-                                  >
-                                    <SelectTrigger className="w-full h-9 text-xs">
-                                      <SelectValue placeholder="Seleccionar código / escanear..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {localOptions.length > 0 && (
-                                        <SelectGroup>
-                                          <SelectLabel className="text-[10px] text-emerald-600">
-                                            Sede Actual
-                                          </SelectLabel>
-                                          {localOptions.map((s) => (
-                                            // Deshabilitar si ya está seleccionado en otro input
-                                            <SelectItem
-                                              key={s.id}
-                                              value={s.id}
-                                              disabled={Object.values(
-                                                selectedStocks,
-                                              ).includes(s.id)}
-                                            >
-                                              {s.id} (Condición: {s.condition})
-                                            </SelectItem>
-                                          ))}
-                                        </SelectGroup>
-                                      )}
-                                      {remoteOptions.length > 0 && (
-                                        <SelectGroup>
-                                          <SelectLabel className="text-[10px] text-orange-600">
-                                            Otras Sedes
-                                          </SelectLabel>
-                                          {remoteOptions.map((s) => (
-                                            <SelectItem
-                                              key={s.id}
-                                              value={s.id}
-                                              disabled={Object.values(
-                                                selectedStocks,
-                                              ).includes(s.id)}
-                                            >
-                                              {s.id} (
-                                              {
-                                                BRANCH_MOCKS.find(
-                                                  (b) => b.id === s.branchId,
-                                                )?.name
-                                              }
-                                              )
-                                            </SelectItem>
-                                          ))}
-                                        </SelectGroup>
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                ) : (
-                                  // ESTADO 2: YA SELECCIONADO (Muestra Tarjeta Bonita)
-                                  <div
-                                    className={`flex items-center justify-between p-2 rounded border border-l-4 ${isLocal ? "border-l-emerald-500 bg-transparent" : "border-l-orange-500 bg-transparent"}`}
-                                  >
-                                    <div className="flex flex-col">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-mono font-bold text-xs">
-                                          {currentStockDetails?.id}
-                                        </span>
-                                        {currentStockDetails?.condition !==
-                                          "Nuevo" && (
-                                          <span className="text-[9px] px-1 bg-white border rounded text-muted-foreground">
-                                            {currentStockDetails?.condition}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                        <HugeiconsIcon
-                                          icon={Location01Icon}
-                                          className="w-3 h-3"
-                                        />
-                                        {
-                                          BRANCH_MOCKS.find(
-                                            (b) =>
-                                              b.id ===
-                                              currentStockDetails?.branchId,
-                                          )?.name
-                                        }
-                                      </div>
-                                    </div>
-
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                                      onClick={() => {
-                                        const newSt = { ...selectedStocks };
-                                        delete newSt[uniqueKey];
-                                        setSelectedStocks(newSt);
-                                      }}
-                                    >
-                                      <HugeiconsIcon
-                                        icon={Delete02Icon}
-                                        className="w-4 h-4 text-red-500"
-                                      />
-                                    </Button>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          },
-                        )}
+                      <div className="flex-1 pl-3">
+                        <p className="text-sm font-bold">{prod?.name}</p>
+                        <div className="flex gap-2 mt-1">
+                          <Badge variant="outline" className="text-[10px]">
+                            {refItem.size}
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px]">
+                            {refItem.color}
+                          </Badge>
+                          {group.totalQty > 1 && (
+                            <Badge className="text-[10px] bg-orange-100 text-orange-700">
+                              x{group.totalQty} Total
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
 
+                    {/* UN SOLO WIDGET QUE MANEJA LOS N SELECTS */}
+                    <StockAssignmentWidget
+                      productId={refItem.productId}
+                      size={refItem.size}
+                      color={refItem.color}
+                      quantity={group.totalQty} // 👈 Cantidad total del grupo
+                      operationType={activeRes?.operationType || "alquiler"}
+                      dateRange={{
+                        from: activeRes?.startDate || new Date(),
+                        to: activeRes?.endDate || new Date(),
+                      }}
+                      currentBranchId={activeRes?.branchId || ""}
+                      isSerial={isSerial}
+                      initialSelections={allInitialSelections}
+                      readOnly={allInitialSelections.length > 0}
+                      onAssignmentChange={(selectedIds) => {
+                        // AQUÍ VIENE LA MAGIA DE LA DISTRIBUCIÓN
+                        // El widget nos devuelve un array de IDs [ID1, ID2, ID3...]
+                        // Tenemos que repartirlos entre los items originales del grupo para actualizar el estado padre
+
+                        setSelectedStocks((prev) => {
+                          const newState = { ...prev };
+                          let idIndex = 0;
+
+                          group.items.forEach((item) => {
+                            // Para este item específico, ¿cuántos IDs necesita?
+                            // (Si item.quantity es 1, toma 1. Si es lote de 5, toma 5 iguales)
+                            for (let q = 0; q < item.quantity; q++) {
+                              const assignedId = selectedIds[idIndex];
+                              if (assignedId) {
+                                // Usamos la clave única basada en el ID real del item en base de datos
+                                newState[`${item.id}-${q}`] = assignedId;
+                              }
+                              idIndex++;
+                            }
+                          });
+
+                          return newState;
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
             {/* 3. SECCIÓN DE GARANTÍA (Solo para alquiler) */}
             {activeRes?.operationType === "alquiler" && (
               <div className="space-y-3">

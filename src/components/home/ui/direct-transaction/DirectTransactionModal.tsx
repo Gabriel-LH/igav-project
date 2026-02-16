@@ -12,7 +12,11 @@ import { toast } from "sonner";
 import { addDays, format } from "date-fns";
 import { Label } from "@/components/label";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar02Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
+import {
+  Calendar02Icon,
+  SaleTag02Icon,
+  Warning,
+} from "@hugeicons/core-free-icons";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
@@ -53,8 +57,6 @@ export function DirectTransactionModal({
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
   const businessRules = BUSINESS_RULES_MOCK;
-
-  const toastIdRef = React.useRef<string | number | null>(null);
 
   // --------------------
   // Estados base
@@ -135,48 +137,12 @@ export function DirectTransactionModal({
   // 3. Seleccionamos el mejor candidato (el primero de la lista para transacciones directas)
   const selectedStockId = validStockCandidates[0]?.id;
 
-  const stockCount = validStockCandidates.length;
+  const stockCount = validStockCandidates.reduce(
+    (acc, curr) => acc + curr.quantity,
+    0,
+  );
 
   const hasStock = stockCount >= quantity;
-
-  useEffect(() => {
-    if (!hasStock) {
-      let message = "";
-      if (type === "venta") {
-        if (stockCount === 0) {
-          message = `No hay unidades disponibles para venta.`;
-        } else {
-          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para venta.`;
-        }
-      } else {
-        if (stockCount === 0) {
-          message = `No hay unidades disponibles para alquiler.`;
-        } else {
-          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para alquiler.`;
-        }
-      }
-
-      // Si ya hay un toast activo con este mensaje, no crear otro
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-      }
-
-      toastIdRef.current = toast.error(message);
-    } else {
-      // Limpiar el toast cuando ya hay stock
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-        toastIdRef.current = null;
-      }
-    }
-
-    // Cleanup al desmontar
-    return () => {
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-      }
-    };
-  }, [hasStock, stockCount, type]);
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType: type,
@@ -236,12 +202,60 @@ export function DirectTransactionModal({
         `Solo hay ${stockCount} unidades disponibles para ${type}.`,
       );
 
-    if (assignedStockIds.length !== quantity) {
-      return toast.error(
-        `Debes asignar ${quantity} prendas físicas antes de continuar.`,
-      );
+    // ---------------------------------------------------------
+    // LÓGICA DE ASIGNACIÓN DE ITEMS (EL CORAZÓN DEL CAMBIO)
+    // ---------------------------------------------------------
+    let transactionItems: any[] = [];
+
+    if (item.is_serial) {
+      // A. CASO SERIALIZADO (Manual)
+      // Aquí SÍ exigimos que haya seleccionado en el Widget
+      if (assignedStockIds.length !== quantity) {
+        return toast.error(
+          `Debes asignar las ${quantity} prendas específicas en la lista.`,
+        );
+      }
+
+      // Mapeamos los IDs seleccionados manualmente
+      transactionItems = assignedStockIds.map((stockId) => ({
+        productId: item.id,
+        productName: item.name,
+        stockId: stockId,
+        quantity: 1, // Serializado siempre es 1 a 1
+        size: size,
+        color: color,
+        priceAtMoment: isVenta ? item.price_sell : item.price_rent,
+      }));
+    } else {
+      // B. CASO NO SERIALIZADO / BULK (Automático)
+      // El sistema toma el stock disponible automáticamente (FIFO implícito por el orden del array)
+
+      let remainingQty = quantity;
+
+      // Recorremos los candidatos disponibles para llenar la cantidad
+      for (const stock of validStockCandidates) {
+        if (remainingQty <= 0) break;
+
+        // Cuánto podemos tomar de este lote (stockId)
+        const take = Math.min(remainingQty, stock.quantity);
+
+        transactionItems.push({
+          productId: item.id,
+          productName: item.name,
+          stockId: stock.id,
+          quantity: take, // Aquí puede ser > 1 si es bulk
+          size: size,
+          color: color,
+          priceAtMoment: isVenta ? item.price_sell : item.price_rent,
+        });
+
+        remainingQty -= take;
+      }
     }
 
+    // ---------------------------------------------------------
+    // CONSTRUCCIÓN DEL DTO (Común para ambos)
+    // ---------------------------------------------------------
     const baseData = {
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
@@ -250,9 +264,6 @@ export function DirectTransactionModal({
       notes,
       createdAt: new Date(),
     };
-
-    console.log("Tipo de garantia", guaranteeType);
-    console.log("Valor de garantia", guarantee);
 
     if (type === "alquiler") {
       const rentalData: RentalDTO = {
@@ -274,15 +285,7 @@ export function DirectTransactionModal({
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
-        items: assignedStockIds.map((stockId) => ({
-          productId: item.id,
-          productName: item.name,
-          stockId: stockId,
-          quantity: 1,
-          size: size,
-          color: color,
-          priceAtMoment: item.price_rent,
-        })),
+        items: transactionItems,
         updatedAt: new Date(),
       };
 
@@ -309,15 +312,7 @@ export function DirectTransactionModal({
         sellerId,
         branchId: currentBranchId,
 
-        items: assignedStockIds.map((stockId) => ({
-          productId: item.id,
-          productName: item.name,
-          stockId: stockId, // <--- ID REAL SELECCIONADO EN EL WIDGET
-          quantity: 1,
-          size: size,
-          color: color,
-          priceAtMoment: item.price_rent,
-        })),
+        items: transactionItems,
         financials: {
           totalAmount: totalOperacion,
           paymentMethod,
@@ -370,7 +365,6 @@ export function DirectTransactionModal({
             Completa el formulario para realizar la operación
           </DialogDescription>
         </DialogHeader>
-
         <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
           {/* Producto */}
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
@@ -388,8 +382,18 @@ export function DirectTransactionModal({
               <Input
                 type="number"
                 min={1}
+                max={Number(stockCount)}
                 value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (val > Number(stockCount)) {
+                    // Bloqueo manual por si el navegador falla
+                    setQuantity(Number(stockCount));
+                    toast.error(`Máximo disponible: ${stockCount}`);
+                  } else {
+                    setQuantity(val);
+                  }
+                }}
                 className="h-8 font-bold"
               />
             </div>
@@ -558,20 +562,30 @@ export function DirectTransactionModal({
             setGuaranteeType={setGuaranteeType}
           />
 
-          <div className="mt-4">
-            <StockAssignmentWidget
-              productId={item.id}
-              size={size}
-              isImmediate={true}
-              color={color}
-              quantity={quantity}
-              operationType={type}
-              dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
-              currentBranchId={currentBranchId}
-              onAssignmentChange={setAssignedStockIds} // <--- Capturamos los IDs aquí
-              isSerial={item.is_serial}
-            />
-          </div>
+          {item.is_serial && (
+            <div className="mt-4">
+              <div className="border-t border-r border-l border-b-0  p-2  rounded-md">
+                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <HugeiconsIcon icon={Warning} className="w-3 h-3" />
+                  Producto serializado: Debes seleccionar qué unidades
+                  específicas entregar.
+                </p>
+              </div>
+
+              <StockAssignmentWidget
+                productId={item.id}
+                size={size}
+                isImmediate={true}
+                color={color}
+                quantity={quantity}
+                operationType={type}
+                dateRange={dateRange}
+                currentBranchId={currentBranchId}
+                onAssignmentChange={setAssignedStockIds}
+                isSerial={item.is_serial}
+              />
+            </div>
+          )}
         </div>
 
         {!hasStock ? (

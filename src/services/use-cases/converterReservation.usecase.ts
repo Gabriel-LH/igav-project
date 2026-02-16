@@ -71,9 +71,11 @@ export async function convertReservationUseCase(
         totalPrice: 0,
       },
       notes: input.notes,
-      status: input.shouldDeliverImmediately ? "vendido" : "pendiente_entrega",
+      status: input.shouldDeliverImmediately
+        ? "vendido"
+        : "vendido_pendiente_entrega",
     });
   }
-  
+
   throw new Error("Tipo de reserva no soportado");
 }

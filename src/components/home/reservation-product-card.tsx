@@ -5,11 +5,9 @@ import Image from "next/image";
 import { DetailsReservedViewer } from "./details-reserved-viewer";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { STOCK_MOCK } from "@/src/mocks/mock.stock";
-import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Reservation } from "@/src/types/reservation/type.reservation";
-import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { useReservationStore } from "@/src/store/useReservationStore";
 
 interface Props {
@@ -18,20 +16,21 @@ interface Props {
 }
 
 export function ReservationProductCard({ reservation }: Props) {
-
   const { reservationItems } = useReservationStore();
 
   // 1. Buscamos el item exacto de esta reserva
   const specificItems = reservationItems.filter(
-    (i) => i.reservationId === reservation.id
+    (i) => i.reservationId === reservation.id,
   );
   const specificClient = CLIENTS_MOCK.find(
-    (c) => c.id === reservation.customerId
+    (c) => c.id === reservation.customerId,
   );
 
   if (!specificItems.length) {
     return null;
   }
+
+  console.log("reservationItems", reservationItems);
 
   return (
     <Card className="flex flex-col p-4 gap-4 hover:shadow-md transition-all ">
@@ -65,33 +64,58 @@ export function ReservationProductCard({ reservation }: Props) {
 
       {/* CUERPO: Lista de productos de esta reserva */}
       <div className="space-y-3">
-        {specificItems.map((item) => {
+        {/* Agrupamos items visualmente */}
+        {Object.values(
+          specificItems.reduce(
+            (acc, item) => {
+              const key = `${item.productId}-${item.size}-${item.color}`;
+              if (!acc[key]) {
+                acc[key] = { ...item, quantity: 0 };
+              }
+              acc[key].quantity += item.quantity;
+              return acc;
+            },
+            {} as Record<string, (typeof specificItems)[0]>,
+          ),
+        ).map((item) => {
           // Buscamos la info del producto (nombre, imagen) para cada ítem
           const productInfo = PRODUCTS_MOCK.find(
-            (p) => p.id.toString() === item.productId
+            (p) => p.id.toString() === item.productId,
           );
 
           const itemColorHex = STOCK_MOCK.find(
             (s) =>
               s.productId.toString() === item.productId.toString() &&
-              s.color === item.color
+              s.color === item.color,
           )?.colorHex;
 
           return (
             <div
-              key={item.id}
+              key={`${item.id}-grouped`}
               className="flex items-center gap-3 bg-muted/30 p-2 rounded-lg"
             >
-              <Image
-                src={productInfo?.image ?? ""}
-                alt="Product"
-                width={40}
-                height={40}
-                className="rounded "
-              />
+              <div className="relative">
+                <Image
+                  src={productInfo?.image ?? ""}
+                  alt="Product"
+                  width={40}
+                  height={40}
+                  className="rounded "
+                />
+                {item.quantity > 1 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center rounded-full p-0 text-[10px]">
+                    {item.quantity}
+                  </Badge>
+                )}
+              </div>
               <div className="flex-1">
-                <p className="text-xs font-bold">{productInfo?.name}</p>
-                <div className="flex gap-2 items-center">
+                <div className="flex justify-between items-start">
+                  <p className="text-xs font-bold">{productInfo?.name}</p>
+                  <span className="text-xs font-bold">
+                    {formatCurrency(item.priceAtMoment * item.quantity)}
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center mt-1">
                   <span className="text-[10px] text-muted-foreground uppercase">
                     Talla {item.size}
                   </span>
@@ -104,10 +128,12 @@ export function ReservationProductCard({ reservation }: Props) {
                     {item.color}
                   </span>
                 </div>
+                {item.quantity > 1 && (
+                  <p className="text-[9px] text-muted-foreground mt-0.5">
+                    {formatCurrency(item.priceAtMoment)} c/u
+                  </p>
+                )}
               </div>
-              <span className="text-xs font-bold">
-                {formatCurrency(item.priceAtMoment)}
-              </span>
             </div>
           );
         })}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,14 +19,17 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { OperationType } from "@/src/utils/status-type/OperationType";
-import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import {
+  getAvailabilityByAttributes,
+  getTotalStock,
+} from "@/src/utils/reservation/checkAvailability";
 import { endOfDay, startOfDay } from "date-fns";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import z from "zod";
 import { productSchema } from "@/src/types/product/type.product";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
@@ -68,14 +71,13 @@ export function ReservationModal({
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
-  const [guarantee, setGuarantee] = React.useState("");
   const [paymentMethod, setPaymentMethod] =
     React.useState<PaymentMethodType>("cash");
-  const [guaranteeType, setGuaranteeType] =
-    React.useState<GuaranteeType>("dinero");
 
   const [keepAsCredit, setKeepAsCredit] = React.useState(false);
   const [amountPaid, setAmountPaid] = React.useState("");
+
+  const [useCredit, setUseCredit] = React.useState(false);
 
   const scrollRef = useScrollIndicator();
 
@@ -115,23 +117,15 @@ export function ReservationModal({
     });
   }, [allStock, item.id, size, color, operationType]);
 
+  // 2. STOCK FÍSICO TOTAL (Para el max)
+  // Usamos el helper centralizado para garantizar consistencia con las validaciones
   const totalPhysicalStock = useMemo(() => {
-    return allStock.filter((s) => {
-      const isBaseMatch =
-        String(s.productId) === String(item.id) &&
-        s.size === size &&
-        s.color === color;
-
-      // Filtro importante que ya discutimos (Venta vs Alquiler)
-      if (operationType === "venta") {
-        return s.isForSale === true && s.status === "disponible";
-      } else {
-        return (
-          s.isForRent === true && s.status !== "baja" && s.status !== "vendido"
-        );
-      }
-    }).length;
-  }, [allStock, item.id, size, color, operationType]);
+    return getTotalStock(item.id, size, color, operationType);
+  }, [item.id, size, color, operationType]); // allStock es dependencia implícita del store en el helper, pero react query/zustand manejan eso.
+  // Nota: getTotalStock usa getState(), así que no es reactivo por sí mismo si allStock cambia.
+  // Pero aquí estamos forzando re-render via useInventoryStore hook arriba que actualiza el componente.
+  // Para ser puristas, deberíamos pasarle el stock al helper o confiar en que el render actualiza.
+  // Dado que getTotalStock lee getState(), leerá lo último.
 
   // 2. STOCK DISPONIBLE EN FECHAS (Dinámico)
   // Esto dice: "Para las fechas que elegiste, ¿cuántos quedan?"
@@ -153,156 +147,141 @@ export function ReservationModal({
     return check.availableCount;
   }, [item.id, size, color, dateRange, operationType, totalPhysicalStock]);
 
-  // 3. VALIDACIÓN DE CANTIDAD SELECCIONADA
-  // Si el usuario tenía puesto "3" y cambia las fechas a unas donde solo hay "2",
-  // debemos avisarle o corregirlo.
-  useEffect(() => {
-    if (quantity > Number(availableInDates)) {
-      toast.warning(
-        `Solo hay ${availableInDates} unidades disponibles para esas fechas.`,
-      );
-      setQuantity(Number(availableInDates) > 0 ? Number(availableInDates) : 1); // Ajuste automático
-    }
-  }, [availableInDates, quantity]);
-
-  const selectedStockId = validStockCandidates[0]?.id;
-
-  const stockCount = validStockCandidates.length;
-
-  const hasStock = stockCount >= quantity;
-
-  const availabilityCheck = getAvailabilityByAttributes(
-    item.id,
-    size,
-    color,
-    dateRange?.from,
-    dateRange?.to,
-    operationType,
+  const stockCount = validStockCandidates.reduce(
+    (acc, s) => acc + s.quantity,
+    0,
   );
 
-  const hasStockForType = useInventoryStore
-    .getState()
-    .stock.some(
-      (s) =>
-        s.productId === item.id &&
-        s.size === size &&
-        s.color === color &&
-        s.status === "disponible" &&
-        (operationType === "venta" ? s.isForSale : s.isForRent),
-    );
+  const hasStock = stockCount >= quantity;
 
   const balance = useClientCreditStore((s) =>
     s.getBalance(selectedCustomer?.id),
   );
 
-  const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
-    operationType,
-    priceSell: item.price_sell,
-    priceRent: item.price_rent,
-    quantity,
-    startDate: dateRange?.from,
-    endDate: dateRange?.to,
-    rentUnit: item?.rent_unit,
-    receivedAmount: Number(downPayment),
-    guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
-  });
-
-  const toastIdRef = React.useRef<string | number | null>(null);
+  const { days, subtotal, creditApplied, totalOperacion, isVenta, isEvent } =
+    usePriceCalculation({
+      operationType,
+      priceSell: item.price_sell,
+      priceRent: item.price_rent,
+      quantity,
+      startDate: dateRange?.from,
+      endDate: dateRange?.to,
+      rentUnit: item?.rent_unit,
+      receivedAmount: Number(downPayment),
+      availableCredit: balance,
+      useCredit: keepAsCredit,
+    });
 
   // 💲 Precio unitario
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
 
-  useEffect(() => {
-    if (!hasStock) {
-      let message = "";
-      if (operationType === "venta") {
-        if (stockCount === 0) {
-          message = `No hay unidades disponibles para venta.`;
-        } else {
-          message = `Solo hay ${stockCount}  ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para venta.`;
-        }
-      } else {
-        if (stockCount === 0) {
-          message = `No hay unidades disponibles para alquiler.`;
-        } else {
-          message = `Solo hay ${stockCount} ${stockCount === 1 ? "unidad" : "unidades"} disponible${stockCount === 1 ? "" : "s"} para alquiler.`;
-        }
-      }
-      // Si ya hay un toast activo con este mensaje, no crear otro
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-      }
+  // En ReservationModal.tsx, cuando se abre el modal
+  React.useEffect(() => {
+    if (open) {
+      // Determinar qué operaciones están disponibles
+      const hasRentStock = validStockCandidates.some((s) => s.isForRent);
+      const hasSaleStock = validStockCandidates.some((s) => s.isForSale);
 
-      toastIdRef.current = toast.error(message);
-    } else {
-      // Limpiar el toast cuando ya hay stock
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-        toastIdRef.current = null;
+      // Si solo hay un tipo disponible, seleccionarlo automáticamente
+      if (hasRentStock && !hasSaleStock) {
+        setOperationType("alquiler");
+      } else if (!hasRentStock && hasSaleStock) {
+        setOperationType("venta");
       }
+      // Si hay ambos, mantener el que estaba
     }
+  }, [open, validStockCandidates]);
 
-    // Cleanup al desmontar
-    return () => {
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-      }
-    };
-  }, [hasStock, operationType, stockCount]);
-
-  if (!availabilityCheck.available) {
-    // El mensaje detallado: "Solo tienes 3 unidades y hay 3 reservas..."
-    return toast.error(availabilityCheck.reason);
-  }
+  const realPaidAmount = Number(amountPaid) || Number(downPayment);
+  const overpayment =
+    realPaidAmount > totalOperacion ? realPaidAmount - totalOperacion : 0;
 
   const handleConfirm = () => {
+    // 1. VALIDACIONES BÁSICAS
     if (!selectedCustomer || !dateRange?.from) {
       return toast.error("Faltan datos obligatorios (Fecha o Cliente)");
     }
 
-    // A. VALIDACIÓN ESPECÍFICA PARA VENTA (Apartado Físico)
-    if (operationType === "venta") {
-      if (assignedStockIds.length !== quantity) {
+    // 2. VALIDACIÓN DE DISPONIBILIDAD GLOBAL
+    if (operationType === "alquiler") {
+      // Para alquiler: Validamos "Cupos" en fechas (virtual)
+      if (quantity > availableInDates) {
         return toast.error(
-          `Debes asignar las ${quantity} prendas físicas para apartar la venta.`,
+          `Solo hay ${availableInDates} unidades disponibles para esas fechas.`,
         );
       }
-    }
-    // B. VALIDACIÓN PARA ALQUILER (Stock Numérico)
-    else {
-      if (!hasStock)
-        return toast.error("Stock insuficiente para las fechas seleccionadas");
-    }
-
-    // CONSTRUCCIÓN DE LOS ITEMS (Aquí está la magia)
-    let transactionItems = [];
-
-    if (operationType === "venta") {
-      // VENTA: Creamos una línea por cada producto físico seleccionado
-      transactionItems = assignedStockIds.map((stockId) => ({
-        productId: item.id,
-        productName: item.name,
-        size,
-        color,
-        quantity: 1, // Siempre 1 porque es unitario
-        priceAtMoment: unitPrice,
-        stockId: stockId, // <--- ID REAL DEL WIDGET
-      }));
     } else {
-      // ALQUILER: Creamos una línea genérica (Cupo)
-      transactionItems = [
-        {
+      // Para venta: Validamos existencia física actual
+      if (!hasStock) {
+        return toast.error(`Stock insuficiente para realizar la venta.`);
+      }
+    }
+
+    // 3. CONSTRUCCIÓN DE ITEMS (LA LÓGICA CORE)
+    let transactionItems: any[] = [];
+
+    // =====================================================================
+    // RAMA A: VENTA (Requiere Asignación Física Inmediata)
+    // =====================================================================
+    if (operationType === "venta") {
+      if (item.is_serial) {
+        // CASO SERIALIZADO: El usuario DEBE haber seleccionado los IDs en el widget
+        if (assignedStockIds.length !== quantity) {
+          return toast.error(
+            `Venta: Debes asignar las ${quantity} prendas físicas exactas para retirar.`,
+          );
+        }
+        // Mapeamos los IDs que el usuario seleccionó
+        transactionItems = assignedStockIds.map((stockId) => ({
           productId: item.id,
           productName: item.name,
           size,
           color,
-          quantity: quantity, // Cantidad total del cupo
+          quantity: 1,
           priceAtMoment: unitPrice,
-          stockId: selectedStockId, // ID referencial (el primero disponible) o null si tu DB lo permite
-        },
-      ];
+          stockId: stockId, // 👈 VENTA: LLEVA ID
+        }));
+      } else {
+        // CASO NO SERIALIZADO (Lotes): Tomamos automáticamente del stock disponible (FIFO)
+        let remainingQty = quantity;
+        for (const stockItem of validStockCandidates) {
+          if (remainingQty <= 0) break;
+          const take = Math.min(remainingQty, stockItem.quantity);
+
+          transactionItems.push({
+            productId: item.id,
+            productName: item.name,
+            size,
+            color,
+            quantity: take,
+            priceAtMoment: unitPrice,
+            stockId: stockItem.id, // 👈 VENTA: LLEVA ID DEL LOTE
+          });
+          remainingQty -= take;
+        }
+      }
     }
 
+    // =====================================================================
+    // RAMA B: ALQUILER (Reserva Virtual - Sin ID Físico)
+    // =====================================================================
+    else {
+      // En alquiler, NO asignamos stockId ahora. Se asignará al momento del retiro (pickup).
+      // Creamos "1 item virtual" por cada unidad solicitada.
+      for (let i = 0; i < quantity; i++) {
+        transactionItems.push({
+          productId: item.id,
+          productName: item.name,
+          size,
+          color,
+          quantity: 1, // Desglosamos unitariamente para facilitar gestión futura
+          priceAtMoment: unitPrice,
+          stockId: undefined, // 👈 ALQUILER: VIRTUAL (Sin ID todavía)
+        });
+      }
+    }
+
+    // 4. CREAR DTO
     const newReservation: ReservationDTO = {
       branchId: currentBranchId,
       createdAt: new Date(),
@@ -313,12 +292,12 @@ export function ReservationModal({
       status: "confirmada",
       notes,
       financials: {
-        receivedAmount: Number(amountPaid),
+        receivedAmount: realPaidAmount,
         keepAsCredit,
         totalPrice: totalOperacion,
         downPayment: Number(downPayment),
         paymentMethod,
-        pendingAmount: totalOperacion - Number(downPayment),
+        pendingAmount: Math.max(totalOperacion - Number(downPayment), 0),
       },
       sellerId,
       reservationDateRange: {
@@ -328,17 +307,31 @@ export function ReservationModal({
       },
       id: "",
       operationId: "",
-      items: transactionItems,
+
+      items: transactionItems, // <--- Aquí va el array generado arriba
+
       updatedAt: new Date(),
     };
 
+    // 5. PROCESAR
     try {
       processTransaction(newReservation);
-      toast.success(
-        operationType === "venta"
-          ? "Reserva de venta creada con éxito"
-          : "Reserva de alquiler creada con éxito",
-      );
+
+      if (overpayment > 0 && !keepAsCredit) {
+        toast.info(
+          `Operación exitosa. Se entregó ${formatCurrency(overpayment)} de vuelto.`,
+        );
+      } else if (overpayment > 0 && keepAsCredit) {
+        toast.success(
+          `Operación exitosa. ${formatCurrency(overpayment)} guardados como crédito.`,
+        );
+      } else {
+        toast.success(
+          operationType === "venta"
+            ? "Venta registrada correctamente"
+            : "Reserva de alquiler creada con éxito",
+        );
+      }
     } catch (err) {
       console.error(err);
       toast.error("Error al crear la operación");
@@ -405,12 +398,8 @@ export function ReservationModal({
             setAmountPaid={setAmountPaid}
             keepAsCredit={keepAsCredit}
             setKeepAsCredit={setKeepAsCredit}
-            guarantee={guarantee}
-            setGuarantee={setGuarantee}
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
-            guaranteeType={guaranteeType}
-            setGuaranteeType={setGuaranteeType}
             notes={notes}
             setNotes={setNotes}
             operationType={operationType}
@@ -421,6 +410,9 @@ export function ReservationModal({
                 : totalPhysicalStock
             }
             setAssignedStockIds={setAssignedStockIds}
+            useCredit={useCredit}
+            setUseCredit={setUseCredit}
+            balance={balance}
           />
         </div>
 

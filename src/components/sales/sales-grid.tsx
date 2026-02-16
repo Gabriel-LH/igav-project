@@ -25,7 +25,7 @@ export const SalesGrid = () => {
 
   console.log("Todos los datos que llegan al grid",allData);
 
-  const pending = allData.filter((i) => i.status === "pendiente_entrega");
+  const pending = allData.filter((i) => i.status === "vendido_pendiente_entrega");
   const canceled = allData.filter((i) => i.status === "cancelado");
   const returned = allData.filter((i) => i.status === "devuelto");
   const history = allData.filter((i) => i.status === "vendido");

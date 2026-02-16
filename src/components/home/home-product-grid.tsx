@@ -15,22 +15,17 @@ import {
 
 // Mocks e IDs
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
-import { RESERVATIONS_MOCK } from "@/src/mocks/mock.reservation";
-import { MOCK_RESERVATION_ITEM } from "@/src/mocks/mock.reservationItem";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
-import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { toast } from "sonner";
 
 export function ProductGrid() {
-  const { updateStatus } = useReservationStore();
-  const { addRental } = useRentalStore(); // NUEVO
-  const { updateStockStatus } = useInventoryStore();
+
+  const { products } = useInventoryStore();
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,7 +39,7 @@ export function ProductGrid() {
 
   // --- 1. LÓGICA DE CATÁLOGO (PRODUCTOS DISPONIBLES) ---
   const filteredCatalog = useMemo(() => {
-    return PRODUCTS_MOCK.filter((product) => {
+    return products.filter((product) => {
       // Filtro de Sede: Sumamos stock total del producto en esta sucursal
       const branchStock = stock
         .filter(
@@ -69,7 +64,7 @@ export function ProductGrid() {
 
       return matchesSearch && matchesTab;
     });
-  }, [activeTab, query, currentUser.branchId]);
+  }, [products, stock, query, activeTab, currentUser.branchId]);
 
   const { reservations } = useReservationStore();
 
@@ -118,32 +113,10 @@ export function ProductGrid() {
     );
   }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
 
-  // // Función profesional de entrega
-  // const handleDeliver = (reservation: any) => {
-  //   // 1. En un futuro aquí abrirás un Modal para elegir el stockId real.
-  //   // Por ahora, simulamos que elegimos el primer stock disponible del producto.
-  //   const mockSelectedItems = MOCK_RESERVATION_ITEM.filter(
-  //     (item) => item.reservationId === reservation.id,
-  //   ).map((item) => ({
-  //     ...item,
-  //     stockId: `STK-GENERIC-${item.productId}`, // Esto lo cambiaremos por el Selector
-  //   }));
-
-  //   // A) Creamos el Alquiler Activo
-  //   addRental(reservation, mockSelectedItems);
-
-  //   // B) Marcamos los items de stock como "alquilado"
-  //   mockSelectedItems.forEach((item) => {
-  //     updateStockStatus(item.stockId, "alquilado");
-  //   });
-
-  //   // C) Cerramos la reserva (cambia de 'confirmada' a 'completada')
-  //   // Al cambiar a 'completada', desaparecerá de esta vista automáticamente
-  //   updateStatus(reservation.id, "convertida");
-  // };
-
   // Decidir qué lista mostrar
   const displayList = showReserved ? filteredReservations : filteredCatalog;
+
+  console.log("reservations", reservations);
 
   return (
     <div className="w-full">
@@ -167,10 +140,7 @@ export function ProductGrid() {
       >
         {viewMode === "reserved" &&
           filteredReservations.map((res) => (
-            <ReservationProductCard
-              key={res.id}
-              reservation={res}
-            />
+            <ReservationProductCard key={res.id} reservation={res} />
           ))}
 
         {viewMode === "catalog" &&

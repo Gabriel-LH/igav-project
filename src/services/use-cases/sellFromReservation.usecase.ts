@@ -24,7 +24,7 @@ export function createSaleFromReservationUseCase({
   sellerId,
   financials,
   notes,
-  status = "pendiente_entrega",
+  status = "vendido_pendiente_entrega",
 }: SellFromReservationInput) {
   const saleDTO: SaleFromReservationDTO = {
     type: "venta",
@@ -33,7 +33,8 @@ export function createSaleFromReservationUseCase({
     customerId: reservation.customerId,
     reservationItems: reservationItems.map((item) => ({
       reservationItemId: item.id,
-      stockId: selectedStocks[item.id],
+      // El viewer usa formato "id-0" para el primer item (y unicos)
+      stockId: selectedStocks[`${item.id}-0`] || selectedStocks[item.id],
     })),
     sellerId,
     branchId: reservation.branchId,

@@ -4,8 +4,8 @@ import { Client } from "../types/clients/type.client";
 import { Product } from "../types/product/type.product";
 import { Sale } from "../types/sales/type.sale";
 import { SaleItem } from "../types/sales/type.saleItem";
+import { generateProductsSummary } from "../utils/generateProductsSummary";
 
-// Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface SaleTableRow {
   id: string;
   amountRefunded: number;
@@ -17,7 +17,14 @@ export interface SaleTableRow {
   cancelDate: string;
   returnDate: string;
   nameCustomer: string;
-  product: string;
+
+  // Nuevos campos de agrupación
+  summary: string;
+  totalItems: number;
+  itemsDetail: SaleItem[];
+
+  // Campos legacy
+  product: string; // Mapeado a summary
   count: number;
   income: number;
   status: string;
@@ -30,55 +37,65 @@ export const mapSaleToTable = (
   salesItems: SaleItem[],
   products: Product[],
 ): SaleTableRow[] => {
-  return sales.map((item) => {
-
-    const parent = sales.find((s) => s.id === item.id);
-
-    const saleItem = salesItems.find((s) => s.saleId === item.id);
-
-    const product = products.find((p) => p.id === saleItem?.productId);
-
-    const branch = BRANCH_MOCKS.find((b) => b.id === parent?.branchId);
-
-    const customer = customers.find((c) => c.id === parent?.customerId);
-
+  return sales.map((sale) => {
+    const branch = BRANCH_MOCKS.find((b) => b.id === sale.branchId);
+    const customer = customers.find((c) => c.id === sale.customerId);
     const seller = USER_MOCK[0];
 
-    console.log("Data que llega a sales table adapter",item);
+    // 1. Buscamos TODOS los items de esta venta
+    const currentItems = salesItems.filter((s) => s.saleId === sale.id);
 
-    
+    // 2. Enriquecemos con nombres
+    const itemsWithNames = currentItems.map((item) => {
+      const prod = products.find((p) => p.id === item.productId);
+      return { ...item, productName: prod?.name };
+    });
+
+    // 3. Generamos resumen y conteo
+    const summary = generateProductsSummary(itemsWithNames);
+    const totalItems = currentItems.reduce(
+      (acc, item) => acc + item.quantity,
+      0,
+    );
+
     return {
-      // El ID técnico se usa para la "key" de React, pero no se muestra
-      id: item.id,
+      id: sale.id,
       branchName: branch?.name || "Principal",
       sellerName: seller?.name || "",
 
-      createdAt: parent?.createdAt
-        ? new Date(parent.createdAt).toLocaleDateString()
+      createdAt: sale.createdAt
+        ? new Date(sale.createdAt).toLocaleDateString()
         : "---",
-      saleDate: parent?.saleDate
-        ? new Date(parent.saleDate).toLocaleDateString()
+      saleDate: sale.saleDate
+        ? new Date(sale.saleDate).toLocaleDateString()
         : "---",
-      outDate: parent?.outDate
-        ? new Date(parent.outDate).toLocaleDateString()
+      outDate: sale.outDate
+        ? new Date(sale.outDate).toLocaleDateString()
         : "---",
-      realOutDate: parent?.realOutDate
-        ? new Date(parent.realOutDate).toLocaleDateString()
+      realOutDate: sale.realOutDate
+        ? new Date(sale.realOutDate).toLocaleDateString()
         : "---",
-      cancelDate: parent?.canceledAt
-        ? new Date(parent.canceledAt).toLocaleDateString()
+      cancelDate: sale.canceledAt
+        ? new Date(sale.canceledAt).toLocaleDateString()
         : "---",
-      returnDate: parent?.returnedAt
-        ? new Date(parent.returnedAt).toLocaleDateString()
+      returnDate: sale.returnedAt
+        ? new Date(sale.returnedAt).toLocaleDateString()
         : "---",
-      amountRefunded: parent?.amountRefunded || 0,
+      amountRefunded: sale.amountRefunded || 0,
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
-      restockingFee: saleItem?.restockingFee || 0,
-      product: product?.name || `ID: ${saleItem?.productId}`,
-      count: saleItem?.quantity || 0,
-      income: saleItem?.priceAtMoment || 0,
-      status: item.status,
-      damage: saleItem?.returnCondition || "---",
+
+      // Nuevos campos
+      summary,
+      totalItems,
+      itemsDetail: currentItems,
+
+      // Legacy
+      product: summary, // <--- COMPATIBILIDAD
+      restockingFee: 0, // No hay un único fee
+      count: totalItems,
+      income: sale.totalAmount, // Usamos totalAmount directo de la venta
+      status: sale.status,
+      damage: "---",
     };
   });
 };

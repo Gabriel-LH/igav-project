@@ -94,13 +94,11 @@ export const columnsSalesPending: ColumnDef<
   {
     accessorKey: "status",
     header: "Estado",
-    cell: ({ getValue }) => {
-      const type = getValue() as string;
+    cell: () => {
       return (
         <div className="w-32">
           <Badge variant="outline" className="text-muted-foreground px-1.5">
-            {type === "anulado" && <BadgeX />}
-            {type.replace("_", " ").toUpperCase()}
+            POR ENTREGAR
           </Badge>
         </div>
       );
@@ -120,33 +118,33 @@ function ActionCell({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDeliverModal, setShowDeliverModal] = useState(false);
 
-  const user = USER_MOCK[0]
+  const user = USER_MOCK[0];
 
   const item = row.original;
 
   const { sales } = useSaleStore(); // Asumiendo que tienes un store de ventas
   const fullSaleData = sales.find((s) => s.id === item.id);
 
-   const handleCancelConfirm = async (id: string, reason: string) => {
-      try {
-        await cancelSaleUseCase({
-          saleId: id,
-          reason,
-          userId: user.id,
-        });
-  
-        toast.success("Venta anulada", {
-          description: "La venta fue anulada correctamente",
-        });
-  
-        setShowCancelModal(false);
-      } catch (error) {
-        toast.error("No se pudo anular", {
-          description: (error as Error).message,
-        });
-      }
-    };
-  
+  const handleCancelConfirm = async (id: string, reason: string) => {
+    try {
+      await cancelSaleUseCase({
+        saleId: id,
+        reason,
+        userId: user.id,
+      });
+
+      toast.success("Venta anulada", {
+        description: "La venta fue anulada correctamente",
+      });
+
+      setShowCancelModal(false);
+    } catch (error) {
+      toast.error("No se pudo anular", {
+        description: (error as Error).message,
+      });
+    }
+  };
+
   if (!fullSaleData) {
     return null;
   }
@@ -163,7 +161,7 @@ function ActionCell({
         description: (error as Error).message,
       });
     }
-  }
+  };
 
   return (
     <>
@@ -184,7 +182,7 @@ function ActionCell({
               setShowDeliverModal(true);
             }}
           >
-            <Handbag className="animate-pulse"/>
+            <Handbag className="animate-pulse" />
             Entregar Venta
           </DropdownMenuItem>
 
@@ -195,7 +193,7 @@ function ActionCell({
             variant="destructive"
             onClick={() => setShowCancelModal(true)}
           >
-            <BadgeX className="animate-pulse"/>
+            <BadgeX className="animate-pulse" />
             Anular Venta
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -211,7 +209,7 @@ function ActionCell({
       <DeliverSaleModal
         open={showDeliverModal}
         onOpenChange={setShowDeliverModal}
-        sale={fullSaleData }
+        sale={fullSaleData}
         onConfirm={handleDeliverSale}
       />
     </>

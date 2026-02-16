@@ -216,22 +216,43 @@ export function processTransaction(
 
     useSaleStore.getState().addSale(specificData, saleItems);
 
-    // Mover stock para TODOS los items
+    // 🔥 MODIFICACIÓN DE ESTADO DE STOCK
     saleItems.forEach((item) => {
-      const finalStockStatus =
-        dto.status === "vendido" ? "vendido" : "vendido_pendiente_entrega";
+      let finalStockStatus: StockStatus = "vendido";
 
-      useInventoryStore
-        .getState()
-        .deliverAndTransfer(
-          item.stockId,
-          finalStockStatus as StockStatus,
-          dto.branchId,
-          dto.sellerId,
-        );
+      // 1. Mapeo de estados: Venta -> Stock
+      switch (dto.status) {
+        case "reservado":
+          finalStockStatus = "reservado"; // 👈 Aquí aplicamos el estado reservado
+          break;
+        case "pendiente_entrega":
+          finalStockStatus = "vendido_pendiente_entrega";
+          break;
+        case "vendido":
+        default:
+          finalStockStatus = "vendido";
+          break;
+      }
+
+      // 2. Ejecutar actualización en el Store
+      if (finalStockStatus === "reservado") {
+        // Si solo es reserva, solo actualizamos el estado para bloquear disponibilidad
+        useInventoryStore
+          .getState()
+          .updateStockStatus(item.stockId, "reservado");
+      } else {
+        // Si es venta firme o entrega, usamos la lógica de transferencia/entrega
+        useInventoryStore
+          .getState()
+          .deliverAndTransfer(
+            item.stockId,
+            finalStockStatus as StockStatus,
+            dto.branchId,
+            dto.sellerId,
+          );
+      }
     });
   }
-
   // ---------------- RESERVA -------------------
   if (dto.type === "reserva") {
     const reservation = reservationSchema.parse({
@@ -262,7 +283,11 @@ export function processTransaction(
         quantity: item.quantity ?? 1,
         size: item.size,
         color: item.color,
-        priceAtMoment: dto.financials.totalPrice, // O precio unitario si lo tienes
+        // CORRECCIÓN: Usar precio unitario si existe en el item, o calcularlo proporcionalmente
+        priceAtMoment:
+          item.priceAtMoment ||
+          dto.financials.totalPrice /
+            dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0),
         itemStatus: "confirmada",
         notes: dto.notes ?? "",
       })),
@@ -272,8 +297,16 @@ export function processTransaction(
       .getState()
       .addReservation(reservation, reservationItems);
 
+    // 🔴 BUG FIX: Actualizar estado del stock a "reservado"
+    reservationItems.forEach((item) => {
+      if (item.stockId) {
+        useInventoryStore
+          .getState()
+          .updateStockStatus(item.stockId, "reservado");
+      }
+    });
+
     specificData = reservation;
-    
   }
 
   // ---------------- ALQUILER -------------------

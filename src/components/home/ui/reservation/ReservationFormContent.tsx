@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { StockAssignmentWidget } from "../widget/StockAssigmentWidget";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
+import { Switch } from "@/components/ui/switch";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 export function ReservationFormContent({
   item,
@@ -46,25 +48,24 @@ export function ReservationFormContent({
   setAmountPaid,
   keepAsCredit,
   setKeepAsCredit,
-  guarantee,
-  setGuarantee,
   paymentMethod,
   setPaymentMethod,
-  guaranteeType,
-  setGuaranteeType,
   operationType,
   setOperationType,
   notes,
   setNotes,
   maxStock,
   setAssignedStockIds,
+  useCredit,
+  setUseCredit,
+  balance,
 }: any) {
   const businessRules = BUSINESS_RULES_MOCK;
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
   const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
-  const returnDateRef = React.useRef<HTMLButtonElement>(null);
+  // const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -262,6 +263,29 @@ export function ReservationFormContent({
         />
       </div>
 
+      {balance > 0 && (
+        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-xl mb-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-blue-700 uppercase">
+              Saldo a favor disponible
+            </span>
+            <span className="text-sm font-bold text-blue-900">
+              {formatCurrency(balance)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="use-credit" className="text-xs font-bold">
+              Usar crédito
+            </Label>
+            <Switch
+              id="use-credit"
+              checked={useCredit}
+              onCheckedChange={setUseCredit}
+            />
+          </div>
+        </div>
+      )}
+
       {/* 4. RESUMEN FINANCIERO */}
       {dateRange?.from && dateRange?.to && (
         <PriceSummary
@@ -277,12 +301,8 @@ export function ReservationFormContent({
           setAmountPaid={setAmountPaid}
           keepAsCredit={keepAsCredit}
           setKeepAsCredit={setKeepAsCredit}
-          guarantee={guarantee}
-          setGuarantee={setGuarantee}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
-          guaranteeType={guaranteeType}
-          setGuaranteeType={setGuaranteeType}
         />
       )}
 
@@ -290,7 +310,7 @@ export function ReservationFormContent({
       {operationType === "venta" ? (
         // CASO VENTA: ASIGNACIÓN INMEDIATA OBLIGATORIA (HARD ALLOCATION)
         // El cliente está apartando ESTE producto físico para que nadie más lo compre.
-        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="p-3 border rounded-lg">
           <p className="text-[10px] font-bold text-orange-800 uppercase mb-2">
             Selecciona la prenda a apartar (Venta):
           </p>
@@ -304,22 +324,22 @@ export function ReservationFormContent({
             dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
             currentBranchId={currentBranchId}
             onAssignmentChange={setAssignedStockIds} // <---
-            isSerial={item.is_serial}
+            isSerial={false}
           />
         </div>
       ) : (
         // CASO ALQUILER: SOLO INFORMACIÓN (SOFT ALLOCATION)
         // No seleccionamos stock físico. Solo mostramos disponibilidad.
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+        <div className="p-3 border rounded-lg flex items-center gap-3">
           <HugeiconsIcon
             icon={CalendarCheckIn01Icon}
             className="text-blue-600 w-5 h-5"
           />
           <div>
-            <p className="text-xs font-bold text-blue-800">Reserva por Cupo</p>
-            <p className="text-[10px] text-blue-600">
-              Se reservará {quantity} unidad del stock general. La prenda física se
-              asignará el día de la entrega.
+            <p className="text-xs font-bold">Reserva por Cupo</p>
+            <p className="text-[10px] text-muted-foreground">
+              Se reservará {quantity} unidad del stock general. La prenda física
+              se asignará el día de la entrega.
             </p>
           </div>
         </div>

@@ -25,7 +25,8 @@ export async function rentalFromReservationUseCase({
 }: RentalFromReservationInput) {
   // Validación
   reservationItems.forEach((item) => {
-    if (!selectedStocks[item.id]) {
+    // El viewer usa formato "id-0" para el primer item (y unicos)
+    if (!selectedStocks[`${item.id}-0`] && !selectedStocks[item.id]) {
       throw new Error("Item sin stock asignado");
     }
   });
@@ -42,7 +43,7 @@ export async function rentalFromReservationUseCase({
     reservationId: reservation.id,
     reservationItems: reservationItems.map((item) => ({
       reservationItemId: item.id,
-      stockId: selectedStocks[item.id],
+      stockId: selectedStocks[`${item.id}-0`] || selectedStocks[item.id],
     })),
 
     financials,
@@ -73,7 +74,7 @@ export async function rentalFromReservationUseCase({
     useInventoryStore
       .getState()
       .deliverAndTransfer(
-        selectedStocks[item.id],
+        selectedStocks[`${item.id}-0`] || selectedStocks[item.id],
         "alquilado",
         reservation.branchId,
         sellerId,
