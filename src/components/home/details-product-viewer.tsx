@@ -44,19 +44,22 @@ export function DetailsProductViewer({
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { stock } = useInventoryStore();
+  const { inventoryItems, stockLots } = useInventoryStore();
 
-  // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO
-  const allProductStock = useMemo(
-    () =>
-      stock.filter(
-        (s) =>
-          s.productId.toString() === item.id.toString() &&
-          s.status === "disponible",
-      ),
-
-    [item.id, stock],
-  );
+  // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO (Global)
+  const allProductStock = useMemo(() => {
+    const productId = String(item.id);
+    const serials = inventoryItems.filter(
+      (s) => String(s.productId) === productId && s.status === "disponible",
+    );
+    const lots = stockLots.filter(
+      (s) =>
+        String(s.productId) === productId &&
+        s.status === "disponible" &&
+        s.quantity > 0,
+    );
+    return [...serials, ...lots];
+  }, [item.id, inventoryItems, stockLots]);
 
   // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
@@ -69,7 +72,6 @@ export function DetailsProductViewer({
   // 3. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
   const colorsForSelectedSize = useMemo(() => {
     const stockInSize = allProductStock.filter((s) => s.size === selectedSize);
-    // Agrupamos para tener colores únicos con sus hex
     return Array.from(
       new Map(
         stockInSize.map((s) => [s.color, { name: s.color, hex: s.colorHex }]),
@@ -81,43 +83,62 @@ export function DetailsProductViewer({
     colorsForSelectedSize[0] || null,
   );
 
+  // Sync selected color if size changes
+  React.useEffect(() => {
+    if (
+      colorsForSelectedSize.length > 0 &&
+      (!selectedColor ||
+        !colorsForSelectedSize.find((c) => c.name === selectedColor.name))
+    ) {
+      setSelectedColor(colorsForSelectedSize[0]);
+    }
+  }, [colorsForSelectedSize, selectedColor]);
+
   // 5. CÁLCULO DE STOCK (Local vs Global)
-  // Filtramos el stock específico de la combinación Talla + Color
-  const variantLocations = allProductStock.filter(
-    (s) => s.size === selectedSize && s.color === selectedColor?.name,
+  const variantLocations = useMemo(
+    () =>
+      allProductStock.filter(
+        (s) => s.size === selectedSize && s.color === selectedColor?.name,
+      ),
+    [allProductStock, selectedSize, selectedColor],
   );
 
-  const localStock = variantLocations
-    .filter((l) => l.branchId === currentBranchId)
-    .reduce((acc, curr) => acc + curr.quantity, 0);
-
-  const totalStockCombo = variantLocations.reduce(
-    (acc, curr) => acc + curr.quantity,
-    0,
+  const localStock = useMemo(
+    () =>
+      variantLocations
+        .filter((l) => l.branchId === currentBranchId)
+        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+    [variantLocations, currentBranchId],
   );
 
-const stockSellItems = variantLocations
-    .filter((l) => l.branchId === currentBranchId)
-    .filter((s) => s.isForSale === true);
+  const totalStockCombo = useMemo(
+    () =>
+      variantLocations.reduce(
+        (acc, curr: any) => acc + (curr.quantity ?? 1),
+        0,
+      ),
+    [variantLocations],
+  );
 
-  // 2. Calculamos la CANTIDAD REAL sumando la propiedad 'quantity'
-  const stockSellQty = stockSellItems.reduce((acc, curr) => acc + curr.quantity, 0);
+  const stockSellQty = useMemo(
+    () =>
+      variantLocations
+        .filter((l) => l.branchId === currentBranchId && l.isForSale)
+        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+    [variantLocations, currentBranchId],
+  );
 
-  // Hacemos lo mismo para Alquiler
-  const stockRentItems = variantLocations
-      .filter((l) => l.branchId === currentBranchId)
-      .filter((s) => s.isForRent === true);
+  const stockRentQty = useMemo(
+    () =>
+      variantLocations
+        .filter((l) => l.branchId === currentBranchId && l.isForRent)
+        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+    [variantLocations, currentBranchId],
+  );
 
-  const stockRentQty = stockRentItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const canReserveCurrentSelection = useMemo(() => {
     if (!selectedSize || !selectedColor) return false;
-
-    return variantLocations.some(
-      (s) =>
-        s.status === "disponible" &&
-        // Si el producto puede ser alquilado O vendido
-        (s.isForRent === true || s.isForSale === true),
-    );
+    return variantLocations.some((s) => s.isForRent || s.isForSale);
   }, [variantLocations, selectedSize, selectedColor]);
 
   const maxTransferTime = useMemo(() => {
@@ -138,10 +159,10 @@ const stockSellItems = variantLocations
 
   const otherBranchStock = totalStockCombo - localStock;
 
-  // Para el Badge del Header (Stock total de todas las tallas/colores)
-  const totalGlobalStock = allProductStock.reduce(
-    (acc, curr) => acc + curr.quantity,
-    0,
+  const totalGlobalStock = useMemo(
+    () =>
+      allProductStock.reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+    [allProductStock],
   );
 
   return (
@@ -166,7 +187,7 @@ const stockSellItems = variantLocations
       >
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
-          <DialogDescription>
+          <DialogDescription className="flex flex-wrap gap-2">
             <Badge
               variant="outline"
               className="font-mono text-blue-600 border-blue-500"
@@ -210,14 +231,11 @@ const stockSellItems = variantLocations
             <div className="flex flex-wrap gap-4">
               {colorsForSelectedSize.map((color) => {
                 const isSelected = selectedColor?.name === color.name;
-
-                // CAMBIO: Buscamos el stock total de este color específico en la talla seleccionada
-                // usando nuestro array plano de stock
                 const totalStockThisColor = allProductStock
                   .filter(
                     (s) => s.size === selectedSize && s.color === color.name,
                   )
-                  .reduce((acc, curr) => acc + curr.quantity, 0);
+                  .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0);
 
                 const hasGlobalStock = totalStockThisColor > 0;
 
@@ -234,8 +252,8 @@ const stockSellItems = variantLocations
                       className={cn(
                         "w-12 h-12 rounded-full border flex items-center justify-center transition-all",
                         isSelected
-                          ? "border-primary scale-110 transition-all shadow-lg"
-                          : "border border-gray-800",
+                          ? "border-primary scale-110 shadow-lg"
+                          : "border-gray-800",
                       )}
                       style={{ backgroundColor: color.hex }}
                     >
@@ -269,18 +287,16 @@ const stockSellItems = variantLocations
           <div className="grid grid-cols-1 gap-4">
             <div className="border rounded-lg bg-card border-gray-800">
               <div className="flex flex-col justify-between items-center">
-                <div className="flex w-full bg-muted justify-between rounded-t-lg border-b pb-1">
-                  <div className="flex w-full justify-between px-2 py-1">
-                    <p className="text-[10px] font-bold uppercase text-emerald-700">
-                      Stock en esta Sede
-                    </p>
-                    <p className="text-[10px] font-bold uppercase text-slate-500">
-                      Otras Sedes
-                    </p>
-                  </div>
+                <div className="flex w-full bg-muted justify-between rounded-t-lg border-b p-2">
+                  <p className="text-[10px] font-bold uppercase text-emerald-700">
+                    Stock en esta Sede
+                  </p>
+                  <p className="text-[10px] font-bold uppercase text-slate-500">
+                    Otras Sedes
+                  </p>
                 </div>
-                <div className="flex w-full justify-between">
-                  <div className="flex w-full justify-between px-2 py-1">
+                <div className="flex w-full justify-between p-3">
+                  <div className="flex flex-col">
                     <span
                       className={cn(
                         "text-2xl font-black",
@@ -289,39 +305,29 @@ const stockSellItems = variantLocations
                     >
                       {localStock}{" "}
                       <span className="text-xs font-medium">unid.</span>
-                      <div className="flex gap-2">
-                        {stockSellQty > 0 && (
-                          <div>
-                            <span className="text-xs text-emerald-500">
-                              {" "}
-                              Venta:{" "}
-                            </span>{" "}
-                            <span className="text-xs text-white">
-                              {" "}
-                              {stockSellQty}
-                            </span>
-                          </div>
-                        )}
-
-                        {stockRentQty > 0 && (
-                          <div>
-                            <span className="text-xs text-emerald-500">
-                              {" "}
-                              Alquiler:{" "}
-                            </span>{" "}
-                            <span className="text-xs text-white">
-                              {" "}
-                              {stockRentQty}
-                            </span>
-                          </div>
-                        )}
-                      </div>
                     </span>
-
-                    <span className="text-xl font-bold text-violet-700">
-                      +{otherBranchStock}
-                    </span>
+                    <div className="flex gap-2">
+                      {stockSellQty > 0 && (
+                        <span className="text-[10px]">
+                          <span className="text-emerald-500 font-bold">
+                            Venta:
+                          </span>{" "}
+                          {stockSellQty}
+                        </span>
+                      )}
+                      {stockRentQty > 0 && (
+                        <span className="text-[10px]">
+                          <span className="text-emerald-500 font-bold">
+                            Alq:
+                          </span>{" "}
+                          {stockRentQty}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <span className="text-xl font-bold text-violet-700">
+                    +{otherBranchStock}
+                  </span>
                 </div>
               </div>
             </div>
@@ -332,21 +338,17 @@ const stockSellItems = variantLocations
                 Distribución por Sucursal
               </div>
 
-              {/* 1. Agrupamos el stock de la variante por sucursal */}
               {Array.from(
-                variantLocations.reduce((acc, curr) => {
+                variantLocations.reduce((acc, curr: any) => {
                   const branchId = curr.branchId;
                   const currentQty = acc.get(branchId) || 0;
-                  acc.set(branchId, currentQty + curr.quantity);
+                  acc.set(branchId, currentQty + (curr.quantity ?? 1));
                   return acc;
                 }, new Map<string, number>()),
               ).map(([branchId, quantity]) => {
-                // 2. Buscamos los datos de la sucursal
                 const branch = BRANCH_MOCKS.find((b) => b.id === branchId);
                 const branchName = branch?.name || "Sucursal";
                 const isLocal = branchId === currentBranchId;
-
-                // 3. Calculamos el tiempo de traslado (usando las reglas que definimos)
                 const transferTime = !isLocal
                   ? getEstimatedTransferTime(
                       branchId,
@@ -357,7 +359,7 @@ const stockSellItems = variantLocations
 
                 return (
                   <div
-                    key={branchId} // Ahora el ID es único en este mapa
+                    key={branchId}
                     className={cn("flex flex-col border-t p-3 text-sm")}
                   >
                     <div className="flex justify-between items-center">
@@ -370,19 +372,17 @@ const stockSellItems = variantLocations
                         {isLocal ? (
                           <HugeiconsIcon
                             icon={Tick01Icon}
-                            className="w-3 h-3"
+                            className="w-3 h-3 text-emerald-500"
                           />
                         ) : (
                           <div className="w-3" />
                         )}
                         {branchName} {isLocal && "(Aquí)"}
                       </span>
-
                       <span className="font-mono font-bold">
                         {quantity} unid.
                       </span>
                     </div>
-                    {/* Aviso de tiempo si no es local */}
                     {!isLocal && quantity > 0 && (
                       <p className="text-[10px] text-blue-500 font-medium mt-1 flex items-center gap-1">
                         <HugeiconsIcon
@@ -398,80 +398,62 @@ const stockSellItems = variantLocations
               })}
             </div>
           </div>
+
           {/* PRECIOS Y CONDICIÓN */}
-
-          <div className="rounded-lg p-2 border bg-card">
-            <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase text-muted-foreground">
-                    Precio alquiler
+          <div className="rounded-lg p-3 border bg-card space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">
+                  Precio alquiler
+                </p>
+                <div className="flex items-center gap-1">
+                  <p className="text-lg font-bold">
+                    {formatCurrency(item.price_rent || 0)}
                   </p>
-                  <div className="flex items-center gap-1">
-                    <p className="text-md font-bold">
-                      {formatCurrency(item.price_rent || 0)}
-                    </p>
-                    <p className="text-xs font-bold">por {item.rent_unit}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase text-muted-foreground">
-                    Precio venta
-                  </p>
-
-                  <p className="text-md font-bold">
-                    {formatCurrency(item.price_sell || 0)}
-                  </p>
+                  <p className="text-[10px] font-bold">/ {item.rent_unit}</p>
                 </div>
               </div>
-
-              <Separator />
-
-              <div className=" grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase text-muted-foreground">
-                    Condición
-                  </p>
-
-                  <p className="text-sm font-bold text-foreground">
-                    {allProductStock[0]?.condition
-                      ? allProductStock[0].condition
-                      : "Sin stock"}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase text-muted-foreground">
-                    Estado
-                  </p>
-
-                  <p className="text-sm capitalize font-bold text-foreground">
-                    {allProductStock[0]?.status
-                      ? allProductStock[0].status
-                      : "Sin stock"}
-                  </p>
-                </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">
+                  Precio venta
+                </p>
+                <p className="text-lg font-bold">
+                  {formatCurrency(item.price_sell || 0)}
+                </p>
+              </div>
+            </div>
+            <Separator />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">
+                  Condición
+                </p>
+                <p className="text-sm font-bold capitalize">
+                  {variantLocations[0]?.condition || "Excelente"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">
+                  Estado
+                </p>
+                <p className="text-sm font-bold capitalize">
+                  {variantLocations[0]?.status || "Disponible"}
+                </p>
               </div>
             </div>
           </div>
 
-          <Separator />
-
-          {/* DESCRIPCIÓN */}
-
           <div className="space-y-2">
-            <h4 className="font-bold text-xs uppercase text-muted-foreground">
+            <h4 className="font-black text-[10px] uppercase text-muted-foreground">
               Descripción del artículo:
             </h4>
-
             <p className="text-muted-foreground leading-relaxed italic border-l-2 pl-3">
               &quot;{item.description}&quot;
             </p>
           </div>
         </div>
 
-        <DrawerFooter className="border-t bg-muted/30 ">
+        <DrawerFooter className="border-t bg-muted/30">
           <div className="flex flex-col gap-2 w-full">
             <div className="grid grid-cols-2 gap-2 w-full">
               <DirectTransactionModal
@@ -484,18 +466,15 @@ const stockSellItems = variantLocations
               >
                 <Button
                   disabled={stockRentQty === 0}
-                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  className="bg-blue-600 text-white hover:bg-blue-700 font-bold"
                 >
                   <HugeiconsIcon
                     icon={Calendar03Icon}
-                    strokeWidth={2}
                     className="w-4 h-4 mr-2"
                   />
                   Alquilar
                 </Button>
               </DirectTransactionModal>
-
-              {/* VENDER: Modal Directo */}
 
               <DirectTransactionModal
                 item={item}
@@ -507,33 +486,33 @@ const stockSellItems = variantLocations
               >
                 <Button
                   disabled={stockSellQty === 0}
-                  className="bg-orange-600 text-white hover:bg-orange-700"
+                  className="bg-orange-600 text-white hover:bg-orange-700 font-bold"
                 >
                   <HugeiconsIcon
                     icon={SaleTag02Icon}
-                    strokeWidth={2}
                     className="w-4 h-4 mr-2"
                   />
                   Vender
                 </Button>
               </DirectTransactionModal>
 
-              {/* RESERVAR: Habilitado si hay stock en CUALQUIER sede */}
               <ReservationModal
                 item={item}
                 size={selectedSize || ""}
                 color={selectedColor?.name || ""}
                 currentBranchId={currentBranchId}
-                originBranchId={variantLocations[0]?.branchId} // La sede que tiene el vestido
+                originBranchId={
+                  variantLocations.find((v) => v.branchId !== currentBranchId)
+                    ?.branchId || currentBranchId
+                }
                 onSuccess={() => setDrawerOpen(false)}
               >
                 <Button
                   disabled={!canReserveCurrentSelection}
-                  className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
                 >
                   <HugeiconsIcon
                     icon={CalendarLock01Icon}
-                    strokeWidth={2}
                     className="w-4 h-4 mr-2"
                   />
                   {localStock > 0

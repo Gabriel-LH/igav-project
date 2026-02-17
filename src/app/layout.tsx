@@ -15,9 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning className="h-full">
         <head />
-        <body>
+        <body className="h-full overflow-hidden">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

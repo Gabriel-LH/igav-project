@@ -37,7 +37,7 @@ import { TimePicker } from "./TimePicker";
 import { setHours, setMinutes } from "date-fns";
 import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
-import { StockAssignmentWidget } from "../widget/StockAssigmentWidget";
+import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 
 export function DirectTransactionModal({
   item,
@@ -108,38 +108,45 @@ export function DirectTransactionModal({
   // --------------------
   // Stock exacto
   // --------------------
-  const allStock = useInventoryStore((state) => state.stock);
+  const { inventoryItems, stockLots } = useInventoryStore();
 
-  console.log("Cantidad a llevar", quantity);
-
-  // 2️⃣ Paso 2: Filtramos localmente usando useMemo (Solo se recalcula si cambia el stock o los filtros)
+  // 2️⃣ Paso 2: Filtramos localmente usando useMemo
   const validStockCandidates = useMemo(() => {
-    return allStock.filter((s) => {
-      // A. Filtros base de coincidencia física
-      const isBaseMatch =
-        String(s.productId) === String(item.id) &&
-        s.size === size &&
-        s.color === color &&
-        s.status === "disponible";
+    const productId = String(item.id);
 
-      if (!isBaseMatch) return false;
+    if (item.is_serial) {
+      return inventoryItems.filter(
+        (s) =>
+          String(s.productId) === productId &&
+          s.size === size &&
+          s.color === color &&
+          s.status === "disponible" &&
+          (type === "venta" ? s.isForSale : s.isForRent),
+      );
+    } else {
+      return stockLots.filter(
+        (s) =>
+          String(s.productId) === productId &&
+          s.size === size &&
+          s.color === color &&
+          s.status === "disponible" &&
+          (type === "venta" ? s.isForSale : s.isForRent),
+      );
+    }
+  }, [inventoryItems, stockLots, item.id, item.is_serial, size, color, type]);
 
-      // B. Filtro por Propósito (Regla de Negocio)
-      if (type === "venta") {
-        // Si el campo no existe (undefined), asumimos false para seguridad
-        return s.isForSale === true;
-      } else {
-        return s.isForRent === true;
-      }
-    });
-  }, [allStock, item.id, size, color, type]); // Dependencias: si algo de esto cambia, re-filtramos.
+  // 3. Seleccionamos el mejor candidato
+  const selectedStockId = item.is_serial
+    ? (validStockCandidates[0] as any)?.serialCode
+    : (validStockCandidates[0] as any)?.variantCode;
 
-  // 3. Seleccionamos el mejor candidato (el primero de la lista para transacciones directas)
-  const selectedStockId = validStockCandidates[0]?.id;
-
-  const stockCount = validStockCandidates.reduce(
-    (acc, curr) => acc + curr.quantity,
-    0,
+  const stockCount = useMemo(
+    () =>
+      validStockCandidates.reduce(
+        (acc, curr: any) => acc + (curr.quantity ?? 1),
+        0,
+      ),
+    [validStockCandidates],
   );
 
   const hasStock = stockCount >= quantity;
@@ -184,16 +191,14 @@ export function DirectTransactionModal({
 
     if (!check.available) {
       toast.error("No se puede realizar la operación", {
-        description: check.reason, // "Solo tienes 3 unidades y hay 3 reservas..."
+        description: check.reason,
       });
       return false;
     }
 
     return true;
   };
-  // --------------------
-  // Confirmar operación
-  // --------------------
+
   const handleConfirm = () => {
     if (!validateTransaction()) return;
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
@@ -202,60 +207,45 @@ export function DirectTransactionModal({
         `Solo hay ${stockCount} unidades disponibles para ${type}.`,
       );
 
-    // ---------------------------------------------------------
-    // LÓGICA DE ASIGNACIÓN DE ITEMS (EL CORAZÓN DEL CAMBIO)
-    // ---------------------------------------------------------
     let transactionItems: any[] = [];
 
     if (item.is_serial) {
-      // A. CASO SERIALIZADO (Manual)
-      // Aquí SÍ exigimos que haya seleccionado en el Widget
       if (assignedStockIds.length !== quantity) {
         return toast.error(
           `Debes asignar las ${quantity} prendas específicas en la lista.`,
         );
       }
 
-      // Mapeamos los IDs seleccionados manualmente
-      transactionItems = assignedStockIds.map((stockId) => ({
-        productId: item.id,
-        productName: item.name,
-        stockId: stockId,
-        quantity: 1, // Serializado siempre es 1 a 1
-        size: size,
-        color: color,
-        priceAtMoment: isVenta ? item.price_sell : item.price_rent,
-      }));
+      transactionItems = assignedStockIds.map((code) => {
+        const stockFound = inventoryItems.find((s) => s.serialCode === code);
+        return {
+          productId: item.id,
+          productName: item.name,
+          stockId: code,
+          quantity: 1,
+          size: size,
+          color: color,
+          priceAtMoment: isVenta ? item.price_sell : item.price_rent,
+        };
+      });
     } else {
-      // B. CASO NO SERIALIZADO / BULK (Automático)
-      // El sistema toma el stock disponible automáticamente (FIFO implícito por el orden del array)
-
       let remainingQty = quantity;
-
-      // Recorremos los candidatos disponibles para llenar la cantidad
-      for (const stock of validStockCandidates) {
+      for (const lot of validStockCandidates as any[]) {
         if (remainingQty <= 0) break;
-
-        // Cuánto podemos tomar de este lote (stockId)
-        const take = Math.min(remainingQty, stock.quantity);
-
+        const take = Math.min(remainingQty, lot.quantity);
         transactionItems.push({
           productId: item.id,
           productName: item.name,
-          stockId: stock.id,
-          quantity: take, // Aquí puede ser > 1 si es bulk
+          stockId: lot.variantCode,
+          quantity: take,
           size: size,
           color: color,
           priceAtMoment: isVenta ? item.price_sell : item.price_rent,
         });
-
         remainingQty -= take;
       }
     }
 
-    // ---------------------------------------------------------
-    // CONSTRUCCIÓN DEL DTO (Común para ambos)
-    // ---------------------------------------------------------
     const baseData = {
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
@@ -300,18 +290,12 @@ export function DirectTransactionModal({
     }
 
     if (type === "venta") {
-      if (!selectedCustomer) return toast.error("Seleccione un cliente");
-
-      if (!hasStock || !selectedStockId)
-        return toast.error("No hay stock disponible físicamente.");
-
       const saleData: SaleDTO = {
         type: "venta",
         customerId: selectedCustomer.id,
         customerName: selectedCustomer.name,
         sellerId,
         branchId: currentBranchId,
-
         items: transactionItems,
         financials: {
           totalAmount: totalOperacion,
@@ -321,7 +305,6 @@ export function DirectTransactionModal({
           totalPrice: totalOperacion,
           downPayment: 0,
         },
-
         notes,
         status: !checklist.deliverAfter
           ? "vendido"
@@ -333,14 +316,12 @@ export function DirectTransactionModal({
       };
 
       processTransaction(saleData);
-
       if (!checklist.deliverAfter) {
         toast.success("Venta realizada correctamente");
       } else {
         toast.success("Registro para entrega posterior exitoso");
       }
       setOpen(false);
-
       onSuccess?.();
     }
   };
@@ -389,7 +370,6 @@ export function DirectTransactionModal({
                 onChange={(e) => {
                   const val = Number(e.target.value);
                   if (val > Number(stockCount)) {
-                    // Bloqueo manual por si el navegador falla
                     setQuantity(Number(stockCount));
                     toast.error(`Máximo disponible: ${stockCount}`);
                   } else {
@@ -451,7 +431,6 @@ export function DirectTransactionModal({
 
           {/* Bloque de Fechas */}
           <div className="grid grid-cols-2 gap-4">
-            {/* FECHA DE INICIO / RECOJO */}
             <div className="relative">
               <DateTimeContainer
                 label={type === "venta" ? "Fecha de Recojo" : "Inicio Alquiler"}
@@ -462,10 +441,9 @@ export function DirectTransactionModal({
                 placeholderDate="Seleccionar fecha"
                 placeholderTime="Seleccionar hora"
               />
-              {/* Componentes ocultos que hacen el trabajo sucio */}
               <div className="absolute opacity-0 pointer-events-none top-0">
                 <DirectTransactionCalendar
-                  triggerRef={pickupDateRef} // Necesitas pasar la ref al botón interno
+                  triggerRef={pickupDateRef}
                   selectedDate={dateRange.from}
                   onSelect={(date) =>
                     setDateRange({ ...dateRange, from: date })
@@ -478,14 +456,13 @@ export function DirectTransactionModal({
                   type={type}
                 />
                 <TimePicker
-                  triggerRef={pickupTimeRef} // Necesitas pasar la ref al botón interno
+                  triggerRef={pickupTimeRef}
                   value={pickupTime}
                   onChange={setPickupTime}
                 />
               </div>
             </div>
 
-            {/* DEVOLUCIÓN */}
             {type === "alquiler" && (
               <div className="relative">
                 <DateTimeContainer
@@ -536,8 +513,6 @@ export function DirectTransactionModal({
             selected={selectedCustomer}
             onSelect={setSelectedCustomer}
           />
-
-          {/* BLOQUES FINANCIEROS */}
 
           <div className="space-y-4">
             <PriceBreakdownBase

@@ -74,7 +74,7 @@ export const columnsSalesHistory: ColumnDef<
   {
     accessorKey: "product",
     header: "Producto",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
   {
     accessorKey: "count",

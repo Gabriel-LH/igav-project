@@ -20,7 +20,7 @@ import { addDays, format } from "date-fns";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { DateRangePickerContainer } from "./DateRangePickerContainer";
 import { toast } from "sonner";
-import { StockAssignmentWidget } from "../widget/StockAssigmentWidget";
+import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
 import { Switch } from "@/components/ui/switch";
@@ -324,7 +324,7 @@ export function ReservationFormContent({
             dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
             currentBranchId={currentBranchId}
             onAssignmentChange={setAssignedStockIds} // <---
-            isSerial={false}
+            isSerial={item.is_serial}
           />
         </div>
       ) : (

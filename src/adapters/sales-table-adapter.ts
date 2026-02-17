@@ -4,7 +4,6 @@ import { Client } from "../types/clients/type.client";
 import { Product } from "../types/product/type.product";
 import { Sale } from "../types/sales/type.sale";
 import { SaleItem } from "../types/sales/type.saleItem";
-import { generateProductsSummary } from "../utils/generateProductsSummary";
 
 export interface SaleTableRow {
   id: string;
@@ -17,14 +16,14 @@ export interface SaleTableRow {
   cancelDate: string;
   returnDate: string;
   nameCustomer: string;
+
+  // Nuevos campos de agrupación (La clave del cambio)
+  summary: string; // Texto corto para la tabla: "Producto (+N más)"
+  totalItems: number; // Cantidad total de unidades
+  itemsDetail: any[]; // Array enriquecido con nombres/fotos para el Drawer
+
+  // Campos legacy (Mantenidos para que no rompa tu <DataTable /> actual)
   product: string;
-
-  // Nuevos campos de agrupación
-  summary: string;
-  totalItems: number;
-  itemsDetail: SaleItem[];
-
-  // Campos legacy
   count: number;
   income: number;
   status: string;
@@ -44,17 +43,31 @@ export const mapSaleToTable = (
 
     // 1. Buscamos TODOS los items de esta venta
     const currentItems = salesItems.filter((s) => s.saleId === sale.id);
-    const productName = products.find((p) => p.id === currentItems[0].productId)?.name;
 
-    // 2. Enriquecemos con nombres
+    // 2. ENRIQUECIMIENTO (Crucial para el Drawer)
+    // Agregamos nombre, imagen y SKU a cada item para no tener que buscarlos luego
     const itemsWithNames = currentItems.map((item) => {
       const prod = products.find((p) => p.id === item.productId);
-      return { ...item, productName: prod?.name };
+      return {
+        ...item,
+        productName: prod?.name || "Desconocido",
+        image: prod?.image,
+        sku: prod?.sku,
+        // Aseguramos tener el precio unitario visible
+        priceAtMoment: item.priceAtMoment,
+      };
     });
 
-    // 3. Generamos resumen y conteo
-    const summary = generateProductsSummary(itemsWithNames);
-    
+    // 3. LÓGICA DE RESUMEN LIMPIA (Igual que en Rentals)
+    const mainProductName = itemsWithNames[0]?.productName || "Sin productos";
+    const distinctCount = itemsWithNames.length;
+
+    // Si hay más de 1 tipo de producto, mostramos el badge "+N más"
+    const cleanSummary =
+      distinctCount > 1
+        ? `${mainProductName} (+${distinctCount - 1} más)`
+        : mainProductName;
+
     const totalItems = currentItems.reduce(
       (acc, item) => acc + item.quantity,
       0,
@@ -68,7 +81,7 @@ export const mapSaleToTable = (
       createdAt: sale.createdAt
         ? new Date(sale.createdAt).toLocaleDateString()
         : "---",
-      saleDate: sale.saleDate
+      saleDate: sale.saleDate // Ojo: a veces saleDate no existe en el tipo, usa createdAt si falla
         ? new Date(sale.saleDate).toLocaleDateString()
         : "---",
       outDate: sale.outDate
@@ -83,19 +96,20 @@ export const mapSaleToTable = (
       returnDate: sale.returnedAt
         ? new Date(sale.returnedAt).toLocaleDateString()
         : "---",
+
       amountRefunded: sale.amountRefunded || 0,
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
 
-      // Nuevos campos
-      summary,
-      totalItems,
-      itemsDetail: currentItems,
-      product: productName || "---",
+      // --- NUEVOS CAMPOS LIMPIOS ---
+      summary: cleanSummary,
+      totalItems: totalItems,
+      itemsDetail: itemsWithNames, // Esto alimenta tu Drawer de tarjetas
 
-      // Legacy
-      restockingFee: 0, // No hay un único fee
+      // --- CAMPOS LEGACY ---
+      // Mapeamos 'product' al resumen limpio para que la tabla se vea bien de inmediato
+      product: cleanSummary,
       count: totalItems,
-      income: sale.totalAmount, // Usamos totalAmount directo de la venta
+      income: sale.totalAmount,
       status: sale.status,
       damage: "---",
     };

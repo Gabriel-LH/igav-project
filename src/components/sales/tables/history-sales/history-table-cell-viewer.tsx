@@ -1,11 +1,7 @@
+"use client";
+
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Button } from "@/components/button";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/chart";
 import {
   Drawer,
   DrawerClose,
@@ -16,158 +12,197 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/drawer";
-import { Input } from "@/components/input";
-import { Label } from "@/components/label";
+import { Badge } from "@/components/badge";
 import { Separator } from "@/components/separator";
-import { z } from "zod";
-import { salesHistorySchema } from "../type/type.history";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { IconTrendingUp } from "@tabler/icons-react";
+import {
+  IconPackage,
+  IconReceipt2,
+  IconUser,
+  IconBuildingStore,
+  IconCalendarEvent,
+  IconRuler,
+  IconPalette,
+} from "@tabler/icons-react";
+import { formatCurrency } from "@/src/utils/currency-format";
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
-  },
-} satisfies ChartConfig;
+// ⚠️ NOTA IMPORTANTE: Asegúrate de que salesHistorySchema incluya 'itemsDetail'
+// en tu definición Zod (type.history.ts), o usa 'any' temporalmente si prefieres.
+// itemsDetail: z.array(z.any()).optional(),
 
 export function TableCellViewerHistory({
   item,
 }: {
-  item: z.infer<typeof salesHistorySchema>;
+  item: any; // O 'any' si el tipo te da problemas
 }) {
   const isMobile = useIsMobile();
+
+  // Calcular total si no viene precalculado
+  // (Aunque item.income ya debería ser el total de la venta)
+  const totalCalculated = item.income;
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.nameCustomer}
+        <Button
+          variant="link"
+          className="text-foreground w-full justify-start px-0 text-left h-auto py-1 whitespace-normal"
+        >
+          <span className="truncate font-bold hover:underline">
+            {item.nameCustomer}
+          </span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="gap-1">
-          <DrawerTitle>{item.product}</DrawerTitle>
-          <DrawerDescription>Todos los detalles de la venta</DrawerDescription>
+
+      <DrawerContent
+        className={
+          isMobile
+            ? "max-h-[90vh]"
+            : "h-full w-[450px] ml-auto rounded-none border-l"
+        }
+      >
+        <DrawerHeader className="border-b pb-4 bg-muted/10">
+          <div className="flex items-center justify-between mb-2">
+            <Badge
+              variant="outline"
+              className="font-mono text-[10px] text-muted-foreground"
+            >
+              ID: {item.id.slice(0, 8)}...
+            </Badge>
+            <Badge
+              variant={
+                item.status === "vendido"
+                  ? "default"
+                  : item.status === "anulado"
+                    ? "destructive"
+                    : "secondary"
+              }
+              className="uppercase"
+            >
+              {item.status.replace("_", " ")}
+            </Badge>
+          </div>
+          <DrawerTitle className="text-xl">{item.nameCustomer}</DrawerTitle>
+          <DrawerDescription>
+            Historial de Venta • {item.createdAt}
+          </DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          {/* {!isMobile && (
-            <>
-              <ChartContainer config={chartConfig}>
-                <AreaChart
-                  accessibilityLayer
-                  data={chartData}
-                  margin={{
-                    left: 0,
-                    right: 10,
-                  }}
+
+        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+          {/* SECCIÓN 1: PRODUCTOS */}
+          <section>
+            <h4 className="text-xs font-black uppercase text-muted-foreground mb-3 flex items-center gap-2">
+              <IconPackage className="w-4 h-4" /> Productos Vendidos (
+              {item.totalItems || item.count})
+            </h4>
+
+            <div className="space-y-3">
+              {/* RENDERIZADO DE ITEMS */}
+              {item.itemsDetail && item.itemsDetail.length > 0 ? (
+                item.itemsDetail.map((detail: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex gap-3 p-3 rounded-lg border bg-card hover:bg-muted/20 transition-colors shadow-sm"
+                  >
+                    {/* Icono */}
+                    <div className="w-10 h-10 rounded bg-secondary text-orange-600 flex items-center justify-center shrink-0 border">
+                      <IconPackage className="w-5 h-5" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <p className="font-bold text-sm truncate pr-2 text-slate-400">
+                          {detail.productName}
+                        </p>
+                        <span className="font-mono text-sm font-bold text-slate-500">
+                          {formatCurrency(
+                            detail.priceAtMoment * detail.quantity,
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                        <div className="flex gap-2 items-center">
+                          {/* Variantes */}
+                          {detail.size && (
+                            <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded border border-muted-foreground/10">
+                              <IconRuler className="w-3 h-3" /> {detail.size}
+                            </span>
+                          )}
+                          {detail.color && (
+                            <span className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded border border-muted-foreground/10">
+                              <IconPalette className="w-3 h-3" /> {detail.color}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded">
+                          x{detail.quantity}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                /* FALLBACK SI NO HAY DETALLE (Legacy) */
+                <div className="p-4 border border-dashed rounded text-center text-muted-foreground text-sm bg-muted/20">
+                  <p className="font-medium text-slate-700">{item.product}</p>
+                  <p className="text-xs mt-1">
+                    (Resumen simple sin detalle desglosado)
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <Separator />
+
+          {/* SECCIÓN 2: INFO FINANCIERA & LOGÍSTICA */}
+          <section className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1 mb-1">
+                  <IconReceipt2 className="w-3 h-3" /> Ingreso Total
+                </h4>
+                <p className="text-2xl font-black text-emerald-600 tracking-tight">
+                  {formatCurrency(item.income)}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1 mb-1">
+                  <IconCalendarEvent className="w-3 h-3" /> Fecha Venta
+                </h4>
+                <p className="text-sm font-medium">{item.saleDate}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1 mb-1">
+                  <IconUser className="w-3 h-3" /> Vendedor
+                </h4>
+                <p
+                  className="text-sm font-medium truncate"
+                  title={item.sellerName}
                 >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    hide
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
-                  />
-                  <Area
-                    dataKey="mobile"
-                    type="natural"
-                    fill="var(--color-mobile)"
-                    fillOpacity={0.6}
-                    stroke="var(--color-mobile)"
-                    stackId="a"
-                  />
-                  <Area
-                    dataKey="desktop"
-                    type="natural"
-                    fill="var(--color-desktop)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-desktop)"
-                    stackId="a"
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <Separator />
-              <div className="grid gap-2">
-                <div className="flex gap-2 leading-none font-medium">
-                  Trending up by 5.2% this month{" "}
-                  <IconTrendingUp className="size-4" />
-                </div>
-                <div className="text-muted-foreground">
-                  Showing total visitors for the last 6 months. This is just
-                  some random text to test the layout. It spans multiple lines
-                  and should wrap around.
-                </div>
+                  {item.sellerName || "N/A"}
+                </p>
               </div>
-              <Separator />
-            </>
-          )} */}
-          <form className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Producto</Label>
-              <Input id="name" defaultValue={item.product} disabled />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="count">Cantidad vendido</Label>
-                <Input
-                  id="count"
-                  defaultValue={item.count.toString()}
-                  disabled
-                />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Ingreso generado</Label>
-                <Input
-                  id="income"
-                  defaultValue={item.income.toString()}
-                  disabled
-                />
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1 mb-1">
+                  <IconBuildingStore className="w-3 h-3" /> Sucursal
+                </h4>
+                <p className="text-sm font-medium truncate">
+                  {item.branchName}
+                </p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Vendedor</Label>
-                <Input
-                  id="income"
-                  defaultValue={item.sellerName}
-                  disabled
-                />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Punto de venta</Label>
-                <Input
-                  id="income"
-                  defaultValue={item.branchName}
-                  disabled
-                />
-              </div>
-            </div>
-          </form>
+          </section>
         </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
+
+        <DrawerFooter className="border-t pt-4 bg-muted/10">
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <Button variant="outline" className="w-full">
+              Cerrar Detalles
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

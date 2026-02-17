@@ -24,8 +24,7 @@ import { MaintenanceActionCard } from "./maintance/maintance-card";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function ProductGrid() {
-
-  const { products } = useInventoryStore();
+  const { products, inventoryItems, stockLots } = useInventoryStore();
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,36 +34,50 @@ export function ProductGrid() {
   const currentUser = USER_MOCK[0];
   const query = searchQuery.toLowerCase();
 
-  const stock = useInventoryStore((state) => state.stock);
-
   // --- 1. LÓGICA DE CATÁLOGO (PRODUCTOS DISPONIBLES) ---
   const filteredCatalog = useMemo(() => {
     return products.filter((product) => {
-      // Filtro de Sede: Sumamos stock total del producto en esta sucursal
-      const branchStock = stock
-        .filter(
-          (s) =>
-            s.productId.toString() === product.id.toString() &&
-            s.branchId === currentUser.branchId,
-        )
-        .reduce((acc, curr) => acc + curr.quantity, 0);
+      // Stock total del producto en esta sucursal (combinando seriales y lotes)
+      let branchStockQuantity = 0;
 
-      // Si no hay stock en esta sede, no va al catálogo de disponibles
-      if (branchStock <= 0) return false;
+      if (product.is_serial) {
+        branchStockQuantity = inventoryItems.filter(
+          (i) =>
+            String(i.productId) === String(product.id) &&
+            i.branchId === currentUser.branchId &&
+            i.status === "disponible",
+        ).length;
+      } else {
+        branchStockQuantity = stockLots
+          .filter(
+            (l) =>
+              String(l.productId) === String(product.id) &&
+              l.branchId === currentUser.branchId &&
+              l.status === "disponible",
+          )
+          .reduce((acc, curr) => acc + curr.quantity, 0);
+      }
 
-      // Filtro de Búsqueda (Nombre o SKU)
+      if (branchStockQuantity <= 0) return false;
+
       const matchesSearch =
         product.name.toLowerCase().includes(query) ||
         product.sku.toLowerCase().includes(query);
 
-      // Filtro de Tabs
       const matchesTab =
         activeTab === "todos" ||
         (activeTab === "alquiler" ? product.can_rent : product.can_sell);
 
       return matchesSearch && matchesTab;
     });
-  }, [products, stock, query, activeTab, currentUser.branchId]);
+  }, [
+    products,
+    inventoryItems,
+    stockLots,
+    query,
+    activeTab,
+    currentUser.branchId,
+  ]);
 
   const { reservations } = useReservationStore();
 
@@ -75,12 +88,10 @@ export function ProductGrid() {
         currentUser.role === "admin" || res.branchId === currentUser.branchId;
       if (!isMyBranch) return false;
 
-      // CAMBIO: Solo mostramos lo que está listo para salir.
-      // Si el status es "completada", significa que ya es un Rental y no va aquí.
       const isReadyForPickup =
         res.status === "confirmada" || res.status === "expirada";
       if (!isReadyForPickup) return false;
-      // Búsqueda: Por Cliente o por nombre de algún producto dentro de la reserva
+
       const client = CLIENTS_MOCK.find((c) => c.id === res.customerId);
       const matchesClient =
         `${client?.firstName} ${client?.lastName}`
@@ -98,25 +109,46 @@ export function ProductGrid() {
   }, [query, currentUser.branchId, currentUser.role, reservations]);
 
   const filteredLaundry = useMemo(() => {
-    return stock.filter(
-      (s) =>
-        s.branchId === currentUser.branchId && s.status === "en_lavanderia",
-    );
-  }, [stock, currentUser.branchId]);
+    return [
+      ...inventoryItems.filter(
+        (i) =>
+          i.branchId === currentUser.branchId && i.status === "en_lavanderia",
+      ),
+      ...stockLots.filter(
+        (l) =>
+          l.branchId === currentUser.branchId && l.status === "en_lavanderia",
+      ),
+    ];
+  }, [inventoryItems, stockLots, currentUser.branchId]);
 
   const filteredMaintenance = useMemo(() => {
-    return stock.filter(
-      // Usamos 'stock' de Zustand
-      (s) =>
-        s.branchId === currentUser.branchId &&
-        (s.status as string) === "en_mantenimiento",
-    );
-  }, [currentUser.branchId, stock]); // IMPORTANTE: Agregar 'stock' aquí también
+    return [
+      ...inventoryItems.filter(
+        (i) =>
+          i.branchId === currentUser.branchId &&
+          i.status === "en_mantenimiento",
+      ),
+      ...stockLots.filter(
+        (l) =>
+          l.branchId === currentUser.branchId &&
+          l.status === "en_mantenimiento",
+      ),
+    ];
+  }, [inventoryItems, stockLots, currentUser.branchId]);
 
   // Decidir qué lista mostrar
-  const displayList = showReserved ? filteredReservations : filteredCatalog;
-
-  console.log("reservations", reservations);
+  const displayList = useMemo(() => {
+    if (viewMode === "reserved") return filteredReservations;
+    if (viewMode === "laundry") return filteredLaundry;
+    if (viewMode === "maintenance") return filteredMaintenance;
+    return filteredCatalog;
+  }, [
+    viewMode,
+    filteredReservations,
+    filteredLaundry,
+    filteredMaintenance,
+    filteredCatalog,
+  ]);
 
   return (
     <div className="w-full">
@@ -126,16 +158,16 @@ export function ProductGrid() {
         setActiveTab={setActiveTab}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        viewMode={viewMode} // Pasamos el estado
-        setViewMode={setViewMode} // Pasamos la función (ESTO CORRIGE TU ERROR)
+        viewMode={viewMode}
+        setViewMode={setViewMode}
       />
 
       {/* Grid Dinámico */}
       <div
         className={`grid gap-6 ${
           viewMode !== "catalog"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 items-start"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         }`}
       >
         {viewMode === "reserved" &&
@@ -149,15 +181,22 @@ export function ProductGrid() {
           ))}
 
         {viewMode === "laundry" &&
-          filteredLaundry.map((item) => (
-            <LaundryActionCard key={item.id} item={item} />
+          filteredLaundry.map((item: any) => (
+            <LaundryActionCard
+              key={item.serialCode || item.variantCode}
+              item={item}
+            />
           ))}
 
         {viewMode === "maintenance" &&
-          filteredMaintenance.map((item) => (
-            <MaintenanceActionCard key={item.id} item={item} />
+          filteredMaintenance.map((item: any) => (
+            <MaintenanceActionCard
+              key={item.serialCode || item.variantCode}
+              item={item}
+            />
           ))}
       </div>
+
       {/* Estado Vacío */}
       {displayList.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-500">

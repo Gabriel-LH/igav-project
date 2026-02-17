@@ -48,17 +48,31 @@ export const mapRentalToTable = (
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);
     const seller = USER_MOCK[0]; // TODO: Buscar seller real si está disponible
 
-    // 1. Buscamos TODOS los items de esta operación
     const currentItems = rentalItems.filter((r) => r.rentalId === rental.id);
 
-    // 2. Enriquecemos los items con el nombre del producto para el resumen
+    // Enriquecer items
     const itemsWithNames = currentItems.map((item) => {
       const prod = products.find((p) => p.id === item.productId);
-      return { ...item, productName: prod?.name };
+      return {
+        ...item,
+        productName: prod?.name || "Desconocido",
+        // Agregamos info visual útil para el Drawer
+        image: prod?.image,
+        sku: prod?.sku,
+      };
     });
 
-    // 3. Generamos resumen y conteo
-    const summary = generateProductsSummary(itemsWithNames);
+    const mainProductName = itemsWithNames[0]?.productName || "Sin productos";
+
+    // Calculamos si hay items extra (distintos al primero)
+    const distinctCount = itemsWithNames.length;
+
+    // Construimos un string más limpio para la tabla
+    const cleanSummary =
+      distinctCount > 1
+        ? `${mainProductName} (+${distinctCount - 1} más)`
+        : mainProductName;
+
     const totalItems = currentItems.reduce(
       (acc, item) => acc + item.quantity,
       0,
@@ -83,12 +97,12 @@ export const mapRentalToTable = (
       nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
 
       // Nuevos campos
-      summary,
+      summary: cleanSummary,
       totalItems,
-      itemsDetail: currentItems,
+      itemsDetail: itemsWithNames,
 
       // Campos legacy adaptados
-      product: summary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
+      product: cleanSummary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
       count: totalItems, // <--- COMPATIBILIDAD
       rent_unit:
         currentItems.length === 1

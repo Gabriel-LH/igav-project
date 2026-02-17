@@ -44,7 +44,7 @@ export function PosProductSection() {
             No se encontraron productos
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filtered.map((product) => (
               <PosProductCard key={product.id} product={product} />
             ))}

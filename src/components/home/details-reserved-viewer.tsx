@@ -45,7 +45,7 @@ import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
-import { StockAssignmentWidget } from "./ui/widget/StockAssigmentWidget"; // Tu widget actualizado
+import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -243,7 +243,8 @@ export function DetailsReservedViewer({
       >
         <DrawerTrigger asChild>
           <Button variant="secondary" className="w-full shadow-sm">
-            Ver reserva de {activeRes?.operationType === "venta" ? "venta" : "alquiler"}
+            Ver reserva de{" "}
+            {activeRes?.operationType === "venta" ? "venta" : "alquiler"}
           </Button>
         </DrawerTrigger>
 

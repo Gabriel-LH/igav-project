@@ -83,73 +83,94 @@ export function ReservationModal({
 
   const sellerId = USER_MOCK[0].id;
 
-  const allStock = useInventoryStore((state) => state.stock);
+  const { inventoryItems, stockLots } = useInventoryStore();
 
   // Buscar stock físico exacto
   const validStockCandidates = useMemo(() => {
-    return allStock.filter((s) => {
-      // A. Filtros base de coincidencia física
-      const isBaseMatch =
-        String(s.productId) === String(item.id) &&
-        s.size === size &&
-        s.color === color;
+    const productId = String(item.id);
 
-      if (!isBaseMatch) return false;
+    if (item.is_serial) {
+      return inventoryItems.filter((s) => {
+        const isBaseMatch =
+          String(s.productId) === productId &&
+          s.size === size &&
+          s.color === color;
 
-      // B. Filtro por Propósito (Regla de Negocio)
-      if (operationType === "venta") {
-        // PARA VENTA: Debe ser para venta Y estar físicamente disponible hoy
-        return s.isForSale === true && s.status === "disponible";
-      } else {
-        // PARA ALQUILER:
-        // Debe ser para alquiler.
-        // Y debe EXISTIR (no estar vendido, ni dado de baja).
-        // NO IMPORTA si está "alquilado", "en_lavanderia" o "reservado_fisico" ahora mismo,
-        // porque la validación de fechas se encargará de ver si choca.
-        return (
-          s.isForRent === true &&
-          s.status !== "vendido" &&
-          s.status !== "baja" &&
-          s.status !== "vendido_pendiente_entrega" && // Ya se vendió, solo esperan recogerlo
-          s.status !== "agotado"
-        );
-      }
-    });
-  }, [allStock, item.id, size, color, operationType]);
+        if (!isBaseMatch) return false;
 
-  // 2. STOCK FÍSICO TOTAL (Para el max)
-  // Usamos el helper centralizado para garantizar consistencia con las validaciones
+        if (operationType === "venta") {
+          return s.isForSale === true && s.status === "disponible";
+        } else {
+          return (
+            s.isForRent === true &&
+            s.status !== "baja" &&
+            s.status !== "vendido" &&
+            s.status !== "agotado" &&
+            s.status !== "vendido_pendiente_entrega"
+          );
+        }
+      });
+    } else {
+      return stockLots.filter((s) => {
+        const isBaseMatch =
+          String(s.productId) === productId &&
+          s.size === size &&
+          s.color === color;
+
+        if (!isBaseMatch) return false;
+
+        if (operationType === "venta") {
+          return s.isForSale === true && s.status === "disponible";
+        } else {
+          return (
+            s.isForRent === true &&
+            s.status !== "baja" &&
+            s.status !== "vendido" &&
+            s.status !== "agotado" &&
+            s.status !== "vendido_pendiente_entrega" &&
+            s.quantity > 0
+          );
+        }
+      });
+    }
+  }, [
+    inventoryItems,
+    stockLots,
+    item.id,
+    item.is_serial,
+    size,
+    color,
+    operationType,
+  ]);
+
+  // 2. STOCK FÍSICO TOTAL
   const totalPhysicalStock = useMemo(() => {
     return getTotalStock(item.id, size, color, operationType);
-  }, [item.id, size, color, operationType]); // allStock es dependencia implícita del store en el helper, pero react query/zustand manejan eso.
-  // Nota: getTotalStock usa getState(), así que no es reactivo por sí mismo si allStock cambia.
-  // Pero aquí estamos forzando re-render via useInventoryStore hook arriba que actualiza el componente.
-  // Para ser puristas, deberíamos pasarle el stock al helper o confiar en que el render actualiza.
-  // Dado que getTotalStock lee getState(), leerá lo último.
+  }, [item.id, size, color, operationType]);
 
-  // 2. STOCK DISPONIBLE EN FECHAS (Dinámico)
-  // Esto dice: "Para las fechas que elegiste, ¿cuántos quedan?"
+  // 2. STOCK DISPONIBLE EN FECHAS
   const availableInDates = useMemo(() => {
-    // Si no hay fechas seleccionadas, el límite es el total físico
     if (!dateRange?.from || !dateRange?.to) return totalPhysicalStock;
 
-    // Si hay fechas, preguntamos al oráculo (tu helper)
     const check = getAvailabilityByAttributes(
       item.id,
       size,
       color,
       dateRange.from,
       dateRange.to,
-      operationType, // "alquiler"
+      operationType,
     );
 
-    // El helper nos devuelve 'availableCount'. Ese es nuestro nuevo máximo.
     return check.availableCount;
   }, [item.id, size, color, dateRange, operationType, totalPhysicalStock]);
 
-  const stockCount = validStockCandidates.reduce(
-    (acc, s) => acc + s.quantity,
-    0,
+  const stockCount = useMemo(
+    () =>
+      validStockCandidates.reduce(
+        (acc, curr: any) => acc + (curr.quantity ?? 1),
+        0,
+      ),
+    [validStockCandidates],
   );
 
   const hasStock = stockCount >= quantity;
@@ -172,23 +193,18 @@ export function ReservationModal({
       useCredit: keepAsCredit,
     });
 
-  // 💲 Precio unitario
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
 
-  // En ReservationModal.tsx, cuando se abre el modal
   React.useEffect(() => {
     if (open) {
-      // Determinar qué operaciones están disponibles
-      const hasRentStock = validStockCandidates.some((s) => s.isForRent);
-      const hasSaleStock = validStockCandidates.some((s) => s.isForSale);
+      const hasRentStock = validStockCandidates.some((s: any) => s.isForRent);
+      const hasSaleStock = validStockCandidates.some((s: any) => s.isForSale);
 
-      // Si solo hay un tipo disponible, seleccionarlo automáticamente
       if (hasRentStock && !hasSaleStock) {
         setOperationType("alquiler");
       } else if (!hasRentStock && hasSaleStock) {
         setOperationType("venta");
       }
-      // Si hay ambos, mantener el que estaba
     }
   }, [open, validStockCandidates]);
 
@@ -197,54 +213,44 @@ export function ReservationModal({
     realPaidAmount > totalOperacion ? realPaidAmount - totalOperacion : 0;
 
   const handleConfirm = () => {
-    // 1. VALIDACIONES BÁSICAS
     if (!selectedCustomer || !dateRange?.from) {
       return toast.error("Faltan datos obligatorios (Fecha o Cliente)");
     }
 
-    // 2. VALIDACIÓN DE DISPONIBILIDAD GLOBAL
     if (operationType === "alquiler") {
-      // Para alquiler: Validamos "Cupos" en fechas (virtual)
       if (quantity > availableInDates) {
         return toast.error(
           `Solo hay ${availableInDates} unidades disponibles para esas fechas.`,
         );
       }
     } else {
-      // Para venta: Validamos existencia física actual
       if (!hasStock) {
         return toast.error(`Stock insuficiente para realizar la venta.`);
       }
     }
 
-    // 3. CONSTRUCCIÓN DE ITEMS (LA LÓGICA CORE)
     let transactionItems: any[] = [];
 
-    // =====================================================================
-    // RAMA A: VENTA (Requiere Asignación Física Inmediata)
-    // =====================================================================
     if (operationType === "venta") {
       if (item.is_serial) {
-        // CASO SERIALIZADO: El usuario DEBE haber seleccionado los IDs en el widget
         if (assignedStockIds.length !== quantity) {
           return toast.error(
             `Venta: Debes asignar las ${quantity} prendas físicas exactas para retirar.`,
           );
         }
-        // Mapeamos los IDs que el usuario seleccionó
-        transactionItems = assignedStockIds.map((stockId) => ({
+        transactionItems = assignedStockIds.map((code) => ({
           productId: item.id,
           productName: item.name,
           size,
           color,
           quantity: 1,
           priceAtMoment: unitPrice,
-          stockId: stockId, // 👈 VENTA: LLEVA ID
+          stockId: code,
         }));
       } else {
         // CASO NO SERIALIZADO (Lotes): Tomamos automáticamente del stock disponible (FIFO)
         let remainingQty = quantity;
-        for (const stockItem of validStockCandidates) {
+        for (const stockItem of validStockCandidates as any[]) {
           if (remainingQty <= 0) break;
           const take = Math.min(remainingQty, stockItem.quantity);
 
@@ -255,33 +261,25 @@ export function ReservationModal({
             color,
             quantity: take,
             priceAtMoment: unitPrice,
-            stockId: stockItem.id, // 👈 VENTA: LLEVA ID DEL LOTE
+            stockId: stockItem.variantCode,
           });
           remainingQty -= take;
         }
       }
-    }
-
-    // =====================================================================
-    // RAMA B: ALQUILER (Reserva Virtual - Sin ID Físico)
-    // =====================================================================
-    else {
-      // En alquiler, NO asignamos stockId ahora. Se asignará al momento del retiro (pickup).
-      // Creamos "1 item virtual" por cada unidad solicitada.
+    } else {
       for (let i = 0; i < quantity; i++) {
         transactionItems.push({
           productId: item.id,
           productName: item.name,
           size,
           color,
-          quantity: 1, // Desglosamos unitariamente para facilitar gestión futura
+          quantity: 1,
           priceAtMoment: unitPrice,
-          stockId: undefined, // 👈 ALQUILER: VIRTUAL (Sin ID todavía)
+          stockId: undefined,
         });
       }
     }
 
-    // 4. CREAR DTO
     const newReservation: ReservationDTO = {
       branchId: currentBranchId,
       createdAt: new Date(),
@@ -307,13 +305,10 @@ export function ReservationModal({
       },
       id: "",
       operationId: "",
-
-      items: transactionItems, // <--- Aquí va el array generado arriba
-
+      items: transactionItems,
       updatedAt: new Date(),
     };
 
-    // 5. PROCESAR
     try {
       processTransaction(newReservation);
 

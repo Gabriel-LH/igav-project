@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { STOCK_MOCK } from "../mocks/mock.stock";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
+import { INVENTORY_ITEMS_MOCK } from "../mocks/mock.inventoryItem";
+import { STOCK_LOTS_MOCK } from "../mocks/mock.stockLote";
 
 export type StockStatus =
   | "reservado"
@@ -23,15 +24,21 @@ interface InventoryLog {
 }
 
 interface InventoryStore {
-  stock: typeof STOCK_MOCK;
+  inventoryItems: typeof INVENTORY_ITEMS_MOCK;
+  stockLots: typeof STOCK_LOTS_MOCK;
   products: typeof PRODUCTS_MOCK;
-  inventoryLogs: InventoryLog[]; // Importante para la trazabilidad
-  updateStockStatus: (
-    stockId: string,
+  inventoryLogs: InventoryLog[];
+
+  // Para serializados
+  updateInventoryItemStatus: (
+    serialCode: string,
     newStatus: StockStatus,
     damageNotes?: string,
   ) => void;
-  // Esta es la función profesional de "Mudanza + Alquiler"
+
+  // Para no serializados
+  decreaseStockLot: (variantCode: string, quantity: number) => void;
+
   deliverAndTransfer: (
     stockId: string,
     status: StockStatus,
@@ -41,31 +48,49 @@ interface InventoryStore {
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
-  stock: STOCK_MOCK,
+  inventoryItems: INVENTORY_ITEMS_MOCK,
+  stockLots: STOCK_LOTS_MOCK,
   products: PRODUCTS_MOCK,
   inventoryLogs: [],
 
-  getAvailableStockItem: (
+  // Para serializados
+  getAvailableInventoryItem: (
     productId: string,
-    size: string,
-    status: string,
-    color: string,
+    size?: string,
+    color?: string,
+    status: StockStatus = "disponible",
   ) => {
-    return get().stock.find(
-      (s) =>
-        s.productId.toString() === productId.toString() &&
-        // 2. Usamos trim() por si se coló un espacio en los mocks o selectores
-        s.size.trim() === size.trim() &&
-        s.color.trim() === color.trim() &&
-        s.status === status,
+    return get().inventoryItems.find(
+      (item) =>
+        item.productId === productId &&
+        (!size || item.size.trim() === size.trim()) &&
+        (!color || item.color.trim() === color.trim()) &&
+        item.status === status,
     );
   },
 
-  updateStockStatus: (stockId, newStatus, damageNotes) => {
-    if (!stockId) return;
+  // Para no serializados (lotes)
+  getAvailableStockLot: (
+    productId: string,
+    size?: string,
+    color?: string,
+    status: StockStatus = "disponible",
+  ) => {
+    return get().stockLots.find(
+      (lot) =>
+        lot.productId === productId &&
+        (!size || lot.size.trim() === size.trim()) &&
+        (!color || lot.color.trim() === color.trim()) &&
+        lot.status === status &&
+        lot.quantity > 0,
+    );
+  },
+
+  // 🔹 Actualizar estado de unidad serializada
+  updateInventoryItemStatus: (serialCode, newStatus, damageNotes) =>
     set((state) => ({
-      stock: state.stock.map((item) =>
-        item.id.toString() === stockId.toString()
+      inventoryItems: state.inventoryItems.map((item) =>
+        item.serialCode === serialCode
           ? {
               ...item,
               status: newStatus,
@@ -74,17 +99,39 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
             }
           : item,
       ),
-    }));
-  },
+    })),
 
+  // 🔹 Descontar cantidad de lote (producto no serializado)
+  decreaseStockLot: (variantCode, quantity) =>
+    set((state) => ({
+      stockLots: state.stockLots.map((lot) =>
+        lot.variantCode === variantCode
+          ? {
+              ...lot,
+              quantity: lot.quantity - quantity,
+              updatedAt: new Date(),
+            }
+          : lot,
+      ),
+    })),
+
+  // 🔹 Mantengo deliverAndTransfer, ahora para serializados
   deliverAndTransfer: (stockId, status, targetBranchId, adminId) =>
     set((state) => {
-      const item = state.stock.find(
-        (s) => s.id.toString() === stockId.toString(),
-      );
+      // Busco primero en inventoryItems (serializados)
+      const item =
+        state.inventoryItems.find(
+          (i) => i.serialCode === stockId || i.id === stockId,
+        ) ||
+        // Si no está, por compatibilidad temporal, busco en stockLots
+        state.stockLots.find(
+          (l) => l.variantCode === stockId || l.id === stockId,
+        );
+
       if (!item) return state;
 
-      const needsTransfer = item.branchId !== targetBranchId;
+      const needsTransfer =
+        "branchId" in item && item.branchId !== targetBranchId;
       const newLogs = [...state.inventoryLogs];
 
       if (needsTransfer) {
@@ -99,15 +146,25 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       }
 
       return {
-        stock: state.stock.map((s) =>
-          s.id.toString() === stockId.toString()
+        inventoryItems: state.inventoryItems.map((i) =>
+          i.serialCode === stockId || i.id === stockId
             ? {
-                ...s,
+                ...i,
                 status: status,
                 branchId: targetBranchId,
                 updatedAt: new Date(),
               }
-            : s,
+            : i,
+        ),
+        stockLots: state.stockLots.map((l) =>
+          l.variantCode === stockId || l.id === stockId
+            ? {
+                ...l,
+                status: status,
+                branchId: targetBranchId,
+                updatedAt: new Date(),
+              }
+            : l,
         ),
         inventoryLogs: newLogs,
       };

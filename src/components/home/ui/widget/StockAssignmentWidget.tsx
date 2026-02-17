@@ -1,4 +1,4 @@
-// src/components/common/StockAssignmentWidget.tsx
+// src/components/home/ui/widget/StockAssignmentWidget.tsx
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,7 @@ import {
   MagicWand01Icon,
   Delete02Icon,
   Location01Icon,
-  Layers01Icon, // Icono para lotes
+  Layers01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -29,15 +29,9 @@ interface StockAssignmentWidgetProps {
   operationType: OpType;
   dateRange: { from: Date; to: Date };
   currentBranchId: string;
-
-  // 🔥 NUEVA PROP: Define si es ítem único (Terno) o Lote (Corbata)
   isSerial?: boolean;
-  // 🔥 PROP DE FILTRO: Define si filtramos solo disponibles HOY
   isImmediate?: boolean;
-
   onAssignmentChange: (selectedIds: string[]) => void;
-
-  // 🔥 NUEVA PROP: IDs que vienen asignados inicialmente
   initialSelections?: string[];
   readOnly?: boolean;
 }
@@ -50,18 +44,17 @@ export function StockAssignmentWidget({
   operationType,
   dateRange,
   currentBranchId,
-  isSerial = true, // Por defecto asumimos serializado (más seguro)
+  isSerial = true,
   isImmediate = false,
   onAssignmentChange,
-  initialSelections = [], // 👈 NUEVO: IDs que ya vienen asignados
+  initialSelections = [],
   readOnly = false,
 }: StockAssignmentWidgetProps) {
-  const { stock } = useInventoryStore();
+  const { inventoryItems, stockLots } = useInventoryStore();
 
   const lastEmittedIdsRef = useRef<string>("");
 
   const [selections, setSelections] = useState<Record<number, string>>(() => {
-    // Convertimos el array simple [ID1, ID2] a un objeto {0: ID1, 1: ID2}
     const init: Record<number, string> = {};
     initialSelections.forEach((id, index) => {
       if (id) init[index] = id;
@@ -73,78 +66,98 @@ export function StockAssignmentWidget({
   const validCandidates = useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) return [];
 
-    return stock.filter((s) => {
-      const isBaseMatch =
-        String(s.productId) === String(productId) &&
-        s.size === size &&
-        s.color === color &&
-        s.status !== "baja" &&
-        s.status !== "vendido";
+    if (isSerial) {
+      return inventoryItems.filter((i) => {
+        const isBaseMatch =
+          i.productId === productId &&
+          i.size === size &&
+          i.color === color &&
+          i.status !== "baja" &&
+          i.status !== "vendido";
 
-      if (!isBaseMatch) return false;
+        if (!isBaseMatch) return false;
+        if (operationType === "venta" && !i.isForSale) return false;
+        if (operationType === "alquiler" && !i.isForRent) return false;
 
-      if (operationType === "venta" && !s.isForSale) return false;
-      if (operationType === "alquiler" && !s.isForRent) return false;
+        if (isImmediate && i.status !== "disponible") return false;
 
-      // Filtro de Inmediatez
-      if (isImmediate) {
-        if (s.status !== "disponible") return false;
-      }
+        return (
+          i.status === "disponible" ||
+          (!isImmediate && operationType === "alquiler")
+        );
+      });
+    } else {
+      return stockLots.filter((l) => {
+        const isBaseMatch =
+          l.productId === productId &&
+          l.size === size &&
+          l.color === color &&
+          l.status !== "baja" &&
+          l.status !== "vendido";
 
-      // Si es alquiler futuro (no inmediato), permitimos ver alquilados
-      return (
-        s.status === "disponible" ||
-        (!isImmediate && operationType === "alquiler")
-      );
-    });
-  }, [stock, productId, size, color, operationType, dateRange, isImmediate]);
+        if (!isBaseMatch) return false;
+        if (operationType === "venta" && !l.isForSale) return false;
+        if (operationType === "alquiler" && !l.isForRent) return false;
+
+        if (isImmediate && (l.status !== "disponible" || l.quantity <= 0))
+          return false;
+
+        return (
+          (l.status === "disponible" ||
+            (!isImmediate && operationType === "alquiler")) &&
+          l.quantity > 0
+        );
+      });
+    }
+  }, [
+    inventoryItems,
+    stockLots,
+    productId,
+    size,
+    color,
+    operationType,
+    dateRange,
+    isImmediate,
+    isSerial,
+  ]);
 
   // 2. Notificar al padre
   useEffect(() => {
     const ids = Object.values(selections);
-
     const idsString = JSON.stringify(ids);
-    // Si es lote, el array tendrá IDs repetidos, lo cual está bien para processTransaction
     if (lastEmittedIdsRef.current !== idsString) {
       lastEmittedIdsRef.current = idsString;
       onAssignmentChange(ids);
     }
   }, [selections, onAssignmentChange]);
 
-  
-  // 3. Manejador para Lotes (Bulk Selection)
-  const handleBatchSelect = (stockId: string) => {
+  // 3. Manejador para Lotes
+  const handleBatchSelect = (code: string) => {
     const newSelections: Record<number, string> = {};
-    // Asignamos el MISMO ID a todas las posiciones requeridas
     for (let i = 0; i < quantity; i++) {
-      newSelections[i] = stockId;
+      newSelections[i] = code;
     }
     setSelections(newSelections);
   };
 
-  // 4. Auto-Asignación (Inteligente para Serial y Lotes)
+  // 4. Auto-Asignación
   const handleAutoAllocate = () => {
     const newSelections: Record<number, string> = {};
-    const usedIds = new Set<string>();
+    const usedCodes = new Set<string>();
 
-    const sortedCandidates = [...validCandidates].sort((a, b) => {
-      // Prioridad: Sede Actual -> Otras Sedes
+    const sortedCandidates = [...validCandidates].sort((a: any, b: any) => {
       if (a.branchId === currentBranchId && b.branchId !== currentBranchId)
         return -1;
       if (a.branchId !== currentBranchId && b.branchId === currentBranchId)
         return 1;
-      // Prioridad secundaria: Mayor cantidad (para lotes)
-      return b.quantity - a.quantity;
+      return (b.quantity || 0) - (a.quantity || 0);
     });
 
     if (!isSerial) {
-      // --- LÓGICA LOTE ---
-      // Buscamos el primer lote que tenga suficiente cantidad
-      const bestBatch = sortedCandidates.find((s) => s.quantity >= quantity);
-
-      if (bestBatch) {
-        // Llenamos todo con ese ID
-        for (let i = 0; i < quantity; i++) newSelections[i] = bestBatch.id;
+      const bestLot = sortedCandidates.find((l: any) => l.quantity >= quantity);
+      if (bestLot) {
+        for (let i = 0; i < quantity; i++)
+          newSelections[i] = bestLot.variantCode;
         setSelections(newSelections);
         toast.success("Lote asignado automáticamente.");
       } else {
@@ -153,12 +166,13 @@ export function StockAssignmentWidget({
       return;
     }
 
-    // --- LÓGICA SERIAL ---
     for (let i = 0; i < quantity; i++) {
-      const candidate = sortedCandidates.find((c) => !usedIds.has(c.id));
+      const candidate = sortedCandidates.find(
+        (c: any) => !usedCodes.has(c.serialCode),
+      );
       if (candidate) {
-        newSelections[i] = candidate.id;
-        usedIds.add(candidate.id);
+        newSelections[i] = (candidate as any).serialCode;
+        usedCodes.add((candidate as any).serialCode);
       }
     }
 
@@ -170,12 +184,9 @@ export function StockAssignmentWidget({
     }
   };
 
-  // ---------------------------------------------------------
-  // RENDERIZADO: MODO LOTE (NO SERIALIZADO)
-  // ---------------------------------------------------------
   if (!isSerial) {
-    const currentBatchId = selections[0]; // Basta con ver el primero
-    const currentBatch = stock.find((s) => s.id === currentBatchId);
+    const currentCode = selections[0];
+    const currentLot = stockLots.find((l) => l.variantCode === currentCode);
 
     return (
       <div className="p-3 border rounded-lg space-y-2">
@@ -193,25 +204,25 @@ export function StockAssignmentWidget({
           <Select
             aria-hidden={false}
             onValueChange={handleBatchSelect}
-            value={currentBatchId || ""}
+            value={currentCode || ""}
           >
             <SelectTrigger className="flex-1 h-9 text-xs">
               <SelectValue placeholder="Seleccione lote de origen..." />
             </SelectTrigger>
             <SelectContent>
-              {validCandidates.map((s) => (
+              {validCandidates.map((l: any) => (
                 <SelectItem
-                  key={s.id}
-                  value={s.id}
-                  disabled={s.quantity < quantity} // Validamos capacidad del lote
+                  key={l.variantCode}
+                  value={l.variantCode}
+                  disabled={l.quantity < quantity}
                   className={
-                    s.quantity < quantity
+                    l.quantity < quantity
                       ? "text-muted-foreground opacity-50"
                       : ""
                   }
                 >
-                  {s.id} (Disp: {s.quantity}) -{" "}
-                  {BRANCH_MOCKS.find((b) => b.id === s.branchId)?.name}
+                  {l.variantCode} (Disp: {l.quantity}) -{" "}
+                  {BRANCH_MOCKS.find((b) => b.id === l.branchId)?.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -231,20 +242,17 @@ export function StockAssignmentWidget({
           </Button>
         </div>
 
-        {currentBatch && (
+        {currentLot && (
           <div className="text-[10px] text-emerald-600 flex items-center gap-1 p-1 rounded px-2">
             <HugeiconsIcon icon={Location01Icon} className="w-3 h-3" />
             Se retirarán {quantity} unidades del lote{" "}
-            <strong>{currentBatch.id}</strong>
+            <strong>{currentLot.variantCode}</strong>
           </div>
         )}
       </div>
     );
   }
 
-  // ---------------------------------------------------------
-  // RENDERIZADO: MODO SERIAL (TU CÓDIGO ANTERIOR MEJORADO)
-  // ---------------------------------------------------------
   return (
     <div className="space-y-3 p-3 bg-muted/20 rounded-lg border border-dashed">
       <div className="flex justify-between items-center">
@@ -273,8 +281,10 @@ export function StockAssignmentWidget({
 
       <div className="space-y-2">
         {Array.from({ length: quantity }).map((_, index) => {
-          const selectedId = selections[index];
-          const selectedItem = stock.find((s) => s.id === selectedId);
+          const selectedCode = selections[index];
+          const selectedItem = inventoryItems.find(
+            (i) => i.serialCode === selectedCode,
+          );
           const isLocal = selectedItem?.branchId === currentBranchId;
 
           return (
@@ -292,7 +302,7 @@ export function StockAssignmentWidget({
                 >
                   <div className="flex flex-col">
                     <span className="text-xs font-bold font-mono">
-                      {selectedItem.id}
+                      {selectedItem.serialCode}
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] text-muted-foreground">
@@ -347,13 +357,19 @@ export function StockAssignmentWidget({
                         No hay stock disponible.
                       </div>
                     ) : (
-                      validCandidates.map((s) => {
-                        const isUsed = Object.values(selections).includes(s.id);
+                      validCandidates.map((i: any) => {
+                        const isUsed = Object.values(selections).includes(
+                          i.serialCode,
+                        );
                         return (
-                          <SelectItem key={s.id} value={s.id} disabled={isUsed}>
-                            {s.id} - {s.status} (
+                          <SelectItem
+                            key={i.serialCode}
+                            value={i.serialCode}
+                            disabled={isUsed}
+                          >
+                            {i.serialCode} - {i.status} (
                             {
-                              BRANCH_MOCKS.find((b) => b.id === s.branchId)
+                              BRANCH_MOCKS.find((b) => b.id === i.branchId)
                                 ?.name
                             }
                             )

@@ -47,7 +47,7 @@ export function PosReservationModal({
   onOpenChange,
 }: PosReservationModalProps) {
   const { items, clearCart } = useCartStore();
-  const allStock = useInventoryStore((s) => s.stock);
+  const { inventoryItems, stockLots } = useInventoryStore();
 
   const businessRules = BUSINESS_RULES_MOCK;
   const sellerId = USER_MOCK[0].id;
@@ -122,8 +122,6 @@ export function PosReservationModal({
   const totalOperacion = totalVentas + totalAlquileres;
   const pendingAmount = Math.max(totalOperacion - Number(downPayment || 0), 0);
 
-  // Determinar operationType para la reserva
-  // Si hay ambos tipos, priorizamos "alquiler" como tipo general
   const operationType = hasRentals ? "alquiler" : "venta";
 
   // ─── CONSTRUIR ITEMS ───
@@ -137,29 +135,31 @@ export function PosReservationModal({
       const isVenta = cartItem.operationType === "venta";
 
       if (isVenta) {
-        // Para ventas en reserva: Asignamos stock físico
         if (cartItem.product.is_serial) {
-          if (cartItem.selectedStockIds.length < cartItem.quantity) {
+          if (cartItem.selectedCodes.length < cartItem.quantity) {
             toast.error(
               `"${cartItem.product.name}": Debes asignar ${cartItem.quantity} unidades serializadas.`,
             );
             return null;
           }
-          for (const stockId of cartItem.selectedStockIds) {
-            const stockFound = allStock.find((s) => s.id === stockId);
+          // En la reserva de venta, los códigos ya están pre-seleccionados
+          cartItem.selectedCodes.forEach((code) => {
+            const stockFound = inventoryItems.find(
+              (s) => s.serialCode === code,
+            );
             transactionItems.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
-              stockId,
+              stockId: code, // Usamos el código (serialCode)
               quantity: 1,
               size: stockFound?.size || cartItem.selectedSize || "---",
               color: stockFound?.color || cartItem.selectedColor || "---",
               priceAtMoment: cartItem.unitPrice,
             });
-          }
+          });
         } else {
           // No serializado: FIFO auto-assign
-          const candidates = allStock.filter(
+          const candidates = stockLots.filter(
             (s) =>
               String(s.productId) === String(cartItem.product.id) &&
               s.status === "disponible" &&
@@ -167,16 +167,16 @@ export function PosReservationModal({
           );
 
           let remaining = cartItem.quantity;
-          for (const stock of candidates) {
+          for (const lot of candidates) {
             if (remaining <= 0) break;
-            const take = Math.min(remaining, stock.quantity);
+            const take = Math.min(remaining, lot.quantity);
             transactionItems.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
-              stockId: stock.id,
+              stockId: lot.variantCode, // Usamos variantCode
               quantity: take,
-              size: stock.size,
-              color: stock.color,
+              size: lot.size,
+              color: lot.color,
               priceAtMoment: cartItem.unitPrice,
             });
             remaining -= take;
@@ -189,12 +189,12 @@ export function PosReservationModal({
           }
         }
       } else {
-        // Para alquileres en reserva: Items VIRTUALES (sin stockId)
+        // Alquileres: Virtuales
         for (let i = 0; i < cartItem.quantity; i++) {
           transactionItems.push({
             productId: cartItem.product.id,
             productName: cartItem.product.name,
-            stockId: undefined, // Virtual
+            stockId: undefined,
             quantity: 1,
             size: cartItem.selectedSize || "",
             color: cartItem.selectedColor || "",
@@ -218,14 +218,11 @@ export function PosReservationModal({
 
     const totalDP = Number(downPayment);
 
-    // Si es mixto, separamos en dos transacciones
     if (hasSales && hasRentals) {
-      // 1. Calcular división proporcional del adelanto
       const saleShare = totalVentas / totalOperacion;
       const saleDP = Math.round(totalDP * saleShare * 100) / 100;
       const rentalDP = Math.round((totalDP - saleDP) * 100) / 100;
 
-      // 2. Procesar Venta
       const saleItems = buildReservationItems("venta");
       if (!saleItems) return;
       const saleDTO: ReservationDTO = {
@@ -258,7 +255,6 @@ export function PosReservationModal({
         updatedAt: new Date(),
       };
 
-      // 3. Procesar Alquiler
       const rentalItems = buildReservationItems("alquiler");
       if (!rentalItems) return;
       const rentalDTO: ReservationDTO = {
@@ -301,7 +297,6 @@ export function PosReservationModal({
         return;
       }
     } else {
-      // Flujo único (Solo venta o Solo alquiler)
       const transactionItems = buildReservationItems();
       if (!transactionItems) return;
 

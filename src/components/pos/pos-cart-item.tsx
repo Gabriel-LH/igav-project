@@ -6,16 +6,16 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
-import { Trash2, Barcode, Minus, Plus } from "lucide-react";
+import { Trash2, Minus, Plus, QrCode } from "lucide-react";
 import { formatCurrency } from "@/src/utils/currency-format";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { StockAssignmentWidget } from "../home/ui/widget/StockAssigmentWidget";
+import { StockAssignmentWidget } from "../home/ui/widget/StockAssignmentWidget";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { addDays } from "date-fns";
+import { differenceInDays } from "date-fns";
 
 interface PosCartItemProps {
   item: CartItem;
@@ -24,115 +24,98 @@ interface PosCartItemProps {
 export function PosCartItem({ item }: PosCartItemProps) {
   const { removeItem, updateQuantity, updateSelectedStock, globalRentalDates } =
     useCartStore();
-  const { stock } = useInventoryStore();
+  const { inventoryItems, stockLots } = useInventoryStore();
 
-  const isSerial = item.product.is_serial;
-  const isRent = item.operationType === "alquiler";
   const currentBranchId = USER_MOCK[0].branchId;
+  const isRent = item.operationType === "alquiler";
+  const isSerial = item.product.is_serial;
 
-  // ----------------------------------------------------------------------
-  // 1. LÓGICA DE RECUPERACIÓN DE VARIANTE (CRÍTICO PARA QUE FUNCIONE EL WIDGET)
-  // ----------------------------------------------------------------------
-  const variantContext = useMemo(() => {
-    // A. Si el ítem ya tiene talla/color guardados en el carrito, usamos esos.
-    if (item.selectedSize && item.selectedColor) {
-      return { size: item.selectedSize, color: item.selectedColor };
-    }
-
-    // B. Si es serial y ya seleccionamos IDs (p.ej con escáner), buscamos la variante de ese ID.
-    if (item.selectedStockIds.length > 0) {
-      const firstStock = stock.find((s) => s.id === item.selectedStockIds[0]);
-      if (firstStock) {
-        return { size: firstStock.size, color: firstStock.color };
-      }
-    }
-
-    // C. Fallback Inteligente: Buscamos el primer stock disponible que coincida con el producto.
-    // Esto evita pasar "" al widget.
-    const candidate = stock.find(
-      (s) =>
-        s.productId === item.product.id &&
-        s.status === "disponible" &&
-        (isRent ? s.isForRent : s.isForSale),
-    );
-
-    return {
-      size: candidate?.size || "",
-      color: candidate?.color || "",
-    };
-  }, [item, stock, isRent]);
-
-  // ----------------------------------------------------------------------
-  // 2. LÓGICA DE FECHAS (CRÍTICO PARA EL FILTRO DEL WIDGET)
-  // ----------------------------------------------------------------------
-  const validDateRange = useMemo(() => {
-    // Si hay fechas globales (alquiler), las usamos.
-    if (globalRentalDates) return globalRentalDates;
-
-    // Si es venta o no hay fechas, creamos un rango "Hoy -> Hoy" para que el filtro pase.
-    const today = new Date();
-    return { from: today, to: addDays(today, 1) };
-  }, [globalRentalDates]);
-
-  const handleQuantityChange = (newQty: number) => {
-    if (newQty < 1) return;
-    updateQuantity(item.cartId, newQty);
+  // Variantes
+  const variant = {
+    size: item.selectedSize || "",
+    color: item.selectedColor || "",
   };
 
-  // Validamos si faltan asignaciones
-  const missingAssignments =
-    isSerial && item.selectedStockIds.length !== item.quantity;
-  // Derivar size/color: prioridad → campos del CartItem → primer stock asignado → primer disponible
-  const stockHint = useMemo(() => {
-    // 1. Si el CartItem ya tiene variante seleccionada, usarla directamente
-    if (item.selectedSize && item.selectedColor) {
-      return { size: item.selectedSize, color: item.selectedColor };
-    }
-    // 2. Si ya tiene stock IDs asignados, usamos el primero para sacar size/color
-    if (item.selectedStockIds.length > 0) {
-      const firstAssigned = stock.find(
-        (s) => s.id === item.selectedStockIds[0],
+  // 1. Obtener disponibilidad REAL de este producto/variante en el local
+  const maxAvailable = useMemo(() => {
+    if (isSerial) {
+      return inventoryItems.filter(
+        (i) =>
+          i.productId === item.product.id &&
+          i.size === variant.size &&
+          i.color === variant.color &&
+          i.branchId === currentBranchId &&
+          i.status === "disponible" &&
+          (isRent ? i.isForRent : i.isForSale),
+      ).length;
+    } else {
+      const lot = stockLots.find(
+        (l) =>
+          l.productId === item.product.id &&
+          l.size === variant.size &&
+          l.color === variant.color &&
+          l.branchId === currentBranchId &&
+          l.status === "disponible" &&
+          (isRent ? l.isForRent : l.isForSale),
       );
-      if (firstAssigned)
-        return { size: firstAssigned.size, color: firstAssigned.color };
+      return lot ? lot.quantity : 0;
     }
-    // 3. Fallback: primer stock disponible del producto
-    const firstAvailable = stock.find(
-      (s) =>
-        s.productId === item.product.id &&
-        s.status === "disponible" &&
-        (isRent ? s.isForRent : s.isForSale),
-    );
-    return {
-      size: firstAvailable?.size ?? "",
-      color: firstAvailable?.color ?? "",
-    };
   }, [
-    stock,
+    inventoryItems,
+    stockLots,
     item.product.id,
-    item.selectedStockIds,
-    item.selectedSize,
-    item.selectedColor,
+    variant,
     isRent,
+    currentBranchId,
+    isSerial,
   ]);
 
-  // Fecha de rango (global del carrito o fallback hoy+3)
-  const dateRange = useMemo(() => {
-    if (globalRentalDates) return globalRentalDates;
-    return { from: new Date(), to: addDays(new Date(), 3) };
+  // 2. Controladores
+  const handleQuantityChange = (val: number) => {
+    if (val < 1) return;
+    if (val > maxAvailable) return;
+    updateQuantity(item.cartId, val);
+  };
+
+  const dateRange = useMemo(
+    () => ({
+      from: globalRentalDates?.from || new Date(),
+      to: globalRentalDates?.to || new Date(),
+    }),
+    [globalRentalDates],
+  );
+
+  const days = useMemo(() => {
+    if (!globalRentalDates) return 1;
+    return Math.max(
+      differenceInDays(globalRentalDates.to, globalRentalDates.from),
+      1,
+    );
   }, [globalRentalDates]);
 
   return (
     <div className="flex flex-col gap-2 p-3 border rounded-lg shadow-sm hover:border-slate-900 transition-colors group">
-      {/* 1. Header del Item: Nombre y Borrar */}
+      {/* 1. Header: Nombre y Variantes */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col">
           <span className="font-bold text-xs line-clamp-2 leading-tight">
             {item.product.name}
           </span>
-          <span className="text-[10px] text-muted-foreground">
-            {item.product.category}
-          </span>
+          <div className="flex flex-wrap gap-1 mt-1">
+            <span className="text-[10px] text-muted-foreground mr-1">
+              {item.product.category}
+            </span>
+            {variant.size && (
+              <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
+                Talla: {variant.size}
+              </Badge>
+            )}
+            {variant.color && (
+              <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
+                Color: {variant.color}
+              </Badge>
+            )}
+          </div>
         </div>
         <Button
           variant="ghost"
@@ -144,73 +127,95 @@ export function PosCartItem({ item }: PosCartItemProps) {
         </Button>
       </div>
 
-      {/* 2. Controles de Operación y Cantidad */}
+      {/* 2. Operación, Cantidad y Disponibilidad */}
       <div className="flex items-end justify-between mt-1">
         <div className="flex flex-col gap-1.5">
-          {/* Badge de Tipo */}
-          <Badge
-            variant={isRent ? "default" : "secondary"}
-            className={`text-[9px] px-1.5 h-4 w-fit ${isRent ? "bg-blue-400" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"}`}
-          >
-            {isRent ? "ALQUILER" : "VENTA"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant={isRent ? "default" : "secondary"}
+              className={`text-[9px] px-1.5 h-4 w-fit uppercase font-bold ${
+                isRent
+                  ? "bg-blue-500 text-white"
+                  : "bg-emerald-100 text-emerald-700 font-black"
+              }`}
+            >
+              {isRent ? "ALQUILER" : "VENTA"}
+            </Badge>
 
-          {/* CONTROLES DINÁMICOS */}
+            {!isSerial && (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`text-[9px] font-bold ${item.quantity >= maxAvailable ? "text-amber-600" : "text-slate-400"}`}
+                >
+                  {maxAvailable} disp.
+                </span>
+                {item.quantity >= maxAvailable && (
+                  <Badge className="text-[8px] h-3.5 px-1 bg-amber-500/40 text-white border-0 hover:bg-amber-600">
+                    MÁXIMO
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+
           {isSerial ? (
-            /* CASO SERIAL: Botón de Asignación con Widget Real */
+            /* SERIALIZADO: Botón de Asignación */
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
                   className={`h-7 text-[10px] px-2 border-dashed ${
-                    item.selectedStockIds.length !== item.quantity
-                      ? "border-amber-400 bg-amber-50 text-amber-800"
-                      : "border-emerald-300 bg-emerald-50 text-emerald-700"
+                    item.selectedCodes.length !== item.quantity
+                      ? "border-amber-400 bg-amber-50 text-amber-600"
+                      : "border-emerald-300 bg-emerald-50 text-emerald-500"
                   }`}
                 >
-                  <Barcode className="w-3 h-3 mr-1" />
-                  {item.selectedStockIds.length} / {item.quantity} Asignados
+                  <QrCode className="w-3 h-3 mr-1" />
+                  {item.selectedCodes.length} / {item.quantity} Asignados
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" side="right">
                 <StockAssignmentWidget
                   productId={item.product.id}
-                  // Pasamos la variante calculada (evita vacíos)
-                  size={variantContext.size}
-                  color={variantContext.color}
+                  size={variant.size}
+                  color={variant.color}
                   quantity={item.quantity}
                   operationType={item.operationType}
-                  dateRange={validDateRange}
+                  dateRange={dateRange}
                   currentBranchId={currentBranchId}
-                  // Configuraciones para POS
                   isSerial={true}
-                  isImmediate={true} // El POS suele ser entrega inmediata
-                  initialSelections={item.selectedStockIds} // Estado actual
-                  onAssignmentChange={(ids) =>
-                    updateSelectedStock(item.cartId, ids)
+                  isImmediate={true}
+                  initialSelections={item.selectedCodes}
+                  onAssignmentChange={(codes) =>
+                    updateSelectedStock(item.cartId, codes)
                   }
                 />
               </PopoverContent>
             </Popover>
           ) : (
-            /* CASO LOTE: Stepper Numérico */
-            <div className="flex items-center border rounded-md h-7 w-fit">
+            /* LOTE: Stepper con Límite */
+            <div className="flex items-center border rounded-md h-7 w-fit  overflow-hidden">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-full w-6 rounded-none hover:bg-slate-200"
+                className="h-full w-6 rounded-none hover:bg-slate-100 border-r"
                 onClick={() => handleQuantityChange(item.quantity - 1)}
               >
                 <Minus className="w-3 h-3" />
               </Button>
-              <div className="w-8 text-center text-xs font-bold tabular-nums">
+              <div className="w-8 text-center text-xs font-black tabular-nums">
                 {item.quantity}
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-full w-6 rounded-none hover:bg-slate-200"
+                className={`h-full w-6 rounded-none border-l transition-opacity ${
+                  item.quantity >= maxAvailable
+                    ? "opacity-30 cursor-not-allowed"
+                    : "hover:bg-slate-100"
+                }`}
+                disabled={item.quantity >= maxAvailable}
                 onClick={() => handleQuantityChange(item.quantity + 1)}
               >
                 <Plus className="w-3 h-3" />
@@ -219,12 +224,19 @@ export function PosCartItem({ item }: PosCartItemProps) {
           )}
         </div>
 
-        {/* 3. Subtotal */}
+        {/* 3. Precios */}
         <div className="text-right">
-          <div className="text-[10px] text-muted-foreground">
-            {formatCurrency(item.unitPrice)} c/u
+          <div className="text-[10px] text-muted-foreground font-medium">
+            {isRent && item.product.rent_unit !== "evento" ? (
+              <span className="text-blue-500 font-bold">
+                {formatCurrency(item.unitPrice)} x {days}{" "}
+                {days === 1 ? "día" : "días"}
+              </span>
+            ) : (
+              `${formatCurrency(item.unitPrice)} c/u`
+            )}
           </div>
-          <div className="text-sm font-black text-slate-500">
+          <div className="text-sm font-black text-slate-700">
             {formatCurrency(item.subtotal)}
           </div>
         </div>

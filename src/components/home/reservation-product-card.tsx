@@ -4,11 +4,11 @@ import { Badge } from "@/components/badge";
 import Image from "next/image";
 import { DetailsReservedViewer } from "./details-reserved-viewer";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { STOCK_MOCK } from "@/src/mocks/mock.stock";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { useReservationStore } from "@/src/store/useReservationStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 interface Props {
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
@@ -17,6 +17,7 @@ interface Props {
 
 export function ReservationProductCard({ reservation }: Props) {
   const { reservationItems } = useReservationStore();
+  const { inventoryItems, stockLots } = useInventoryStore();
 
   // 1. Buscamos el item exacto de esta reserva
   const specificItems = reservationItems.filter(
@@ -29,8 +30,6 @@ export function ReservationProductCard({ reservation }: Props) {
   if (!specificItems.length) {
     return null;
   }
-
-  console.log("reservationItems", reservationItems);
 
   return (
     <Card className="flex flex-col p-4 gap-4 hover:shadow-md transition-all ">
@@ -83,7 +82,7 @@ export function ReservationProductCard({ reservation }: Props) {
             (p) => p.id.toString() === item.productId,
           );
 
-          const itemColorHex = STOCK_MOCK.find(
+          const itemColorHex = [...inventoryItems, ...stockLots].find(
             (s) =>
               s.productId.toString() === item.productId.toString() &&
               s.color === item.color,

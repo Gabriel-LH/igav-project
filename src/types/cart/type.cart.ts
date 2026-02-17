@@ -8,10 +8,10 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  
+
   // 🔥 NUEVOS CAMPOS CLAVE
-  selectedSize?: string;  // Ej: "M"
+  selectedSize?: string; // Ej: "M"
   selectedColor?: string; // Ej: "Rojo"
-  
-  selectedStockIds: string[];
+
+  selectedCodes: string[];
 }

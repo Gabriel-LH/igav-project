@@ -12,10 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 
 export function PosLayout() {
-  const { products, stock } = useInventoryStore();
+  const { products, inventoryItems, stockLots } = useInventoryStore();
   const { addItem, items } = useCartStore();
 
-  // "Modo Preferido": Sirve solo cuando hay ambigüedad (cuando el producto puede ser ambas cosas)
   const [preferredMode, setPreferredMode] = useState<"venta" | "alquiler">(
     "alquiler",
   );
@@ -24,54 +23,87 @@ export function PosLayout() {
     onScan: (code) => {
       console.log("Escaneado:", code);
 
-      // 1. BUSCAR EN STOCK (Prioridad: ID Único / Etiqueta física)
-      // Nota: Tu schema tiene 'id', no 'stock_code'. Usamos 'id' como el código de barras único.
-      const stockItem = stock.find((s) => s.id === code);
+      // 1. BUSCAR EN INVENTARIO (Seriales o Lotes)
+      const serialItem = inventoryItems.find((i) => i.serialCode === code);
+      const lotItem = stockLots.find((l) => l.variantCode === code);
 
       let productToAdd = null;
-      let operationMode: "venta" | "alquiler" = preferredMode; // Por defecto usamos la preferencia
-      let specificStockId = undefined;
+      let operationMode: "venta" | "alquiler" = preferredMode;
+      let specificCode = undefined;
+      let scannedVariant = undefined;
+      let maxStock = 0;
 
-      if (stockItem) {
-        // --- CASO 1: ES UN ÍTEM FÍSICO ESPECÍFICO (SERIAL O LOTE ESPECÍFICO) ---
-
-        // Validar estado físico
-        if (stockItem.status !== "disponible") {
+      if (serialItem) {
+        // --- CASO 1: SERIALIZADO ---
+        if (serialItem.status !== "disponible") {
           toast.error(
-            `Este ítem no está disponible. Estado: ${stockItem.status}`,
+            `Este ítem no está disponible. Estado: ${serialItem.status}`,
           );
           return;
         }
 
-        productToAdd = products.find((p) => p.id === stockItem.productId);
-        specificStockId = stockItem.id;
+        productToAdd = products.find((p) => p.id === serialItem.productId);
+        specificCode = serialItem.serialCode;
+        scannedVariant = { size: serialItem.size, color: serialItem.color };
 
-        // --- AUTO-DETECCIÓN DE OPERACIÓN ---
-        if (stockItem.isForSale && !stockItem.isForRent) {
-          operationMode = "venta"; // Solo sirve para venta -> Forzamos venta
-        } else if (!stockItem.isForSale && stockItem.isForRent) {
-          operationMode = "alquiler"; // Solo sirve para alquiler -> Forzamos alquiler
-        } else if (stockItem.isForSale && stockItem.isForRent) {
-          // Sirve para ambos -> Usamos el preferredMode
-          operationMode = preferredMode;
-        } else {
-          toast.error(
-            "Este ítem está marcado como NO disponible para venta ni alquiler.",
-          );
+        if (serialItem.isForSale && !serialItem.isForRent)
+          operationMode = "venta";
+        else if (!serialItem.isForSale && serialItem.isForRent)
+          operationMode = "alquiler";
+        else operationMode = preferredMode;
+
+        maxStock = inventoryItems.filter(
+          (i) =>
+            i.productId === serialItem.productId &&
+            i.size === serialItem.size &&
+            i.color === serialItem.color &&
+            i.status === "disponible" &&
+            (operationMode === "venta" ? i.isForSale : i.isForRent),
+        ).length;
+      } else if (lotItem) {
+        // --- CASO 2: LOTE ---
+        if (lotItem.status === "agotado" || lotItem.quantity <= 0) {
+          toast.error("Este lote está agotado.");
           return;
         }
+
+        productToAdd = products.find((p) => p.id === lotItem.productId);
+        specificCode = lotItem.variantCode;
+        scannedVariant = { size: lotItem.size, color: lotItem.color };
+
+        if (lotItem.isForSale && !lotItem.isForRent) operationMode = "venta";
+        else if (!lotItem.isForSale && lotItem.isForRent)
+          operationMode = "alquiler";
+        else operationMode = preferredMode;
+
+        maxStock = lotItem.quantity;
       } else {
-        // --- CASO 2: ES UN SKU GENÉRICO (PRODUCTO) ---
+        // --- CASO 3: SKU GENÉRICO DE PRODUCTO ---
         productToAdd = products.find((p) => p.sku === code);
-
         if (productToAdd) {
-          // Validar capacidades del producto
-          if (productToAdd.can_sell && !productToAdd.can_rent) {
+          if (productToAdd.can_sell && !productToAdd.can_rent)
             operationMode = "venta";
-          } else if (!productToAdd.can_sell && productToAdd.can_rent) {
+          else if (!productToAdd.can_sell && productToAdd.can_rent)
             operationMode = "alquiler";
+          else operationMode = preferredMode;
+
+          // Stock genérico (sin variantes)
+          if (productToAdd.is_serial) {
+            maxStock = inventoryItems.filter(
+              (i) =>
+                i.productId === productToAdd!.id &&
+                i.status === "disponible" &&
+                (operationMode === "venta" ? i.isForSale : i.isForRent),
+            ).length;
           } else {
-            operationMode = preferredMode;
+            maxStock = stockLots
+              .filter(
+                (l) =>
+                  l.productId === productToAdd!.id &&
+                  l.status === "disponible" &&
+                  (operationMode === "venta" ? l.isForSale : l.isForRent),
+              )
+              .reduce((acc, curr) => acc + curr.quantity, 0);
           }
         }
       }
@@ -82,7 +114,6 @@ export function PosLayout() {
       }
 
       // 2. VALIDACIONES DE SEGURIDAD
-      // Validar si el producto permite la operación detectada
       if (operationMode === "venta" && !productToAdd.can_sell) {
         toast.warning(`El producto ${productToAdd.name} no permite VENTA`);
         return;
@@ -92,26 +123,15 @@ export function PosLayout() {
         return;
       }
 
-      // 3. CALCULAR STOCK DISPONIBLE REAL
-      // Filtramos el stock que coincida con el modo detectado
-      const availableStock = stock.filter(
-        (s) =>
-          s.productId === productToAdd!.id &&
-          s.status === "disponible" &&
-          (operationMode === "venta" ? s.isForSale : s.isForRent),
-      );
-
-      const maxStock = availableStock.reduce(
-        (acc, curr) => acc + curr.quantity,
-        0,
-      );
-
       // 4. VALIDAR CARRITO ACTUAL
       const currentInCart =
         items.find(
           (i) =>
             i.product.id === productToAdd!.id &&
-            i.operationType === operationMode,
+            i.operationType === operationMode &&
+            (!scannedVariant ||
+              (i.selectedSize === scannedVariant.size &&
+                i.selectedColor === scannedVariant.color)),
         )?.quantity || 0;
 
       if (currentInCart >= maxStock) {
@@ -122,32 +142,26 @@ export function PosLayout() {
       }
 
       // Validar duplicidad de serial específico
-      if (specificStockId) {
+      if (specificCode && productToAdd.is_serial) {
         const isSerialInCart = items.some((i) =>
-          i.selectedStockIds.includes(specificStockId!),
+          i.selectedCodes.includes(specificCode!),
         );
         if (isSerialInCart) {
           toast.error("Este ítem específico ya está en el carrito.");
           return;
         }
       }
-      const scannedVariant = {
-        size: stockItem?.size,
-        color: stockItem?.color,
-      };
 
       // 5. AGREGAR AL CARRITO
       addItem(
         productToAdd,
         operationMode,
-        specificStockId,
+        specificCode,
         maxStock,
         scannedVariant,
       );
 
-      // Mensaje inteligente
       const modeLabel = operationMode === "venta" ? "VENTA" : "ALQUILER";
-      // Si el modo forzado fue diferente al preferido, avisamos
       if (operationMode !== preferredMode) {
         toast.info(`Agregado como ${modeLabel} (Restricción del ítem)`);
       } else {
@@ -157,8 +171,7 @@ export function PosLayout() {
   });
 
   return (
-    <div className="flex flex-col h-full gap-2">
-      {/* BARRA SUPERIOR: MODO POR DEFECTO */}
+    <div className="flex flex-col h-full min-h-0 overflow-hidden gap-2">
       <div className="flex items-center justify-between px-4 py-2 bg-slate-800 text-white rounded-lg mx-4 mt-2 shadow-md">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono opacity-70">MODO ESCÁNER:</span>
@@ -194,14 +207,12 @@ export function PosLayout() {
         </div>
       </div>
 
-      <div className="flex flex-1 gap-4 min-h-0 px-4 pb-4">
-        {/* IZQUIERDA: Catálogo Manual */}
-        <div className="flex-1 flex flex-col bg-card border rounded-xl shadow-sm overflow-hidden">
+      <div className="flex flex-1 gap-4 min-h-0 px-4 pb-4 items-stretch">
+        <div className="flex-1 flex flex-col bg-card border rounded-xl shadow-sm overflow-hidden min-h-0">
           <PosProductSection />
         </div>
 
-        {/* DERECHA: Carrito */}
-        <div className="w-[400px] flex flex-col bg-card border rounded-xl shadow-md overflow-hidden">
+        <div className="w-[400px] flex flex-col bg-card border rounded-xl shadow-md overflow-hidden min-h-0">
           <PosCartSection />
         </div>
       </div>

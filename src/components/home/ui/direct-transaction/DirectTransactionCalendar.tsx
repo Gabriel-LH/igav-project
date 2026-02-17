@@ -1,5 +1,11 @@
 // src/components/direct-transaction/DirectTransactionCalendar.tsx
-import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
+import {
+  format,
+  addDays,
+  startOfDay,
+  endOfDay,
+  isWithinInterval,
+} from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -10,8 +16,13 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getReservationDataByAttributes, OpType } from "@/src/utils/reservation/checkAvailability";
+import {
+  getReservationDataByAttributes,
+  OpType,
+  getTotalStock,
+} from "@/src/utils/reservation/checkAvailability";
 import { useMemo } from "react";
+import { CartItem } from "@/src/types/cart/type.cart";
 
 interface DirectCalendarProps {
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
@@ -22,16 +33,16 @@ interface DirectCalendarProps {
   label?: string;
   type?: OpType;
   maxDays?: number;
-  productId: string;
-  size: string;
-  color: string;
+  productId?: string;
+  size?: string;
+  color?: string;
   quantity?: number;
-  
+  cartItems?: CartItem[]; // 👈 Nuevo: Para validación colectiva en el POS
 }
 
 export function DirectTransactionCalendar({
   triggerRef,
-  type,
+  type = "alquiler",
   selectedDate,
   onSelect,
   mode,
@@ -42,32 +53,56 @@ export function DirectTransactionCalendar({
   size,
   color,
   quantity,
+  cartItems,
 }: DirectCalendarProps) {
   const today = new Date();
 
-    const availabilityData = useMemo(() => {
-      if (!productId || !size || !color) {
-        return { totalPhysicalStock: 0, activeReservations: [] };
-      }
-      return getReservationDataByAttributes(productId, size, color, type);
-    }, [productId, size, color, type]);
-  
-    const { totalPhysicalStock, activeReservations } = availabilityData;
+  // 1. OBTENER DATOS DE DISPONIBILIDAD (Para uno o varios productos)
+  const availabilityData = useMemo(() => {
+    // Caso A: Usamos el carrito (POS)
+    if (cartItems && cartItems.length > 0) {
+      return cartItems.map((item) => ({
+        id: item.product.id,
+        quantity: item.quantity,
+        data: getReservationDataByAttributes(
+          item.product.id,
+          item.selectedSize || "",
+          item.selectedColor || "",
+          type,
+        ),
+      }));
+    }
 
-  // 2. FUNCIÓN PARA SABER SI UN DÍA ESTÁ LLENO
+    // Caso B: Un solo producto (DirectTransactionModal)
+    if (productId && size && color) {
+      return [
+        {
+          id: productId,
+          quantity: quantity || 1,
+          data: getReservationDataByAttributes(productId, size, color, type),
+        },
+      ];
+    }
+
+    return [];
+  }, [productId, size, color, type, cartItems, quantity]);
+
+  // 2. FUNCIÓN PARA SABER SI UN DÍA ESTÁ LLENO (Basado en la colección de disponibilidad)
   const isDayFull = (date: Date) => {
-    // Si no hay stock físico, bloqueamos todo
-    if (totalPhysicalStock === 0) return true;
+    if (availabilityData.length === 0) return false;
 
-    // Sumar cuántos ya están ocupados en esa fecha
-    const reservedCount = activeReservations
-      .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
-      .reduce((sum, r) => sum + (r.quantity || 1), 0);
+    // Un día está lleno si AL MENOS UN producto del set no cabe
+    return availabilityData.some(({ quantity: requestedQty, data }) => {
+      const { totalPhysicalStock, activeReservations } = data;
 
-    // Sumar los que yo quiero llevarme
-     const currentRequest = quantity || 1;
-    // Si la suma supera el total físico -> BLOQUEADO
-    return (reservedCount + currentRequest) > totalPhysicalStock;
+      if (totalPhysicalStock === 0) return true;
+
+      const reservedAtThisTime = activeReservations
+        .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
+        .reduce((sum, r) => sum + (r.quantity || 1), 0);
+
+      return reservedAtThisTime + requestedQty > totalPhysicalStock;
+    });
   };
 
   // 3. REGLA DE PICKUP (Apartado Físico: Máximo 2 días)
@@ -76,22 +111,19 @@ export function DirectTransactionCalendar({
   // 4. LÓGICA FINAL DE BLOQUEO
   const isDisabled = (date: Date) => {
     const day = startOfDay(date);
-    
+
     // A. Bloqueo por Reglas de Negocio (Tiempos)
     let isRestrictedByRules = false;
-    
+
     if (mode === "pickup") {
-      // Solo permite hoy, mañana y pasado mañana
-      isRestrictedByRules = day < startOfDay(today) || day > endOfDay(maxPickupDate);
+      isRestrictedByRules =
+        day < startOfDay(today) || day > endOfDay(maxPickupDate);
     } else {
-      // Para devolución: Solo permite fechas posteriores a la de recojo
       const referenceDate = minDate ? startOfDay(minDate) : startOfDay(today);
       isRestrictedByRules = day < referenceDate;
     }
 
-    // B. Bloqueo por Disponibilidad (Stock agotado ese día)
-    // Solo validamos ocupación si NO está ya bloqueado por reglas de fecha
-    // y si es Alquiler (o si quieres validar venta también)
+    // B. Bloqueo por Disponibilidad (Stock agotado en el conjunto de productos)
     const isRestrictedByStock = !isRestrictedByRules && isDayFull(day);
 
     return isRestrictedByRules || isRestrictedByStock;
@@ -106,7 +138,7 @@ export function DirectTransactionCalendar({
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal h-10 border-dashed",
-              !selectedDate && "text-muted-foreground"
+              !selectedDate && "text-muted-foreground",
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 text-primary" />

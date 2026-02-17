@@ -1,11 +1,12 @@
 import z from "zod";
-import { Stock } from "./type.stock";
+import { StockLot } from "./type.stockLote";
+import { InventoryItem } from "./type.inventoryItem";
 
 export const productSchema = z.object({
   id: z.string(),
   name: z.string(),
   image: z.string(),
-  sku: z.string(), // SKU debe ser único
+  sku: z.string(), // SKU único por producto base
   category: z.string(),
   description: z.string(),
   is_serial: z.boolean(),
@@ -18,7 +19,7 @@ export const productSchema = z.object({
 
 export type Product = z.infer<typeof productSchema>;
 
-
 export type ProductWithStock = Product & {
-  inventory: Stock[]; // Todos los registros de stock que coincidan con el productId
+  stockLots: StockLot[]; // Para productos no serializados
+  inventoryItems: InventoryItem[]; // Para productos serializados
 };
