@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,38 +9,30 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/badge";
 import { toast } from "sonner";
-import { addDays } from "date-fns";
-import {
-  ShoppingBag,
-  Calendar,
-  AlertTriangle,
-  CheckCircle2,
-  Banknote,
-} from "lucide-react";
+import { addDays, setHours, setMinutes } from "date-fns";
+import { ShoppingBag, AlertTriangle, Banknote, Calendar } from "lucide-react";
 
+// --- IMPORTS ---
 import { useCartStore } from "@/src/store/useCartStore";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/home/ui/direct-transaction/CashPaymentSummary";
-import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
 import { processTransaction } from "@/src/services/transactionServices";
-import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { CartItem } from "@/src/types/cart/type.cart";
 import { SaleDTO } from "@/src/interfaces/SaleDTO";
 import { RentalDTO } from "@/src/interfaces/RentalDTO";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "@/src/components/home/ui/direct-transaction/TimePicker";
-import { setHours, setMinutes } from "date-fns";
+import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckmarkBadge03Icon } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/badge";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -51,16 +43,16 @@ export function PosCheckoutModal({
   open,
   onOpenChange,
 }: PosCheckoutModalProps) {
-  const { items, clearCart, globalRentalDates } = useCartStore();
-  const allStock = useInventoryStore((s) => s.stock);
+  const { items, clearCart, globalRentalDates, setGlobalDates } =
+    useCartStore();
 
   const businessRules = BUSINESS_RULES_MOCK;
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId;
 
   // ─── ESTADOS ───
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
-  const [notes, setNotes] = React.useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [notes, setNotes] = useState("");
 
   // Fechas de alquiler
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -68,33 +60,37 @@ export function PosCheckoutModal({
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
-  const [dateRange, setDateRange] = React.useState<any>({
-    from: globalRentalDates?.from || new Date(),
-    to: globalRentalDates?.to || addDays(new Date(), 3),
-  });
+  // Sincronizamos fecha local con global
+  const dateRange = useMemo(
+    () => ({
+      from: globalRentalDates?.from || new Date(),
+      to: globalRentalDates?.to || addDays(new Date(), 3),
+    }),
+    [globalRentalDates],
+  );
 
-  const [pickupTime, setPickupTime] = React.useState(
-    businessRules.openHours.open,
-  );
-  const [returnTime, setReturnTime] = React.useState(
-    businessRules.openHours.close,
-  );
+  // Handler para actualizar fecha global desde este modal
+  const handleDateChange = (newRange: { from?: Date; to?: Date }) => {
+    setGlobalDates({
+      from: newRange.from || dateRange.from,
+      to: newRange.to || dateRange.to,
+    });
+  };
+
+  const [pickupTime, setPickupTime] = useState(businessRules.openHours.open);
+  const [returnTime, setReturnTime] = useState(businessRules.openHours.close);
 
   // Financieros
-  const [paymentMethod, setPaymentMethod] = React.useState<
+  const [paymentMethod, setPaymentMethod] = useState<
     "cash" | "card" | "transfer" | "yape" | "plin"
   >("cash");
-  const [receivedAmount, setReceivedAmount] = React.useState("");
-  const [guarantee, setGuarantee] = React.useState("");
-  const [guaranteeType, setGuaranteeType] =
-    React.useState<GuaranteeType>("dinero");
+  const [receivedAmount, setReceivedAmount] = useState("");
+  const [guarantee, setGuarantee] = useState("");
+  const [guaranteeType, setGuaranteeType] = useState<GuaranteeType>("dinero");
 
-  const [checklist, setChecklist] = React.useState({
-    deliverAfter: false,
-    guaranteeAfter: false,
-  });
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // ─── SEPARAR POR TIPO ───
+  // ─── CLASIFICACIÓN DE ITEMS ───
   const ventaItems = useMemo(
     () => items.filter((i) => i.operationType === "venta"),
     [items],
@@ -109,26 +105,21 @@ export function PosCheckoutModal({
 
   // ─── CÁLCULOS DE PRECIO ───
   const totalVentas = useMemo(
-    () => ventaItems.reduce((sum, i) => sum + i.subtotal, 0),
+    () => ventaItems.reduce((acc, item) => acc + item.subtotal, 0),
     [ventaItems],
   );
+
   const totalAlquileres = useMemo(() => {
     if (!hasRentals) return 0;
-    // Para alquileres, recalcular con días
-    const days =
-      dateRange?.from && dateRange?.to
-        ? Math.max(
-            Math.ceil(
-              (dateRange.to.getTime() - dateRange.from.getTime()) /
-                (1000 * 60 * 60 * 24),
-            ) + 1,
-            1,
-          )
-        : 1;
-    return alquilerItems.reduce((sum, item) => {
-      const rentUnit = item.product.rent_unit;
-      const isEvent = rentUnit === "evento";
-      return sum + item.unitPrice * item.quantity * (isEvent ? 1 : days);
+    const diffTime = Math.abs(
+      dateRange.to.getTime() - dateRange.from.getTime(),
+    );
+    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+    return alquilerItems.reduce((acc, item) => {
+      const isEvent = item.product.rent_unit === "evento";
+      const multiplier = isEvent ? 1 : days;
+      return acc + item.unitPrice * item.quantity * multiplier;
     }, 0);
   }, [alquilerItems, dateRange, hasRentals]);
 
@@ -142,9 +133,9 @@ export function PosCheckoutModal({
 
   const changeAmount = useMemo(() => {
     if (paymentMethod !== "cash") return 0;
-    if (Number(receivedAmount) <= 0) return 0;
-    if (Number(receivedAmount) < totalACobrarHoy) return 0;
-    return Number(receivedAmount) - totalACobrarHoy;
+    const received = Number(receivedAmount);
+    if (received <= 0 || received < totalACobrarHoy) return 0;
+    return received - totalACobrarHoy;
   }, [receivedAmount, totalACobrarHoy, paymentMethod]);
 
   const withTime = (date: Date, time: string) => {
@@ -152,78 +143,40 @@ export function PosCheckoutModal({
     return setMinutes(setHours(date, h), m);
   };
 
-  // ─── VALIDAR Y CONSTRUIR ITEMS ───
-  const buildTransactionItems = (cartItems: CartItem[]) => {
-    const transactionItems: any[] = [];
+  // ─── VALIDACIONES (Lógica Robusta) ───
+  const conflicts = useMemo(() => {
+    if (!hasRentals) return [];
+    const list: string[] = [];
 
-    for (const cartItem of cartItems) {
-      const isVenta = cartItem.operationType === "venta";
+    alquilerItems.forEach((item) => {
+      const check = getAvailabilityByAttributes(
+        item.product.id,
+        item.selectedSize || "",
+        item.selectedColor || "",
+        dateRange.from,
+        dateRange.to,
+        "alquiler",
+      );
 
-      if (cartItem.product.is_serial) {
-        // SERIALIZADO: exigir IDs seleccionados
-        if (cartItem.selectedStockIds.length < cartItem.quantity) {
-          toast.error(
-            `"${cartItem.product.name}": Debes asignar ${cartItem.quantity} unidades serializadas (tienes ${cartItem.selectedStockIds.length}).`,
-          );
-          return null;
-        }
-        for (const stockId of cartItem.selectedStockIds) {
-          transactionItems.push({
-            productId: cartItem.product.id,
-            productName: cartItem.product.name,
-            stockId,
-            quantity: 1,
-            size: "", // POS no filtra por talla, se resuelve del stock
-            color: "",
-            priceAtMoment: cartItem.unitPrice,
-          });
-        }
-      } else {
-        // NO SERIALIZADO: auto-asignar FIFO
-        const candidates = allStock.filter((s) => {
-          const isBaseMatch =
-            String(s.productId) === String(cartItem.product.id) &&
-            s.status === "disponible";
-          if (!isBaseMatch) return false;
-          return isVenta ? s.isForSale === true : s.isForRent === true;
-        });
-
-        let remaining = cartItem.quantity;
-        for (const stock of candidates) {
-          if (remaining <= 0) break;
-          const take = Math.min(remaining, stock.quantity);
-          transactionItems.push({
-            productId: cartItem.product.id,
-            productName: cartItem.product.name,
-            stockId: stock.id,
-            quantity: take,
-            size: stock.size,
-            color: stock.color,
-            priceAtMoment: cartItem.unitPrice,
-          });
-          remaining -= take;
-        }
-
-        if (remaining > 0) {
-          toast.error(
-            `"${cartItem.product.name}": Stock insuficiente. Faltan ${remaining} unidades.`,
-          );
-          return null;
-        }
+      if (item.quantity > check.availableCount) {
+        list.push(
+          `${item.product.name}: Solicitado ${item.quantity}, Disponible ${check.availableCount}`,
+        );
       }
-    }
+    });
+    return list;
+  }, [alquilerItems, dateRange, hasRentals]);
 
-    return transactionItems;
-  };
+  const missingSerials = items.some(
+    (i) => i.product.is_serial && i.selectedStockIds.length < i.quantity,
+  );
 
-  // ─── CONFIRMAR ───
-  const handleConfirm = () => {
+  // ─── HANDLER: CONFIRMAR PAGO ───
+  const handleConfirm = async () => {
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
-    if (items.length === 0) return toast.error("El carrito está vacío");
-
-    if (hasRentals && (!dateRange?.from || !dateRange?.to)) {
-      return toast.error("Seleccione fechas de alquiler");
-    }
+    if (conflicts.length > 0)
+      return toast.error("Conflictos de stock en fechas seleccionadas");
+    if (missingSerials) return toast.error("Faltan asignar series");
 
     const baseData = {
       customerId: selectedCustomer.id,
@@ -232,74 +185,83 @@ export function PosCheckoutModal({
       branchId: currentBranchId,
       notes,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date(), // Cumple contrato DTO
     };
 
-    // PROCESAR VENTAS
-    if (hasSales) {
-      const saleItems = buildTransactionItems(ventaItems);
-      if (!saleItems) return; // Error ya mostrado
-
-      const saleData: SaleDTO = {
-        ...baseData,
-        type: "venta",
-        status: checklist.deliverAfter
-          ? "vendido_pendiente_entrega"
-          : "vendido",
-        items: saleItems,
-        financials: {
-          totalAmount: totalVentas,
-          paymentMethod,
-          receivedAmount: Number(receivedAmount),
-          keepAsCredit: false,
-          totalPrice: totalVentas,
-          downPayment: 0,
-        },
-        id: "",
-        operationId: "",
-      };
-
-      processTransaction(saleData);
-    }
-
-    // PROCESAR ALQUILERES
-    if (hasRentals) {
-      const rentalItems = buildTransactionItems(alquilerItems);
-      if (!rentalItems) return; // Error ya mostrado
-
-      const rentalData: RentalDTO = {
-        ...baseData,
-        type: "alquiler",
-        status: checklist.deliverAfter ? "reservado_fisico" : "alquilado",
-        startDate: withTime(dateRange.from, pickupTime),
-        endDate: withTime(dateRange.to, returnTime),
-        items: rentalItems,
-        financials: {
-          totalRent: totalAlquileres,
-          paymentMethod,
-          receivedAmount: Number(receivedAmount),
-          keepAsCredit: false,
-          guarantee: {
-            type: !checklist.guaranteeAfter ? guaranteeType : "por_cobrar",
-            value: guaranteeType === "dinero" ? guarantee : undefined,
-            description: guaranteeType !== "dinero" ? guarantee : undefined,
+    setIsProcessing(true);
+    try {
+      // A. PROCESAR VENTA
+      if (hasSales) {
+        const saleDTO: SaleDTO = {
+          ...baseData,
+          type: "venta",
+          status: "vendido",
+          items: ventaItems.map((i) => ({
+            productId: i.product.id,
+            productName: i.product.name,
+            quantity: i.quantity,
+            stockId: i.selectedStockIds[0], // ID Físico
+            priceAtMoment: i.unitPrice,
+            size: i.selectedSize ?? "",
+            color: i.selectedColor ?? "",
+          })),
+          financials: {
+            totalAmount: totalVentas,
+            paymentMethod: paymentMethod as PaymentMethodType,
+            receivedAmount: Number(receivedAmount),
+            keepAsCredit: false,
+            totalPrice: totalVentas,
+            downPayment: 0,
           },
-        },
-        id: "",
-        operationId: "",
-      };
+          id: "", // Placeholder
+          operationId: "", // Placeholder
+        };
+        await processTransaction(saleDTO);
+      }
 
-      processTransaction(rentalData);
+      // B. PROCESAR ALQUILER
+      if (hasRentals) {
+        const rentalDTO: RentalDTO = {
+          ...baseData,
+          type: "alquiler",
+          status: "alquilado",
+          startDate: withTime(dateRange.from, pickupTime),
+          endDate: withTime(dateRange.to, returnTime),
+          items: alquilerItems.map((i) => ({
+            productId: i.product.id,
+            productName: i.product.name,
+            quantity: i.quantity,
+            stockId: i.selectedStockIds[0], // ID Físico
+            priceAtMoment: i.unitPrice,
+            size: i.selectedSize ?? "",
+            color: i.selectedColor ?? "",
+          })),
+          financials: {
+            totalRent: totalAlquileres,
+            paymentMethod: paymentMethod as PaymentMethodType,
+            receivedAmount: hasSales ? 0 : Number(receivedAmount), // Si es mixto, asumimos pago va a venta
+            keepAsCredit: false,
+            guarantee: {
+              type: guaranteeType,
+              value: guaranteeType === "dinero" ? guarantee : undefined,
+              description: guaranteeType !== "dinero" ? guarantee : undefined,
+            },
+          },
+          id: "", // Placeholder
+          operationId: "", // Placeholder
+        };
+        await processTransaction(rentalDTO);
+      }
+
+      toast.success("Operación exitosa");
+      clearCart();
+      onOpenChange(false);
+    } catch (e) {
+      console.error(e);
+      toast.error("Error al procesar");
+    } finally {
+      setIsProcessing(false);
     }
-
-    // ÉXITO
-    const msgs: string[] = [];
-    if (hasSales) msgs.push("Venta");
-    if (hasRentals) msgs.push("Alquiler");
-    toast.success(`${msgs.join(" + ")} procesado correctamente`);
-
-    clearCart();
-    onOpenChange(false);
   };
 
   return (
@@ -425,15 +387,13 @@ export function PosCheckoutModal({
                     <DirectTransactionCalendar
                       triggerRef={pickupDateRef}
                       selectedDate={dateRange.from}
-                      onSelect={(date: Date | undefined) => {
-                        if (date) setDateRange({ ...dateRange, from: date });
-                      }}
                       mode="pickup"
                       productId=""
                       size=""
                       color=""
                       quantity={1}
                       type="alquiler"
+                      onSelect={(d) => d && handleDateChange({ from: d })}
                     />
                     <TimePicker
                       triggerRef={pickupTimeRef}
@@ -456,17 +416,15 @@ export function PosCheckoutModal({
                   <div className="absolute opacity-0 pointer-events-none top-0">
                     <DirectTransactionCalendar
                       triggerRef={returnDateRef}
-                      minDate={dateRange.from}
                       selectedDate={dateRange.to}
-                      onSelect={(date: Date | undefined) => {
-                        if (date) setDateRange({ ...dateRange, to: date });
-                      }}
+                      minDate={dateRange.from}
                       mode="return"
-                      type="alquiler"
                       productId=""
                       size=""
                       color=""
                       quantity={1}
+                      type="alquiler"
+                      onSelect={(d) => d && handleDateChange({ to: d })}
                     />
                     <TimePicker
                       triggerRef={returnTimeRef}
@@ -476,6 +434,19 @@ export function PosCheckoutModal({
                   </div>
                 </div>
               </div>
+              {conflicts.length > 0 && (
+                <div className="p-2 bg-red-100 border border-red-200 rounded text-xs text-red-700 mt-2 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <div>
+                    <strong>Conflictos de Disponibilidad:</strong>
+                    <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                      {conflicts.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -499,7 +470,6 @@ export function PosCheckoutModal({
 
           {/* ─── PAGO ─── */}
           <CashPaymentSummary
-            checklist={checklist}
             type={hasRentals ? "alquiler" : "venta"}
             totalToPay={totalACobrarHoy}
             paymentMethod={paymentMethod}
@@ -539,8 +509,15 @@ export function PosCheckoutModal({
             )}
             className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
           >
-            <CheckCircle2 className="w-5 h-5 mr-2" />
-            CONFIRMAR COBRO — {formatCurrency(totalACobrarHoy)}
+            <HugeiconsIcon
+              icon={CheckmarkBadge03Icon}
+              className="w-5 h-5 mr-2"
+            />
+            {isProcessing
+              ? "PROCESANDO..."
+              : missingSerials
+                ? "ASIGNAR SERIES EN CARRITO"
+                : `CONFIRMAR COBRO — ${formatCurrency(totalACobrarHoy)}`}
           </Button>
         </div>
       </DialogContent>

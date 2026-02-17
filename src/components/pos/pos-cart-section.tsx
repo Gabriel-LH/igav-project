@@ -3,37 +3,23 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UserCircle, CalendarClock, Trash2 } from "lucide-react";
+import { Trash2, ListChecks } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { PosCartItem } from "./pos-cart-item";
-import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
 import { PosCheckoutModal } from "./modals/PosCheckoutModal";
 import { PosReservationModal } from "./modals/PosReservationModal";
-import { Calendar } from "@/components/ui/calendar";
-import { DateRange } from "react-day-picker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ShoppingCart02Icon } from "@hugeicons/core-free-icons";
 
 export function PosCartSection() {
-  const { items, getTotal, clearCart, globalRentalDates, setGlobalDates } =
-    useCartStore();
+  const { items, getTotal, clearCart } = useCartStore();
 
   const total = getTotal();
-  const hasRentals = items.some((i) => i.operationType === "alquiler");
 
   // ─── MODALES ───
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [reservationOpen, setReservationOpen] = React.useState(false);
-
-  // ─── SELECTOR DE CLIENTE (inline en header) ───
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
-
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -41,32 +27,10 @@ export function PosCartSection() {
       <div className="p-3 border-b  flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full border bg-amber-50 flex items-center justify-center text-blue-700">
-            <UserCircle className="w-5 h-5" />
+            <ListChecks className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-sm font-bold">
-              {selectedCustomer
-                ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}`
-                : "Cliente General"}
-            </p>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <p className="text-[10px] text-blue-600 cursor-pointer hover:underline font-medium">
-                  {selectedCustomer ? "Cambiar" : "Seleccionar / Crear"}
-                </p>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-[400px] p-0"
-                side="left"
-                align="start"
-              >
-                <CustomerSelector
-                  selected={selectedCustomer}
-                  onSelect={(client) => setSelectedCustomer(client)}
-                />
-              </PopoverContent>
-            </Popover>
+            <p className="text-sm font-bold">Lista de Productos</p>
           </div>
         </div>
         {items.length > 0 && (
@@ -81,61 +45,14 @@ export function PosCartSection() {
         )}
       </div>
 
-      {/* 2. HEADER DE FECHAS (Solo visible si hay alquileres) */}
-      {hasRentals && (
-        <div className="px-3 py-2 border-b flex items-center justify-between animate-in slide-in-from-top-2">
-          <div className="flex items-center gap-2">
-            <CalendarClock className="w-4 h-4" />
-            <span className="text-xs font-bold uppercase">
-              Fechas de Alquiler
-            </span>
-          </div>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 text-xs border-amber-200 hover:bg-amber-100"
-              >
-                {globalRentalDates?.from ? (
-                  <>
-                    {format(globalRentalDates.from, "d MMM", { locale: es })} -{" "}
-                    {globalRentalDates?.to
-                      ? format(globalRentalDates.to, "d MMM", { locale: es })
-                      : " ..."}
-                  </>
-                ) : (
-                  "Seleccionar fechas"
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="range"
-                selected={
-                  globalRentalDates
-                    ? { from: globalRentalDates.from, to: globalRentalDates.to }
-                    : undefined
-                }
-                onSelect={(range: DateRange | undefined) => {
-                  if (range?.from && range?.to) {
-                    setGlobalDates({ from: range.from, to: range.to });
-                  }
-                }}
-                numberOfMonths={2}
-                disabled={{ before: new Date() }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
-
       {/* 3. LISTA DE ITEMS */}
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {items.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-muted-foreground opacity-50 gap-2">
-            <UserCircle className="w-10 h-10 stroke-1" />
+            <HugeiconsIcon
+              icon={ShoppingCart02Icon}
+              className="w-10 h-10 stroke-1"
+            />
             <p className="text-sm italic">Carrito vacío</p>
             <p className="text-[10px]">
               Escanea un producto o selecciónalo del catálogo

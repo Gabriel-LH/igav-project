@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/badge";
 import { toast } from "sonner";
 import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
 
@@ -36,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
+import { Client } from "@/src/types/clients/type.client";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -54,7 +54,9 @@ export function PosReservationModal({
   const currentBranchId = USER_MOCK[0].branchId;
 
   // ─── ESTADOS ───
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = React.useState<Client | null>(
+    null,
+  );
   const [notes, setNotes] = React.useState("");
 
   // Fechas
@@ -63,7 +65,7 @@ export function PosReservationModal({
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
-  const [dateRange, setDateRange] = React.useState<any>({
+  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>({
     from: new Date(),
     to: addDays(new Date(), 3),
   });
@@ -125,10 +127,13 @@ export function PosReservationModal({
   const operationType = hasRentals ? "alquiler" : "venta";
 
   // ─── CONSTRUIR ITEMS ───
-  const buildReservationItems = () => {
+  const buildReservationItems = (filterType?: "venta" | "alquiler") => {
     const transactionItems: any[] = [];
+    const targetItems = filterType
+      ? items.filter((i) => i.operationType === filterType)
+      : items;
 
-    for (const cartItem of items) {
+    for (const cartItem of targetItems) {
       const isVenta = cartItem.operationType === "venta";
 
       if (isVenta) {
@@ -141,13 +146,14 @@ export function PosReservationModal({
             return null;
           }
           for (const stockId of cartItem.selectedStockIds) {
+            const stockFound = allStock.find((s) => s.id === stockId);
             transactionItems.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
               stockId,
               quantity: 1,
-              size: "",
-              color: "",
+              size: stockFound?.size || cartItem.selectedSize || "---",
+              color: stockFound?.color || cartItem.selectedColor || "---",
               priceAtMoment: cartItem.unitPrice,
             });
           }
@@ -190,8 +196,8 @@ export function PosReservationModal({
             productName: cartItem.product.name,
             stockId: undefined, // Virtual
             quantity: 1,
-            size: "",
-            color: "",
+            size: cartItem.selectedSize || "",
+            color: cartItem.selectedColor || "",
             priceAtMoment: cartItem.unitPrice,
           });
         }
@@ -210,51 +216,135 @@ export function PosReservationModal({
       return toast.error("Ingrese un adelanto mayor a 0");
     }
 
-    const transactionItems = buildReservationItems();
-    if (!transactionItems) return;
+    const totalDP = Number(downPayment);
 
-    const newReservation: ReservationDTO = {
-      branchId: currentBranchId,
-      createdAt: new Date(),
-      type: "reserva",
-      operationType,
-      customerId: selectedCustomer.id,
-      customerName: selectedCustomer.name,
-      status: "confirmada",
-      notes,
-      financials: {
-        receivedAmount: Number(downPayment),
-        keepAsCredit: false,
-        totalPrice: totalOperacion,
-        downPayment: Number(downPayment),
-        paymentMethod,
-        pendingAmount,
-      },
-      sellerId,
-      reservationDateRange: {
-        from: startOfDay(dateRange.from),
-        to: endOfDay(dateRange.to || dateRange.from),
-        hourFrom: pickupTime,
-      },
-      id: "",
-      operationId: "",
-      items: transactionItems,
-      updatedAt: new Date(),
-    };
+    // Si es mixto, separamos en dos transacciones
+    if (hasSales && hasRentals) {
+      // 1. Calcular división proporcional del adelanto
+      const saleShare = totalVentas / totalOperacion;
+      const saleDP = Math.round(totalDP * saleShare * 100) / 100;
+      const rentalDP = Math.round((totalDP - saleDP) * 100) / 100;
 
-    try {
-      processTransaction(newReservation);
+      // 2. Procesar Venta
+      const saleItems = buildReservationItems("venta");
+      if (!saleItems) return;
+      const saleDTO: ReservationDTO = {
+        branchId: currentBranchId,
+        createdAt: new Date(),
+        type: "reserva",
+        operationType: "venta",
+        customerId: selectedCustomer.id,
+        customerName:
+          selectedCustomer.firstName + " " + selectedCustomer.lastName,
+        status: "confirmada",
+        notes: notes + " (Venta de operacion mixta)",
+        financials: {
+          receivedAmount: saleDP,
+          keepAsCredit: false,
+          totalPrice: totalVentas,
+          downPayment: saleDP,
+          paymentMethod,
+          pendingAmount: Math.max(totalVentas - saleDP, 0),
+        },
+        sellerId,
+        reservationDateRange: {
+          from: startOfDay(dateRange.from),
+          to: endOfDay(dateRange.to || dateRange.from),
+          hourFrom: pickupTime,
+        },
+        id: "",
+        operationId: "",
+        items: saleItems,
+        updatedAt: new Date(),
+      };
 
-      const msgs: string[] = [];
-      if (hasSales) msgs.push("venta");
-      if (hasRentals) msgs.push("alquiler");
-      toast.success(
-        `Reserva de ${msgs.join(" + ")} creada. Adelanto: ${formatCurrency(Number(downPayment))}`,
-      );
-    } catch (err) {
-      console.error(err);
-      toast.error("Error al procesar la reserva");
-      return;
+      // 3. Procesar Alquiler
+      const rentalItems = buildReservationItems("alquiler");
+      if (!rentalItems) return;
+      const rentalDTO: ReservationDTO = {
+        branchId: currentBranchId,
+        createdAt: new Date(),
+        type: "reserva",
+        operationType: "alquiler",
+        customerId: selectedCustomer.id,
+        customerName:
+          selectedCustomer.firstName + " " + selectedCustomer.lastName,
+        status: "confirmada",
+        notes: notes + " (Alquiler de operacion mixta)",
+        financials: {
+          receivedAmount: rentalDP,
+          keepAsCredit: false,
+          totalPrice: totalAlquileres,
+          downPayment: rentalDP,
+          paymentMethod,
+          pendingAmount: Math.max(totalAlquileres - rentalDP, 0),
+        },
+        sellerId,
+        reservationDateRange: {
+          from: startOfDay(dateRange.from),
+          to: endOfDay(dateRange.to || dateRange.from),
+          hourFrom: pickupTime,
+        },
+        id: "",
+        operationId: "",
+        items: rentalItems,
+        updatedAt: new Date(),
+      };
+
+      try {
+        processTransaction(saleDTO);
+        processTransaction(rentalDTO);
+        toast.success(`Dos reservas creadas (Venta + Alquiler)`);
+      } catch (err) {
+        console.error(err);
+        toast.error("Error al procesar la reserva mixta");
+        return;
+      }
+    } else {
+      // Flujo único (Solo venta o Solo alquiler)
+      const transactionItems = buildReservationItems();
+      if (!transactionItems) return;
+
+      const newReservation: ReservationDTO = {
+        branchId: currentBranchId,
+        createdAt: new Date(),
+        type: "reserva",
+        operationType,
+        customerId: selectedCustomer.id,
+        customerName:
+          selectedCustomer.firstName + " " + selectedCustomer.lastName,
+        status: "confirmada",
+        notes,
+        financials: {
+          receivedAmount: totalDP,
+          keepAsCredit: false,
+          totalPrice: totalOperacion,
+          downPayment: totalDP,
+          paymentMethod,
+          pendingAmount,
+        },
+        sellerId,
+        reservationDateRange: {
+          from: startOfDay(dateRange.from),
+          to: endOfDay(dateRange.to || dateRange.from),
+          hourFrom: pickupTime,
+        },
+        id: "",
+        operationId: "",
+        items: transactionItems,
+        updatedAt: new Date(),
+      };
+
+      try {
+        processTransaction(newReservation);
+        toast.success(
+          `Reserva de ${operationType} creada. Adelanto: ${formatCurrency(totalDP)}`,
+        );
+      } catch (err) {
+        console.error(err);
+        toast.error("Error al procesar la reserva");
+        return;
+      }
     }
 
     clearCart();
@@ -508,7 +598,11 @@ export function PosReservationModal({
         <div className="pt-4 border-t">
           <Button
             onClick={handleConfirm}
-            disabled={items.length === 0 || !selectedCustomer || Number(downPayment) <= 0}
+            disabled={
+              items.length === 0 ||
+              !selectedCustomer ||
+              Number(downPayment) <= 0
+            }
             className="w-full h-12 font-black text-white bg-linear-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 shadow-lg"
           >
             <BookmarkPlus className="w-5 h-5 mr-2" />

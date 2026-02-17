@@ -19,7 +19,6 @@ import {
   CalendarAdd01Icon,
   CalendarRemove01Icon,
 } from "@hugeicons/core-free-icons";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import React, { useState, useMemo } from "react";
@@ -244,7 +243,7 @@ export function DetailsReservedViewer({
       >
         <DrawerTrigger asChild>
           <Button variant="secondary" className="w-full shadow-sm">
-            Ver reserva
+            Ver reserva de {activeRes?.operationType === "venta" ? "venta" : "alquiler"}
           </Button>
         </DrawerTrigger>
 
