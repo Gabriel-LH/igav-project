@@ -43,7 +43,7 @@ export function PosLayout() {
         }
 
         productToAdd = products.find((p) => p.id === serialItem.productId);
-        specificCode = serialItem.serialCode;
+        specificCode = serialItem.id; // 🔥 Usamos UUID
         scannedVariant = { size: serialItem.size, color: serialItem.color };
 
         if (serialItem.isForSale && !serialItem.isForRent)
@@ -68,7 +68,7 @@ export function PosLayout() {
         }
 
         productToAdd = products.find((p) => p.id === lotItem.productId);
-        specificCode = lotItem.variantCode;
+        specificCode = lotItem.id; // 🔥 Usamos UUID
         scannedVariant = { size: lotItem.size, color: lotItem.color };
 
         if (lotItem.isForSale && !lotItem.isForRent) operationMode = "venta";

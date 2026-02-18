@@ -126,7 +126,7 @@ export const useCartStore = create<CartState>((set, get) => ({
           state.globalRentalDates,
           type,
         ),
-        selectedCodes: specificStockId ? [specificStockId] : [],
+        selectedCodes: specificStockId ? [specificStockId] : [], // specificStockId should be the UIID (id)
         selectedSize: variant?.size,
         selectedColor: variant?.color,
       };

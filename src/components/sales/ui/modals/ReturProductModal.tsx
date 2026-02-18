@@ -44,7 +44,7 @@ export function ReturnProductModal({
     }[],
   ) => void;
 }) {
-  const { products, stock } = useInventoryStore(); // Access products to check is_serial
+  const { products, inventoryItems, stockLots } = useInventoryStore(); // Access products to check is_serial
 
   // Estado para manejar qué items se están devolviendo y sus condiciones
   const [returnItems, setReturnItems] = useState<
@@ -160,8 +160,11 @@ export function ReturnProductModal({
   const groupedItems = useMemo(() => {
     return sale.items.reduce(
       (acc, item) => {
-        // Buscamos info física para diferenciar grupos
-        const physicalItem = stock.find((s) => s.id === item.stockId);
+        // Buscamos info física para diferenciar grupos (usando el ID que es UUID)
+        const physicalItem =
+          inventoryItems.find((s) => s.id === item.stockId) ||
+          stockLots.find((s) => s.id === item.stockId);
+
         const product = products.find((p) => p.id === item.productId);
 
         const size = physicalItem?.size || "Única";
@@ -192,7 +195,7 @@ export function ReturnProductModal({
         }
       >,
     );
-  }, [sale.items, stock, products]);
+  }, [sale.items, inventoryItems, stockLots, products]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

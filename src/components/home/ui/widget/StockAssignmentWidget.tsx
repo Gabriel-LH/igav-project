@@ -132,10 +132,10 @@ export function StockAssignmentWidget({
   }, [selections, onAssignmentChange]);
 
   // 3. Manejador para Lotes
-  const handleBatchSelect = (code: string) => {
+  const handleBatchSelect = (id: string) => {
     const newSelections: Record<number, string> = {};
     for (let i = 0; i < quantity; i++) {
-      newSelections[i] = code;
+      newSelections[i] = id;
     }
     setSelections(newSelections);
   };
@@ -156,8 +156,7 @@ export function StockAssignmentWidget({
     if (!isSerial) {
       const bestLot = sortedCandidates.find((l: any) => l.quantity >= quantity);
       if (bestLot) {
-        for (let i = 0; i < quantity; i++)
-          newSelections[i] = bestLot.variantCode;
+        for (let i = 0; i < quantity; i++) newSelections[i] = bestLot.id;
         setSelections(newSelections);
         toast.success("Lote asignado automáticamente.");
       } else {
@@ -167,12 +166,10 @@ export function StockAssignmentWidget({
     }
 
     for (let i = 0; i < quantity; i++) {
-      const candidate = sortedCandidates.find(
-        (c: any) => !usedCodes.has(c.serialCode),
-      );
+      const candidate = sortedCandidates.find((c: any) => !usedCodes.has(c.id));
       if (candidate) {
-        newSelections[i] = (candidate as any).serialCode;
-        usedCodes.add((candidate as any).serialCode);
+        newSelections[i] = (candidate as any).id;
+        usedCodes.add((candidate as any).id);
       }
     }
 
@@ -185,8 +182,8 @@ export function StockAssignmentWidget({
   };
 
   if (!isSerial) {
-    const currentCode = selections[0];
-    const currentLot = stockLots.find((l) => l.variantCode === currentCode);
+    const currentId = selections[0];
+    const currentLot = stockLots.find((l) => l.id === currentId);
 
     return (
       <div className="p-3 border rounded-lg space-y-2">
@@ -204,7 +201,7 @@ export function StockAssignmentWidget({
           <Select
             aria-hidden={false}
             onValueChange={handleBatchSelect}
-            value={currentCode || ""}
+            value={currentId || ""}
           >
             <SelectTrigger className="flex-1 h-9 text-xs">
               <SelectValue placeholder="Seleccione lote de origen..." />
@@ -212,8 +209,8 @@ export function StockAssignmentWidget({
             <SelectContent>
               {validCandidates.map((l: any) => (
                 <SelectItem
-                  key={l.variantCode}
-                  value={l.variantCode}
+                  key={l.id}
+                  value={l.id}
                   disabled={l.quantity < quantity}
                   className={
                     l.quantity < quantity
@@ -281,10 +278,8 @@ export function StockAssignmentWidget({
 
       <div className="space-y-2">
         {Array.from({ length: quantity }).map((_, index) => {
-          const selectedCode = selections[index];
-          const selectedItem = inventoryItems.find(
-            (i) => i.serialCode === selectedCode,
-          );
+          const selectedId = selections[index];
+          const selectedItem = inventoryItems.find((i) => i.id === selectedId);
           const isLocal = selectedItem?.branchId === currentBranchId;
 
           return (
@@ -358,15 +353,9 @@ export function StockAssignmentWidget({
                       </div>
                     ) : (
                       validCandidates.map((i: any) => {
-                        const isUsed = Object.values(selections).includes(
-                          i.serialCode,
-                        );
+                        const isUsed = Object.values(selections).includes(i.id);
                         return (
-                          <SelectItem
-                            key={i.serialCode}
-                            value={i.serialCode}
-                            disabled={isUsed}
-                          >
+                          <SelectItem key={i.id} value={i.id} disabled={isUsed}>
                             {i.serialCode} - {i.status} (
                             {
                               BRANCH_MOCKS.find((b) => b.id === i.branchId)

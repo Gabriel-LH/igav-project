@@ -68,9 +68,9 @@ export const useStockAllocation = () => {
       }
 
       // Validar que los IDs manuales existan y estén disponibles en los candidatos
-      // Usamos 'serialCode' como ID para seriales
-      const validManuals = req.manualStockIds.every((code) =>
-        candidates.some((c) => c.serialCode === code),
+      // Usamos el ID (UUID) como llave
+      const validManuals = req.manualStockIds.every((id) =>
+        candidates.some((c) => c.id === id),
       );
       if (!validManuals) {
         return {
@@ -79,8 +79,8 @@ export const useStockAllocation = () => {
         };
       }
 
-      allocatedItems = req.manualStockIds.map((code) => ({
-        stockId: code,
+      allocatedItems = req.manualStockIds.map((id) => ({
+        stockId: id,
         quantity: 1,
       }));
     } else {
@@ -91,7 +91,7 @@ export const useStockAllocation = () => {
         if (remaining <= 0) break;
 
         const take = Math.min(remaining, candidate.quantity);
-        allocatedItems.push({ stockId: candidate.variantCode, quantity: take });
+        allocatedItems.push({ stockId: candidate.id, quantity: take });
         remaining -= take;
       }
     }

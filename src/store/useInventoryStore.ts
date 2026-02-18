@@ -2,17 +2,7 @@ import { create } from "zustand";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 import { INVENTORY_ITEMS_MOCK } from "../mocks/mock.inventoryItem";
 import { STOCK_LOTS_MOCK } from "../mocks/mock.stockLote";
-
-export type StockStatus =
-  | "reservado"
-  | "disponible"
-  | "en_mantenimiento"
-  | "vendido_pendiente_entrega"
-  | "alquilado"
-  | "en_lavanderia"
-  | "baja"
-  | "agotado"
-  | "vendido";
+import { StockStatus } from "../utils/status-type/StockStatusType";
 
 interface InventoryLog {
   timestamp: Date;
@@ -21,6 +11,7 @@ interface InventoryLog {
   toBranch: string;
   userId: string;
   reason: string;
+  quantity?: number; // Agregamos cantidad para logs de lotes
 }
 
 interface InventoryStore {
@@ -29,20 +20,26 @@ interface InventoryStore {
   products: typeof PRODUCTS_MOCK;
   inventoryLogs: InventoryLog[];
 
-  // Para serializados
-  updateInventoryItemStatus: (
-    serialCode: string,
+  // 1. Acciones para SERIALIZADOS (Items únicos)
+  // Cambia estado y ubicación de un item específico
+  updateItemStatus: (
+    itemId: string,
     newStatus: StockStatus,
-    damageNotes?: string,
+    targetBranchId?: string,
+    adminId?: string,
   ) => void;
 
-  // Para no serializados
-  decreaseStockLot: (variantCode: string, quantity: number) => void;
+  // 2. Acciones para LOTES (Cantidad)
+  // Resta cantidad de un lote (Venta/Salida)
+  decreaseLotQuantity: (lotId: string, quantity: number) => void;
 
-  deliverAndTransfer: (
-    stockId: string,
-    status: StockStatus,
+  increaseLotQuantity: (lotId: string, quantity: number) => void;
+
+  // Mueve cantidad de un lote a otro (Transferencia entre sucursales)
+  transferLotQuantity: (
+    sourceLotId: string,
     targetBranchId: string,
+    quantity: number,
     adminId: string,
   ) => void;
 }
@@ -53,120 +50,121 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   products: PRODUCTS_MOCK,
   inventoryLogs: [],
 
-  // Para serializados
-  getAvailableInventoryItem: (
-    productId: string,
-    size?: string,
-    color?: string,
-    status: StockStatus = "disponible",
-  ) => {
-    return get().inventoryItems.find(
-      (item) =>
-        item.productId === productId &&
-        (!size || item.size.trim() === size.trim()) &&
-        (!color || item.color.trim() === color.trim()) &&
-        item.status === status,
-    );
+  // Getter unificado para que la UI no se rompa (Simula una lista plana)
+  get stock() {
+    // Unimos items y lotes en una sola lista para el POS/Buscador
+    const items = get().inventoryItems.map((i) => ({
+      ...i,
+      quantity: 1,
+      type: "serial",
+    }));
+    const lots = get().stockLots.map((l) => ({ ...l, type: "lot" })); // Ya tiene quantity
+    return [...items, ...lots];
   },
 
-  // Para no serializados (lotes)
-  getAvailableStockLot: (
-    productId: string,
-    size?: string,
-    color?: string,
-    status: StockStatus = "disponible",
-  ) => {
-    return get().stockLots.find(
-      (lot) =>
-        lot.productId === productId &&
-        (!size || lot.size.trim() === size.trim()) &&
-        (!color || lot.color.trim() === color.trim()) &&
-        lot.status === status &&
-        lot.quantity > 0,
-    );
-  },
-
-  // 🔹 Actualizar estado de unidad serializada
-  updateInventoryItemStatus: (serialCode, newStatus, damageNotes) =>
-    set((state) => ({
-      inventoryItems: state.inventoryItems.map((item) =>
-        item.serialCode === serialCode
-          ? {
-              ...item,
-              status: newStatus,
-              damageNotes: damageNotes || item.damageNotes,
-              updatedAt: new Date(),
-            }
-          : item,
-      ),
-    })),
-
-  // 🔹 Descontar cantidad de lote (producto no serializado)
-  decreaseStockLot: (variantCode, quantity) =>
-    set((state) => ({
-      stockLots: state.stockLots.map((lot) =>
-        lot.variantCode === variantCode
-          ? {
-              ...lot,
-              quantity: lot.quantity - quantity,
-              updatedAt: new Date(),
-            }
-          : lot,
-      ),
-    })),
-
-  // 🔹 Mantengo deliverAndTransfer, ahora para serializados
-  deliverAndTransfer: (stockId, status, targetBranchId, adminId) =>
+  // -----------------------------------------------------------
+  // 1. LÓGICA PARA ITEMS SERIALIZADOS (Ropa, Activos)
+  // -----------------------------------------------------------
+  updateItemStatus: (itemId, newStatus, targetBranchId, adminId) => {
     set((state) => {
-      // Busco primero en inventoryItems (serializados)
-      const item =
-        state.inventoryItems.find(
-          (i) => i.serialCode === stockId || i.id === stockId,
-        ) ||
-        // Si no está, por compatibilidad temporal, busco en stockLots
-        state.stockLots.find(
-          (l) => l.variantCode === stockId || l.id === stockId,
-        );
+      const itemIndex = state.inventoryItems.findIndex((i) => i.id === itemId);
+      if (itemIndex === -1) return state;
 
-      if (!item) return state;
-
-      const needsTransfer =
-        "branchId" in item && item.branchId !== targetBranchId;
+      const item = state.inventoryItems[itemIndex];
       const newLogs = [...state.inventoryLogs];
+      let newBranchId = item.branchId;
 
-      if (needsTransfer) {
-        newLogs.push({
-          timestamp: new Date(),
-          stockId,
-          fromBranch: item.branchId,
-          toBranch: targetBranchId,
-          userId: adminId,
-          reason: "Transferencia automática por entrega de reserva",
-        });
+      // Si hay cambio de sucursal, registramos log y actualizamos branchId
+      if (targetBranchId && targetBranchId !== item.branchId) {
+        newBranchId = targetBranchId;
+        if (adminId) {
+          newLogs.push({
+            timestamp: new Date(),
+            stockId: itemId,
+            fromBranch: item.branchId,
+            toBranch: targetBranchId,
+            userId: adminId,
+            reason: `Cambio de estado a ${newStatus}`,
+            quantity: 1,
+          });
+        }
       }
 
-      return {
-        inventoryItems: state.inventoryItems.map((i) =>
-          i.serialCode === stockId || i.id === stockId
-            ? {
-                ...i,
-                status: status,
-                branchId: targetBranchId,
-                updatedAt: new Date(),
-              }
-            : i,
-        ),
-        stockLots: state.stockLots.map((l) =>
-          l.variantCode === stockId || l.id === stockId
-            ? {
-                ...l,
-                status: status,
-                branchId: targetBranchId,
-                updatedAt: new Date(),
-              }
-            : l,
-        ),
-        inventoryLogs: newLogs,
+      const updatedItems = [...state.inventoryItems];
+      updatedItems[itemIndex] = {
+        ...item,
+        status: newStatus,
+        branchId: newBranchId,
+        updatedAt: new Date(),
       };
-    }),
+
+      return { inventoryItems: updatedItems, inventoryLogs: newLogs };
+    });
+  },
+
+  // -----------------------------------------------------------
+  // 2. LÓGICA PARA LOTES (Accesorios, Consumibles)
+  // -----------------------------------------------------------
+  decreaseLotQuantity: (lotId, quantity) => {
+    set((state) => ({
+      stockLots: state.stockLots.map((lot) => {
+        if (lot.id === lotId) {
+          const newQty = Math.max(0, lot.quantity - quantity);
+          return { ...lot, quantity: newQty, updatedAt: new Date() };
+        }
+        return lot;
+      }),
+    }));
+  },
+
+  increaseLotQuantity: (lotId, quantity) => {
+    set((state) => ({
+      stockLots: state.stockLots.map((lot) => {
+        if (lot.id === lotId) {
+          return {
+            ...lot,
+            quantity: lot.quantity + quantity,
+            updatedAt: new Date(),
+          };
+        }
+        return lot;
+      }),
+    }));
+  },
+
+  transferLotQuantity: (sourceLotId, targetBranchId, quantity, adminId) => {
+    // ESTO ES COMPLEJO: Implica restar de Lote A y sumar a Lote B (o crearlo)
+    // Por ahora, simplificamos asumiendo que solo restamos del origen
+    // (la lógica de "recibir" suele ser otro proceso)
+    set((state) => {
+      const sourceLot = state.stockLots.find((l) => l.id === sourceLotId);
+      if (!sourceLot || sourceLot.quantity < quantity) return state;
+
+      // 1. Restar del origen
+      const updatedLots = state.stockLots.map((l) =>
+        l.id === sourceLotId
+          ? { ...l, quantity: l.quantity - quantity, updatedAt: new Date() }
+          : l,
+      );
+
+      // 2. Buscar o Crear destino (Simulado)
+      // En un backend real, harías un UPSERT en la tabla de lotes destino.
+      // Aquí solo logueamos la salida.
+
+      const newLogs = [
+        ...state.inventoryLogs,
+        {
+          timestamp: new Date(),
+          stockId: sourceLotId,
+          fromBranch: sourceLot.branchId,
+          toBranch: targetBranchId,
+          userId: adminId,
+          reason: "Transferencia de Lote",
+          quantity: quantity,
+        },
+      ];
+
+      return { stockLots: updatedLots, inventoryLogs: newLogs };
+    });
+  },
 }));

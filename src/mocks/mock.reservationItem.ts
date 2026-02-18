@@ -3,7 +3,7 @@ import { ReservationItem } from "../types/reservation/type.reservationItem";
 export const  MOCK_RESERVATION_ITEM: ReservationItem[] = [
        { 
         id: "RES-001-001",
-        operationId: 501,
+        operationId: "501",
         reservationId: "RES-001",
         stockId: "STK-005",
         size: "M",        // Dato vital para ropa
@@ -16,7 +16,7 @@ export const  MOCK_RESERVATION_ITEM: ReservationItem[] = [
       },
           {
         id: "RES-002-001",
-        operationId: 502,
+        operationId: "502",
         reservationId: "RES-002",
         stockId: "STK-002",
         size: "L",
@@ -29,7 +29,7 @@ export const  MOCK_RESERVATION_ITEM: ReservationItem[] = [
       },
           {
         id: "RES-003-001",
-        operationId: 503,
+        operationId: "503",
         reservationId: "RES-003",
         stockId: "STK-003",
         size: "M",

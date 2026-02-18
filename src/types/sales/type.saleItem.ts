@@ -8,6 +8,11 @@ export const saleItemSchema = z.object({
   priceAtMoment: z.number(),
   quantity: z.number(),
 
+  productName: z.string().optional(),
+  variantCode: z.string().optional(), // Para saber qué talla/color era
+  serialCode: z.string().optional(), // Para saber qué QR fue (si aplica)
+  isSerial: z.boolean().optional(),
+
   // Campos "Pro" para devoluciones:
   isReturned: z.boolean().default(false),
   returnedAt: z.date().optional(),

@@ -29,7 +29,7 @@ export function TableCellViewerActive({ item }: { item: any }) {
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
         {/* En la tabla se ve simple: Texto + Badge si hay muchos */}
-        <Button variant="link" className="text-foreground w-full justify-start px-0 text-left truncate h-auto py-1 block">
+        <Button variant="link" className="text-foreground w-full cursor-pointer justify-start px-0 text-left truncate h-auto py-1 block">
           <span className="font-medium">{item.itemsDetail?.[0]?.productName || item.product}</span>
           {item.itemsDetail && item.itemsDetail.length > 1 && (
              <Badge variant="secondary" className="ml-2 text-[10px] px-1 h-5">

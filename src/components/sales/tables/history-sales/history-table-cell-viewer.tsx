@@ -45,7 +45,7 @@ export function TableCellViewerHistory({
       <DrawerTrigger asChild>
         <Button
           variant="link"
-          className="text-foreground w-full justify-start px-0 text-left h-auto py-1 whitespace-normal"
+          className="text-foreground hover:underline cursor-pointer w-full justify-start px-0 text-left h-auto py-1 whitespace-normal"
         >
           <span className="truncate font-bold hover:underline">
             {item.nameCustomer}

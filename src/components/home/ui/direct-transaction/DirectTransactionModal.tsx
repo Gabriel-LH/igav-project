@@ -136,9 +136,7 @@ export function DirectTransactionModal({
   }, [inventoryItems, stockLots, item.id, item.is_serial, size, color, type]);
 
   // 3. Seleccionamos el mejor candidato
-  const selectedStockId = item.is_serial
-    ? (validStockCandidates[0] as any)?.serialCode
-    : (validStockCandidates[0] as any)?.variantCode;
+  const selectedStockId = (validStockCandidates[0] as any)?.id;
 
   const stockCount = useMemo(
     () =>
@@ -216,12 +214,11 @@ export function DirectTransactionModal({
         );
       }
 
-      transactionItems = assignedStockIds.map((code) => {
-        const stockFound = inventoryItems.find((s) => s.serialCode === code);
+      transactionItems = assignedStockIds.map((id) => {
         return {
           productId: item.id,
           productName: item.name,
-          stockId: code,
+          stockId: id,
           quantity: 1,
           size: size,
           color: color,
@@ -236,7 +233,7 @@ export function DirectTransactionModal({
         transactionItems.push({
           productId: item.id,
           productName: item.name,
-          stockId: lot.variantCode,
+          stockId: lot.id, // Usamos el ID (UUID)
           quantity: take,
           size: size,
           color: color,

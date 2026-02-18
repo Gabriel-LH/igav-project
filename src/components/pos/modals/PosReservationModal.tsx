@@ -142,15 +142,14 @@ export function PosReservationModal({
             );
             return null;
           }
-          // En la reserva de venta, los códigos ya están pre-seleccionados
-          cartItem.selectedCodes.forEach((code) => {
+          cartItem.selectedCodes.forEach((id) => {
             const stockFound = inventoryItems.find(
-              (s) => s.serialCode === code,
+              (s) => s.id === id || s.serialCode === id,
             );
             transactionItems.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
-              stockId: code, // Usamos el código (serialCode)
+              stockId: stockFound?.id || id,
               quantity: 1,
               size: stockFound?.size || cartItem.selectedSize || "---",
               color: stockFound?.color || cartItem.selectedColor || "---",
@@ -158,12 +157,14 @@ export function PosReservationModal({
             });
           });
         } else {
-          // No serializado: FIFO auto-assign
+          // No serializado: FIFO auto-assign con filtros de variante
           const candidates = stockLots.filter(
             (s) =>
               String(s.productId) === String(cartItem.product.id) &&
               s.status === "disponible" &&
-              s.isForSale,
+              s.isForSale &&
+              (!cartItem.selectedSize || s.size === cartItem.selectedSize) &&
+              (!cartItem.selectedColor || s.color === cartItem.selectedColor),
           );
 
           let remaining = cartItem.quantity;
@@ -173,31 +174,31 @@ export function PosReservationModal({
             transactionItems.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
-              stockId: lot.variantCode, // Usamos variantCode
+              stockId: lot.id, // Usamos el ID (UUID)
               quantity: take,
-              size: lot.size,
-              color: lot.color,
+              size: lot.size || cartItem.selectedSize || "---",
+              color: lot.color || cartItem.selectedColor || "---",
               priceAtMoment: cartItem.unitPrice,
             });
             remaining -= take;
           }
           if (remaining > 0) {
             toast.error(
-              `"${cartItem.product.name}": Stock insuficiente para la venta.`,
+              `"${cartItem.product.name}": Stock insuficiente (${cartItem.selectedSize || ""} ${cartItem.selectedColor || ""}) para la venta.`,
             );
             return null;
           }
         }
       } else {
-        // Alquileres: Virtuales
+        // Alquileres
         for (let i = 0; i < cartItem.quantity; i++) {
           transactionItems.push({
             productId: cartItem.product.id,
             productName: cartItem.product.name,
-            stockId: undefined,
+            stockId: undefined, // Virtual
             quantity: 1,
-            size: cartItem.selectedSize || "",
-            color: cartItem.selectedColor || "",
+            size: cartItem.selectedSize || "---",
+            color: cartItem.selectedColor || "---",
             priceAtMoment: cartItem.unitPrice,
           });
         }

@@ -2,7 +2,7 @@ import { InventoryItem } from "../types/product/type.inventoryItem";
 
 export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   {
-    id: "INV-001",
+    id: "inv-uuid-001",
     serialCode: "VEST-NOC-NEG-BR001-0001",
     variantCode: "VEST-NOC-NEG-S-BR003",
     productId: "1",
@@ -20,7 +20,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-002",
+    id: "inv-uuid-002",
     serialCode: "VEST-NOC-NEG-BR001-0002",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -38,7 +38,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
 
   {
-    id: "INV-003",
+    id: "inv-uuid-003",
     serialCode: "VEST-NOC-NEG-BR001-0003",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -55,7 +55,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-004",
+    id: "inv-uuid-004",
     serialCode: "VEST-NOC-NEG-BR001-0004",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -72,7 +72,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-005",
+    id: "inv-uuid-005",
     serialCode: "VEST-NOC-NEG-BR001-0005",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -89,7 +89,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-006",
+    id: "inv-uuid-006",
     serialCode: "VEST-NOC-NEG-BR001-0006",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -106,7 +106,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-007",
+    id: "inv-uuid-007",
     serialCode: "VEST-NOC-NEG-BR001-0007",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -123,7 +123,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     updatedAt: new Date(),
   },
   {
-    id: "INV-008",
+    id: " inv-uuid-008",
     serialCode: "VEST-NOC-NEG-BR001-0008",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -139,6 +139,39 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     status: "disponible",
     updatedAt: new Date(),
   },
- 
+   {
+     id: "inv-uuid-009",
+     serialCode: "TUX-SLIM-L-BR001-0009",
+     variantCode: "TUXEDO-SLIM-L-BR001",
+     productId: "2",
+     branchId: "branch-001",
+     status: "disponible",
+     size: "L",
+     color: "Azul Marino",
+     colorHex: "#000080",
+     isForRent: true,
+     isForSale: false,
+     updatedAt: new Date(),
+     usageCount: 0,
+     condition: "Nuevo"
+   },
+  {
+    id: "inv-uuid-010",
+    serialCode: "TUX-SLIM-M-BR002-0010",
+    variantCode: "TUXEDO-SLIM-M-BR002",
+    productId: "2",
+    branchId: "branch-001",
+    size: "M",
+    color: "Negro",
+    colorHex: "#000000",
+    status: "disponible",
+    isForRent: true,
+    isForSale: false,
+    updatedAt: new Date(),
+    usageCount: 0,
+    condition: "Nuevo"
+  },
+
+  
   // ...más unidades serializadas
 ];

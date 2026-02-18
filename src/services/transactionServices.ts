@@ -2,7 +2,8 @@ import { RentalDTO } from "../interfaces/RentalDTO";
 import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
-import { StockStatus, useInventoryStore } from "../store/useInventoryStore";
+import { useInventoryStore } from "../store/useInventoryStore";
+import { StockStatus } from "../utils/status-type/StockStatusType";
 import { useRentalStore } from "../store/useRentalStore";
 import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { operationSchema } from "../types/operation/type.operations";
@@ -198,6 +199,10 @@ export function processTransaction(
             stockId: item.stockId,
             quantity: reservationItem.quantity ?? 1,
             priceAtMoment: reservationItem.priceAtMoment,
+            // productName: reservationItem.productName,
+            // variantCode: reservationItem.variantCode,
+            // serialCode: reservationItem.serialCode,
+            // isSerial: reservationItem.isSerial,
             restockingFee: 0,
             isReturned: false,
           };
@@ -216,14 +221,15 @@ export function processTransaction(
 
     useSaleStore.getState().addSale(specificData, saleItems);
 
-    // 🔥 MODIFICACIÓN DE ESTADO DE STOCK
+    // 🔥 MODIFICACIÓN DE ESTADO DE STOCK (V2 - SOPORTE HÍBRIDO)
     saleItems.forEach((item) => {
+      const inventoryStore = useInventoryStore.getState();
       let finalStockStatus: StockStatus = "vendido";
 
       // 1. Mapeo de estados: Venta -> Stock
       switch (dto.status) {
         case "reservado":
-          finalStockStatus = "reservado"; // 👈 Aquí aplicamos el estado reservado
+          finalStockStatus = "reservado";
           break;
         case "pendiente_entrega":
           finalStockStatus = "vendido_pendiente_entrega";
@@ -234,22 +240,31 @@ export function processTransaction(
           break;
       }
 
-      // 2. Ejecutar actualización en el Store
-      if (finalStockStatus === "reservado") {
-        // Si solo es reserva, solo actualizamos el estado para bloquear disponibilidad
-        useInventoryStore
-          .getState()
-          .updateStockStatus(item.stockId, "reservado");
+      // 2. Detectamos si es Serial o Lote
+      const isSerial = inventoryStore.inventoryItems.some(
+        (i) => i.id === item.stockId,
+      );
+
+      if (isSerial) {
+        // CASO SERIAL: Actualizamos estado y ubicación
+        inventoryStore.updateItemStatus(
+          item.stockId,
+          finalStockStatus,
+          dto.branchId,
+          dto.sellerId,
+        );
       } else {
-        // Si es venta firme o entrega, usamos la lógica de transferencia/entrega
-        useInventoryStore
-          .getState()
-          .deliverAndTransfer(
-            item.stockId,
-            finalStockStatus as StockStatus,
-            dto.branchId,
-            dto.sellerId,
-          );
+        // CASO LOTE: Descontamos cantidad
+        // Solo restamos si la venta se concreta o se entrega.
+        if (
+          finalStockStatus === "vendido" ||
+          finalStockStatus === "vendido_pendiente_entrega"
+        ) {
+          inventoryStore.decreaseLotQuantity(item.stockId, item.quantity);
+        } else if (finalStockStatus === "reservado") {
+          // Si es reserva de lote, por ahora no descontamos (la lógica de reserva de lotes suele ser distinta)
+          // Pero podríamos marcar el lote o simplemente dejarlo así si el sistema no maneja "apartados" en lotes aún.
+        }
       }
     });
   }
@@ -300,9 +315,18 @@ export function processTransaction(
     // 🔴 BUG FIX: Actualizar estado del stock a "reservado"
     reservationItems.forEach((item) => {
       if (item.stockId) {
-        useInventoryStore
-          .getState()
-          .updateStockStatus(item.stockId, "reservado");
+        const inventoryStore = useInventoryStore.getState();
+        const isSerial = inventoryStore.inventoryItems.some(
+          (i) => i.id === item.stockId,
+        );
+
+        if (isSerial) {
+          inventoryStore.updateItemStatus(item.stockId, "reservado");
+        } else {
+          // Reservas de lotes: Generalmente se manejan con un campo de "comprometido"
+          // o simplemente no se descuentan hasta la venta.
+          // Por ahora, el store no tiene un 'reserveLotQuantity', así que lo omitimos o registramos log.
+        }
       }
     });
 
@@ -419,14 +443,23 @@ export function processTransaction(
       dto.status === "reservado_fisico" ? "reservado_fisico" : "alquilado";
 
     rentalItems.forEach((item) => {
-      useInventoryStore
-        .getState()
-        .deliverAndTransfer(
+      const inventoryStore = useInventoryStore.getState();
+      const isSerial = inventoryStore.inventoryItems.some(
+        (i) => i.id === item.stockId,
+      );
+
+      if (isSerial) {
+        inventoryStore.updateItemStatus(
           item.stockId,
           finalRentalStockStatus as StockStatus,
           dto.branchId,
           dto.sellerId,
         );
+      } else {
+        // Si es alquiler de lote (poco común pero posible para accesorios)
+        // Descontamos la cantidad mientras esté fuera.
+        inventoryStore.decreaseLotQuantity(item.stockId, item.quantity);
+      }
     });
 
     specificData = rental;
