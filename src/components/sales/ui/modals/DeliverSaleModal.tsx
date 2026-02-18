@@ -63,24 +63,35 @@ export const DeliverSaleModal = ({
       // Si no tenemos stocks cargados aquí, podríamos perder ese detalle visual.
       // Asumiremos que `product.name` es suficiente O que el `product` ya es la variante.
 
-      const key = item.productId;
+      const key = `${item.productId}-${item.variantCode || "base"}`;
 
       if (!acc[key]) {
         acc[key] = {
+          id: key,
+          productId: item.productId,
           product,
+          variantCode: item.variantCode,
           items: [],
           quantity: 0,
-          isSerial: product.is_serial || false, // Asumimos propiedad is_serial en producto
+          isSerial: product.is_serial || false,
         };
       }
 
       acc[key].items.push(item);
-      acc[key].quantity += item.quantity; // Sumamos cantidad (normalmente 1 por row en BD relacional pura, pero si hay campo qty...)
+      acc[key].quantity += item.quantity || 1;
       return acc;
     },
     {} as Record<
       string,
-      { product: any; items: SaleItem[]; quantity: number; isSerial: boolean }
+      {
+        id: string;
+        productId: string;
+        product: any;
+        variantCode?: string;
+        items: SaleItem[];
+        quantity: number;
+        isSerial: boolean;
+      }
     >,
   );
 
@@ -95,13 +106,13 @@ export const DeliverSaleModal = ({
   // Inicializar selección (opcional: auto-seleccionar todo o nada)
   // Dejaremos en 0 para que el usuario elija qué entregar.
 
-  const handleToggleSerial = (productId: string, itemId: string) => {
+  const handleToggleSerial = (groupId: string, itemId: string) => {
     setSelection((prev) => {
-      const prodSel = prev[productId] || {
+      const groupSel = prev[groupId] || {
         selectedIds: new Set(),
         selectedQty: 0,
       };
-      const newIds = new Set(prodSel.selectedIds);
+      const newIds = new Set(groupSel.selectedIds);
       if (newIds.has(itemId)) {
         newIds.delete(itemId);
       } else {
@@ -109,8 +120,8 @@ export const DeliverSaleModal = ({
       }
       return {
         ...prev,
-        [productId]: {
-          ...prodSel,
+        [groupId]: {
+          ...groupSel,
           selectedIds: newIds,
           selectedQty: newIds.size,
         },
@@ -118,16 +129,16 @@ export const DeliverSaleModal = ({
     });
   };
 
-  const handleChangeQty = (productId: string, qty: number, max: number) => {
+  const handleChangeQty = (groupId: string, qty: number, max: number) => {
     if (qty < 0) qty = 0;
     if (qty > max) qty = max;
     setSelection((prev) => ({
       ...prev,
-      [productId]: {
-        ...prev[productId],
+      [groupId]: {
+        ...prev[groupId],
         selectedQty: qty,
         selectedIds: new Set(),
-      }, // IDs vacíos si es no-serial
+      },
     }));
   };
 
@@ -140,7 +151,7 @@ export const DeliverSaleModal = ({
       const idsToDeliver: string[] = [];
 
       groups.forEach((group) => {
-        const sel = selection[group.product.id];
+        const sel = selection[group.id];
         if (!sel) return;
 
         if (group.isSerial) {
@@ -229,7 +240,7 @@ export const DeliverSaleModal = ({
           <div className="space-y-4">
             <Label className="text-sm font-bold">Productos a Entregar</Label>
             {groups.map((group) => {
-              const sel = selection[group.product.id] || {
+              const sel = selection[group.id] || {
                 selectedIds: new Set(),
                 selectedQty: 0,
               };
@@ -238,13 +249,17 @@ export const DeliverSaleModal = ({
                 : sel.selectedQty === group.quantity;
 
               return (
-                <div
-                  key={group.product.id}
-                  className="border rounded-lg p-3 space-y-3"
-                >
+                <div key={group.id} className="border rounded-lg p-3 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-bold text-sm">{group.product.name}</p>
+                      <p className="font-bold text-sm">
+                        {group.product.name}
+                        {group.variantCode && (
+                          <span className="ml-2 text-xs font-normal text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
+                            {group.variantCode}
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Cant. Total: {group.quantity}
                       </p>
@@ -276,7 +291,7 @@ export const DeliverSaleModal = ({
                               id={`item-${item.id}`}
                               checked={isChecked}
                               onCheckedChange={() =>
-                                handleToggleSerial(group.product.id, item.id)
+                                handleToggleSerial(group.id, item.id)
                               }
                             />
                             <label
@@ -310,7 +325,7 @@ export const DeliverSaleModal = ({
                         value={sel.selectedQty}
                         onChange={(e) =>
                           handleChangeQty(
-                            group.product.id,
+                            group.id,
                             Number(e.target.value),
                             group.quantity,
                           )

@@ -28,6 +28,7 @@ export interface SaleTableRow {
   income: number;
   status: string;
   damage: string;
+  searchContent: string;
 }
 
 export const mapSaleToTable = (
@@ -58,20 +59,32 @@ export const mapSaleToTable = (
       };
     });
 
-    // 3. LÓGICA DE RESUMEN LIMPIA (Igual que en Rentals)
     const mainProductName = itemsWithNames[0]?.productName || "Sin productos";
     const distinctCount = itemsWithNames.length;
 
-    // Si hay más de 1 tipo de producto, mostramos el badge "+N más"
     const cleanSummary =
       distinctCount > 1
         ? `${mainProductName} (+${distinctCount - 1} más)`
         : mainProductName;
 
     const totalItems = currentItems.reduce(
-      (acc, item) => acc + item.quantity,
+      (acc, item) => acc + (item.quantity || 1),
       0,
     );
+
+    // 4. CONTENIDO DE BÚSQUEDA (Para filtro global)
+    const searchContent = [
+      sale.id,
+      customer?.firstName,
+      customer?.lastName,
+      customer?.dni,
+      ...itemsWithNames.map((i) => i.productName),
+      ...currentItems.map((i) => i.serialCode),
+      ...currentItems.map((i) => i.variantCode),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
     return {
       id: sale.id,
@@ -112,6 +125,7 @@ export const mapSaleToTable = (
       income: sale.totalAmount,
       status: sale.status,
       damage: "---",
+      searchContent,
     };
   });
 };

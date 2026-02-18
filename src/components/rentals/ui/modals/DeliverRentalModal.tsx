@@ -71,22 +71,33 @@ export const DeliverRentalModal = ({
     (acc, item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) return acc;
-      const key = item.productId;
+      const key = `${item.productId}-${item.size || "S"}-${item.color || "C"}`;
       if (!acc[key]) {
         acc[key] = {
+          id: key,
           product,
+          size: item.size,
+          color: item.color,
           items: [],
           quantity: 0,
           isSerial: product.is_serial || false,
         };
       }
       acc[key].items.push(item);
-      acc[key].quantity += item.quantity; // Usually 1 for rental items stored individually
+      acc[key].quantity += item.quantity || 1;
       return acc;
     },
     {} as Record<
       string,
-      { product: any; items: any[]; quantity: number; isSerial: boolean }
+      {
+        id: string;
+        product: any;
+        size?: string;
+        color?: string;
+        items: any[];
+        quantity: number;
+        isSerial: boolean;
+      }
     >,
   );
 
@@ -97,13 +108,13 @@ export const DeliverRentalModal = ({
     Record<string, { selectedIds: Set<string>; selectedQty: number }>
   >({});
 
-  const handleToggleSerial = (productId: string, itemId: string) => {
+  const handleToggleSerial = (groupId: string, itemId: string) => {
     setSelection((prev) => {
-      const prodSel = prev[productId] || {
+      const groupSel = prev[groupId] || {
         selectedIds: new Set(),
         selectedQty: 0,
       };
-      const newIds = new Set(prodSel.selectedIds);
+      const newIds = new Set(groupSel.selectedIds);
       if (newIds.has(itemId)) {
         newIds.delete(itemId);
       } else {
@@ -111,8 +122,8 @@ export const DeliverRentalModal = ({
       }
       return {
         ...prev,
-        [productId]: {
-          ...prodSel,
+        [groupId]: {
+          ...groupSel,
           selectedIds: newIds,
           selectedQty: newIds.size,
         },
@@ -120,13 +131,13 @@ export const DeliverRentalModal = ({
     });
   };
 
-  const handleChangeQty = (productId: string, qty: number, max: number) => {
+  const handleChangeQty = (groupId: string, qty: number, max: number) => {
     if (qty < 0) qty = 0;
     if (qty > max) qty = max;
     setSelection((prev) => ({
       ...prev,
-      [productId]: {
-        ...prev[productId],
+      [groupId]: {
+        ...prev[groupId],
         selectedQty: qty,
         selectedIds: new Set(),
       },
@@ -138,7 +149,7 @@ export const DeliverRentalModal = ({
     try {
       const idsToDeliver: string[] = [];
       groups.forEach((group) => {
-        const sel = selection[group.product.id];
+        const sel = selection[group.id];
         if (!sel) return;
         if (group.isSerial) {
           sel.selectedIds.forEach((id) => idsToDeliver.push(id));
@@ -183,7 +194,7 @@ export const DeliverRentalModal = ({
           <div className="space-y-4">
             <Label className="text-sm font-bold">Productos a Entregar</Label>
             {groups.map((group) => {
-              const sel = selection[group.product.id] || {
+              const sel = selection[group.id] || {
                 selectedIds: new Set(),
                 selectedQty: 0,
               };
@@ -192,13 +203,19 @@ export const DeliverRentalModal = ({
                 : sel.selectedQty === group.quantity;
 
               return (
-                <div
-                  key={group.product.id}
-                  className="border rounded-lg p-3 space-y-3"
-                >
+                <div key={group.id} className="border rounded-lg p-3 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-bold text-sm">{group.product.name}</p>
+                      <p className="font-bold text-sm">
+                        {group.product.name}
+                        {(group.size || group.color) && (
+                          <span className="ml-2 text-xs font-normal text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
+                            {[group.size, group.color]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Cant. Total: {group.quantity}
                       </p>
@@ -229,7 +246,7 @@ export const DeliverRentalModal = ({
                               id={`item-${item.id}`}
                               checked={isChecked}
                               onCheckedChange={() =>
-                                handleToggleSerial(group.product.id, item.id)
+                                handleToggleSerial(group.id, item.id)
                               }
                             />
                             <label
@@ -261,7 +278,7 @@ export const DeliverRentalModal = ({
                         value={sel.selectedQty}
                         onChange={(e) =>
                           handleChangeQty(
-                            group.product.id,
+                            group.id,
                             Number(e.target.value),
                             group.quantity,
                           )

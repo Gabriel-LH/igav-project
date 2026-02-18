@@ -21,10 +21,10 @@ export const ReturnGrid = () => {
     (item) => item.itemStatus === "alquilado",
   );
 
-  // Group items by rentalId + productId + size + color
+  // Group items by rentalId + productId
   const groupedItems = itemsInStreet.reduce(
     (acc, item) => {
-      const key = `${item.rentalId}-${item.productId}-${item.size}-${item.color}`;
+      const key = `${item.rentalId}-${item.productId}`;
       if (!acc[key]) {
         acc[key] = [];
       }
@@ -123,7 +123,7 @@ export const ReturnGrid = () => {
 
           return (
             <div key={`grid-group-${item.rentalId}-${item.productId}`}>
-              <ReturnActionCard rental={rentalUnified as RentalDTO} />
+              <ReturnActionCard rental={rentalUnified} />
             </div>
           );
         })}

@@ -137,17 +137,30 @@ export function ReturnActionCard({ rental }: Props) {
                 {rental.items?.[0]?.productName || "Producto"}
               </span>
               <span className="text-[10px] text-muted-foreground">
-                Total: {rental.items?.length || 0} unid.
+                Total:{" "}
+                {rental.items?.reduce((acc, curr) => acc + curr.quantity, 0) ||
+                  0}{" "}
+                unid.
               </span>
             </div>
             <div className="flex gap-2">
               <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
                 <HugeiconsIcon icon={Information} size={12} strokeWidth={2} />
-                Talla {rental.items?.[0]?.size}
+                {(() => {
+                  const sizes = Array.from(
+                    new Set(rental.items?.map((i) => i.size)),
+                  );
+                  return sizes.length === 1 ? `Talla ${sizes[0]}` : "Mixto";
+                })()}
               </span>
               <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
                 <HugeiconsIcon icon={ColorsIcon} size={12} strokeWidth={2} />
-                {rental.items?.[0]?.color}
+                {(() => {
+                  const colors = Array.from(
+                    new Set(rental.items?.map((i) => i.color)),
+                  );
+                  return colors.length === 1 ? colors[0] : "Mixto";
+                })()}
               </span>
             </div>
           </div>

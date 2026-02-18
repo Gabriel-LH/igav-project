@@ -22,8 +22,6 @@ import {
 } from "@/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { Input } from "@/components/input";
-import { RentalsActiveTable } from "./tables/rentals-active/rentals-active-table";
-import { rentalsActiveSchema } from "./tables/type/type.active";
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -38,27 +36,21 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
-import { columnsRentalsActive } from "./tables/rentals-active/column-active-table";
-import { columnsRentalCanceled } from "./tables/canceled-rentals/column-cancel-table";
-import { columnsRentalsHistory } from "./tables/rentals-history/column-history-table";
-import { rentalsCanceledSchema } from "./tables/type/type.canceled";
-import { rentalsHistorySchema } from "./tables/type/type.history";
-import { RentalsCanceledTable } from "./tables/canceled-rentals/rental-canceled-table";
-import { RentalsHistoryTable } from "./tables/rentals-history/rentals-history-table";
-import { rentalsPendingSchema } from "./tables/type/type.pending";
-import { columnsRentalsPending } from "./tables/pending-rentals/column-pending-table";
-import { RentalsPendingTable } from "./tables/pending-rentals/rentals-pending-table";
+import { columnsClientActive } from "./tables/active-table/column-active-table";
+import { columnsClientInactive } from "./tables/inactive-table/column-inactive-table";
 
-export function RentalsDataTable({
-  dataRentalPending,
-  dataRentalActive,
-  dataRentalCanceled,
-  dataRentalHistory,
+import { clientActiveSchema } from "./tables/type/type.active";
+import { clientInactiveSchema } from "./tables/type/type.inactive";
+
+import { ClientsActiveTable } from "./tables/active-table/active-client-table";
+import { ClientsInactiveTable } from "./tables/inactive-table/inactive-client-table";
+
+export function ClientDataTable({
+  dataClientActive,
+  dataClientInactive,
 }: {
-  dataRentalPending: z.infer<typeof rentalsPendingSchema>[];
-  dataRentalActive: z.infer<typeof rentalsActiveSchema>[];
-  dataRentalCanceled: z.infer<typeof rentalsCanceledSchema>[];
-  dataRentalHistory: z.infer<typeof rentalsHistorySchema>[];
+  dataClientActive: z.infer<typeof clientActiveSchema>[];
+  dataClientInactive: z.infer<typeof clientInactiveSchema>[];
 }) {
   const [activeTab, setActiveTab] = React.useState("active");
   const [rowSelection, setRowSelection] = React.useState({});
@@ -122,38 +114,20 @@ export function RentalsDataTable({
     getFacetedUniqueValues: getFacetedUniqueValues<TData>(),
   });
 
-  const tableRentalActive = useReactTable<z.infer<typeof rentalsActiveSchema>>({
-    data: dataRentalActive,
-    columns: columnsRentalsActive,
+  const tableClientActive = useReactTable<z.infer<typeof clientActiveSchema>>({
+    data: dataClientActive,
+    columns: columnsClientActive,
     getRowId: (row) => row.id.toString(),
-    ...getCommonTableProps<z.infer<typeof rentalsActiveSchema>>(),
+    ...getCommonTableProps<z.infer<typeof clientActiveSchema>>(),
   });
 
-  const tableRentalPending = useReactTable<
-    z.infer<typeof rentalsPendingSchema>
+  const tableClientInactive = useReactTable<
+    z.infer<typeof clientInactiveSchema>
   >({
-    data: dataRentalPending,
-    columns: columnsRentalsPending,
+    data: dataClientInactive,
+    columns: columnsClientInactive,
     getRowId: (row) => row.id.toString(),
-    ...getCommonTableProps<z.infer<typeof rentalsPendingSchema>>(),
-  });
-
-  const tableRentalCanceled = useReactTable<
-    z.infer<typeof rentalsCanceledSchema>
-  >({
-    data: dataRentalCanceled,
-    columns: columnsRentalCanceled,
-    getRowId: (row) => row.id.toString(),
-    ...getCommonTableProps<z.infer<typeof rentalsCanceledSchema>>(),
-  });
-
-  const tableRentalHistory = useReactTable<
-    z.infer<typeof rentalsHistorySchema>
-  >({
-    data: dataRentalHistory,
-    columns: columnsRentalsHistory,
-    getRowId: (row) => row.id.toString(),
-    ...getCommonTableProps<z.infer<typeof rentalsHistorySchema>>(),
+    ...getCommonTableProps<z.infer<typeof clientInactiveSchema>>(),
   });
 
   return (
@@ -185,12 +159,8 @@ export function RentalsDataTable({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 {(activeTab === "active"
-                  ? tableRentalActive
-                  : activeTab === "canceled"
-                    ? tableRentalCanceled
-                    : activeTab === "history"
-                      ? tableRentalHistory
-                      : tableRentalPending
+                  ? tableClientActive
+                  : tableClientInactive
                 )
                   .getAllColumns()
                   .filter(
@@ -225,18 +195,14 @@ export function RentalsDataTable({
               <SelectValue placeholder="Seleccionar vista" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending">Pendientes</SelectItem>
               <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="canceled">Anulados</SelectItem>
-              <SelectItem value="history">Historial</SelectItem>
+              <SelectItem value="inactive">Inactivos</SelectItem>
             </SelectContent>
           </Select>
 
           <TabsList className="hidden lg:flex">
-            <TabsTrigger value="pending">Pendientes</TabsTrigger>
             <TabsTrigger value="active">Activos</TabsTrigger>
-            <TabsTrigger value="canceled">Anulados</TabsTrigger>
-            <TabsTrigger value="history">Historial</TabsTrigger>
+            <TabsTrigger value="inactive">Inactivos</TabsTrigger>
           </TabsList>
         </div>
       </div>
@@ -245,27 +211,13 @@ export function RentalsDataTable({
         value="active"
         className="relative flex flex-col gap-4 overflow-auto pt-4"
       >
-        <RentalsActiveTable data={dataRentalActive} table={tableRentalActive} />
+        <ClientsActiveTable data={dataClientActive} table={tableClientActive} />
       </TabsContent>
 
-      <TabsContent value="pending" className="w-full pt-4">
-        <RentalsPendingTable
-          data={dataRentalPending}
-          table={tableRentalPending}
-        />
-      </TabsContent>
-
-      <TabsContent value="canceled" className="pt-4">
-        <RentalsCanceledTable
-          data={dataRentalCanceled}
-          table={tableRentalCanceled}
-        />
-      </TabsContent>
-
-      <TabsContent value="history" className="w-full pt-4">
-        <RentalsHistoryTable
-          data={dataRentalHistory}
-          table={tableRentalHistory}
+      <TabsContent value="inactive" className="w-full pt-4">
+        <ClientsInactiveTable
+          data={dataClientInactive}
+          table={tableClientInactive}
         />
       </TabsContent>
     </Tabs>

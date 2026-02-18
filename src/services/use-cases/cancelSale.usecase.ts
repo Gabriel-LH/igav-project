@@ -48,7 +48,7 @@ export function cancelSaleUseCase({
 
     // 2️⃣ Stock vuelve a disponible (por item)
   saleWithItems.items.forEach((item) => {
-    inventory.updateStockStatus(item.stockId, "disponible");
+    inventory.updateItemStatus(item.stockId, "disponible", sale.branchId, userId);
   });
 
 

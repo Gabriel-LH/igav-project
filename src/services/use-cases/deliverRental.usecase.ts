@@ -55,12 +55,14 @@ export function deliverRentalUseCase(rentalId: string, guaranteeData: { value: s
       throw new Error(`Item ${item.id} no tiene stock asignado`);
     }
 
-    inventoryStore.deliverAndTransfer(
+    inventoryStore.updateItemStatus(
       item.stockId,
       "alquilado",
       rental.branchId,
       user.id,
     );
+
+    inventoryStore.decreaseLotQuantity(item.stockId, 1);
   });
 
   // 4️⃣ Actualizar estado del alquiler   

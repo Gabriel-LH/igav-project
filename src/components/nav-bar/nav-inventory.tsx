@@ -14,8 +14,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/sidebar";
 import Link from "next/link";
+import { useSidebarActive } from "@/src/hooks/useSideBarActive";
 
-// Componente separado para el icono
 function InventoryIcon({
   icon,
 }: {
@@ -24,37 +24,17 @@ function InventoryIcon({
   return React.isValidElement(icon) ? icon : React.createElement(icon);
 }
 
-export function NavInventory({
+function NavInventoryItem({
   items,
+  pathname,
 }: {
-  items: {
-    title: string;
-    url: string;
-    icon: React.ElementType | React.ReactElement;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
+  items: any;
+  pathname: string;
 }) {
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Inventario</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) => (
-          <NavInventoryItem key={item.title} item={item} />
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-  );
-}
-
-function NavInventoryItem({ item }: { item: any }) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { isActive, isOpen, setIsOpen } = useSidebarActive(items, pathname);
 
   const handleToggle = (e: React.MouseEvent) => {
-    if (item.items?.length) {
+    if (items.items?.length) {
       e.preventDefault();
       setIsOpen(!isOpen);
     }
@@ -63,15 +43,15 @@ function NavInventoryItem({ item }: { item: any }) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        tooltip={item.title}
-        isActive={isOpen}
+        tooltip={items.title}
+        isActive={isActive}
         onClick={handleToggle}
-        asChild={!item.items?.length}
+        asChild={!items.items?.length}
       >
-        {item.items?.length ? (
+        {items.items?.length ? (
           <div className="flex w-full items-center">
-            <InventoryIcon icon={item.icon} />
-            <span className="ml-2 flex-1 text-left text-sm">{item.title}</span>
+            <InventoryIcon icon={items.icon} />
+            <span className="ml-2 flex-1 text-left text-sm">{items.title}</span>
             <ChevronRight
               className={`ml-auto size-4 transition-transform duration-200 ${
                 isOpen ? "rotate-90" : ""
@@ -79,25 +59,60 @@ function NavInventoryItem({ item }: { item: any }) {
             />
           </div>
         ) : (
-          <Link href={item.url} className="flex w-full items-center">
-            <InventoryIcon icon={item.icon} />
-            <span className="ml-2 text-sm">{item.title}</span>
+          <Link href={items.url} className="flex w-full items-center">
+            <InventoryIcon icon={items.icon} />
+            <span className="ml-2 text-sm">{items.title}</span>
           </Link>
         )}
       </SidebarMenuButton>
-      {item.items?.length && isOpen && (
+
+      {items.items?.length && isOpen && (
         <SidebarMenuSub>
-          {item.items.map((subItem: any) => (
-            <SidebarMenuSubItem key={subItem.title}>
-              <SidebarMenuSubButton asChild>
-                <Link href={subItem.url}>
-                  <span className="text-sm">{subItem.title}</span>
-                </Link>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-          ))}
+          {items.items.map((subItem: any) => {
+            const isSubActive = pathname.startsWith(subItem.url);
+
+            return (
+              <SidebarMenuSubItem key={subItem.title}>
+                <SidebarMenuSubButton
+                  asChild
+                  className={
+                    isSubActive
+                      ? "bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                      : "hover:bg-muted text-neutral-300"
+                  }
+                >
+                  <Link href={subItem.url}>
+                    <span className="text-sm">{subItem.title}</span>
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            );
+          })}
         </SidebarMenuSub>
       )}
     </SidebarMenuItem>
+  );
+}
+
+export function NavInventory({
+  items,
+  pathname,
+}: {
+  items: any[];
+  pathname: string;
+}) {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Inventario</SidebarGroupLabel>
+      <SidebarMenu>
+        {items.map((item) => (
+          <NavInventoryItem
+            key={item.title}
+            items={item} // 👈 ahora sí es un objeto individual
+            pathname={pathname}
+          />
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
   );
 }

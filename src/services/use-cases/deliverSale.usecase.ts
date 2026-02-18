@@ -22,7 +22,7 @@ export function deliverSaleUseCase(saleId: string) {
   }
 
   // 1️⃣ Validar estado
-  if (sale.status !== "pendiente_entrega") {
+  if (sale.status !== "vendido_pendiente_entrega") {
     throw new Error(
       `No se puede entregar una venta en estado ${sale.status}`,
     );
@@ -45,11 +45,9 @@ export function deliverSaleUseCase(saleId: string) {
       );
     }
 
-    inventoryStore.deliverAndTransfer(
+    inventoryStore.decreaseLotQuantity(
       item.stockId,
-      "vendido",
-      sale.branchId,
-      user.id,
+      item.quantity,
     );
   });
 

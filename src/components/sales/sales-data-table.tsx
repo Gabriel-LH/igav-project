@@ -1,7 +1,10 @@
 "use client";
-"use no memo";
 import z from "zod";
-import { IconChevronDown, IconLayoutColumns } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconLayoutColumns,
+  IconSearch,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/button";
 import {
@@ -18,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
+import { Input } from "@/components/input";
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -27,6 +31,7 @@ import {
   getSortedRowModel,
   useReactTable,
   type ColumnFiltersState,
+  type Row,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
@@ -63,6 +68,7 @@ export function SalesDataTable({
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState("");
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -74,212 +80,182 @@ export function SalesDataTable({
     rent_unit: "Evento / Día",
     count: "Cantidad",
     income: "Ingreso",
-    gurantee: "Garantía",
     status: "Estado",
     outDate: "Fecha de salida",
     createdAt: "Fecha de registro",
     expectedReturnDate: "Fecha de devolución",
+    saleDate: "Fecha de venta",
     returnDate: "Fecha de retorno",
     cancelDate: "Fecha de cancelación",
     branchName: "Sucursal",
     sellerName: "Vendedor",
-    guarantee_status: "Estado de garantía",
   };
 
-  // eslint-disable-next-line
-  const tableSalesPending = useReactTable({
+  const getCommonTableProps = <TData,>() => ({
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+      pagination,
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (
+      row: Row<TData>,
+      columnId: string,
+      filterValue: string,
+    ) => {
+      const searchContent = (row.original as any).searchContent as string;
+      return searchContent?.toLowerCase().includes(filterValue.toLowerCase());
+    },
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel<TData>(),
+    getFilteredRowModel: getFilteredRowModel<TData>(),
+    getPaginationRowModel: getPaginationRowModel<TData>(),
+    getSortedRowModel: getSortedRowModel<TData>(),
+    getFacetedRowModel: getFacetedRowModel<TData>(),
+    getFacetedUniqueValues: getFacetedUniqueValues<TData>(),
+  });
+
+  const tableSalesPending = useReactTable<z.infer<typeof salesPendingSchema>>({
     data: dataSalesPending,
     columns: columnsSalesPending,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
-    },
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    ...getCommonTableProps<z.infer<typeof salesPendingSchema>>(),
   });
 
-  const tableSalesCanceled = useReactTable({
-    data: dataSalesCanceled,
-    columns: columnsSalesCanceled,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
+  const tableSalesCanceled = useReactTable<z.infer<typeof salesCanceledSchema>>(
+    {
+      data: dataSalesCanceled,
+      columns: columnsSalesCanceled,
+      getRowId: (row) => row.id.toString(),
+      ...getCommonTableProps<z.infer<typeof salesCanceledSchema>>(),
     },
-    getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-  });
+  );
 
-  const tableSalesReturn = useReactTable({
+  const tableSalesReturn = useReactTable<z.infer<typeof salesReturnSchema>>({
     data: dataSalesReturn,
     columns: columnsSalesReturn,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
-    },
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    ...getCommonTableProps<z.infer<typeof salesReturnSchema>>(),
   });
 
-  const tableSalesHistory = useReactTable({
+  const tableSalesHistory = useReactTable<z.infer<typeof salesHistorySchema>>({
     data: dataSalesHistory,
     columns: columnsSalesHistory,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
-    },
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    ...getCommonTableProps<z.infer<typeof salesHistorySchema>>(),
   });
 
   return (
     <Tabs
-      value={activeTab} // Controlado por el estado
-      onValueChange={setActiveTab} // Función para cambiar el estado
+      value={activeTab}
+      onValueChange={setActiveTab}
       className="w-full flex-col justify-start gap-6"
     >
-      <div className="flex items-center justify-between">
-        {/* SELECT (Se ve en pantallas pequeñas @4xl/main:hidden) */}
-        <Select value={activeTab} onValueChange={setActiveTab}>
-          <SelectTrigger className="flex w-fit lg:hidden" size="sm">
-            <SelectValue placeholder="Seleccionar vista" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pending">Pendientes</SelectItem>
-            <SelectItem value="history">Historial</SelectItem>
-            <SelectItem value="canceled">Anulados</SelectItem>
-            <SelectItem value="return">Devoluciones</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* TABS (Se ve en pantallas grandes lg:flex) */}
-        <TabsList className="hidden lg:flex">
-          <TabsTrigger value="pending">Pendientes</TabsTrigger>
-          <TabsTrigger value="history">Historial</TabsTrigger>
-          <TabsTrigger value="canceled">Anulados</TabsTrigger>
-          <TabsTrigger value="return">Devoluciones</TabsTrigger>
-        </TabsList>
-
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <IconLayoutColumns />
-                <span className="hidden lg:inline">Personalizar Columnas</span>
-                <span className="lg:hidden">Columnas</span>
-                <IconChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {(activeTab === "pending"
-                ? tableSalesPending
-                : activeTab === "canceled"
-                  ? tableSalesCanceled
-                  : activeTab === "return"
-                    ? tableSalesReturn
-                    : tableSalesHistory
-              )
-                .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide(),
+      <div className="flex flex-col gap-4">
+        {/* BUSCADOR Y COLUMNAS */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="relative w-full md:w-96">
+            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por ID, Cliente, DNI, Producto, Serie o Variante..."
+              value={globalFilter ?? ""}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="pl-10 h-10 w-full"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-10">
+                  <IconLayoutColumns />
+                  <span className="hidden lg:inline text-xs">Columnas</span>
+                  <IconChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {(activeTab === "pending"
+                  ? tableSalesPending
+                  : activeTab === "canceled"
+                    ? tableSalesCanceled
+                    : activeTab === "return"
+                      ? tableSalesReturn
+                      : tableSalesHistory
                 )
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {/* Aquí puedes usar un switch o mapeo si quieres nombres más amigables que el ID */}
-                      {COLUMN_LABELS_ES[column.id] ?? column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  .getAllColumns()
+                  .filter(
+                    (column) =>
+                      typeof column.accessorFn !== "undefined" &&
+                      column.getCanHide() &&
+                      column.id !== "searchContent",
+                  )
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {COLUMN_LABELS_ES[column.id] ?? column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        {/* TABS SELECTORES */}
+        <div className="flex items-center justify-between">
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className="flex w-fit lg:hidden" size="sm">
+              <SelectValue placeholder="Seleccionar vista" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pendientes</SelectItem>
+              <SelectItem value="history">Historial</SelectItem>
+              <SelectItem value="canceled">Anulados</SelectItem>
+              <SelectItem value="return">Devoluciones</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <TabsList className="hidden lg:flex">
+            <TabsTrigger value="pending">Pendientes</TabsTrigger>
+            <TabsTrigger value="history">Historial</TabsTrigger>
+            <TabsTrigger value="canceled">Anulados</TabsTrigger>
+            <TabsTrigger value="return">Devoluciones</TabsTrigger>
+          </TabsList>
         </div>
       </div>
 
-      {/* CONTENIDOS: Los "value" deben coincidir con los de arriba */}
       <TabsContent
         value="pending"
-        className="relative flex flex-col gap-4 overflow-auto"
+        className="relative flex flex-col gap-4 overflow-auto pt-4"
       >
         <SalesPendingTable data={dataSalesPending} table={tableSalesPending} />
       </TabsContent>
 
-      <TabsContent value="canceled">
+      <TabsContent value="canceled" className="pt-4">
         <SalesCanceledTable
           data={dataSalesCanceled}
           table={tableSalesCanceled}
         />
       </TabsContent>
 
-      <TabsContent value="return">
+      <TabsContent value="return" className="pt-4">
         <SalesReturnTable data={dataSalesReturn} table={tableSalesReturn} />
       </TabsContent>
 
-      <TabsContent value="history" className="w-full">
+      <TabsContent value="history" className="w-full pt-4">
         <SalesHistoryTable data={dataSalesHistory} table={tableSalesHistory} />
       </TabsContent>
     </Tabs>

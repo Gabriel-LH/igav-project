@@ -49,6 +49,7 @@ import { NavOperation } from "../nav-bar/nav-operation";
 import { NavRRHH } from "../nav-bar/nav-rrhh";
 import { NavAdmin } from "../nav-bar/nav-admin";
 import { ShoppingBasket } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const data = {
   user: {
@@ -125,13 +126,17 @@ const data = {
       url: "/returns",
       icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
     }, // cambia icono si quieres
-    { title: "Pagos", url: "/payments", icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />  },
+    {
+      title: "Pagos",
+      url: "/payments",
+      icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />,
+    },
   ],
   navRRHH: [
     {
       title: "Asistencia",
       url: "/attendance",
-      icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2}  />,
+      icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2} />,
     },
     {
       title: "Turnos",
@@ -191,6 +196,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -202,18 +209,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/home">
                 <ShoppingBasket className="size-5!" />
-                <span className="text-base font-semibold italic">AZRAEL SHOP</span>
+                <span className="text-base font-semibold italic">
+                  AZRAEL SHOP
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavInventory items={data.navInventory} />
-        <NavOperation items={data.navOperation} />
-        <NavRRHH items={data.navRRHH} />
-        <NavAdmin items={data.navAdmin} />
+        <NavMain items={data.navMain} pathname={pathname} />
+        <NavInventory items={data.navInventory} pathname={pathname} />
+        <NavOperation items={data.navOperation} pathname={pathname} />
+        <NavRRHH items={data.navRRHH} pathname={pathname} />
+        <NavAdmin items={data.navAdmin} pathname={pathname} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

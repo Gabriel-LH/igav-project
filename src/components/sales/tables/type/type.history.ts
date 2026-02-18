@@ -11,5 +11,7 @@ export const salesHistorySchema = z.object({
   count: z.number(), // Cantidad
   income: z.number(), // Ingreso
   status: z.string(), // Estado
+  summary: z.string(),
+  itemsDetail: z.array(z.any()),
+  searchContent: z.string(),
 });
-``

@@ -33,6 +33,7 @@ export interface RentalTableRow {
   status: string;
   damage: string;
   returnDate: string;
+  searchContent: string;
 }
 
 export const mapRentalToTable = (
@@ -63,20 +64,32 @@ export const mapRentalToTable = (
     });
 
     const mainProductName = itemsWithNames[0]?.productName || "Sin productos";
-
-    // Calculamos si hay items extra (distintos al primero)
     const distinctCount = itemsWithNames.length;
 
-    // Construimos un string más limpio para la tabla
     const cleanSummary =
       distinctCount > 1
         ? `${mainProductName} (+${distinctCount - 1} más)`
         : mainProductName;
 
     const totalItems = currentItems.reduce(
-      (acc, item) => acc + item.quantity,
+      (acc, item) => acc + (item.quantity || 1),
       0,
     );
+
+    // CONTENIDO DE BÚSQUEDA
+    const searchContent = [
+      rental.id,
+      customer?.firstName,
+      customer?.lastName,
+      customer?.dni,
+      ...itemsWithNames.map((i) => i.productName),
+      ...currentItems.map((i) => i.size),
+      ...currentItems.map((i) => i.color),
+      ...currentItems.map((i) => i.stockId),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
     return {
       id: rental.id,
@@ -104,14 +117,24 @@ export const mapRentalToTable = (
       // Campos legacy adaptados
       product: cleanSummary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
       count: totalItems, // <--- COMPATIBILIDAD
-      rent_unit:
-        currentItems.length === 1
-          ? products.find((p) => p.id === currentItems[0].productId)
-              ?.rent_unit || "---"
-          : "Varios",
+      rent_unit: (() => {
+        const units = Array.from(
+          new Set(
+            currentItems
+              .map(
+                (item) =>
+                  products.find((p) => p.id === item.productId)?.rent_unit,
+              )
+              .filter(Boolean),
+          ),
+        );
+        if (units.length > 1) return "Mixto";
+        if (units.length === 1) return units[0] === "día" ? "Días" : "Evento";
+        return "---";
+      })(),
       income:
         currentItems.reduce(
-          (acc, item) => acc + item.priceAtMoment * (item.quantity || 1),
+          (acc, item) => acc + item.priceAtMoment, // Basado en el feedback del usuario de que se multiplicaba de más
           0,
         ) || 0,
       gurantee_type: guarantee ? guarantee.type.toString() : "---",
@@ -119,6 +142,7 @@ export const mapRentalToTable = (
       guarantee_status: guarantee?.status || "---",
       status: rental.status,
       damage: "---", // Difícil de resumir si hay muchos
+      searchContent,
     };
   });
 };

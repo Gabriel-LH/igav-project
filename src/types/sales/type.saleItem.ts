@@ -5,8 +5,14 @@ export const saleItemSchema = z.object({
   saleId: z.string(),
   productId: z.string(),
   stockId: z.string(), // La prenda específica que se llevó
-  priceAtMoment: z.number(),
+  priceAtMoment: z.number(), // El precio FINAL que pagó el cliente (ej: 80)
+  listPrice: z.number().optional(), // El precio ORIGINAL de catálogo (ej: 100)
   quantity: z.number(),
+
+  discountAmount: z.number().default(0), // Dinero descontado (ej: 20)
+  discountReason: z.string().optional(), // Ej: "Pack Terno Ejecutivo", "Promo Verano"
+  bundleId: z.string().optional(), // ID temporal para agrupar visualmente en el recibo (ej: "pack-uuid-123")
+  promotionId: z.string().optional(),
 
   productName: z.string().optional(),
   variantCode: z.string().optional(), // Para saber qué talla/color era

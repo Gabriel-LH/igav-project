@@ -16,4 +16,7 @@ export const rentalsCanceledSchema = z.object({
   gurantee_value: z.string(), // Garantia
   guarantee_status: z.string(), // Estado de garantia
   status: z.string(), // Estado
+  summary: z.string(),
+  itemsDetail: z.array(z.any()),
+  searchContent: z.string(),
 });

@@ -8,12 +8,19 @@ export const clientSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   dni: z.string(),
-  email: z.string().email().optional(),
+  email: z.string().optional(),
   phone: z.string(),
   address: z.string(),
   city: z.string(),
   province: z.string().optional(),
   zipCode: z.string().optional(),
+
+  // Dinero real a favor del cliente (por devoluciones o vueltos)
+  walletBalance: z.number().default(0),
+
+  // Puntos acumulados por compras (gamificación)
+  loyaltyPoints: z.number().int().default(0),
+
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().optional(),
@@ -27,7 +34,11 @@ export const clientWithDetailsSchema = clientSchema.extend({
   calculated: z.object({
     totalPaid: z.number(),
     remainingBalance: z.number(),
-  })
+    totalDebt: z.number(), // Deuda Actual: Cuánto nos debe (Mora + Alquileres abiertos)
+
+    // Opcional: Puedes exponer el wallet aquí también para facilitar el frontend
+    availableCredit: z.number(),
+  }),
 });
 
 export type ClientWithDetails = z.infer<typeof clientWithDetailsSchema>;

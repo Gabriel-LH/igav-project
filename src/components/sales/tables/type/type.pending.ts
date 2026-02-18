@@ -11,4 +11,7 @@ export const salesPendingSchema = z.object({
   count: z.number(), // Cantidad
   income: z.number(), // Ingreso
   status: z.string(), // Estado
+  summary: z.string().optional(),
+  itemsDetail: z.array(z.any()).optional(),
+  searchContent: z.string().optional(),
 });

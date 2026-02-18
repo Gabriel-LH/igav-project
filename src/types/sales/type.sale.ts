@@ -11,6 +11,10 @@ export const saleSchema = z.object({
   totalAmount: z.number(),
   saleDate: z.date(),
 
+  // FINANCIEROS
+  subTotal: z.number().optional(), // La suma de los precios de lista (Bruto)
+  totalDiscount: z.number().default(0), // Total ahorrado por el cliente
+
   status: z.enum([
     "pendiente_pago",
     "reservado",
