@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { CartItem } from "@/src/types/cart/type.cart";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { Trash2, Minus, Plus, QrCode } from "lucide-react";
@@ -32,9 +33,12 @@ export function PosCartItem({ item }: PosCartItemProps) {
 
   // Variantes
   const variant = {
-    size: item.selectedSize || "",
-    color: item.selectedColor || "",
+    sizeId: item.selectedSizeId || "",
+    colorId: item.selectedColorId || "",
   };
+
+  const { getSizeById, getColorById, getCategoryById, getModelById } =
+    useAttributeStore();
 
   // 1. Obtener disponibilidad REAL de este producto/variante en el local
   const maxAvailable = useMemo(() => {
@@ -42,8 +46,8 @@ export function PosCartItem({ item }: PosCartItemProps) {
       return inventoryItems.filter(
         (i) =>
           i.productId === item.product.id &&
-          i.size === variant.size &&
-          i.color === variant.color &&
+          i.sizeId === variant.sizeId &&
+          i.colorId === variant.colorId &&
           i.branchId === currentBranchId &&
           i.status === "disponible" &&
           (isRent ? i.isForRent : i.isForSale),
@@ -52,8 +56,8 @@ export function PosCartItem({ item }: PosCartItemProps) {
       const lot = stockLots.find(
         (l) =>
           l.productId === item.product.id &&
-          l.size === variant.size &&
-          l.color === variant.color &&
+          l.sizeId === variant.sizeId &&
+          l.colorId === variant.colorId &&
           l.branchId === currentBranchId &&
           l.status === "disponible" &&
           (isRent ? l.isForRent : l.isForSale),
@@ -103,16 +107,25 @@ export function PosCartItem({ item }: PosCartItemProps) {
           </span>
           <div className="flex flex-wrap gap-1 mt-1">
             <span className="text-[10px] text-muted-foreground mr-1">
-              {item.product.category}
+              {item.product.categoryId
+                ? getCategoryById(item.product.categoryId)?.name
+                : "Gen"}
+              {item.product.modelId && (
+                <span className="ml-1 text-slate-400 font-bold italic">
+                  -{" "}
+                  {getModelById(item.product.modelId)?.name ||
+                    item.product.modelId}
+                </span>
+              )}
             </span>
-            {variant.size && (
+            {variant.sizeId && (
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
-                Talla: {variant.size}
+                Talla: {getSizeById(variant.sizeId)?.name || variant.sizeId}
               </Badge>
             )}
-            {variant.color && (
+            {variant.colorId && (
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
-                Color: {variant.color}
+                Color: {getColorById(variant.colorId)?.name || variant.colorId}
               </Badge>
             )}
           </div>
@@ -178,8 +191,8 @@ export function PosCartItem({ item }: PosCartItemProps) {
               <PopoverContent className="w-80 p-0" side="right">
                 <StockAssignmentWidget
                   productId={item.product.id}
-                  size={variant.size}
-                  color={variant.color}
+                  sizeId={variant.sizeId}
+                  colorId={variant.colorId}
                   quantity={item.quantity}
                   operationType={item.operationType}
                   dateRange={dateRange}

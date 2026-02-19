@@ -15,9 +15,9 @@ export interface ClientTableRow {
   lastName: string;
   dni: string;
   email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
+  phone: string;
+  address: string;
+  city: string;
   province?: string;
   zipCode?: string;
 
@@ -34,23 +34,36 @@ export interface ClientTableRow {
 }
 
 export const mapClientToTable = (customers: Client[]): ClientTableRow[] => {
-  return customers.map((customer) => ({
-    id: customer.id,
-    userName: `${customer.firstName} ${customer.lastName}`,
-    firstName: customer.firstName,
-    lastName: customer.lastName,
-    dni: customer.dni,
-    email: customer.email,
-    phone: customer.phone,
-    address: customer.address,
-    city: customer.city,
-    province: customer.province,
-    zipCode: customer.zipCode,
-    walletBalance: customer.walletBalance,
-    loyaltyPoints: customer.loyaltyPoints,
-    createdAt: customer.createdAt,
-    updatedAt: customer.updatedAt,
-    deletedAt: customer.deletedAt,
-    status: customer.status,
-  }));
+  return customers.map((customer) => {
+    const searchContent = [
+      customer.id,
+      customer.firstName,
+      customer.lastName,
+      customer.dni,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return {
+      id: customer.id,
+      userName: `${customer.firstName} ${customer.lastName}`,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      dni: customer.dni,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      city: customer.city,
+      province: customer.province,
+      zipCode: customer.zipCode,
+      walletBalance: customer.walletBalance,
+      loyaltyPoints: customer.loyaltyPoints,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+      deletedAt: customer.deletedAt,
+      status: customer.status,
+      searchContent,
+    };
+  });
 };

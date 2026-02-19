@@ -33,8 +33,8 @@ import { formatCurrency } from "@/src/utils/currency-format";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
-  size: string;
-  color: string;
+  sizeId: string;
+  colorId: string;
   children: React.ReactNode;
   currentBranchId: string;
   originBranchId: string;
@@ -43,8 +43,8 @@ interface ReservationModalProps {
 
 export function ReservationModal({
   item,
-  size,
-  color,
+  sizeId,
+  colorId,
   children,
   currentBranchId,
   originBranchId,
@@ -93,8 +93,8 @@ export function ReservationModal({
       return inventoryItems.filter((s) => {
         const isBaseMatch =
           String(s.productId) === productId &&
-          s.size === size &&
-          s.color === color;
+          s.sizeId === sizeId &&
+          s.colorId === colorId;
 
         if (!isBaseMatch) return false;
 
@@ -114,8 +114,8 @@ export function ReservationModal({
       return stockLots.filter((s) => {
         const isBaseMatch =
           String(s.productId) === productId &&
-          s.size === size &&
-          s.color === color;
+          s.sizeId === sizeId &&
+          s.colorId === colorId;
 
         if (!isBaseMatch) return false;
 
@@ -138,15 +138,15 @@ export function ReservationModal({
     stockLots,
     item.id,
     item.is_serial,
-    size,
-    color,
+    sizeId,
+    colorId,
     operationType,
   ]);
 
   // 2. STOCK FÍSICO TOTAL
   const totalPhysicalStock = useMemo(() => {
-    return getTotalStock(item.id, size, color, operationType);
-  }, [item.id, size, color, operationType]);
+    return getTotalStock(item.id, sizeId, colorId, operationType);
+  }, [item.id, sizeId, colorId, operationType]);
 
   // 2. STOCK DISPONIBLE EN FECHAS
   const availableInDates = useMemo(() => {
@@ -154,15 +154,15 @@ export function ReservationModal({
 
     const check = getAvailabilityByAttributes(
       item.id,
-      size,
-      color,
+      sizeId,
+      colorId,
       dateRange.from,
       dateRange.to,
       operationType,
     );
 
     return check.availableCount;
-  }, [item.id, size, color, dateRange, operationType, totalPhysicalStock]);
+  }, [item.id, sizeId, colorId, dateRange, operationType, totalPhysicalStock]);
 
   const stockCount = useMemo(
     () =>
@@ -241,8 +241,8 @@ export function ReservationModal({
         transactionItems = assignedStockIds.map((code) => ({
           productId: item.id,
           productName: item.name,
-          size,
-          color,
+          sizeId,
+          colorId,
           quantity: 1,
           priceAtMoment: unitPrice,
           stockId: code,
@@ -257,8 +257,8 @@ export function ReservationModal({
           transactionItems.push({
             productId: item.id,
             productName: item.name,
-            size,
-            color,
+            sizeId: sizeId,
+            colorId: colorId,
             quantity: take,
             priceAtMoment: unitPrice,
             stockId: stockItem.variantCode,
@@ -271,8 +271,8 @@ export function ReservationModal({
         transactionItems.push({
           productId: item.id,
           productName: item.name,
-          size,
-          color,
+          sizeId: sizeId,
+          colorId: colorId,
           quantity: 1,
           priceAtMoment: unitPrice,
           stockId: undefined,
@@ -369,8 +369,8 @@ export function ReservationModal({
         >
           <ReservationFormContent
             item={item}
-            size={size}
-            color={color}
+            sizeId={sizeId}
+            colorId={colorId}
             originBranchId={originBranchId}
             currentBranchId={currentBranchId}
             dateRange={dateRange}

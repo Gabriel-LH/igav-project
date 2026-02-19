@@ -41,8 +41,8 @@ import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 
 export function DirectTransactionModal({
   item,
-  size,
-  color,
+  sizeId,
+  colorId,
   children,
   currentBranchId,
   type,
@@ -118,8 +118,8 @@ export function DirectTransactionModal({
       return inventoryItems.filter(
         (s) =>
           String(s.productId) === productId &&
-          s.size === size &&
-          s.color === color &&
+          s.sizeId === sizeId &&
+          s.colorId === colorId &&
           s.status === "disponible" &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
@@ -127,13 +127,21 @@ export function DirectTransactionModal({
       return stockLots.filter(
         (s) =>
           String(s.productId) === productId &&
-          s.size === size &&
-          s.color === color &&
+          s.sizeId === sizeId &&
+          s.colorId === colorId &&
           s.status === "disponible" &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
     }
-  }, [inventoryItems, stockLots, item.id, item.is_serial, size, color, type]);
+  }, [
+    inventoryItems,
+    stockLots,
+    item.id,
+    item.is_serial,
+    sizeId,
+    colorId,
+    type,
+  ]);
 
   // 3. Seleccionamos el mejor candidato
   const selectedStockId = (validStockCandidates[0] as any)?.id;
@@ -180,8 +188,8 @@ export function DirectTransactionModal({
   const validateTransaction = () => {
     const check = getAvailabilityByAttributes(
       item.id,
-      size,
-      color,
+      sizeId,
+      colorId,
       dateRange.from,
       dateRange.to || dateRange.from,
       type,
@@ -220,8 +228,8 @@ export function DirectTransactionModal({
           productName: item.name,
           stockId: id,
           quantity: 1,
-          size: size,
-          color: color,
+          sizeId: sizeId,
+          colorId: colorId,
           priceAtMoment: isVenta ? item.price_sell : item.price_rent,
         };
       });
@@ -235,8 +243,8 @@ export function DirectTransactionModal({
           productName: item.name,
           stockId: lot.id, // Usamos el ID (UUID)
           quantity: take,
-          size: size,
-          color: color,
+          sizeId: sizeId,
+          colorId: colorId,
           priceAtMoment: isVenta ? item.price_sell : item.price_rent,
         });
         remainingQty -= take;
@@ -349,12 +357,12 @@ export function DirectTransactionModal({
           {/* Producto */}
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
             <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
-              {size || "S/T"}
+              {sizeId || "S/T"}
             </div>
             <div className="flex-1">
               <h4 className="text-sm font-bold uppercase">{item.name}</h4>
               <p className="text-[10px] text-muted-foreground">
-                Color: {color} | SKU: {item.sku}
+                Color: {colorId} | SKU: {item.sku}
               </p>
             </div>
             <div className="w-20">
@@ -447,8 +455,8 @@ export function DirectTransactionModal({
                   }
                   mode="pickup"
                   productId={item.id}
-                  size={size}
-                  color={color}
+                  sizeId={sizeId}
+                  colorId={colorId}
                   quantity={quantity}
                   type={type}
                 />
@@ -482,8 +490,8 @@ export function DirectTransactionModal({
                     mode="return"
                     type={type}
                     productId={item.id}
-                    size={size}
-                    color={color}
+                    sizeId={sizeId}
+                    colorId={colorId}
                     quantity={quantity}
                   />
                   <TimePicker
@@ -548,9 +556,9 @@ export function DirectTransactionModal({
 
               <StockAssignmentWidget
                 productId={item.id}
-                size={size}
+                sizeId={sizeId}
                 isImmediate={true}
-                color={color}
+                colorId={colorId}
                 quantity={quantity}
                 operationType={type}
                 dateRange={dateRange}

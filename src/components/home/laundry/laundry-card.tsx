@@ -13,7 +13,7 @@ import { Badge } from "@/components/badge";
 
 export function LaundryActionCard({ item }: { item: any }) {
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus
+    (state) => state.updateItemStatus
   );
 
   const { products } = useInventoryStore();

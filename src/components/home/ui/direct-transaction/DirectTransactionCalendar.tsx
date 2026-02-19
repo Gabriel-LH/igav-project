@@ -34,8 +34,8 @@ interface DirectCalendarProps {
   type?: OpType;
   maxDays?: number;
   productId?: string;
-  size?: string;
-  color?: string;
+  sizeId?: string;
+  colorId?: string;
   quantity?: number;
   cartItems?: CartItem[]; // 👈 Nuevo: Para validación colectiva en el POS
 }
@@ -50,8 +50,8 @@ export function DirectTransactionCalendar({
   label = "Seleccionar fecha",
   maxDays,
   productId,
-  size,
-  color,
+  sizeId,
+  colorId,
   quantity,
   cartItems,
 }: DirectCalendarProps) {
@@ -66,26 +66,31 @@ export function DirectTransactionCalendar({
         quantity: item.quantity,
         data: getReservationDataByAttributes(
           item.product.id,
-          item.selectedSize || "",
-          item.selectedColor || "",
+          item.selectedSizeId || "",
+          item.selectedColorId || "",
           type,
         ),
       }));
     }
 
     // Caso B: Un solo producto (DirectTransactionModal)
-    if (productId && size && color) {
+    if (productId && sizeId && colorId) {
       return [
         {
           id: productId,
           quantity: quantity || 1,
-          data: getReservationDataByAttributes(productId, size, color, type),
+          data: getReservationDataByAttributes(
+            productId,
+            sizeId,
+            colorId,
+            type,
+          ),
         },
       ];
     }
 
     return [];
-  }, [productId, size, color, type, cartItems, quantity]);
+  }, [productId, sizeId, colorId, type, cartItems, quantity]);
 
   // 2. FUNCIÓN PARA SABER SI UN DÍA ESTÁ LLENO (Basado en la colección de disponibilidad)
   const isDayFull = (date: Date) => {

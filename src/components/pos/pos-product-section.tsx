@@ -17,7 +17,7 @@ export function PosProductSection() {
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.sku.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q),
+        p.categoryId.toLowerCase().includes(q),
     );
   }, [products, search]);
 

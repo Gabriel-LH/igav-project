@@ -18,8 +18,8 @@ export type OpType = "venta" | "alquiler";
 // =========================================================================
 export function getTotalStock(
   productId: string,
-  size: string,
-  color: string,
+  sizeId: string,
+  colorId: string,
   type: OpType,
 ) {
   const { products, inventoryItems, stockLots } = useInventoryStore.getState();
@@ -32,8 +32,8 @@ export function getTotalStock(
     return inventoryItems.filter(
       (s) =>
         String(s.productId) === String(productId) &&
-        s.size === size &&
-        s.color === color &&
+        s.sizeId === sizeId &&
+        s.colorId === colorId &&
         s.status !== "baja" &&
         s.status !== "vendido" &&
         s.status !== "agotado" &&
@@ -48,8 +48,8 @@ export function getTotalStock(
       .filter(
         (s) =>
           String(s.productId) === String(productId) &&
-          s.size === size &&
-          s.color === color &&
+          s.sizeId === sizeId &&
+          s.colorId === colorId &&
           s.status !== "baja" &&
           s.status !== "vendido" &&
           s.status !== "agotado" &&
@@ -67,8 +67,8 @@ export function getTotalStock(
 // =========================================================================
 function getAllOccupiedIntervals(
   productId: string,
-  size: string,
-  color: string,
+  sizeId: string,
+  colorId: string,
   type: OpType,
 ) {
   const { reservations, reservationItems } = useReservationStore.getState();
@@ -90,8 +90,8 @@ function getAllOccupiedIntervals(
   const activeReservationItems = reservationItems.filter(
     (item) =>
       String(item.productId) === String(productId) &&
-      item.size === size &&
-      item.color === color &&
+      item.sizeId === sizeId &&
+      item.colorId === colorId &&
       item.itemStatus === "confirmada",
   );
 
@@ -110,25 +110,29 @@ function getAllOccupiedIntervals(
   const activeRentalItems = rentalItems.filter(
     (item) =>
       String(item.productId) === String(productId) &&
-      item.size === size &&
-      item.color === color &&
+      item.sizeId === sizeId &&
+      item.colorId === colorId &&
       item.itemStatus === "alquilado",
   );
 
+  const rentalMap = new Map(rentals.map((r) => [r.id, r]));
+
   activeRentalItems.forEach((item) => {
-    const parent = rentals.find((r) => r.id === item.rentalId);
-    if (parent && parent.status === "alquilado") {
+    const parent = rentalMap.get(item.rentalId);
+
+    if (
+      parent &&
+      ["alquilado", "atrasado", "reservado_fisico"].includes(parent.status)
+    ) {
       occupiedList.push({
-        start: startOfDay(
-          new Date(parent.startDate || (parent as any).outDate),
-        ),
+        start: startOfDay(parent.outDate),
         end: endOfDay(
           addDays(
-            new Date(parent.endDate || (parent as any).expectedReturnDate),
+            parent.actualReturnDate ?? parent.expectedReturnDate,
             bufferDays,
           ),
         ),
-        quantity: item.quantity || 1,
+        quantity: item.quantity,
       });
     }
   });
@@ -141,8 +145,8 @@ function getAllOccupiedIntervals(
         .filter(
           (s) =>
             String(s.productId) === String(productId) &&
-            s.size === size &&
-            s.color === color &&
+            s.sizeId === sizeId &&
+            s.colorId === colorId &&
             (s.status === "en_lavanderia" || s.status === "en_mantenimiento") &&
             s.isForRent === true,
         )
@@ -158,8 +162,8 @@ function getAllOccupiedIntervals(
         .filter(
           (s) =>
             String(s.productId) === String(productId) &&
-            s.size === size &&
-            s.color === color &&
+            s.sizeId === sizeId &&
+            s.colorId === colorId &&
             (s.status === "en_lavanderia" || s.status === "en_mantenimiento") &&
             s.isForRent === true,
         )
@@ -181,18 +185,18 @@ function getAllOccupiedIntervals(
 // =========================================================================
 export function getAvailabilityByAttributes(
   productId: string,
-  size: string,
-  color: string,
+  sizeId: string,
+  colorId: string,
   startDate: Date,
   endDate: Date,
   type: OpType,
 ) {
-  const totalCount = getTotalStock(productId, size, color, type);
+  const totalCount = getTotalStock(productId, sizeId, colorId, type);
 
   const occupiedIntervals = getAllOccupiedIntervals(
     productId,
-    size,
-    color,
+    sizeId,
+    colorId,
     type,
   );
 
@@ -222,15 +226,15 @@ export function getAvailabilityByAttributes(
 // =========================================================================
 export function getReservationDataByAttributes(
   productId: string,
-  size: string,
-  color: string,
+  sizeId: string,
+  colorId: string,
   type: OpType = "alquiler",
 ) {
-  const totalPhysicalStock = getTotalStock(productId, size, color, type);
+  const totalPhysicalStock = getTotalStock(productId, sizeId, colorId, type);
   const activeReservations = getAllOccupiedIntervals(
     productId,
-    size,
-    color,
+    sizeId,
+    colorId,
     type,
   );
 

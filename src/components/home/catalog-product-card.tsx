@@ -18,6 +18,7 @@ import { formatCurrency } from "@/src/utils/currency-format";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { useMemo } from "react";
 
 interface Props {
@@ -27,6 +28,8 @@ interface Props {
 export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
+  const { getSizeById, getColorById, getModelById, getCategoryById } =
+    useAttributeStore();
 
   const { inventoryItems, stockLots } = useInventoryStore();
 
@@ -72,14 +75,26 @@ export function CatalogProductCard({ product }: Props) {
   const activeColors = useMemo(() => {
     const map = new Map();
     displayStock.forEach((s) => {
-      map.set(s.color, { name: s.color, hex: s.colorHex });
+      const color = getColorById(s.colorId);
+      if (color) {
+        map.set(s.colorId, { name: color.name, hex: color.hex });
+      } else {
+        // Fallback or legacy matching
+        map.set(s.colorId || (s as any).color, {
+          name: (s as any).color,
+          hex: (s as any).colorHex,
+        });
+      }
     });
     return Array.from(map.values());
-  }, [displayStock]);
+  }, [displayStock, getColorById]);
 
   const activeSizes = useMemo(
-    () => Array.from(new Set(displayStock.map((s) => s.size))),
-    [displayStock],
+    () =>
+      Array.from(new Set(displayStock.map((s) => s.sizeId))).map(
+        (id) => getSizeById(id)?.name || id,
+      ),
+    [displayStock, getSizeById],
   );
 
   const days = hasRemote
@@ -136,16 +151,26 @@ export function CatalogProductCard({ product }: Props) {
         </div>
       </div>
 
-      <CardHeader className="px-4 space-y-0">
-        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-          {product.category}
-        </p>
+      <CardHeader className="px-4 space-y-1">
+        <div className="flex w-full justify-between">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+            {product.categoryId
+              ? getCategoryById(product.categoryId)?.name || "General"
+              : "General"}
+          </p>
+          {product.modelId && (
+            <p className="text-[10px] text-slate-500 font-bold italic flex items-center gap-1">
+              <span className="text-slate-400">Modelo:</span>
+              {getModelById(product.modelId)?.name || product.modelId}
+            </p>
+          )}
+        </div>
         <CardTitle className="text-base line-clamp-1 transition-colors group-hover:text-primary">
           {product.name}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="px-4 pt-0 space-y-1">
+      <CardContent className="px-4 space-y-1">
         <div className="space-y-1 border-muted/50 py-2">
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">

@@ -69,8 +69,8 @@ export const useCartStore = create<CartState>((set, get) => ({
       const existingIndex = state.items.findIndex((i) => {
         const sameProduct = i.product.id === product.id;
         const sameType = i.operationType === type;
-        const sameSize = i.selectedSize === variant?.size;
-        const sameColor = i.selectedColor === variant?.color;
+        const sameSize = i.selectedSizeId === variant?.size;
+        const sameColor = i.selectedColorId === variant?.color;
 
         return sameProduct && sameType && sameSize && sameColor;
       });
@@ -127,8 +127,8 @@ export const useCartStore = create<CartState>((set, get) => ({
           type,
         ),
         selectedCodes: specificStockId ? [specificStockId] : [], // specificStockId should be the UIID (id)
-        selectedSize: variant?.size,
-        selectedColor: variant?.color,
+        selectedSizeId: variant?.size,
+        selectedColorId: variant?.color,
       };
 
       return { items: [...state.items, newItem] };

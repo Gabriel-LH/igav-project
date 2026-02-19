@@ -23,8 +23,8 @@ import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 
 interface StockAssignmentWidgetProps {
   productId: string;
-  size: string;
-  color: string;
+  sizeId: string;
+  colorId: string;
   quantity: number;
   operationType: OpType;
   dateRange: { from: Date; to: Date };
@@ -38,8 +38,8 @@ interface StockAssignmentWidgetProps {
 
 export function StockAssignmentWidget({
   productId,
-  size,
-  color,
+  sizeId,
+  colorId,
   quantity,
   operationType,
   dateRange,
@@ -70,8 +70,8 @@ export function StockAssignmentWidget({
       return inventoryItems.filter((i) => {
         const isBaseMatch =
           i.productId === productId &&
-          i.size === size &&
-          i.color === color &&
+          i.sizeId === sizeId &&
+          i.colorId === colorId &&
           i.status !== "baja" &&
           i.status !== "vendido";
 
@@ -90,8 +90,8 @@ export function StockAssignmentWidget({
       return stockLots.filter((l) => {
         const isBaseMatch =
           l.productId === productId &&
-          l.size === size &&
-          l.color === color &&
+          l.sizeId === sizeId &&
+          l.colorId === colorId &&
           l.status !== "baja" &&
           l.status !== "vendido";
 
@@ -109,17 +109,7 @@ export function StockAssignmentWidget({
         );
       });
     }
-  }, [
-    inventoryItems,
-    stockLots,
-    productId,
-    size,
-    color,
-    operationType,
-    dateRange,
-    isImmediate,
-    isSerial,
-  ]);
+  }, [inventoryItems, stockLots, productId, isSerial]);
 
   // 2. Notificar al padre
   useEffect(() => {

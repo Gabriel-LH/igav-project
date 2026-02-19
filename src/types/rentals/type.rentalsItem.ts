@@ -12,8 +12,8 @@ export const rentalItemSchema = z.object({
   
   // --- SNAPSHOT DEL MOMENTO --- 
   // Guardamos esto por si el producto cambia en el catálogo
-  size: z.string(),
-  color: z.string(),
+  sizeId: z.string(),
+  colorId: z.string(),
   priceAtMoment: z.number(), 
   quantity: z.number().default(1), 
   

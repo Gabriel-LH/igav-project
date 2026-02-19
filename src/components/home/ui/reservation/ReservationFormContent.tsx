@@ -28,8 +28,8 @@ import { formatCurrency } from "@/src/utils/currency-format";
 
 export function ReservationFormContent({
   item,
-  size,
-  color,
+  sizeId,
+  colorId,
   pickupTime,
   setPickupTime,
   returnTime,
@@ -105,12 +105,12 @@ export function ReservationFormContent({
       {/* 1. INFO Y CANTIDAD */}
       <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
         <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
-          {size || "S/T"}
+          {sizeId || "S/T"}
         </div>
         <div className="flex-1">
           <h4 className="text-sm font-bold uppercase">{item.name}</h4>
           <p className="text-[10px] text-muted-foreground">
-            Color: {color} | SKU: {item.sku}
+            Color: {colorId} | SKU: {item.sku}
           </p>
         </div>
         <div className="w-20">
@@ -165,8 +165,8 @@ export function ReservationFormContent({
                 setDateRange={setDateRange}
                 rules={businessRules}
                 productId={item.id}
-                size={size}
-                color={color}
+                sizeId={sizeId}
+                colorId={colorId}
                 quantityDesired={quantity}
                 type={operationType}
               />
@@ -209,8 +209,8 @@ export function ReservationFormContent({
                 setDateRange={setDateRange}
                 rules={businessRules}
                 productId={item.id}
-                size={size}
-                color={color}
+                sizeId={sizeId}
+                colorId={colorId}
                 type={operationType}
               />
               <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
@@ -318,8 +318,8 @@ export function ReservationFormContent({
             isImmediate={true} // Debe estar disponible HOY
             operationType="venta"
             productId={item.id}
-            size={size}
-            color={color}
+            sizeId={sizeId}
+            colorId={colorId}
             quantity={quantity}
             dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
             currentBranchId={currentBranchId}

@@ -18,8 +18,8 @@ export interface RentalDTO extends BaseOperation {
     productName: string;
     stockId: string;
     quantity: number;
-    size: string;
-    color: string;
+    sizeId: string;
+    colorId: string;
     priceAtMoment: number;
   }[];
   financials: {

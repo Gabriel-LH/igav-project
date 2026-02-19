@@ -6,7 +6,6 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,8 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/label";
 import React from "react";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { CreateClientModal } from "@/src/components/client/ui/modals/CreateClientModal";
 
 export function CustomerSelector({
   selected,
@@ -24,8 +25,11 @@ export function CustomerSelector({
   selected: any;
   onSelect: (client: any) => void;
 }) {
+  const { customers } = useCustomerStore();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const [search, setSearch] = React.useState("");
+
 
   return (
     <div>
@@ -47,17 +51,29 @@ export function CustomerSelector({
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0">
           <Command>
-            <CommandInput placeholder="Escribe el DNI o nombre..." />
+            <CommandInput placeholder="Escribe el DNI o nombre..." value={search} onValueChange={setSearch} />
             <CommandEmpty>
               <div className="p-4 text-center">
                 <p className="text-sm mb-2">No se encontró el cliente</p>
-                <Button size="sm" variant="outline" className="gap-2">
-                  <UserPlus className="h-4 w-4" /> Crear nuevo cliente
-                </Button>
+
+                <CreateClientModal
+                  onCreated={(newClient) => {
+                    setValue(newClient.firstName + " " + newClient.lastName);
+                    onSelect(newClient);
+                    setOpen(false);
+                  }}
+                  defaultValues={{ dni: search }}
+                >
+                  <Button size="sm" variant="outline" className="gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Crear nuevo cliente
+                  </Button>
+                </CreateClientModal>
               </div>
             </CommandEmpty>
+
             <CommandGroup>
-              {CLIENTS_MOCK.map((client) => (
+              {customers.map((client) => (
                 <CommandItem
                   key={client.id}
                   value={`${client.firstName} ${client.lastName} ${client.dni}`}

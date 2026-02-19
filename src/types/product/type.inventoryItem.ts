@@ -6,9 +6,8 @@ export const inventoryItemSchema = z.object({
   variantCode: z.string(),       // Relación a variante de producto
   productId: z.string(),
   branchId: z.string(),
-  size: z.string(),
-  color: z.string(),
-  colorHex: z.string(),
+  sizeId: z.string(),      // <--- CAMBIO: Usar ID de la tabla de tallas
+  colorId: z.string(),     // <--- CAMBIO: Usar ID de la tabla de colores
   isForRent: z.boolean(),
   isForSale: z.boolean(),
   usageCount: z.number().min(0),

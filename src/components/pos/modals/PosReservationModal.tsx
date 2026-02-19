@@ -151,8 +151,8 @@ export function PosReservationModal({
               productName: cartItem.product.name,
               stockId: stockFound?.id || id,
               quantity: 1,
-              size: stockFound?.size || cartItem.selectedSize || "---",
-              color: stockFound?.color || cartItem.selectedColor || "---",
+              sizeId: stockFound?.sizeId || cartItem.selectedSizeId || "---",
+              colorId: stockFound?.colorId || cartItem.selectedColorId || "---",
               priceAtMoment: cartItem.unitPrice,
             });
           });
@@ -163,8 +163,10 @@ export function PosReservationModal({
               String(s.productId) === String(cartItem.product.id) &&
               s.status === "disponible" &&
               s.isForSale &&
-              (!cartItem.selectedSize || s.size === cartItem.selectedSize) &&
-              (!cartItem.selectedColor || s.color === cartItem.selectedColor),
+              (!cartItem.selectedSizeId ||
+                s.sizeId === cartItem.selectedSizeId) &&
+              (!cartItem.selectedColorId ||
+                s.colorId === cartItem.selectedColorId),
           );
 
           let remaining = cartItem.quantity;
@@ -176,15 +178,15 @@ export function PosReservationModal({
               productName: cartItem.product.name,
               stockId: lot.id, // Usamos el ID (UUID)
               quantity: take,
-              size: lot.size || cartItem.selectedSize || "---",
-              color: lot.color || cartItem.selectedColor || "---",
+              sizeId: lot.sizeId || cartItem.selectedSizeId || "---",
+              colorId: lot.colorId || cartItem.selectedColorId || "---",
               priceAtMoment: cartItem.unitPrice,
             });
             remaining -= take;
           }
           if (remaining > 0) {
             toast.error(
-              `"${cartItem.product.name}": Stock insuficiente (${cartItem.selectedSize || ""} ${cartItem.selectedColor || ""}) para la venta.`,
+              `"${cartItem.product.name}": Stock insuficiente (${cartItem.selectedSizeId || ""} ${cartItem.selectedColorId || ""}) para la venta.`,
             );
             return null;
           }
@@ -197,8 +199,8 @@ export function PosReservationModal({
             productName: cartItem.product.name,
             stockId: undefined, // Virtual
             quantity: 1,
-            size: cartItem.selectedSize || "---",
-            color: cartItem.selectedColor || "---",
+            sizeId: cartItem.selectedSizeId || "---",
+            colorId: cartItem.selectedColorId || "---",
             priceAtMoment: cartItem.unitPrice,
           });
         }
@@ -447,8 +449,8 @@ export function PosReservationModal({
                     }}
                     mode="pickup"
                     productId=""
-                    size=""
-                    color=""
+                    sizeId=""
+                    colorId=""
                     quantity={1}
                     type="alquiler"
                   />
@@ -482,8 +484,8 @@ export function PosReservationModal({
                       mode="return"
                       type="alquiler"
                       productId=""
-                      size=""
-                      color=""
+                      sizeId=""
+                      colorId=""
                       quantity={1}
                     />
                     <TimePicker

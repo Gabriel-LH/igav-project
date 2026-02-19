@@ -30,8 +30,9 @@ import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-tra
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
-import { DialogDescription } from "@radix-ui/react-dialog";
+import { DialogDescription } from "@/components/ui/dialog"; 
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 
 export function DetailsProductViewer({
   item,
@@ -41,6 +42,8 @@ export function DetailsProductViewer({
   const isMobile = useIsMobile();
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId;
+  const { getSizeById, getColorById, getModelById, getCategoryById } =
+    useAttributeStore();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -63,7 +66,7 @@ export function DetailsProductViewer({
 
   // 2. TALLAS ÚNICAS DISPONIBLES
   const availableSizes = useMemo(
-    () => Array.from(new Set(allProductStock.map((s) => s.size))),
+    () => Array.from(new Set(allProductStock.map((s) => s.sizeId))),
     [allProductStock],
   );
 
@@ -71,13 +74,25 @@ export function DetailsProductViewer({
 
   // 3. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
   const colorsForSelectedSize = useMemo(() => {
-    const stockInSize = allProductStock.filter((s) => s.size === selectedSize);
+    const stockInSize = allProductStock.filter(
+      (s) => s.sizeId === selectedSize,
+    );
     return Array.from(
       new Map(
-        stockInSize.map((s) => [s.color, { name: s.color, hex: s.colorHex }]),
+        stockInSize.map((s) => {
+          const color = getColorById(s.colorId);
+          return [
+            s.colorId,
+            {
+              id: s.colorId,
+              name: color?.name || "Desconocido",
+              hex: color?.hex || "#CCCCCC",
+            },
+          ];
+        }),
       ).values(),
     );
-  }, [selectedSize, allProductStock]);
+  }, [selectedSize, allProductStock, getColorById]);
 
   const [selectedColor, setSelectedColor] = useState(
     colorsForSelectedSize[0] || null,
@@ -88,7 +103,7 @@ export function DetailsProductViewer({
     if (
       colorsForSelectedSize.length > 0 &&
       (!selectedColor ||
-        !colorsForSelectedSize.find((c) => c.name === selectedColor.name))
+        !colorsForSelectedSize.find((c) => c.id === selectedColor.id))
     ) {
       setSelectedColor(colorsForSelectedSize[0]);
     }
@@ -98,7 +113,7 @@ export function DetailsProductViewer({
   const variantLocations = useMemo(
     () =>
       allProductStock.filter(
-        (s) => s.size === selectedSize && s.color === selectedColor?.name,
+        (s) => s.sizeId === selectedSize && s.colorId === selectedColor?.id,
       ),
     [allProductStock, selectedSize, selectedColor],
   );
@@ -187,16 +202,28 @@ export function DetailsProductViewer({
       >
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
-          <DialogDescription className="flex flex-wrap gap-2">
-            <Badge
-              variant="outline"
-              className="font-mono text-blue-600 border-blue-500"
-            >
-              SKU: {item.sku}
-            </Badge>
-            <Badge className="bg-muted text-primary border-gray-500">
-              Existencia Total: {totalGlobalStock}
-            </Badge>
+          <DialogDescription className="flex flex-col gap-1">
+            <div className="flex flex-wrap gap-2 mb-1">
+              <Badge
+                variant="outline"
+                className="font-mono text-blue-600 border-blue-500"
+              >
+                SKU: {item.sku}
+              </Badge>
+              <Badge className="bg-muted text-primary border-gray-500">
+                Existencia Total: {totalGlobalStock}
+              </Badge>
+            </div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+              {item.categoryId
+                ? getCategoryById(item.categoryId)?.name || "General"
+                : "General"}
+              {item.modelId && (
+                <span className="ml-2 text-slate-400 font-bold italic">
+                  - {getModelById(item.modelId)?.name || item.modelId}
+                </span>
+              )}
+            </div>
           </DialogDescription>
         </DrawerHeader>
 
@@ -217,7 +244,7 @@ export function DetailsProductViewer({
                   )}
                   onClick={() => setSelectedSize(size)}
                 >
-                  {size}
+                  {getSizeById(size)?.name || size}
                 </Button>
               ))}
             </div>
@@ -230,10 +257,10 @@ export function DetailsProductViewer({
             </Label>
             <div className="flex flex-wrap gap-4">
               {colorsForSelectedSize.map((color) => {
-                const isSelected = selectedColor?.name === color.name;
+                const isSelected = selectedColor?.id === color.id;
                 const totalStockThisColor = allProductStock
                   .filter(
-                    (s) => s.size === selectedSize && s.color === color.name,
+                    (s) => s.sizeId === selectedSize && s.colorId === color.id,
                   )
                   .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0);
 
@@ -429,7 +456,7 @@ export function DetailsProductViewer({
                   Condición
                 </p>
                 <p className="text-sm font-bold capitalize">
-                  {variantLocations[0]?.condition || "Excelente"}
+                  {(variantLocations[0] as any)?.condition || "Excelente"}
                 </p>
               </div>
               <div>
@@ -458,8 +485,8 @@ export function DetailsProductViewer({
             <div className="grid grid-cols-2 gap-2 w-full">
               <DirectTransactionModal
                 item={item}
-                size={selectedSize || ""}
-                color={selectedColor?.name || ""}
+                sizeId={selectedSize || ""}
+                colorId={selectedColor?.id || ""}
                 type="alquiler"
                 currentBranchId={currentBranchId}
                 onSuccess={() => setDrawerOpen(false)}
@@ -478,8 +505,8 @@ export function DetailsProductViewer({
 
               <DirectTransactionModal
                 item={item}
-                size={selectedSize || ""}
-                color={selectedColor?.name || ""}
+                sizeId={selectedSize || ""}
+                colorId={selectedColor?.id || ""}
                 type="venta"
                 currentBranchId={currentBranchId}
                 onSuccess={() => setDrawerOpen(false)}
@@ -498,8 +525,8 @@ export function DetailsProductViewer({
 
               <ReservationModal
                 item={item}
-                size={selectedSize || ""}
-                color={selectedColor?.name || ""}
+                sizeId={selectedSize || ""}
+                colorId={selectedColor?.id || ""}
                 currentBranchId={currentBranchId}
                 originBranchId={
                   variantLocations.find((v) => v.branchId !== currentBranchId)

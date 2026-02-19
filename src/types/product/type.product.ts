@@ -6,8 +6,9 @@ export const productSchema = z.object({
   id: z.string(),
   name: z.string(),
   image: z.string(),
+  modelId: z.string(),
   sku: z.string(), // SKU único por producto base
-  category: z.string(),
+  categoryId: z.string(),
   description: z.string(),
   is_serial: z.boolean(),
   can_rent: z.boolean(),

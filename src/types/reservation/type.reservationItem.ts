@@ -9,8 +9,8 @@ export const reservationItemSchema = z.object({
 
   // Aquí movimos lo que tenías en "details"
   quantity: z.number().min(1),
-  size: z.string(),
-  color: z.string(),
+  sizeId: z.string(),
+  colorId: z.string(),
   priceAtMoment: z.number(),
   notes: z.string().optional(),
 

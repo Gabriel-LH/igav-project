@@ -9,6 +9,7 @@ import { formatCurrency } from "@/src/utils/currency-format";
 import { ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 import {
   Dialog,
   DialogContent,
@@ -64,8 +65,10 @@ function VariantSelector({
   ]);
 
   // 2. Extraer tallas únicas de la fuente seleccionada
+  const { getSizeById, getColorById } = useAttributeStore();
+
   const sizes = useMemo(
-    () => Array.from(new Set(availableInventory.map((item) => item.size))),
+    () => Array.from(new Set(availableInventory.map((item) => item.sizeId))),
     [availableInventory],
   );
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -76,15 +79,15 @@ function VariantSelector({
     return Array.from(
       new Set(
         availableInventory
-          .filter((item) => item.size === selectedSize)
-          .map((item) => item.color),
+          .filter((item) => item.sizeId === selectedSize)
+          .map((item) => item.colorId),
       ),
     );
   }, [availableInventory, selectedSize]);
 
-  const handleConfirm = (color: string) => {
+  const handleConfirm = (colorId: string) => {
     const variantStock = availableInventory.filter(
-      (item) => item.size === selectedSize && item.color === color,
+      (item) => item.sizeId === selectedSize && item.colorId === colorId,
     );
 
     // Sumamos la cantidad total física disponible para esta variante
@@ -96,7 +99,7 @@ function VariantSelector({
 
     addItem(product, type, undefined, totalPhysicalQty, {
       size: selectedSize!,
-      color,
+      color: colorId,
     });
     onClose();
   };
@@ -108,15 +111,15 @@ function VariantSelector({
           1. Talla
         </span>
         <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => (
+          {sizes.map((sizeId) => (
             <Button
-              key={size}
-              variant={selectedSize === size ? "default" : "outline"}
+              key={sizeId}
+              variant={selectedSize === sizeId ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedSize(size)}
+              onClick={() => setSelectedSize(sizeId)}
               className="w-10 h-10 p-0 rounded-lg shadow-sm hover:scale-105 transition-transform"
             >
-              {size}
+              {getSizeById(sizeId)?.name || sizeId}
             </Button>
           ))}
         </div>
@@ -128,9 +131,10 @@ function VariantSelector({
             2. Color
           </span>
           <div className="flex flex-wrap gap-2">
-            {colors.map((color) => {
+            {colors.map((colorId) => {
               const variantStockItems = availableInventory.filter(
-                (item) => item.size === selectedSize && item.color === color,
+                (item) =>
+                  item.sizeId === selectedSize && item.colorId === colorId,
               );
 
               const totalPhysicalQty = variantStockItems.reduce(
@@ -144,8 +148,8 @@ function VariantSelector({
                   (i) =>
                     i.product.id === product.id &&
                     i.operationType === type &&
-                    i.selectedSize === selectedSize &&
-                    i.selectedColor === color,
+                    i.selectedSizeId === selectedSize &&
+                    i.selectedColorId === colorId,
                 )?.quantity || 0;
 
               const remainingQty = Math.max(
@@ -155,13 +159,13 @@ function VariantSelector({
 
               return (
                 <Button
-                  key={color}
+                  key={colorId}
                   variant="outline"
                   disabled={remainingQty <= 0}
-                  onClick={() => handleConfirm(color)}
+                  onClick={() => handleConfirm(colorId)}
                   className="flex items-center gap-1 text-xs rounded-lg shadow-sm hover:scale-105 transition-transform"
                 >
-                  {color}
+                  {getColorById(colorId)?.name || colorId}
                   <Badge
                     variant={remainingQty > 0 ? "secondary" : "destructive"}
                     className="text-[9px] h-4 px-1"
@@ -181,6 +185,7 @@ function VariantSelector({
 export function PosProductCard({ product }: PosProductCardProps) {
   const { addItem, items } = useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
+  const { getModelById, getCategoryById } = useAttributeStore();
   const currentBranchId = USER_MOCK[0].branchId;
 
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -227,7 +232,7 @@ export function PosProductCard({ product }: PosProductCardProps) {
           0,
         );
 
-      const variants = itemsForBranch.some((i) => i.size || i.color);
+      const variants = itemsForBranch.some((i) => i.sizeId || i.colorId);
 
       return {
         totalPhysicalStock: total,
@@ -340,9 +345,19 @@ export function PosProductCard({ product }: PosProductCardProps) {
             >
               {product.name}
             </h3>
-            <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
-              {product.category || "General"}
-            </p>
+            <div className="flex flex-col gap-0.5 min-h-[32px]">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">
+                {product.categoryId
+                  ? getCategoryById(product.categoryId)?.name
+                  : "General"}
+              </p>
+              {product.modelId && (
+                <div className="text-[10px] text-slate-500 font-bold italic flex items-center gap-1">
+                  <span className="text-slate-400">Modelo:</span>
+                  {getModelById(product.modelId)?.name || product.modelId}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -375,7 +390,7 @@ export function PosProductCard({ product }: PosProductCardProps) {
                 </div>
               </Button>
             ) : (
-              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2 border border-red-200">
+              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
                 NO VENTA
               </div>
             )}
@@ -409,7 +424,7 @@ export function PosProductCard({ product }: PosProductCardProps) {
                 </div>
               </Button>
             ) : (
-              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2 border border-red-200">
+              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
                 NO RENTA
               </div>
             )}

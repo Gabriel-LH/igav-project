@@ -11,7 +11,7 @@ import { Product } from "@/src/types/product/type.product";
 
 export function MaintenanceActionCard({ item }: { item: any }) {
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateStockStatus
+    (state) => state.updateItemStatus
   );
 
   const { products } = useInventoryStore();

@@ -1,0 +1,286 @@
+Explicacion para descuentos individuales: 
+
+Gemini ha dicho
+Para manejar Descuentos Individuales y la lógica de Packs (Combos) correctamente, la respuesta corta es:
+
+NO toques Product, InventoryItem ni StockLot.
+Ellos representan "lo que es" el producto y su precio de lista oficial. Eso no cambia porque le hagas un descuento a Juan Pérez.
+
+SÍ debes modificar saleItemSchema (y rentalItemSchema).
+Aquí es donde ocurre la "negociación" del precio. Es el único lugar donde debes guardar la diferencia entre el "Precio Real" y el "Precio Cobrado".
+
+Aquí te detallo exactamente qué agregar para que tu sistema soporte Packs y Descuentos como un PRO.
+
+1. Modificación en saleItemSchema (La Clave)
+Necesitas guardar 3 datos nuevos para que tu contabilidad y analítica funcionen:
+
+Precio de Lista: Cuánto costaba originalmente.
+
+Descuento: Cuánto le bajaste.
+
+Razón: Por qué le bajaste (ej: "Pack Terno", "Amigo de la casa").
+
+Bundle ID (Opcional): Para saber que este ítem pertenece a un grupo visual.
+
+Actualiza tu archivo types/sales/type.saleItem.ts:
+
+¿Por qué NO tocar Product ni Stock?
+Imagina este escenario:
+
+Tu Saco Azul tiene un price_sell de $100 en productSchema.
+
+Viene un cliente y le vendes el Pack Terno (donde el saco sale a $80).
+
+Viene otro cliente y le vendes el Saco solo, pero le haces 10% de descuento por ser familiar ($90).
+
+Si modificaras el precio en Product o Stock, cambiarías el precio para todos los clientes futuros o perderías el registro de que el precio original era $100.
+
+Al guardarlo en SaleItem, tienes la "foto" exacta de ese momento:
+
+Venta 1: Saco (Lista: 100, Final: 80, Razón: Pack).
+
+Venta 2: Saco (Lista: 100, Final: 90, Razón: Familiar).
+
+
+Ejemplo de uso (Cómo llenar los datos)
+Cuando agregues el Pack al carrito en tu código de Frontend, harías esto:
+
+TypeScript
+// Ejemplo: Pack Terno (Precio Pack 120 / Precio Real 150)
+const factor = 120 / 150; // 0.8
+
+const sacoItem = {
+    productId: "prod-001",
+    stockId: "inv-001",
+    
+    listPrice: 100, // Precio original del producto
+    priceAtMoment: 80, // 100 * 0.8 (Prorrateado)
+    discountAmount: 20, // 100 - 80
+    discountReason: "Pack Terno Ejecutivo",
+    bundleId: "pack-uniq-id-1", // Para que en el recibo salgan juntitos
+    // ...
+};
+
+const pantalonItem = {
+    productId: "prod-002",
+    stockId: "inv-002",
+    
+    listPrice: 50, // Precio original
+    priceAtMoment: 40, // 50 * 0.8
+    discountAmount: 10,
+    discountReason: "Pack Terno Ejecutivo",
+    bundleId: "pack-uniq-id-1",
+    // ...
+};
+Conclusión
+Solo modifica saleItemSchema (y rentalItemSchema si aplica alquiler). Agrega campos para rastrear el Precio de Lista vs. Precio Real. Esa es la forma profesional de manejar descuentos y packs sin ensuciar tu inventario maestro.
+
+----------------------------------------------------------------------------
+
+Como se aplica la promocion? Se puede poner en el busnessRules?
+
+Gemini ha dicho
+No, no te recomiendo poner los descuentos específicos de productos dentro de businessRulesSchema.
+
+¿Por qué?
+
+Reglas de Negocio (BusinessRules): Son las "Leyes" de tu empresa. Son estáticas y cambian poco (IGV, Hora de cierre, Penalidad por mora). Afectan a toda la operación.
+
+Descuentos y Promociones: Son estrategias de "Marketing". Son dinámicas, tienen fecha de inicio/fin, aplican a ciertos productos y cambian cada semana.
+
+Si metes "Descuento del 10% en Corbatas" dentro de BusinessRules, ese objeto se volverá gigante e inmanejable muy rápido.
+
+La Solución Arquitectónica: Nueva Entidad Promotion
+Lo ideal es crear una nueva colección o tabla llamada Promotions (o Discounts). Esto te permite tener un CRUD independiente donde el administrador crea campañas sin tocar el código ni la configuración global.
+
+Aquí te diseño el Schema Zod para una gestión de descuentos profesional:
+
+1. Crear types/promotion/type.promotion.ts
+TypeScript
+import { z } from "zod";
+
+export const promotionSchema = z.object({
+  id: z.string(),
+  name: z.string(), // Ej: "Campaña Día del Padre", "Liquidación Verano"
+  code: z.string().optional(), // Ej: "PADRE2026" (si quieres usar cupones)
+  
+  // ¿De qué tipo es el descuento?
+  type: z.enum(["percentage", "fixed_amount"]), 
+  value: z.number().min(0), // Ej: 10 (para 10%) o 50 (para S/ 50.00)
+
+  // ¿A quién aplica? (Scope)
+  scope: z.enum(["global", "category", "product_specific", "pack"]),
+  
+  // IDs a los que aplica (Si es category -> IDs de categorías, Si es product -> IDs de productos)
+  targetIds: z.array(z.string()).optional(), 
+
+  // Vigencia
+  startDate: z.date(),
+  endDate: z.date().optional(), // Si es null, es indefinido
+  
+  // Restricciones
+  isActive: z.boolean().default(true),
+  branchIds: z.array(z.string()).optional(), // ¿Aplica solo en algunas tiendas?
+  minPurchaseAmount: z.number().optional(), // "Descuento válido por compras mayores a S/ 200"
+
+  createdAt: z.date(),
+});
+
+export type Promotion = z.infer<typeof promotionSchema>;
+2. ¿Qué papel juegan las BusinessRules entonces?
+En BusinessRules solo debes poner los Límites de Seguridad para evitar que un cajero "regale" la tienda.
+
+Agrega esto a tu businessRulesSchema:
+
+TypeScript
+export const businessRulesSchema = z.object({
+  // ... tus reglas existentes ...
+
+  // 🛡️ REGLAS DE SEGURIDAD PARA DESCUENTOS
+  maxDiscountPercentageAllowed: z.number(), // Ej: 0.30 (Nadie puede dar más del 30% manual)
+  requireAdminAuthForDiscountOver: z.number(), // Ej: 0.15 (Si pasa del 15%, pide clave de gerente)
+  allowStackingDiscounts: z.boolean(), // ¿Se puede sumar cupón + descuento manual? (False recomendado)
+});
+3. Cómo funciona esto en el POS (La Lógica)
+Cuando estés en el POS (PosCartSection o PosCheckoutModal), el sistema debe calcular el precio automáticamente.
+
+Flujo:
+
+Carga: Al iniciar el POS, cargas las Promotions activas (isActive: true y fecha vigente).
+
+Cálculo: Cada vez que agregas un producto al carrito, ejecutas una función applyBestPromotion(item).
+
+Ejemplo de la función (Helper):
+
+TypeScript
+const applyBestPromotion = (product: Product, price: number, activePromotions: Promotion[]) => {
+  // Filtramos promociones que apliquen a este producto
+  const validPromos = activePromotions.filter(promo => {
+     if (promo.scope === 'global') return true;
+     if (promo.scope === 'category' && promo.targetIds?.includes(product.category)) return true;
+     if (promo.scope === 'product_specific' && promo.targetIds?.includes(product.id)) return true;
+     return false;
+  });
+
+  if (validPromos.length === 0) return { finalPrice: price, discount: 0, reason: null };
+
+  // Buscamos el mejor descuento para el cliente
+  let bestPrice = price;
+  let bestPromoName = "";
+
+  validPromos.forEach(promo => {
+     let currentDiscount = 0;
+     if (promo.type === 'percentage') {
+        currentDiscount = price * (promo.value / 100);
+     } else {
+        currentDiscount = promo.value;
+     }
+
+     const newPrice = Math.max(0, price - currentDiscount);
+     
+     if (newPrice < bestPrice) {
+        bestPrice = newPrice;
+        bestPromoName = promo.name;
+     }
+  });
+
+  return { 
+     finalPrice: bestPrice, 
+     discount: price - bestPrice, 
+     reason: bestPromoName 
+  };
+};
+4. Interfaz de Usuario (UI) para crear descuentos
+Crearías una página en tu Dashboard /admin/marketing/promotions/new:
+
+Nombre: "Liquidación Ternos"
+
+Tipo: Porcentaje (20%)
+
+Aplica a: Categoría "Ternos"
+
+Fechas: 18/02/2026 al 28/02/2026.
+
+Resumen:
+
+BusinessRules: Define hasta cuánto se puede descontar (Seguridad).
+
+Promotions: Define qué se descuenta hoy (Marketing).
+
+POS: Cruza ambas informaciones para dar el precio final.
+
+---------------------------------------------------------------------------------------
+
+Por que se debe de mantener bundleId?
+
+No, no debes eliminar bundleId. Aunque parezca que hacen lo mismo, cumplen dos funciones arquitectónicas muy diferentes.
+
+Aquí te explico la diferencia clave: promotionId es la "Regla" y bundleId es la "Instancia".
+
+Te pongo un ejemplo práctico para que veas por qué necesitas ambos:
+
+El Problema de los "Dos Packs"
+Imagina que entra un cliente y compra DOS "Packs Terno Ejecutivo" en la misma transacción (uno para él y otro para su hijo).
+
+Si solo usas promotionId:
+Todos los items (2 sacos, 2 pantalones) tendrán promotionId: "PROMO-TERNO-2026".
+
+Problema: En el recibo o en la pantalla, verás una lista plana de 4 ítems mezclados. No sabrás qué pantalón va con qué saco. Visualmente es un desastre.
+
+Si usas bundleId + promotionId:
+Pack 1 (Papá):
+
+Saco Talla L (bundleId: "uuid-temp-1", promotionId: "PROMO-TERNO")
+
+Pantalón 34 (bundleId: "uuid-temp-1", promotionId: "PROMO-TERNO")
+
+Pack 2 (Hijo):
+
+Saco Talla S (bundleId: "uuid-temp-2", promotionId: "PROMO-TERNO")
+
+Pantalón 30 (bundleId: "uuid-temp-2", promotionId: "PROMO-TERNO")
+
+Resultado en el Recibo (UX):
+
+1x Pack Terno Ejecutivo (Agrupado por uuid-temp-1)
+L__ Saco L
+L__ Pantalón 34
+
+1x Pack Terno Ejecutivo (Agrupado por uuid-temp-2)
+L__ Saco S
+L__ Pantalón 30
+
+Resumen Técnico
+promotionId (Analítica y Finanzas):
+
+Propósito: Saber por qué bajó el precio.
+
+Uso: Reportes. "¿Cuánto vendimos gracias a la promo de verano?".
+
+Valor: Es estático (el ID de la promoción en base de datos).
+
+bundleId (UX y Operación):
+
+Propósito: Saber qué ítems van juntos visualmente en esta venta específica.
+
+Uso: Imprimir el recibo agrupado, o si devuelven el pack completo, saber qué ítems borrar del carrito de golpe.
+
+Valor: Es dinámico (un crypto.randomUUID() generado al momento de agregar al carrito).
+
+Veredicto
+Mantén ambos. Tu saleItemSchema está perfecto así:
+
+TypeScript
+export const saleItemSchema = z.object({
+  // ...
+  
+  // FINANCIERO (La Regla)
+  promotionId: z.string().optional(), // "promo-verano-2025"
+  discountReason: z.string().optional(), // "Oferta de Verano"
+  
+  // VISUAL / OPERATIVO (La Agrupación)
+  bundleId: z.string().optional(), // "550e8400-e29b-..." (Unico por grupo en el carrito)
+
+  // ...
+});
+Estás construyendo un sistema muy robusto. ¡Sigue así!

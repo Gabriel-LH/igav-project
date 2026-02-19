@@ -159,8 +159,8 @@ export function PosCheckoutModal({
     alquilerItems.forEach((item) => {
       const check = getAvailabilityByAttributes(
         item.product.id,
-        item.selectedSize || "",
-        item.selectedColor || "",
+        item.selectedSizeId || "",
+        item.selectedColorId || "",
         dateRange.from,
         dateRange.to,
         "alquiler",
@@ -210,8 +210,8 @@ export function PosCheckoutModal({
                 productName: cartItem.product.name,
                 stockId: code, // Usamos code as stockId for serials
                 quantity: 1,
-                size: cartItem.selectedSize ?? "",
-                color: cartItem.selectedColor ?? "",
+                sizeId: cartItem.selectedSizeId ?? "",
+                colorId: cartItem.selectedColorId ?? "",
                 priceAtMoment: cartItem.subtotal / cartItem.quantity,
               });
             });
@@ -220,8 +220,8 @@ export function PosCheckoutModal({
             const candidates = stockLots.filter(
               (l) =>
                 l.productId === cartItem.product.id &&
-                l.size === (cartItem.selectedSize || "") &&
-                l.color === (cartItem.selectedColor || "") &&
+                l.sizeId === (cartItem.selectedSizeId || "") &&
+                l.colorId === (cartItem.selectedColorId || "") &&
                 l.branchId === currentBranchId &&
                 l.status === "disponible" &&
                 (opType === "venta" ? l.isForSale : l.isForRent),
@@ -235,8 +235,8 @@ export function PosCheckoutModal({
                 productName: cartItem.product.name,
                 stockId: lot.variantCode, // Usamos variantCode as stockId for lots
                 quantity: take,
-                size: cartItem.selectedSize ?? "",
-                color: cartItem.selectedColor ?? "",
+                sizeId: cartItem.selectedSizeId ?? "",
+                colorId: cartItem.selectedColorId ?? "",
                 priceAtMoment: (cartItem.subtotal / cartItem.quantity) * take,
               });
               remaining -= take;
@@ -459,8 +459,9 @@ export function PosCheckoutModal({
                       mode="return"
                       type="alquiler"
                       productId=""
-                      size=""
-                      color=""
+                      sizeId=""
+                      colorId=""
+                      cartItems={items}
                       quantity={1}
                       onSelect={(d) => d && handleDateChange({ to: d })}
                     />
@@ -475,7 +476,7 @@ export function PosCheckoutModal({
                 </div>
               </div>
               {conflicts.length > 0 && (
-                <div className="p-2 bg-red-100 border border-red-200 rounded text-xs text-red-700 mt-2 flex items-start gap-2">
+                <div className="p-2 rounded text-xs border text-red-500 mt-2 flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <strong>Conflictos de Disponibilidad:</strong>

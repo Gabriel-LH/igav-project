@@ -3,6 +3,7 @@ import z from "zod";
 import {
   IconChevronDown,
   IconLayoutColumns,
+  IconPlus,
   IconSearch,
 } from "@tabler/icons-react";
 
@@ -44,6 +45,8 @@ import { clientInactiveSchema } from "./tables/type/type.inactive";
 
 import { ClientsActiveTable } from "./tables/active-table/active-client-table";
 import { ClientsInactiveTable } from "./tables/inactive-table/inactive-client-table";
+import { CreateClientModal } from "./ui/modals/CreateClientModal";
+import { UserPlus2 } from "lucide-react";
 
 export function ClientDataTable({
   dataClientActive,
@@ -134,30 +137,62 @@ export function ClientDataTable({
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className="w-full flex-col justify-start gap-6"
+      className="w-full flex flex-col gap-6"
     >
-      <div className="flex flex-col gap-4">
-        {/* BUSCADOR Y COLUMNAS */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="relative w-full md:w-96">
-            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por ID, Cliente, DNI, Producto, Serie o Variante..."
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 h-10 w-full"
-            />
-          </div>
+      {/* HEADER */}
+      <div className="flex flex-col gap-6">
+        {/* Buscador */}
+        <div className="relative w-full max-w-md">
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por ID, Cliente, DNI"
+            value={globalFilter ?? ""}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10 h-10"
+          />
+        </div>
+
+        {/* Acciones + Tabs */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          {/* IZQUIERDA */}
           <div className="flex items-center gap-2">
+            {/* Mobile */}
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="lg:hidden w-fit" size="sm">
+                <SelectValue placeholder="Seleccionar vista" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Activos</SelectItem>
+                <SelectItem value="inactive">Inactivos</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Desktop */}
+            <TabsList className="hidden lg:flex">
+              <TabsTrigger value="active">Activos</TabsTrigger>
+              <TabsTrigger value="inactive">Inactivos</TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* DERECHA */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <CreateClientModal>
+              <Button size="sm" className="h-10 gap-2">
+                <UserPlus2 className="size-4" />
+                <span className="hidden xl:inline text-xs">Crear cliente</span>
+              </Button>
+            </CreateClientModal>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-10">
-                  <IconLayoutColumns />
-                  <span className="hidden lg:inline text-xs">Columnas</span>
-                  <IconChevronDown />
+                <Button variant="outline" size="sm" className="h-10 gap-2">
+                  <IconLayoutColumns className="size-4" />
+                  <span className="hidden xl:inline text-xs">Columnas</span>
+                  <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+
+              <DropdownMenuContent align="start" className="w-56">
                 {(activeTab === "active"
                   ? tableClientActive
                   : tableClientInactive
@@ -169,41 +204,21 @@ export function ClientDataTable({
                       column.getCanHide() &&
                       column.id !== "searchContent",
                   )
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {COLUMN_LABELS_ES[column.id] ?? column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {COLUMN_LABELS_ES[column.id] ?? column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
-
-        {/* TABS SELECTORES */}
-        <div className="flex items-center justify-between">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="flex w-fit lg:hidden" size="sm">
-              <SelectValue placeholder="Seleccionar vista" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="inactive">Inactivos</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <TabsList className="hidden lg:flex">
-            <TabsTrigger value="active">Activos</TabsTrigger>
-            <TabsTrigger value="inactive">Inactivos</TabsTrigger>
-          </TabsList>
         </div>
       </div>
 

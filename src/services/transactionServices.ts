@@ -195,11 +195,11 @@ export function processTransaction(
           return {
             id: `SITEM-${item.reservationItemId}`,
             saleId: specificData.id,
-            operationId: String(operationId),
             productId: reservationItem.productId,
             stockId: item.stockId,
             quantity: reservationItem.quantity ?? 1,
             priceAtMoment: reservationItem.priceAtMoment,
+            discountAmount: 0,
             // productName: reservationItem.productName,
             // variantCode: reservationItem.variantCode,
             // serialCode: reservationItem.serialCode,
@@ -211,11 +211,11 @@ export function processTransaction(
       : (dto as SaleDTO).items.map((item) => ({
           id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
           saleId: specificData.id,
-          operationId: String(operationId),
           productId: item.productId,
           stockId: item.stockId,
           quantity: item.quantity ?? 1,
           priceAtMoment: item.priceAtMoment,
+          discountAmount: 0,
           restockingFee: 0,
           isReturned: false,
         }));
@@ -297,8 +297,8 @@ export function processTransaction(
         productId: item.productId,
         stockId: item.stockId,
         quantity: item.quantity ?? 1,
-        size: item.size,
-        color: item.color,
+        sizeId: item.sizeId,
+        colorId: item.colorId,
         // CORRECCIÓN: Usar precio unitario si existe en el item, o calcularlo proporcionalmente
         priceAtMoment:
           item.priceAtMoment ||
@@ -411,8 +411,8 @@ export function processTransaction(
               productId: reservationItem.productId,
               stockId: item.stockId,
               quantity: reservationItem.quantity ?? 1,
-              size: reservationItem.size,
-              color: reservationItem.color,
+              sizeId: reservationItem.sizeId,
+              colorId: reservationItem.colorId,
               priceAtMoment: dto.financials.totalRent,
               conditionOut: "Excelente",
               itemStatus: "alquilado",
@@ -428,8 +428,8 @@ export function processTransaction(
             productId: item.productId,
             stockId: item.stockId,
             quantity: item.quantity ?? 1, // Típicamente 1 por línea
-            size: item.size,
-            color: item.color,
+            sizeId: item.sizeId,
+            colorId: item.colorId,
             priceAtMoment: item.priceAtMoment ?? dto.financials.totalRent, // Mejor precio unitario si existe
             conditionOut: "Excelente",
             itemStatus: "alquilado",
