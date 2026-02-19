@@ -20,6 +20,8 @@ import { useOperationStore } from "../store/useOperationStore";
 import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
 import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
 import { useSaleStore } from "../store/useSaleStore";
+import { manageLoyaltyPoints } from "./use-cases/manageLoyaltyPoints";
+import { addClientCredit } from "./use-cases/addClientCredit.usecase";
 
 function getFinancials(
   dto:
@@ -112,15 +114,14 @@ export function processTransaction(
   let specificData: any = {};
   let guaranteeData: any = null;
 
+  // 1. Crédito (Vuelto del pago inicial)
   if (overpayment > 0 && keepAsCredit) {
-    useClientCreditStore.getState().addEntry({
-      id: `CCL-${Math.random().toString(36).substring(2, 9)}`,
-      clientId: dto.customerId,
-      amount: overpayment,
-      reason: "overpayment",
-      operationId,
-      createdAt: now,
-    });
+    addClientCredit(
+      dto.customerId,
+      overpayment,
+      "overpayment",
+      String(operationId),
+    );
   }
 
   // 1️⃣ OPERACIÓN MADRE
@@ -465,6 +466,20 @@ export function processTransaction(
     specificData = rental;
   }
 
+  // 2. 🌟 Lógica de Puntos por el pago inicial
+  // Usamos downPayment (lo que amortizó hoy) para darle puntos
+  if (downPayment > 0) {
+    const pointsEarned = Math.floor(downPayment / 10);
+    if (pointsEarned > 0) {
+      manageLoyaltyPoints({
+        clientId: dto.customerId,
+        points: pointsEarned,
+        type: "earned_purchase",
+        operationId: String(operationId),
+        description: `Puntos por pago inicial de ${dto.type}`,
+      });
+    }
+  }
   return {
     operation: operationData,
     payment: paymentData,

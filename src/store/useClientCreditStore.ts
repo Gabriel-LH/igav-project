@@ -1,4 +1,4 @@
-import { ClientCreditLedger } from "@/src/types/clients/type.clientCreditLedgerSchema";
+import { ClientCreditLedger } from "@/src/types/clients/type.clientCreditLedger";
 import { create } from "zustand";
 
 type CreditState = {
@@ -16,7 +16,7 @@ export const useClientCreditStore = create<CreditState>((set, get) => ({
     })),
 
   getBalance: (clientId) =>
-    get().ledger
-      .filter((l) => l.clientId === clientId)
+    get()
+      .ledger.filter((l) => l.clientId === clientId)
       .reduce((sum, l) => sum + l.amount, 0),
 }));

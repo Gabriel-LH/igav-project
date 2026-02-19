@@ -1,11 +1,12 @@
-import { PaymentMethod } from "../components/home/ui/direct-transaction/CashPaymentSummary";
+import { PaymentMethodType } from "../utils/status-type/PaymentMethodType";
 import { USER_MOCK } from "../mocks/mock.user";
-import { useClientCreditStore } from "../store/useClientCreditStore";
 import { useOperationStore } from "../store/useOperationStore";
 import { usePaymentStore } from "../store/usePaymentStore";
 import { useSaleStore } from "../store/useSaleStore";
 import { paymentSchema } from "../types/payments/type.payments";
 import { getOperationBalances } from "../utils/payment-helpers";
+import { addClientCredit } from "./use-cases/addClientCredit.usecase";
+import { manageLoyaltyPoints } from "./use-cases/manageLoyaltyPoints";
 
 // src/services/paymentService.ts
 export function registerPayment({
@@ -16,7 +17,7 @@ export function registerPayment({
 }: {
   operationId: string;
   amount: number;
-  method: PaymentMethod;
+  method: PaymentMethodType;
   receivedAmount?: number;
 }) {
   const now = new Date();
@@ -61,15 +62,30 @@ export function registerPayment({
   });
 
   // 4. Si hay crédito → ClientCredit
-  if (isCredit) {
-    useClientCreditStore.getState().addEntry({
-      id: `CCL-${crypto.randomUUID().slice(0, 8)}`,
-      clientId: operation.customerId,
-      amount: creditAmount,
-      reason: "overpayment",
+  if (isCredit && creditAmount > 0) {
+    // En lugar de llamar al store directamente, llamamos al Caso de Uso.
+    // Esto asegura que se actualice el Ledger Y el walletBalance del cliente.
+    addClientCredit(
+      operation.customerId,
+      creditAmount,
+      "overpayment",
       operationId,
-      createdAt: now,
-    });
+    );
+  }
+
+  // El cliente gana puntos por el 'amount' (lo que realmente pagó de la deuda), 
+  // no por el overpayment.
+  if (amount > 0) {
+      const pointsEarned = Math.floor(amount / 10); // Ej: 1 pt por cada S/ 10
+      if (pointsEarned > 0) {
+          manageLoyaltyPoints({
+              clientId: operation.customerId,
+              points: pointsEarned,
+              type: "earned_purchase",
+              operationId: operationId,
+              description: `Puntos por pago de cuota`
+          });
+      }
   }
 
   if (operation.type === "venta" && balance === 0) {
@@ -79,7 +95,7 @@ export function registerPayment({
 
     if (sale && sale.status === "pendiente_pago") {
       saleStore.updateSale(sale.id, {
-        status: "pendiente_entrega",
+        status: "vendido_pendiente_entrega",
         updatedAt: now,
         updatedBy: user.id,
       });

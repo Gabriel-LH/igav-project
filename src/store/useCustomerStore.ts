@@ -8,6 +8,7 @@ interface CustomerStore {
   customers: typeof CLIENTS_MOCK;
   addCustomer: (customer: Customer) => void;
   getCustomerById: (id: string) => Customer | undefined;
+  updateCustomer: (id: string, data: Partial<Customer>) => void;
 }
 
 export const useCustomerStore = create<CustomerStore>((set, get) => ({
@@ -19,4 +20,11 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
   getCustomerById: (id) => {
     return get().customers.find((c) => c.id === id);
   },
+
+  updateCustomer: (id, data) =>
+    set((state) => ({
+      customers: state.customers.map((c) =>
+        c.id === id ? { ...c, ...data, updatedAt: new Date() } : c,
+      ),
+    })),
 }));

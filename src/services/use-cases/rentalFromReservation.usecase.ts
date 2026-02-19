@@ -73,7 +73,7 @@ export async function rentalFromReservationUseCase({
   reservationItems.forEach((item) => {
     useInventoryStore
       .getState()
-      .deliverAndTransfer(
+      .updateItemStatus(
         selectedStocks[`${item.id}-0`] || selectedStocks[item.id],
         "alquilado",
         reservation.branchId,

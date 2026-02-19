@@ -36,9 +36,6 @@ export function TableCellViewerHistory({
 }) {
   const isMobile = useIsMobile();
 
-  // Calcular total si no viene precalculado
-  // (Aunque item.income ya debería ser el total de la venta)
-  const totalCalculated = item.income;
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>

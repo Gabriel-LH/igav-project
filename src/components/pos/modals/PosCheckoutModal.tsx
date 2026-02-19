@@ -34,6 +34,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckmarkBadge03Icon } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/badge";
 import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { UsePointsComponent } from "../ui/UsePointsComponent";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -61,9 +63,18 @@ export function PosCheckoutModal({
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [notes, setNotes] = useState("");
 
-  // Fechas de alquiler
-  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
-  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
+  const [usePoints, setUsePoints] = React.useState(false);
+
+  // Obtenemos al cliente actual desde tu store
+  const selectedClient = useCustomerStore(
+    (state) => state.getCustomerById(useCartStore.getState().customerId!), // O como saques tu customerId actual
+  );
+
+  // Configuraciones (Idealmente vienen de tus businessRules)
+  const availablePoints = selectedClient?.loyaltyPoints || 0;
+  const pointValueInMoney = 0.1; // 1 punto = S/ 0.10
+  const pointsDiscount = usePoints ? availablePoints * pointValueInMoney : 0;
+
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
@@ -125,8 +136,8 @@ export function PosCheckoutModal({
   const totalACobrarHoy = useMemo(() => {
     const guaranteeValue =
       guaranteeType === "dinero" ? Number(guarantee || 0) : 0;
-    return totalOperacion + (hasRentals ? guaranteeValue : 0);
-  }, [totalOperacion, guarantee, guaranteeType, hasRentals]);
+    return totalOperacion + (hasRentals ? guaranteeValue : 0) - pointsDiscount;
+  }, [totalOperacion, guarantee, guaranteeType, hasRentals, pointsDiscount]);
 
   const changeAmount = useMemo(() => {
     if (paymentMethod !== "cash") return 0;
@@ -187,7 +198,7 @@ export function PosCheckoutModal({
 
     setIsProcessing(true);
     try {
-      const { inventoryItems, stockLots } = useInventoryStore.getState();
+      const { stockLots } = useInventoryStore.getState();
 
       const prepareItems = (cartItems: any[], opType: "venta" | "alquiler") => {
         const results: any[] = [];
@@ -494,6 +505,17 @@ export function PosCheckoutModal({
               </span>
             </div>
           </div>
+
+          {/* --- INICIO UI DE PUNTOS --- */}
+          {selectedClient && availablePoints >= 0 && (
+            <UsePointsComponent
+              usePoints={usePoints}
+              setUsePoints={setUsePoints}
+              availablePoints={availablePoints}
+              pointValueInMoney={pointValueInMoney}
+            />
+          )}
+          {/* --- FIN UI DE PUNTOS --- */}
 
           <CashPaymentSummary
             type={hasRentals ? "alquiler" : "venta"}
