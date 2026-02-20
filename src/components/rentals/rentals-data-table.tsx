@@ -160,21 +160,43 @@ export function RentalsDataTable({
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className="w-full flex-col justify-start gap-6"
+      className="w-full flex-col justify-start"
     >
       <div className="flex flex-col gap-4">
-        {/* BUSCADOR Y COLUMNAS */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="relative w-full md:w-96">
-            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por ID, Cliente, DNI, Producto, Serie o Variante..."
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 h-10 w-full"
-            />
+        <div className="relative w-full max-w-md md:w-96">
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por ID, Cliente, DNI, Producto, Serie o Variante..."
+            value={globalFilter ?? ""}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10 h-10 w-full"
+          />
+        </div>
+
+        {/* TABS SELECTORES */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center justify-between">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="flex w-fit lg:hidden" size="sm">
+                <SelectValue placeholder="Seleccionar vista" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pendientes</SelectItem>
+                <SelectItem value="active">Activos</SelectItem>
+                <SelectItem value="canceled">Anulados</SelectItem>
+                <SelectItem value="history">Historial</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <TabsList className="hidden lg:flex">
+              <TabsTrigger value="pending">Pendientes</TabsTrigger>
+              <TabsTrigger value="active">Activos</TabsTrigger>
+              <TabsTrigger value="canceled">Anulados</TabsTrigger>
+              <TabsTrigger value="history">Historial</TabsTrigger>
+            </TabsList>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 flex-wrap">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-10">
@@ -217,33 +239,11 @@ export function RentalsDataTable({
             </DropdownMenu>
           </div>
         </div>
-
-        {/* TABS SELECTORES */}
-        <div className="flex items-center justify-between">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="flex w-fit lg:hidden" size="sm">
-              <SelectValue placeholder="Seleccionar vista" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pendientes</SelectItem>
-              <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="canceled">Anulados</SelectItem>
-              <SelectItem value="history">Historial</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <TabsList className="hidden lg:flex">
-            <TabsTrigger value="pending">Pendientes</TabsTrigger>
-            <TabsTrigger value="active">Activos</TabsTrigger>
-            <TabsTrigger value="canceled">Anulados</TabsTrigger>
-            <TabsTrigger value="history">Historial</TabsTrigger>
-          </TabsList>
-        </div>
       </div>
 
       <TabsContent
         value="active"
-        className="relative flex flex-col gap-4 overflow-auto pt-4"
+        className="relative flex flex-col gap-4 overflow-auto pt-3"
       >
         <RentalsActiveTable data={dataRentalActive} table={tableRentalActive} />
       </TabsContent>

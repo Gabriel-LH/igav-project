@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -30,7 +31,6 @@ import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-tra
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
-import { DialogDescription } from "@/components/ui/dialog"; 
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
 
@@ -202,31 +202,29 @@ export function DetailsProductViewer({
       >
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-2xl">{item.name}</DrawerTitle>
-          <DialogDescription className="flex flex-col gap-1">
-            <div className="flex flex-wrap gap-2 mb-1">
-              <Badge
-                variant="outline"
-                className="font-mono text-blue-600 border-blue-500"
-              >
-                SKU: {item.sku}
-              </Badge>
-              <Badge className="bg-muted text-primary border-gray-500">
-                Existencia Total: {totalGlobalStock}
-              </Badge>
-            </div>
-            <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-              {item.categoryId
-                ? getCategoryById(item.categoryId)?.name || "General"
-                : "General"}
-              {item.modelId && (
-                <span className="ml-2 text-slate-400 font-bold italic">
-                  - {getModelById(item.modelId)?.name || item.modelId}
-                </span>
-              )}
-            </div>
-          </DialogDescription>
+          <DrawerDescription className="flex gap-2">
+            <Badge
+              variant="outline"
+              className="font-mono text-blue-600 border-blue-500"
+            >
+              SKU: {item.sku}
+            </Badge>
+            <Badge className="bg-muted text-primary border-gray-500">
+              Existencia Total: {totalGlobalStock}
+            </Badge>
+          </DrawerDescription>
         </DrawerHeader>
 
+        <div className="flex px-4 py-2">
+          {item.categoryId
+            ? getCategoryById(item.categoryId)?.name || "General"
+            : "General"}
+          {item.modelId && (
+            <span className="ml-2 text-slate-400 font-bold italic">
+              - {getModelById(item.modelId)?.name || item.modelId}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">
           {/* PASO 1: SELECCIÓN DE TALLA */}
           <div className="space-y-3">
@@ -253,7 +251,8 @@ export function DetailsProductViewer({
           {/* PASO 2: SELECCIÓN DE COLOR */}
           <div className="space-y-3">
             <Label className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter">
-              2. Color en Talla {selectedSize}
+              2. Color en Talla{" "}
+              {getSizeById(selectedSize!)?.name || selectedSize}
             </Label>
             <div className="flex flex-wrap gap-4">
               {colorsForSelectedSize.map((color) => {

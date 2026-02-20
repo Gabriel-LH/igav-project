@@ -38,6 +38,7 @@ import { setHours, setMinutes } from "date-fns";
 import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 
 export function DirectTransactionModal({
   item,
@@ -110,6 +111,8 @@ export function DirectTransactionModal({
   // --------------------
   const { inventoryItems, stockLots } = useInventoryStore();
 
+  const { getSizeById, getColorById } = useAttributeStore();
+
   // 2️⃣ Paso 2: Filtramos localmente usando useMemo
   const validStockCandidates = useMemo(() => {
     const productId = String(item.id);
@@ -142,6 +145,10 @@ export function DirectTransactionModal({
     colorId,
     type,
   ]);
+
+
+  const colorName = getColorById(colorId)?.name;
+  const sizeName = getSizeById(sizeId)?.name;
 
   // 3. Seleccionamos el mejor candidato
   const selectedStockId = (validStockCandidates[0] as any)?.id;
@@ -357,12 +364,12 @@ export function DirectTransactionModal({
           {/* Producto */}
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
             <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
-              {sizeId || "S/T"}
+              {sizeName || "S/T"}
             </div>
             <div className="flex-1">
               <h4 className="text-sm font-bold uppercase">{item.name}</h4>
               <p className="text-[10px] text-muted-foreground">
-                Color: {colorId} | SKU: {item.sku}
+                Color: {colorName} | SKU: {item.sku}
               </p>
             </div>
             <div className="w-20">

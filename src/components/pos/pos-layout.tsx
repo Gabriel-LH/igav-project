@@ -44,7 +44,7 @@ export function PosLayout() {
 
         productToAdd = products.find((p) => p.id === serialItem.productId);
         specificCode = serialItem.id; // 🔥 Usamos UUID
-        scannedVariant = { size: serialItem.size, color: serialItem.color };
+        scannedVariant = { size: serialItem.sizeId, color: serialItem.colorId };
 
         if (serialItem.isForSale && !serialItem.isForRent)
           operationMode = "venta";
@@ -55,8 +55,8 @@ export function PosLayout() {
         maxStock = inventoryItems.filter(
           (i) =>
             i.productId === serialItem.productId &&
-            i.size === serialItem.size &&
-            i.color === serialItem.color &&
+            i.sizeId === serialItem.sizeId &&
+            i.colorId === serialItem.colorId &&
             i.status === "disponible" &&
             (operationMode === "venta" ? i.isForSale : i.isForRent),
         ).length;
@@ -69,7 +69,7 @@ export function PosLayout() {
 
         productToAdd = products.find((p) => p.id === lotItem.productId);
         specificCode = lotItem.id; // 🔥 Usamos UUID
-        scannedVariant = { size: lotItem.size, color: lotItem.color };
+        scannedVariant = { size: lotItem.sizeId, color: lotItem.colorId };
 
         if (lotItem.isForSale && !lotItem.isForRent) operationMode = "venta";
         else if (!lotItem.isForSale && lotItem.isForRent)
@@ -130,8 +130,8 @@ export function PosLayout() {
             i.product.id === productToAdd!.id &&
             i.operationType === operationMode &&
             (!scannedVariant ||
-              (i.selectedSize === scannedVariant.size &&
-                i.selectedColor === scannedVariant.color)),
+              (i.selectedSizeId === scannedVariant.size &&
+                i.selectedColorId === scannedVariant.color)),
         )?.quantity || 0;
 
       if (currentInCart >= maxStock) {

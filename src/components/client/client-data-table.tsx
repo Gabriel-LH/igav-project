@@ -3,7 +3,6 @@ import z from "zod";
 import {
   IconChevronDown,
   IconLayoutColumns,
-  IconPlus,
   IconSearch,
 } from "@tabler/icons-react";
 
@@ -137,10 +136,10 @@ export function ClientDataTable({
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className="w-full flex flex-col gap-6"
+      className="w-full flex flex-col"
     >
       {/* HEADER */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         {/* Buscador */}
         <div className="relative w-full max-w-md">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -224,7 +223,7 @@ export function ClientDataTable({
 
       <TabsContent
         value="active"
-        className="relative flex flex-col gap-4 overflow-auto pt-4"
+        className="relative flex flex-col gap-4 overflow-auto pt-3"
       >
         <ClientsActiveTable data={dataClientActive} table={tableClientActive} />
       </TabsContent>
