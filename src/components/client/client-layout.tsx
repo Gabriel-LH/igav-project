@@ -13,6 +13,8 @@ export function ClientLayout() {
     customers.filter((c) => c.status === "inactive"),
   );
 
+  const dataClientAll = mapClientToTable(customers);
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -20,6 +22,7 @@ export function ClientLayout() {
           <ClientDataTable
             dataClientActive={dataClientActive}
             dataClientInactive={dataClientInactive}
+            dataClientAll={dataClientAll}
           />
         </div>
       </div>

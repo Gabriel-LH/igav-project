@@ -4,15 +4,16 @@ export const clientCreditLedgerSchema = z.object({
   id: z.string(),
   clientId: z.string(),
 
-  amount: z.number(), 
-  // + positivo = crédito generado
-  // - negativo = crédito usado
+  amount: z.number().positive(), // siempre valor absoluto
+  direction: z.enum(["credit", "debit"]),
+
+  status: z.enum(["confirmed", "voided"]).default("confirmed"),
 
   reason: z.enum([
     "overpayment",
     "used_in_operation",
     "manual_adjustment",
-    "refund"
+    "refund",
   ]),
 
   operationId: z.string().optional(),

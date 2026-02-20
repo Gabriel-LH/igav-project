@@ -9,18 +9,8 @@ export const stockLotSchema = z.object({
   colorId: z.string(), // <--- CAMBIO: Usar ID de la tabla de colores
   quantity: z.number().min(0),
   isForRent: z.boolean(), // Algunos productos no serializados podrían alquilarse por lote
-  status: z.enum([
-    "disponible",
-    "en_mantenimiento",
-    "alquilado",
-    "reservado",
-    "vendido_pendiente_entrega",
-    "en_lavanderia",
-    "baja",
-    "agotado",
-    "vendido",
-  ]),
   isForSale: z.boolean(),
+  createdAt: z.date(),
   updatedAt: z.date(),
 });
 

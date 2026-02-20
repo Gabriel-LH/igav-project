@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { SaleReversal } from "@/src/types/sales/type.saleRevelsal";
+import { SaleReversal } from "@/src/types/sales/type.saleReversal";
 
 interface SaleReversalState {
   reversals: SaleReversal[];

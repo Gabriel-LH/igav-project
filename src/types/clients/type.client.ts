@@ -14,17 +14,28 @@ export const clientSchema = z.object({
   city: z.string(),
   province: z.string().optional(),
   zipCode: z.string().optional(),
+  type: z.enum(["individual", "company"]).default("individual"),
 
   // Dinero real a favor del cliente (por devoluciones o vueltos)
   walletBalance: z.number().default(0),
 
   // Puntos acumulados por compras (gamificación)
-  loyaltyPoints: z.number().int().default(0),
+  loyaltyPoints: z.number().default(0),
 
   createdAt: z.date(),
   updatedAt: z.date(),
-  deletedAt: z.date().optional(),
-  status: z.enum(["active", "inactive"]),
+  createdBy: z.string().optional(),
+  updatedBy: z.string().optional(),
+  //Soft delete
+  isDeleted: z.boolean().default(false),
+  deletedAt: z.date().nullable().default(null),
+  deletedBy: z.string().nullable().default(null),
+  deleteReason: z.string().nullable().default(null),
+
+  status: z.enum(["active", "inactive", "suspended", "blocked"]),
+  internalNotes: z.string().optional(),
+
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type Client = z.infer<typeof clientSchema>;

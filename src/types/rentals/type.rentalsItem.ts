@@ -1,5 +1,6 @@
 // src/types/rental/type.rentalItem.ts
 import z from "zod";
+import { rentalItemStatusHistorySchema } from "./rentalItemStatusHistory";
 
 export const rentalItemSchema = z.object({
   id: z.string(),
@@ -28,3 +29,8 @@ export const rentalItemSchema = z.object({
 });
 
 export type RentalItem = z.infer<typeof rentalItemSchema>;
+
+export const rentalItemWithHistorySchema =
+  rentalItemSchema.extend({
+    statusHistory: z.array(rentalItemStatusHistorySchema),
+  });

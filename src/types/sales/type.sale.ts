@@ -1,5 +1,6 @@
 import z from "zod";
 import { saleItemSchema } from "./type.saleItem";
+import { saleItemStatusHistorySchema } from "./saleItemStatusHistory";
 
 export const saleSchema = z.object({
   id: z.string(),
@@ -21,10 +22,12 @@ export const saleSchema = z.object({
     "vendido_pendiente_entrega",
     "vendido",
     "cancelado",
+    "baja",
     "devuelto",
   ]),
   notes: z.string().optional(),
   createdAt: z.date(),
+  createdBy: z.string().optional(),
 
   // Fechas de control logístico
   outDate: z.date().optional(), // Cuándo se le dio físicamente al cliente
@@ -37,6 +40,7 @@ export const saleSchema = z.object({
 
   updatedAt: z.date(), // Crucial para auditoría
   updatedBy: z.string().optional(),
+  deletedAt: z.date().optional(),
 });
 
 export type Sale = z.infer<typeof saleSchema>;
@@ -44,5 +48,10 @@ export type Sale = z.infer<typeof saleSchema>;
 export const saleWithItemsSchema = saleSchema.extend({
   items: z.array(saleItemSchema),
 });
+
+export const saleItemWithHistorySchema = saleItemSchema.extend({
+  statusHistory: z.array(saleItemStatusHistorySchema),
+});
+export type SaleItemWithHistory = z.infer<typeof saleItemWithHistorySchema>;
 
 export type SaleWithItems = z.infer<typeof saleWithItemsSchema>;

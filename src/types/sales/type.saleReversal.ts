@@ -20,6 +20,7 @@ export const saleReversalSchema = z.object({
 
   createdAt: z.date(),
   createdBy: z.string().optional(),
+  
 });
 
 export type SaleReversal = z.infer<typeof saleReversalSchema>;

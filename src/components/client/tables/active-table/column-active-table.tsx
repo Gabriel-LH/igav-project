@@ -1,38 +1,20 @@
 "use client";
 
-import { IconDotsVertical } from "@tabler/icons-react";
 import { Row, type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/dropdown-menu";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
 import { clientActiveSchema } from "../type/type.active";
 import {
   ArrowUpDown,
   BadgeCheck,
-  BadgeX,
-  CircleDashed,
-  Handbag,
 } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
-import { cancelRentalTransaction } from "@/src/services/cancelRental";
-import { toast } from "sonner";
-import { useRentalStore } from "@/src/store/useRentalStore";
-import { useState } from "react";
-import { RentalWithItems } from "@/src/types/rentals/type.rentals";
 
-import { deliverRentalUseCase } from "@/src/services/use-cases/deliverRental.usecase";
 
-import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 
 export const columnsClientActive: ColumnDef<
   z.infer<typeof clientActiveSchema>

@@ -11,6 +11,9 @@ export const paymentSchema = z.object({
   changeAmount: z.number().optional(), // El vuelto que se le dio (ej: 15)
   method: z.enum(["cash", "card", "transfer", "yape", "plin"]),
   type: z.enum(["adelanto", "cuota", "saldo_total"]),
+  status: z
+    .enum(["pendiente", "completado", "reembolsado", "anulado"])
+    .default("pendiente"),
   reference: z.string().optional(),
   date: z.date(),
 });

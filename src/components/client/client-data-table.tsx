@@ -42,17 +42,22 @@ import { columnsClientInactive } from "./tables/inactive-table/column-inactive-t
 import { clientActiveSchema } from "./tables/type/type.active";
 import { clientInactiveSchema } from "./tables/type/type.inactive";
 
-import { ClientsActiveTable } from "./tables/active-table/active-client-table";
+import { ClientsAllTable } from "./tables/active-table/active-client-table";
 import { ClientsInactiveTable } from "./tables/inactive-table/inactive-client-table";
 import { CreateClientModal } from "./ui/modals/CreateClientModal";
 import { UserPlus2 } from "lucide-react";
+import { clientAllSchema } from "./tables/type/type.all";
+import { ClientsActiveTable } from "./tables/all-table/all-client-table";
+import { columnsClientAll } from "./tables/all-table/column-active-table";
 
 export function ClientDataTable({
   dataClientActive,
   dataClientInactive,
+  dataClientAll,
 }: {
   dataClientActive: z.infer<typeof clientActiveSchema>[];
   dataClientInactive: z.infer<typeof clientInactiveSchema>[];
+  dataClientAll: z.infer<typeof clientAllSchema>[];
 }) {
   const [activeTab, setActiveTab] = React.useState("active");
   const [rowSelection, setRowSelection] = React.useState({});
@@ -132,6 +137,13 @@ export function ClientDataTable({
     ...getCommonTableProps<z.infer<typeof clientInactiveSchema>>(),
   });
 
+  const tableClientAll = useReactTable<z.infer<typeof clientAllSchema>>({
+    data: dataClientAll,
+    columns: columnsClientAll,
+    getRowId: (row) => row.id.toString(),
+    ...getCommonTableProps<z.infer<typeof clientAllSchema>>(),
+  });
+
   return (
     <Tabs
       value={activeTab}
@@ -163,6 +175,7 @@ export function ClientDataTable({
               <SelectContent>
                 <SelectItem value="active">Activos</SelectItem>
                 <SelectItem value="inactive">Inactivos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
               </SelectContent>
             </Select>
 
@@ -170,6 +183,7 @@ export function ClientDataTable({
             <TabsList className="hidden lg:flex">
               <TabsTrigger value="active">Activos</TabsTrigger>
               <TabsTrigger value="inactive">Inactivos</TabsTrigger>
+              <TabsTrigger value="all">Todos</TabsTrigger>
             </TabsList>
           </div>
 
@@ -233,6 +247,10 @@ export function ClientDataTable({
           data={dataClientInactive}
           table={tableClientInactive}
         />
+      </TabsContent>
+
+      <TabsContent value="all" className="w-full pt-4">
+        <ClientsAllTable data={dataClientAll} table={tableClientAll} />
       </TabsContent>
     </Tabs>
   );

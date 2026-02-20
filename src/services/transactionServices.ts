@@ -3,7 +3,7 @@ import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
 import { useInventoryStore } from "../store/useInventoryStore";
-import { StockStatus } from "../utils/status-type/StockStatusType";
+import { StockStatus } from "../utils/status-type/InventoryItemStatusType";
 import { useRentalStore } from "../store/useRentalStore";
 import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { operationSchema } from "../types/operation/type.operations";

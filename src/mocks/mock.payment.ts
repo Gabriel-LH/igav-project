@@ -13,6 +13,7 @@ export const PAYMENTS_MOCK: Payment[] = [
     type: "adelanto",
     reference: "TX-99281",
     date: new Date(2026, 0, 1),
+    status: "completado",
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440101",
@@ -23,8 +24,9 @@ export const PAYMENTS_MOCK: Payment[] = [
     method: "cash",
     type: "cuota",
     date: new Date(2026, 0, 5),
+    status: "pendiente",
   },
-   {
+  {
     id: "550e8400-e29b-41d4-a716-446655440102",
     operationId: "502",
     branchId: "branch-001",
@@ -33,5 +35,17 @@ export const PAYMENTS_MOCK: Payment[] = [
     method: "cash",
     type: "cuota",
     date: new Date(2026, 0, 5),
-  }
+    status: "reembolsado",
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440103",
+    operationId: "502",
+    branchId: "branch-001",
+    receivedById: "550e8400-e29b-41d4-a716-446655440000",
+    amount: 50,
+    method: "cash",
+    type: "cuota",
+    date: new Date(2026, 0, 5),
+    status: "anulado",
+  },
 ];

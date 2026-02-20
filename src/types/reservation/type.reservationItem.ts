@@ -1,4 +1,5 @@
 import z from "zod";
+import { reservationItemStatusHistorySchema } from "./type.reservationItemStatusHistory";
 
 export const reservationItemSchema = z.object({
   id: z.string(),
@@ -19,3 +20,10 @@ export const reservationItemSchema = z.object({
 });
 
 export type ReservationItem = z.infer<typeof reservationItemSchema>;
+
+export const reservationItemWithHistorySchema = reservationItemSchema.extend({
+  statusHistory: z.array(reservationItemStatusHistorySchema),
+});
+export type ReservationItemWithHistory = z.infer<
+  typeof reservationItemWithHistorySchema
+>;

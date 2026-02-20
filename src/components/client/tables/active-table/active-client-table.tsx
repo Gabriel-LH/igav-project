@@ -49,7 +49,7 @@ import { columnsClientActive } from "./column-active-table";
 import { clientActiveSchema } from "../type/type.active";
 import { DraggableRowActive } from "./dragrable-row-active";
 
-export function ClientsActiveTable({
+export function ClientsAllTable({
   data: initialData,
   table,
 }: {

@@ -12,8 +12,8 @@ export const businessRulesSchema = z.object({
   maxDaysRental: z.number(),
   maxDaysSale: z.number(),
   openHours: z.object({
-    open: z.string(),
-    close: z.string(),
+    open: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
+    close: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
   }),
   daysInLaundry: z.number(), // Ej: 2 días lavando y secando
   daysInMaintenance: z.number(), // Ej: 1 día cosiendo botones/bastas
@@ -43,6 +43,7 @@ export const businessRulesSchema = z.object({
 
     // Mínimo de puntos para canjear
     minPointsToRedeem: z.number().default(100),
+    expirePointsAfterDays: z.number().optional(),
   }),
 });
 

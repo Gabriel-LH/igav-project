@@ -1,5 +1,6 @@
 import z from "zod";
 import { rentalItemSchema } from "./type.rentalsItem";
+import { rentalStatusHistorySchema } from "./rentalStatusHistory";
 
 export const rentalSchema = z.object({
   id: z.string(),
@@ -33,6 +34,10 @@ export const rentalSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   updatedBy: z.string().optional(),
+  deletedAt: z.date().nullable().default(null),
+  deletedBy: z.string().nullable().default(null),
+  deleteReason: z.string().nullable().default(""),
+  isDeleted: z.boolean().default(false),
 });
 
 export type Rental = z.infer<typeof rentalSchema>;
@@ -42,3 +47,8 @@ export const rentalWithItemsSchema = rentalSchema.extend({
 });
 
 export type RentalWithItems = z.infer<typeof rentalWithItemsSchema>;
+
+export const rentalWithHistorySchema =
+  rentalSchema.extend({
+    statusHistory: z.array(rentalStatusHistorySchema),
+  });

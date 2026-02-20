@@ -14,7 +14,10 @@ export const reservationSchema = z.object({
 
   // --- FECHAS DE AUDITORÍA (Control del sistema) ---
   createdAt: z.date(), // Cuándo se creó el registro en el sistema
+  createdBy: z.string().optional(),
   updatedAt: z.date(), // Cuándo fue la última vez que se editó (opcional pero recomendado)
+  updatedBy: z.string().optional(),
+  deletedAt: z.date().optional(),
 
   //podemos usar expirada para cuando el cliente no llega por su reserva hasta la fecha limite el sistema lo expire
   status: z.enum(["confirmada", "cancelada", "convertida", "expirada"]),

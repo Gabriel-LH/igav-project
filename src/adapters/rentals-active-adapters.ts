@@ -44,6 +44,7 @@ export const mapRentalToTable = (
   products: Product[],
 ): RentalTableRow[] => {
   return rentals.map((rental) => {
+    
     const branch = BRANCH_MOCKS.find((b) => b.id === rental.branchId);
     const customer = customers.find((c) => c.id === rental.customerId);
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);

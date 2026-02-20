@@ -4,4 +4,5 @@ export type SaleStatusType =
   | "vendido_pendiente_entrega"
   | "vendido"
   | "cancelado"
+  | "baja"
   | "devuelto";

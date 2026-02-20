@@ -16,6 +16,14 @@ export const productSchema = z.object({
   price_rent: z.number().min(0).optional(),
   rent_unit: z.enum(["día", "evento"]).optional(),
   price_sell: z.number().min(0).optional(),
+  createdAt: z.date(),
+  createdBy: z.string(),
+  updatedAt: z.date(),
+  updatedBy: z.string().optional(),
+  deletedAt: z.date().nullable().default(null),
+  deletedBy: z.string().nullable().default(null),
+  deleteReason: z.string().nullable().default(null),
+  isDeleted: z.boolean().default(false),
 });
 
 export type Product = z.infer<typeof productSchema>;

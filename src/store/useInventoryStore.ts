@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 import { INVENTORY_ITEMS_MOCK } from "../mocks/mock.inventoryItem";
 import { STOCK_LOTS_MOCK } from "../mocks/mock.stockLote";
-import { StockStatus } from "../utils/status-type/StockStatusType";
+import { StockStatus } from "../utils/status-type/InventoryItemStatusType";
 
 interface InventoryLog {
   timestamp: Date;
