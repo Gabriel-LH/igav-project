@@ -1,51 +1,73 @@
 import { Payment } from "../types/payments/type.payments";
 
 export const PAYMENTS_MOCK: Payment[] = [
+  // ===============================
+  // CLIENTE 1 – Venta anulada por error de cobro
+  // ===============================
+
+  // Pago original (entra dinero)
   {
-    id: "550e8400-e29b-41d4-a716-446655440100",
-    operationId: "501",
+    id: "p-001",
+    operationId: "op-001",
     branchId: "branch-001",
-    receivedById: "550e8400-e29b-41d4-a716-446655440000",
-    amount: 180,
-    receivedAmount: 200,
-    changeAmount: 20,
-    method: "transfer",
-    type: "adelanto",
-    reference: "TX-99281",
+    receivedById: "c1a2b3c4-d5e6-47f8-9abc-1234567890ab",
+    amount: 150,
+    direction: "in",
+    method: "cash",
+    status: "posted",
+    category: "payment",
     date: new Date(2026, 0, 1),
-    status: "completado",
+    notes: "Pago total en efectivo",
   },
+
+  // Movimiento compensatorio (sale dinero)
   {
-    id: "550e8400-e29b-41d4-a716-446655440101",
-    operationId: "502",
+    id: "p-002",
+    operationId: "op-001",
     branchId: "branch-001",
-    receivedById: "550e8400-e29b-41d4-a716-446655440000",
+    receivedById: "9f1c2d3e-4b5a-6789-8cde-abcdef123456",
+    amount: 150,
+    direction: "out",
+    method: "cash",
+    status: "posted",
+    category: "correction",
+    originalPaymentId: "p-001",
+    date: new Date(2026, 0, 1),
+    notes: "Corrección por error de cobro en caja",
+  },
+
+  // ===============================
+  // CLIENTE 2 – Reembolso con retención
+  // ===============================
+
+  // Pago original
+  {
+    id: "p-003",
+    operationId: "op-002",
+    branchId: "branch-001",
+    receivedById: "9f1c2d3e-4b5a-6789-8cde-abcdef123456",
     amount: 200,
-    method: "cash",
-    type: "cuota",
+    direction: "in",
+    method: "card",
+    status: "posted",
+    category: "payment",
     date: new Date(2026, 0, 5),
-    status: "pendiente",
+    notes: "Pago con tarjeta",
   },
+
+  // Reembolso parcial (cliente recibe 190)
   {
-    id: "550e8400-e29b-41d4-a716-446655440102",
-    operationId: "502",
+    id: "p-004",
+    operationId: "op-002",
     branchId: "branch-001",
-    receivedById: "550e8400-e29b-41d4-a716-446655440000",
-    amount: 50,
-    method: "cash",
-    type: "cuota",
-    date: new Date(2026, 0, 5),
-    status: "reembolsado",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440103",
-    operationId: "502",
-    branchId: "branch-001",
-    receivedById: "550e8400-e29b-41d4-a716-446655440000",
-    amount: 50,
-    method: "cash",
-    type: "cuota",
-    date: new Date(2026, 0, 5),
-    status: "anulado",
+    receivedById: "c1a2b3c4-d5e6-47f8-9abc-1234567890ab",
+    amount: 190,
+    direction: "out",
+    method: "card",
+    status: "posted",
+    category: "refund",
+    originalPaymentId: "p-003",
+    date: new Date(2026, 0, 6),
+    notes: "Reembolso parcial. Se retienen 10 por gastos operativos",
   },
 ];

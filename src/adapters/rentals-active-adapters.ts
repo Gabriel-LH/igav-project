@@ -1,11 +1,11 @@
 import { BRANCH_MOCKS } from "../mocks/mock.branch";
 import { USER_MOCK } from "../mocks/mock.user";
+import { useAttributeStore } from "../store/useAttributeStore";
 import { Client } from "../types/clients/type.client";
 import { Guarantee } from "../types/guarantee/type.guarantee";
 import { Product } from "../types/product/type.product";
 import { Rental } from "../types/rentals/type.rentals";
 import { RentalItem } from "../types/rentals/type.rentalsItem";
-import { generateProductsSummary } from "../utils/generateProductsSummary";
 
 // Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface RentalTableRow {
@@ -44,7 +44,6 @@ export const mapRentalToTable = (
   products: Product[],
 ): RentalTableRow[] => {
   return rentals.map((rental) => {
-    
     const branch = BRANCH_MOCKS.find((b) => b.id === rental.branchId);
     const customer = customers.find((c) => c.id === rental.customerId);
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);
@@ -52,6 +51,7 @@ export const mapRentalToTable = (
 
     const currentItems = rentalItems.filter((r) => r.rentalId === rental.id);
 
+    const { colors, sizes } = useAttributeStore();
     // Enriquecer items
     const itemsWithNames = currentItems.map((item) => {
       const prod = products.find((p) => p.id === item.productId);
@@ -77,6 +77,8 @@ export const mapRentalToTable = (
       0,
     );
 
+    const size = sizes.find((s) => s.id === currentItems[0].sizeId);
+    const color = colors.find((c) => c.id === currentItems[0].colorId);
     // CONTENIDO DE BÚSQUEDA
     const searchContent = [
       rental.id,
@@ -84,8 +86,8 @@ export const mapRentalToTable = (
       customer?.lastName,
       customer?.dni,
       ...itemsWithNames.map((i) => i.productName),
-      ...currentItems.map((i) => i.size),
-      ...currentItems.map((i) => i.color),
+      size?.name,
+      color?.name,
       ...currentItems.map((i) => i.stockId),
     ]
       .filter(Boolean)

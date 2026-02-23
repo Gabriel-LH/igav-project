@@ -89,7 +89,7 @@ export const mapSaleToTable = (
     return {
       id: sale.id,
       branchName: branch?.name || "Principal",
-      sellerName: seller?.name || "",
+      sellerName: seller?.firstName + " " + seller?.lastName || "",
 
       createdAt: sale.createdAt
         ? new Date(sale.createdAt).toLocaleDateString()

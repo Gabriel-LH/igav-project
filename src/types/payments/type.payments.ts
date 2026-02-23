@@ -1,20 +1,34 @@
 import { z } from "zod";
 
-// Cómo entró el dinero
 export const paymentSchema = z.object({
   id: z.string(),
+
+  // Relación
   operationId: z.string(),
-  branchId: z.string(), // Sucursal donde se recibió el dinero
-  receivedById: z.string(), // ID del usuario que cobró
+  branchId: z.string(),
+  receivedById: z.string(),
+
+  // Movimiento financiero
   amount: z.number().positive(),
-  receivedAmount: z.number().optional(), // Lo que el cliente entregó (ej: un billete de 100)
-  changeAmount: z.number().optional(), // El vuelto que se le dio (ej: 15)
+  direction: z.enum(["in", "out"]), // Registro de entrada o salida
   method: z.enum(["cash", "card", "transfer", "yape", "plin"]),
-  type: z.enum(["adelanto", "cuota", "saldo_total"]),
-  status: z
-    .enum(["pendiente", "completado", "reembolsado", "anulado"])
-    .default("pendiente"),
+
+  // Estado contable
+  status: z.enum(["pending", "posted"]).default("pending"),
+
+  // Clasificación del movimiento
+  category: z.enum([
+    "payment", // cliente paga
+    "refund", // devolución
+    "correction", // corrección administrativa
+  ]),
+
+  originalPaymentId: z.string().optional(),
+
+  // Metadatos
   reference: z.string().optional(),
   date: z.date(),
+  notes: z.string().optional(),
 });
+
 export type Payment = z.infer<typeof paymentSchema>;

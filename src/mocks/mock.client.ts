@@ -17,7 +17,12 @@ export const CLIENTS_MOCK: Client[] = [
     updatedAt: new Date("2024-02-15T14:20:00Z"),
     status: "active",
     walletBalance: 0,
-    loyaltyPoints: 0
+    loyaltyPoints: 0,
+    type: "individual",
+    isDeleted: false,
+    deletedAt: null,
+    deletedBy: null,
+    deleteReason: null
   },
   {
     id: "cl_002",
@@ -31,7 +36,12 @@ export const CLIENTS_MOCK: Client[] = [
     updatedAt: new Date("2024-03-05T09:00:00Z"),
     status: "inactive",
     walletBalance: 0,
-    loyaltyPoints: 0
+    loyaltyPoints: 0,
+    type: "individual",
+    isDeleted: false,
+    deletedAt: null,
+    deletedBy: null,
+    deleteReason: null
   },
   {
     id: "cl_003",
@@ -50,6 +60,10 @@ export const CLIENTS_MOCK: Client[] = [
     deletedAt: new Date("2024-06-01T08:00:00Z"),
     status: "inactive",
     walletBalance: 0,
-    loyaltyPoints: 0
+    loyaltyPoints: 0,
+    type: "individual",
+    isDeleted: false,
+    deletedBy: null,
+    deleteReason: null
   },
 ];

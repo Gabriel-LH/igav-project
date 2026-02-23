@@ -15,6 +15,6 @@ export const clientInactiveSchema = z.object({
 
   createdAt: z.date(),
   updatedAt: z.date(),
-  deletedAt: z.date().optional(),
-  status: z.enum(["active", "inactive"]),
+  deletedAt: z.date().nullable(),
+  status: z.enum(["active", "inactive", "suspended", "blocked"]),
 });

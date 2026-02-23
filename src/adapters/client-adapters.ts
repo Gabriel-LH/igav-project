@@ -1,11 +1,4 @@
-import { BRANCH_MOCKS } from "../mocks/mock.branch";
-import { USER_MOCK } from "../mocks/mock.user";
 import { Client } from "../types/clients/type.client";
-import { Guarantee } from "../types/guarantee/type.guarantee";
-import { Product } from "../types/product/type.product";
-import { Rental } from "../types/rentals/type.rentals";
-import { RentalItem } from "../types/rentals/type.rentalsItem";
-import { generateProductsSummary } from "../utils/generateProductsSummary";
 
 // Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface ClientTableRow {
@@ -29,8 +22,8 @@ export interface ClientTableRow {
 
   createdAt: Date;
   updatedAt: Date;
-  deletedAt?: Date;
-  status: "active" | "inactive";
+  deletedAt: Date | null;
+  status: "active" | "inactive" | "suspended" | "blocked";
 }
 
 export const mapClientToTable = (customers: Client[]): ClientTableRow[] => {

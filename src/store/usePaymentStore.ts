@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Payment } from "../types/payments/type.payments"; // Ajusta la ruta
+import { PAYMENTS_MOCK } from "../mocks/mock.payment";
 
 interface PaymentStore {
   payments: Payment[];
@@ -9,7 +10,7 @@ interface PaymentStore {
 }
 
 export const usePaymentStore = create<PaymentStore>((set, get) => ({
-  payments: [],
+  payments: PAYMENTS_MOCK,
 
   addPayment: (payment) =>
     set((state) => ({ payments: [...state.payments, payment] })),

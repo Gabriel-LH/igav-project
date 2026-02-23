@@ -2,7 +2,7 @@ import { Operation } from "../types/operation/type.operations";
 
 export const OPERATIONS_MOCK: Operation[] = [
   {
-    id: "501",
+    id: "op-001",
     branchId: "branch-001",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_001",
@@ -14,7 +14,7 @@ export const OPERATIONS_MOCK: Operation[] = [
     createdAt: new Date(2026, 0, 1),
   },
   {
-    id: "502",
+    id: "op-002",
     branchId: "branch-001",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_002",
@@ -26,7 +26,7 @@ export const OPERATIONS_MOCK: Operation[] = [
     createdAt: new Date(2026, 0, 1),
   },
   {
-    id: "503",
+    id: "op-003",
     branchId: "branch-002",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_002",

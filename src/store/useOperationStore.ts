@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Operation } from "../types/operation/type.operations";
 import { OperationUpdate } from "../types/operation/type.operationUpdate";
+import { OPERATIONS_MOCK } from "../mocks/mock.operation";
 
 interface OperationStore {
   operations: Operation[];
@@ -10,7 +11,7 @@ interface OperationStore {
 }
 
 export const useOperationStore = create<OperationStore>((set, get) => ({
-  operations: [],
+  operations: OPERATIONS_MOCK,
 
   addOperation: (operation: Operation) =>
     set((state) => ({ operations: [...state.operations, operation] })),

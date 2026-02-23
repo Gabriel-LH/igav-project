@@ -94,7 +94,7 @@ export function returnSaleItemsUseCase({
     throw new Error("No se aceptan devoluciones en este estado");
   }
 
-  useInventoryStore.getState().updateStockStatus(saleItem.stockId, "disponible");
+  useInventoryStore.getState().updateItemStatus(saleItem.stockId, "disponible");
 });
 
   

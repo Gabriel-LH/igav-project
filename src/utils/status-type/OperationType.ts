@@ -1,1 +1,1 @@
-export type OperationType = "venta" | "alquiler";
+export type OperationType = "venta" | "alquiler" | "reserva";
