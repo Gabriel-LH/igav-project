@@ -42,20 +42,16 @@ export function PaymentCellViewer({
             <span className="font-medium">{item.receivedBy || "-"}</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <span className="text-muted-foreground">Monto</span>
+            <span className="text-muted-foreground">Movimiento</span>
             <span className="font-medium">{formatCurrency(item.amount)}</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <span className="text-muted-foreground">Total operacion</span>
-            <span className="font-medium">{formatCurrency(item.totalAmount)}</span>
+            <span className="text-muted-foreground">Direccion</span>
+            <span className="font-medium uppercase">{item.direction}</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <span className="text-muted-foreground">Pagado neto</span>
-            <span className="font-medium">{formatCurrency(item.netPaid)}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <span className="text-muted-foreground">Pendiente</span>
-            <span className="font-medium">{formatCurrency(item.remaining)}</span>
+            <span className="text-muted-foreground">Categoria</span>
+            <span className="font-medium uppercase">{item.category}</span>
           </div>
           <Separator />
           <div className="grid grid-cols-2 gap-2">

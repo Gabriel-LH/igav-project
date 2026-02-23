@@ -16,7 +16,7 @@ export const PAYMENTS_MOCK: Payment[] = [
     method: "cash",
     status: "posted",
     category: "payment",
-    date: new Date(2026, 0, 1),
+    date: new Date(2026, 1, 23, 12, 30),
     notes: "Pago total en efectivo",
   },
 
@@ -32,7 +32,7 @@ export const PAYMENTS_MOCK: Payment[] = [
     status: "posted",
     category: "correction",
     originalPaymentId: "p-001",
-    date: new Date(2026, 0, 1),
+    date: new Date(2026, 1, 23, 14, 30),
     notes: "Corrección por error de cobro en caja",
   },
 
@@ -51,7 +51,7 @@ export const PAYMENTS_MOCK: Payment[] = [
     method: "card",
     status: "posted",
     category: "payment",
-    date: new Date(2026, 0, 5),
+    date: new Date(2026, 1, 23, 10, 20),
     notes: "Pago con tarjeta",
   },
 
@@ -67,7 +67,7 @@ export const PAYMENTS_MOCK: Payment[] = [
     status: "posted",
     category: "refund",
     originalPaymentId: "p-003",
-    date: new Date(2026, 0, 6),
+    date: new Date(2026, 1, 23, 15, 30),
     notes: "Reembolso parcial. Se retienen 10 por gastos operativos",
   },
 ];

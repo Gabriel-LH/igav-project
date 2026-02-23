@@ -46,6 +46,13 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+@theme {
+  /* En v4, defines las columnas así */
+  --grid-template-columns-4: repeat(4, minmax(0, 1fr));
+  --grid-template-columns-5: repeat(5, minmax(0, 1fr));
+  --grid-template-columns-6: repeat(6, minmax(0, 1fr));
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

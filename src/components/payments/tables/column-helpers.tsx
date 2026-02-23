@@ -3,11 +3,14 @@
 import { Badge } from "@/components/badge";
 import { Checkbox } from "@/components/checkbox";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
-import { formatCurrency } from "@/src/utils/currency-format";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   BankIcon,
+  Calendar01Icon,
+  Calendar03Icon,
   CreditCardIcon,
+  Repeat,
+  SaleTag01Icon,
   SmartPhone02Icon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
@@ -62,14 +65,63 @@ export const clientColumn = (
   ),
 });
 
+export const dateColumn = (extraClassName?: string): ColumnDef<PaymentRow> => ({
+  accessorKey: "date",
+  header: "Fecha y Hora",
+  cell: ({ getValue }) => {
+    const dateValue = getValue() as Date;
+
+    // Formateamos la hora (ej: "14:30" o "02:30 PM")
+    const time = dateValue.toLocaleTimeString("es-PE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Ponlo en false si prefieres formato 24h
+    });
+
+    // Formateamos la fecha corta (ej: "01/01/2026")
+    const date = dateValue.toLocaleDateString("es-PE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric", // Puedes usar '2-digit' para que ocupe menos (26 en vez de 2026)
+    });
+
+    return (
+      <div className={`flex flex-col w-32 ${extraClassName ?? ""}`}>
+        <span className="font-medium text-sm text-slate-400">{time}</span>
+        <span className="text-[10px] text-muted-foreground">{date}</span>
+      </div>
+    );
+  },
+});
+
 export const operationColumn = (
   extraClassName?: string,
 ): ColumnDef<PaymentRow> => ({
   accessorKey: "operationType",
   header: "Operacion",
-  cell: ({ getValue }) => (
-    <div className={`w-32 ${extraClassName ?? ""}`}>{String(getValue())}</div>
-  ),
+  cell: ({ getValue }) => {
+    const operationType = getValue() as string;
+    return (
+      <div className={`w-32 ${extraClassName ?? ""}`}>
+        {operationType === "alquiler" ? (
+          <Badge variant="outline" className="px-1.5">
+            <HugeiconsIcon icon={Repeat} />
+            ALQUILER
+          </Badge>
+        ) : operationType === "venta" ? (
+          <Badge variant="outline" className="px-1.5">
+            <HugeiconsIcon icon={SaleTag01Icon} />
+            VENTA
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="px-1.5">
+            <HugeiconsIcon icon={Calendar03Icon} />
+            RESERVA
+          </Badge>
+        )}
+      </div>
+    );
+  },
 });
 
 export const receivedByColumn = (
@@ -84,79 +136,21 @@ export const receivedByColumn = (
   ),
 });
 
-export const movementColumn = (opts?: {
-  forceOut?: boolean;
-  className?: string;
-  label?: string;
-}): ColumnDef<PaymentRow> => ({
+export const movementColumn: ColumnDef<PaymentRow> = {
   accessorKey: "amount",
-  header: opts?.label ?? "Movimiento",
+  header: "Movimiento",
   cell: ({ row }) => {
-    const isOut = opts?.forceOut || row.original.direction === "out";
+    const isOut = row.original.direction === "out";
     const sign = isOut ? "-" : "+";
     const tone = isOut ? "text-red-600" : "text-emerald-600";
+
     return (
-      <div className={`w-32 font-medium ${tone} ${opts?.className ?? ""}`}>
-        {sign} {formatCurrency(row.original.amount)}
+      <div className={`w-32 font-semibold ${tone}`}>
+        {`${sign} S/ ${row.original.amount.toFixed(2)}`}
       </div>
     );
   },
-});
-
-export const totalColumn: ColumnDef<PaymentRow> = {
-  accessorKey: "totalAmount",
-  header: "Total",
-  cell: ({ getValue }) => (
-    <div className="w-32 font-medium">{formatCurrency(Number(getValue()))}</div>
-  ),
 };
-
-export const netPaidColumn: ColumnDef<PaymentRow> = {
-  accessorKey: "netPaid",
-  header: "Pagado neto",
-  cell: ({ getValue }) => (
-    <div className="w-32 font-medium">{formatCurrency(Number(getValue()))}</div>
-  ),
-};
-
-export const remainingColumn = (opts?: {
-  className?: string;
-  label?: string;
-}): ColumnDef<PaymentRow> => ({
-  accessorKey: "remaining",
-  header: opts?.label ?? "Pendiente",
-  cell: ({ row }) => {
-    const historicalRemaining = row.original.remaining;
-    const currentRemaining = row.original.currentRemaining;
-
-    const tone =
-      historicalRemaining <= 0
-        ? "text-emerald-600"
-        : (opts?.className ?? "text-amber-600");
-
-    // ¿El saldo histórico es diferente al saldo real de hoy?
-    const hasChanged = historicalRemaining !== currentRemaining;
-
-    return (
-      <div className="flex flex-col justify-center w-32">
-        {/* Saldo Histórico (El principal) */}
-        <span className={`font-semibold ${tone}`}>
-          {formatCurrency(historicalRemaining)}
-        </span>
-
-        {/* 🔥 Saldo Actual (Solo aparece si la deuda cambió por una corrección) */}
-        {hasChanged && (
-          <span
-            className="text-[10px] text-muted-foreground font-medium"
-            title="Deuda real actual"
-          >
-            Hoy: {formatCurrency(currentRemaining)}
-          </span>
-        )}
-      </div>
-    );
-  },
-});
 
 export const categoryColumn: ColumnDef<PaymentRow> = {
   accessorKey: "category",
@@ -168,31 +162,24 @@ export const categoryColumn: ColumnDef<PaymentRow> = {
       correction: "CORRECCION",
     } as const;
 
-    const hasBeenAltered = row.original.hasSubsequentCorrections;
+    const badgeStyle =
+      row.original.category === "payment"
+        ? ""
+        : row.original.category === "refund"
+          ? "bg-destructive text-white border-transparent"
+          : "bg-amber-100 text-amber-800 border-amber-200";
 
     return (
-      <div className="flex flex-col items-start gap-1 w-32">
-        <Badge variant="outline" className="px-1.5">
+      <div className="w-32">
+        <Badge variant="outline" className={`px-1.5 ${badgeStyle}`}>
           {labels[row.original.category]}
         </Badge>
-        {/* 🔥 Si el pago fue alterado después, mostramos el badge rojo */}
-        {hasBeenAltered && (
-          <Badge
-            variant="destructive"
-            className="px-1 text-[7px] h-3 leading-none cursor-help"
-            title="Esta operación sufrió reembolsos o correcciones posteriormente"
-          >
-            MODIFICADO
-          </Badge>
-        )}
       </div>
     );
   },
 };
 
-export const statusColumn = (opts?: {
-  className?: string;
-}): ColumnDef<PaymentRow> => ({
+export const statusColumn: ColumnDef<PaymentRow> = {
   accessorKey: "status",
   header: "Estado",
   cell: ({ row }) => {
@@ -203,16 +190,13 @@ export const statusColumn = (opts?: {
 
     return (
       <div className="w-32">
-        <Badge
-          variant="outline"
-          className={`px-1.5 ${opts?.className ?? tone}`}
-        >
+        <Badge variant="outline" className={`px-1.5 ${tone}`}>
           {row.original.status.toUpperCase()}
         </Badge>
       </div>
     );
   },
-});
+};
 
 export const methodColumn: ColumnDef<PaymentRow> = {
   accessorKey: "method",
@@ -255,13 +239,3 @@ export const notesColumn: ColumnDef<PaymentRow> = {
     </div>
   ),
 };
-
-export const dateColumn = (extraClassName?: string): ColumnDef<PaymentRow> => ({
-  accessorKey: "date",
-  header: "Fecha",
-  cell: ({ getValue }) => (
-    <div className={`w-32 ${extraClassName ?? ""}`}>
-      {(getValue() as Date).toLocaleDateString()}
-    </div>
-  ),
-});

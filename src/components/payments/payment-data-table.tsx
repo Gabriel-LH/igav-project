@@ -35,29 +35,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
-import { columnsPaymentCanceled } from "./tables/canceled-table/column-canceled-table";
-import { columnsPaymentCompleted } from "./tables/completed-table/column-completed-table";
-import { columnsPaymentPending } from "./tables/pending-table/column-pending-table";
-import { columnsPaymentRefund } from "./tables/refund-table/column-refund-table";
+import { PaymentDatePreset } from "./payment-layout";
+import { columnsPaymentsUnified } from "./tables/columns";
 import { PaymentTable } from "./tables/payment-table";
 import { paymentTableSchema } from "./type/type.payments";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 
 type PaymentRow = z.infer<typeof paymentTableSchema>;
-type PaymentTab = "completed" | "pending" | "refund" | "corrections";
 
 export function PaymentDataTable({
-  dataPaymentCompleted,
-  dataPaymentPending,
-  dataPaymentRefund,
-  dataPaymentCorrections,
+  data,
+  datePreset,
+  onDatePresetChange,
+  customFrom,
+  customTo,
+  onCustomFromChange,
+  onCustomToChange,
 }: {
-  dataPaymentCompleted: PaymentRow[];
-  dataPaymentPending: PaymentRow[];
-  dataPaymentRefund: PaymentRow[];
-  dataPaymentCorrections: PaymentRow[];
+  data: PaymentRow[];
+  datePreset: PaymentDatePreset;
+  onDatePresetChange: (value: PaymentDatePreset) => void;
+  customFrom: Date;
+  customTo: Date;
+  onCustomFromChange: (value: Date) => void;
+  onCustomToChange: (value: Date) => void;
 }) {
-  const [activeTab, setActiveTab] = React.useState<PaymentTab>("completed");
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -70,15 +81,16 @@ export function PaymentDataTable({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: customFrom,
+    to: customTo,
+  });
 
   const COLUMN_LABELS_ES: Record<string, string> = {
     clientName: "Cliente",
     operationType: "Operacion",
     receivedBy: "Registrado por",
-    totalAmount: "Total",
     amount: "Movimiento",
-    netPaid: "Pagado neto",
-    remaining: "Pendiente",
     category: "Categoria",
     status: "Estado",
     date: "Fecha",
@@ -87,49 +99,10 @@ export function PaymentDataTable({
     notes: "Notas",
   };
 
-  React.useEffect(() => {
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    setRowSelection({});
-  }, [activeTab]);
-
-  const tableConfig = React.useMemo(() => {
-    if (activeTab === "completed") {
-      return {
-        data: dataPaymentCompleted,
-        columns: columnsPaymentCompleted,
-      };
-    }
-
-    if (activeTab === "pending") {
-      return {
-        data: dataPaymentPending,
-        columns: columnsPaymentPending,
-      };
-    }
-
-    if (activeTab === "refund") {
-      return {
-        data: dataPaymentRefund,
-        columns: columnsPaymentRefund,
-      };
-    }
-
-    return {
-      data: dataPaymentCorrections,
-      columns: columnsPaymentCanceled,
-    };
-  }, [
-    activeTab,
-    dataPaymentCompleted,
-    dataPaymentPending,
-    dataPaymentRefund,
-    dataPaymentCorrections,
-  ]);
-
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable<PaymentRow>({
-    data: tableConfig.data,
-    columns: tableConfig.columns,
+    data,
+    columns: columnsPaymentsUnified,
     getRowId: (row) => row.id,
     state: {
       sorting,
@@ -144,11 +117,12 @@ export function PaymentDataTable({
       const query = String(filterValue).toLowerCase().trim();
       if (!query) return true;
 
-      const searchableText = Object.values(row.original)
-        .map((value) => {
-          if (value instanceof Date) return value.toLocaleDateString();
-          return String(value ?? "");
-        })
+      const searchableText = [
+        row.original.clientName,
+        row.original.method,
+        row.original.status,
+        row.original.category,
+      ]
         .join(" ")
         .toLowerCase();
 
@@ -167,107 +141,127 @@ export function PaymentDataTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  const renderActiveTable = () => (
-    <PaymentTable
-      data={tableConfig.data}
-      table={table}
-      columnCount={tableConfig.columns.length}
-    />
-  );
-
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={(value) => setActiveTab(value as PaymentTab)}
-      className="w-full flex flex-col"
-    >
-      <div className="flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="relative w-full max-w-md">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por ID, cliente, metodo o referencia"
+            placeholder="Buscar por cliente, metodo, estado o categoria"
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="pl-10 h-10"
           />
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Select
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value as PaymentTab)}
-            >
-              <SelectTrigger className="lg:hidden w-fit" size="sm">
-                <SelectValue placeholder="Seleccionar vista" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="completed">Completados</SelectItem>
-                <SelectItem value="pending">Pendientes</SelectItem>
-                <SelectItem value="refund">Reembolsos</SelectItem>
-                <SelectItem value="corrections">Correcciones</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Select
+            value={datePreset}
+            onValueChange={(value) =>
+              onDatePresetChange(value as PaymentDatePreset)
+            }
+          >
+            <SelectTrigger className="h-10 w-[220px]">
+              <SelectValue placeholder="Filtrar por fecha" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Hoy</SelectItem>
+              <SelectItem value="yesterday">Ayer</SelectItem>
+              <SelectItem value="days_2">Hace 2 dias</SelectItem>
+              <SelectItem value="days_3">Hace 3 dias</SelectItem>
+              <SelectItem value="days_4">Hace 4 dias</SelectItem>
+              <SelectItem value="days_5">Hace 5 dias</SelectItem>
+              <SelectItem value="days_6">Hace 6 dias</SelectItem>
+              <SelectItem value="days_7">Hace 7 dias</SelectItem>
+              <SelectItem value="custom">Rango personalizado</SelectItem>
+            </SelectContent>
+          </Select>
 
-            <TabsList className="hidden lg:flex">
-              <TabsTrigger value="completed">Completados</TabsTrigger>
-              <TabsTrigger value="pending">Pendientes</TabsTrigger>
-              <TabsTrigger value="refund">Reembolsos</TabsTrigger>
-              <TabsTrigger value="corrections">Correcciones</TabsTrigger>
-            </TabsList>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-10 gap-2">
-                  <IconLayoutColumns className="size-4" />
-                  <span className="hidden xl:inline text-xs">Columnas</span>
-                  <IconChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="start" className="w-56">
-                {table
-                  .getAllColumns()
-                  .filter(
-                    (column) =>
-                      column.getCanHide() &&
-                      !["drag", "select", "actions"].includes(column.id),
-                  )
-                  .map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+          {datePreset === "custom" ? (
+            <>
+              <Field className="-mt-3 w-60">
+                <FieldLabel htmlFor="date-picker-range"></FieldLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      id="date-picker-range"
+                      className="justify-start px-2.5 font-normal"
                     >
-                      {COLUMN_LABELS_ES[column.id] ?? column.id}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                      <CalendarIcon />
+                      {customFrom ? (
+                        customTo ? (
+                          <>
+                            {format(customFrom, "LLL dd, y")} -{" "}
+                            {format(customTo, "LLL dd, y")}
+                          </>
+                        ) : (
+                          format(customFrom, "LLL dd, y")
+                        )
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="range"
+                      defaultMonth={customFrom}
+                      selected={date}
+                      onSelect={(range) => {
+                        setDate(range); // mantiene el estado local del calendario
+                        if (range?.from) onCustomFromChange(range.from);
+                        if (range?.to) onCustomToChange(range.to);
+                      }}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
+            </>
+          ) : null}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-10 gap-2">
+                <IconLayoutColumns className="size-4" />
+                <span className="hidden xl:inline text-xs">Columnas</span>
+                <IconChevronDown className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="start" className="w-56">
+              {table
+                .getAllColumns()
+                .filter(
+                  (column) =>
+                    column.getCanHide() &&
+                    !["drag", "select", "actions"].includes(column.id),
+                )
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {COLUMN_LABELS_ES[column.id] ?? column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      <TabsContent
-        value="completed"
-        className="relative flex flex-col gap-4 overflow-auto pt-3"
-      >
-        {renderActiveTable()}
-      </TabsContent>
-      <TabsContent value="pending" className="w-full pt-4">
-        {renderActiveTable()}
-      </TabsContent>
-      <TabsContent value="refund" className="w-full pt-4">
-        {renderActiveTable()}
-      </TabsContent>
-      <TabsContent value="corrections" className="w-full pt-4">
-        {renderActiveTable()}
-      </TabsContent>
-    </Tabs>
+      <div className="relative flex flex-col gap-4 overflow-auto pt-3">
+        <PaymentTable
+          data={data}
+          table={table}
+          columnCount={columnsPaymentsUnified.length}
+        />
+      </div>
+    </div>
   );
 }

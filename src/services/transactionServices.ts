@@ -3,7 +3,7 @@ import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
 import { useInventoryStore } from "../store/useInventoryStore";
-import { StockStatus } from "../utils/status-type/InventoryItemStatusType";
+import { InventoryItemStatus } from "../utils/status-type/InventoryItemStatusType";
 import { useRentalStore } from "../store/useRentalStore";
 import { guaranteeSchema } from "../types/guarantee/type.guarantee";
 import { operationSchema } from "../types/operation/type.operations";
@@ -225,7 +225,7 @@ export function processTransaction(
     // 🔥 MODIFICACIÓN DE ESTADO DE STOCK (V2 - SOPORTE HÍBRIDO)
     saleItems.forEach((item) => {
       const inventoryStore = useInventoryStore.getState();
-      let finalStockStatus: StockStatus = "vendido";
+      let finalStockStatus: InventoryItemStatus = "vendido";
 
       // 1. Mapeo de estados: Venta -> Stock
       switch (dto.status) {
@@ -452,7 +452,7 @@ export function processTransaction(
       if (isSerial) {
         inventoryStore.updateItemStatus(
           item.stockId,
-          finalRentalStockStatus as StockStatus,
+          finalRentalStockStatus as InventoryItemStatus,
           dto.branchId,
           dto.sellerId,
         );
