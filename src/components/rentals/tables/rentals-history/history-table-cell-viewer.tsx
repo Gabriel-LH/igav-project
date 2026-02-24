@@ -55,7 +55,7 @@ export function TableCellViewerHistory({
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
         <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.product}
+          {item.nameCustomer}
         </Button>
       </DrawerTrigger>
       <DrawerContent>

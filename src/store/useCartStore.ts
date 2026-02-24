@@ -5,24 +5,28 @@ import { differenceInDays } from "date-fns";
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
-  item: { product: Product; unitPrice: number; quantity: number },
+  item: {
+    product: Product;
+    unitPrice: number;
+    quantity: number;
+    discountAmount?: number;
+  },
   dates: { from: Date; to: Date } | null,
   opType: CartOperationType,
 ) => {
-  // 1. Si es Venta -> Precio x Cantidad (Simple)
-  if (opType === "venta") return item.unitPrice * item.quantity;
+  const discount = item.discountAmount ?? 0;
 
-  // 2. Si es Alquiler -> Precio x Cantidad x Días
+  // 1. Si es Venta -> (Precio - Descuento) x Cantidad
+  if (opType === "venta") return (item.unitPrice - discount) * item.quantity;
+
+  // 2. Si es Alquiler -> (Precio - Descuento) x Cantidad x Días
   const isEvent = item.product.rent_unit === "evento";
 
-  // Si no hay fechas definidas, asumimos 1 día por defecto para no mostrar 0
-  const days = dates
-    ? Math.max(differenceInDays(dates.to, dates.from), 1) // Ojo: differenceInDays puede ser 0 si es el mismo día, forzamos min 1
-    : 1;
+  const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
 
   const multiplier = isEvent ? 1 : days;
 
-  return item.unitPrice * item.quantity * multiplier;
+  return (item.unitPrice - discount) * item.quantity * multiplier;
 };
 
 interface CartState {
@@ -39,6 +43,13 @@ interface CartState {
     stockId?: string,
     maxQuantity?: number,
     variant?: { size?: string; color?: string },
+    customData?: {
+      listPrice?: number;
+      discountAmount?: number;
+      discountReason?: string;
+      bundleId?: string;
+      appliedPromotionId?: string;
+    },
   ) => void;
 
   removeItem: (cartId: string) => void;
@@ -58,7 +69,14 @@ export const useCartStore = create<CartState>((set, get) => ({
   globalRentalDates: null, // Inicialmente null
   globalRentalTimes: null,
 
-  addItem: (product, type, specificStockId, maxQuantity = 9999, variant) => {
+  addItem: (
+    product,
+    type,
+    specificStockId,
+    maxQuantity = 9999,
+    variant,
+    customData,
+  ) => {
     set((state) => {
       const unitPrice =
         type === "venta"
@@ -121,8 +139,18 @@ export const useCartStore = create<CartState>((set, get) => ({
         operationType: type,
         quantity: 1,
         unitPrice,
+        listPrice: customData?.listPrice || unitPrice,
+        discountAmount: customData?.discountAmount || 0,
+        discountReason: customData?.discountReason,
+        bundleId: customData?.bundleId,
+        appliedPromotionId: customData?.appliedPromotionId,
         subtotal: calculateSubtotal(
-          { product, unitPrice, quantity: 1 },
+          {
+            product,
+            unitPrice,
+            quantity: 1,
+            discountAmount: customData?.discountAmount,
+          },
           state.globalRentalDates,
           type,
         ),

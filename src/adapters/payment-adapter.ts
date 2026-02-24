@@ -3,6 +3,7 @@ import { Operation } from "../types/operation/type.operations";
 import { Payment } from "../types/payments/type.payments";
 import { User } from "../types/user/type.user";
 import { MethodPaymentType } from "../utils/status-type/MethodPaymentType";
+import { OperationType } from "../utils/status-type/OperationType";
 
 export interface PaymentTableRow {
   id: string;
@@ -15,7 +16,7 @@ export interface PaymentTableRow {
   status: "pending" | "posted";
   date: Date;
   method: MethodPaymentType;
-  reference: string | undefined;
+  reference: OperationType;
   notes: string | undefined;
 }
 
@@ -29,7 +30,9 @@ export const mapPaymentsToTable = (
     (a, b) => b.date.getTime() - a.date.getTime(),
   );
 
-  const operationMap = new Map(operations.map((operation) => [operation.id, operation]));
+  const operationMap = new Map(
+    operations.map((operation) => [operation.id, operation]),
+  );
   const clientMap = new Map(clients.map((client) => [client.id, client]));
   const userMap = new Map(users.map((user) => [user.id, user]));
 
@@ -43,8 +46,9 @@ export const mapPaymentsToTable = (
 
       return {
         id: payment.id,
-        clientName: `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim(),
-        operationType: operation.id,
+        clientName:
+          `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim(),
+        operationType: operation.referenceCode,
         receivedBy: receivedBy
           ? `${receivedBy.firstName} ${receivedBy.lastName}`
           : "",
@@ -54,7 +58,7 @@ export const mapPaymentsToTable = (
         status: payment.status,
         date: payment.date,
         method: payment.method,
-        reference: payment.reference,
+        reference: operation.type,
         notes: payment.notes,
       } satisfies PaymentTableRow;
     })

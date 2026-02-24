@@ -18,30 +18,34 @@ export const manageLoyaltyPoints = ({
     operationId, 
     description 
 }: LoyaltyInput) => {
+    if (!points || points <= 0) return;
     
     // 1. Obtener cliente actual para validaciones
     const customer = useCustomerStore.getState().getCustomerById(clientId);
     if (!customer) return; // O lanzar error
 
-    // 2. Determinar si SUMA o RESTA según el tipo
-    let finalPointsChange = points;
-    
-    if (type === "redeemed") {
+    const absolutePoints = Math.abs(points);
+    const isDebit = type === "redeemed" || type === "expired";
+    let finalPointsChange = isDebit ? -absolutePoints : absolutePoints;
+
+    // 2. Validaciones de salida (canje/expiración)
+    if (isDebit) {
         // Validación de negocio: No puede canjear más de lo que tiene
-        if ((customer.loyaltyPoints || 0) < points) {
+        if ((customer.loyaltyPoints || 0) < absolutePoints) {
             throw new Error("Puntos insuficientes para realizar el canje.");
         }
-        finalPointsChange = -points; // Convertimos a negativo para restar
     }
 
     // 3. Crear registro en el Historial (Ledger)
     useLoyaltyStore.getState().addEntry({
         id: `LOY-${crypto.randomUUID().slice(0, 8)}`,
         clientId,
-        amount: finalPointsChange, // Guardamos +100 o -50
+        amount: absolutePoints,
+        direction: isDebit ? "debit" : "credit",
         type,
+        status: "confirmed",
         operationId,
-        description: description || getTypeDescription(type, points),
+        description: description || getTypeDescription(type, absolutePoints),
         createdAt: new Date(),
     });
 
@@ -52,7 +56,7 @@ export const manageLoyaltyPoints = ({
         loyaltyPoints: currentPoints + finalPointsChange
     });
 
-    console.log(`Loyalty: ${type} ${points} pts. Nuevo saldo: ${currentPoints + finalPointsChange}`);
+    console.log(`Loyalty: ${type} ${absolutePoints} pts. Nuevo saldo: ${currentPoints + finalPointsChange}`);
 };
 
 // Helper para descripciones automáticas

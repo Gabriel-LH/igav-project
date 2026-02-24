@@ -12,6 +12,11 @@ export interface ReservationDTO extends BaseOperation {
     sizeId: string;
     colorId: string;
     priceAtMoment: number;
+    listPrice?: number;
+    discountAmount?: number;
+    discountReason?: string;
+    bundleId?: string;
+    promotionId?: string;
   }[];
   reservationDateRange: {
     from: Date;
@@ -22,7 +27,7 @@ export interface ReservationDTO extends BaseOperation {
     receivedAmount?: number;
     keepAsCredit?: boolean;
     totalPrice: number;
-    downPayment: number; // El dinero que dejó para separar
+    downPayment: number;
     pendingAmount: number;
     paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
   };

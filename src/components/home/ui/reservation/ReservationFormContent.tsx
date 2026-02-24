@@ -167,7 +167,7 @@ export function ReservationFormContent({
                 productId={item.id}
                 sizeId={sizeId}
                 colorId={colorId}
-                quantityDesired={quantity}
+                quantity={quantity}
                 type={operationType}
               />
               {/* Estos botones invisibles se posicionan en los extremos para las horas */}

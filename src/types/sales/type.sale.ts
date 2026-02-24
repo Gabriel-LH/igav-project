@@ -1,6 +1,7 @@
 import z from "zod";
 import { saleItemSchema } from "./type.saleItem";
 import { saleItemStatusHistorySchema } from "./saleItemStatusHistory";
+import { saleChargeSchema } from "./saleCharge";
 
 export const saleSchema = z.object({
   id: z.string(),
@@ -36,7 +37,8 @@ export const saleSchema = z.object({
   returnedAt: z.date().optional(),
 
   // Información financiera adicional
-  amountRefunded: z.number().default(0), // Dinero que se le regresó al cliente
+  // Resumen acumulado de reembolsos reales (refund payments), no cargos.
+  amountRefunded: z.number().default(0),
 
   updatedAt: z.date(), // Crucial para auditoría
   updatedBy: z.string().optional(),
@@ -47,6 +49,8 @@ export type Sale = z.infer<typeof saleSchema>;
 
 export const saleWithItemsSchema = saleSchema.extend({
   items: z.array(saleItemSchema),
+  // Fuente única de cargos post-venta (restocking_fee, damage, admin_fee, etc).
+  charges: z.array(saleChargeSchema),
 });
 
 export const saleItemWithHistorySchema = saleItemSchema.extend({

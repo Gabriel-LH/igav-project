@@ -1,0 +1,64 @@
+Estoy trabajando en un sistema comercial con arquitectura modular financiera.
+
+Contexto del dominio:
+
+1) Operation:
+- Representa la transacción financiera raíz.
+- Tiene totalAmount, paymentStatus y se conecta con Payment.
+
+2) Payment:
+- Representa movimientos reales de dinero (pagos, refunds, créditos).
+- Es la única entidad que representa flujo real de caja.
+
+3) Sale:
+- Representa la venta comercial (snapshot del momento).
+- Tiene totalAmount, subTotal, totalDiscount.
+- amountRefunded es solo un resumen acumulado de payments tipo refund.
+- No debe contener cargos financieros posteriores.
+
+4) SaleItem:
+- Representa el producto vendido.
+- Solo debe contener información del producto y estado logístico.
+- No debe contener cargos financieros como restockingFee.
+
+5) saleCharge:
+- Representa cargos financieros adicionales posteriores a la venta.
+- Ejemplos: restocking_fee, damage, admin_fee, late_fee.
+- No debe duplicar montos existentes en Sale.
+- Puede generar nuevos Payments si es necesario.
+
+6) Rental:
+- Similar a Sale pero para alquiler.
+- Usa rentalCharge para daños, penalidades, pérdidas.
+
+7) rentalCharge:
+- Maneja daños, penalidades, pérdida, limpieza, etc.
+- Puede estar parcialmente cubierto por garantía.
+- Puede generar Payment adicional si excede garantía.
+
+Principios obligatorios:
+
+- Payment es la única fuente de verdad para flujo de dinero real.
+- Charges representan obligaciones financieras, no movimientos de caja.
+- No mezclar lógica logística con lógica financiera.
+- No duplicar montos en múltiples entidades.
+- Mantener separación de responsabilidades (SRP).
+- Mantener consistencia entre Sale y Rental.
+- No eliminar campos de auditoría (createdAt, updatedAt, etc).
+- No cambiar nombres de archivos ni exports sin necesidad.
+- No introducir lógica de negocio dentro de schemas.
+
+Acción solicitada:
+
+Quiero hacer el siguiente cambio:
+[DESCRIBE AQUÍ EL CAMBIO]
+
+Antes de escribir código:
+1) Explica brevemente cómo impacta la arquitectura.
+2) Detecta posibles duplicaciones o inconsistencias.
+3) Luego muestra los schemas actualizados completos.
+4) No escribas código innecesario.
+
+Evalúa si el cambio introduce acoplamiento innecesario.
+Evalúa si rompe la consistencia con Operation.
+Evalúa si genera duplicación de datos financieros.

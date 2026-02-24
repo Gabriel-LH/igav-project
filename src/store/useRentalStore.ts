@@ -1,7 +1,8 @@
 // src/store/useRentalStore.ts
 import { create } from "zustand";
-import { Rental } from "../types/rentals/type.rentals";
+import { Rental, RentalWithDetails } from "../types/rentals/type.rentals";
 import { RentalItem } from "../types/rentals/type.rentalsItem";
+import { useRentalChargeStore } from "./useRentalChargeStore";
 
 interface RentalStore {
   rentals: Rental[];
@@ -10,6 +11,7 @@ interface RentalStore {
   addRental: (rental: Rental, items: RentalItem[]) => void;
 
   getRentalById: (id: string) => Rental | undefined;
+  getRentalWithDetails: (id: string) => RentalWithDetails;
 
   updateRental: (id: string, data: Partial<Rental>) => void;
 
@@ -33,6 +35,22 @@ export const useRentalStore = create<RentalStore>((set, get) => ({
     })),
 
   getRentalById: (id) => get().rentals.find((r) => r.id === id),
+
+  getRentalWithDetails: (id) => {
+    const rental = get().rentals.find((r) => r.id === id);
+    if (!rental) {
+      throw new Error("Rental no encontrado");
+    }
+
+    const items = get().rentalItems.filter((item) => item.rentalId === id);
+    const charges = useRentalChargeStore.getState().getByRentalId(id);
+
+    return {
+      ...rental,
+      items,
+      charges,
+    };
+  },
 
   updateRental: (id, data) =>
     set((state) => ({
@@ -92,7 +110,6 @@ export const useRentalStore = create<RentalStore>((set, get) => ({
           r.id === item.rentalId
             ? {
                 ...r,
-                totalPenalty: (r.totalPenalty || 0) + penalty,
                 status: allReturned ? "devuelto" : r.status,
                 updatedAt: new Date(),
               }

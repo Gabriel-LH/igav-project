@@ -22,7 +22,7 @@ import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ReservationDTO } from "@/src/interfaces/reservationDTO";
+import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "@/src/components/home/ui/direct-transaction/TimePicker";
@@ -36,6 +36,7 @@ import {
 } from "@/components/select";
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
+import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -94,6 +95,30 @@ export function PosReservationModal({
 
   const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
+
+  const conflicts = useMemo(() => {
+    if (!hasRentals) return [];
+
+    const list: string[] = [];
+    alquilerItems.forEach((item) => {
+      const check = getAvailabilityByAttributes(
+        item.product.id,
+        item.selectedSizeId || "",
+        item.selectedColorId || "",
+        dateRange.from,
+        dateRange.to,
+        "alquiler",
+      );
+
+      if (item.quantity > check.availableCount) {
+        list.push(
+          `${item.product.name}: Solicitado ${item.quantity}, Disponible ${check.availableCount}`,
+        );
+      }
+    });
+
+    return list;
+  }, [alquilerItems, dateRange, hasRentals]);
 
   // ─── CÁLCULOS ───
   const totalVentas = useMemo(
@@ -215,6 +240,9 @@ export function PosReservationModal({
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
     if (items.length === 0) return toast.error("El carrito está vacío");
     if (!dateRange?.from) return toast.error("Seleccione una fecha");
+    if (conflicts.length > 0) {
+      return toast.error("Conflictos de stock en fechas seleccionadas");
+    }
     if (Number(downPayment) <= 0) {
       return toast.error("Ingrese un adelanto mayor a 0");
     }
@@ -448,11 +476,9 @@ export function PosReservationModal({
                       if (date) setDateRange({ ...dateRange, from: date });
                     }}
                     mode="pickup"
-                    productId=""
-                    sizeId=""
-                    colorId=""
                     quantity={1}
                     type="alquiler"
+                    cartItems={alquilerItems}
                   />
                   <TimePicker
                     triggerRef={pickupTimeRef}
@@ -483,10 +509,8 @@ export function PosReservationModal({
                       }}
                       mode="return"
                       type="alquiler"
-                      productId=""
-                      sizeId=""
-                      colorId=""
                       quantity={1}
+                      cartItems={alquilerItems}
                     />
                     <TimePicker
                       triggerRef={returnTimeRef}
@@ -498,6 +522,21 @@ export function PosReservationModal({
               )}
             </div>
           </div>
+
+          {conflicts.length > 0 && (
+            <div className="p-3 border border-red-200 bg-red-50 rounded-lg">
+              <p className="text-[11px] font-bold text-red-700 uppercase">
+                Conflictos de disponibilidad
+              </p>
+              <ul className="mt-1 space-y-1">
+                {conflicts.map((c, i) => (
+                  <li key={i} className="text-[11px] text-red-600">
+                    • {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* ─── CLIENTE ─── */}
           <CustomerSelector
@@ -599,7 +638,8 @@ export function PosReservationModal({
             disabled={
               items.length === 0 ||
               !selectedCustomer ||
-              Number(downPayment) <= 0
+              Number(downPayment) <= 0 ||
+              conflicts.length > 0
             }
             className="w-full h-12 font-black text-white bg-linear-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 shadow-lg"
           >

@@ -13,6 +13,11 @@ export const reservationItemSchema = z.object({
   sizeId: z.string(),
   colorId: z.string(),
   priceAtMoment: z.number(),
+  listPrice: z.number().optional(),
+  discountAmount: z.number().default(0),
+  discountReason: z.string().optional(),
+  bundleId: z.string().optional(),
+  promotionId: z.string().optional(),
   notes: z.string().optional(),
 
   // --- ESTADO DE LA RESERVA DEL ITEM ---

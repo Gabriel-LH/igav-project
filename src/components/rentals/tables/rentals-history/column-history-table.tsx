@@ -69,19 +69,9 @@ export const columnsRentalsHistory: ColumnDef<
     enableHiding: false,
   },
   {
-    accessorKey: "sellerName",
-    header: "Vendedor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
-    accessorKey: "branchName",
-    header: "Sucursal",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
-  },
-  {
     accessorKey: "product",
     header: "Producto",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
   {
     accessorKey: "rent_unit",
@@ -112,7 +102,7 @@ export const columnsRentalsHistory: ColumnDef<
   },
   {
     accessorKey: "actualReturnDate",
-    header: "Fecha de entrega",
+    header: "Fecha real de retorno",
     cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
@@ -139,11 +129,6 @@ export const columnsRentalsHistory: ColumnDef<
         </div>
       );
     },
-  },
-  {
-    accessorKey: "gurantee",
-    header: "Garantia",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
   },
   {
     accessorKey: "guarantee_status",

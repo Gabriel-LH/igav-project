@@ -98,7 +98,20 @@ export function PosCartItem({ item }: PosCartItemProps) {
   }, [globalRentalDates]);
 
   return (
-    <div className="flex flex-col gap-2 p-3 border rounded-lg shadow-sm hover:border-slate-900 transition-colors group">
+    <div
+      className={`flex flex-col gap-2 p-3 border rounded-lg shadow-sm transition-all group ${
+        item.bundleId
+          ? "border-blue-200 bg-blue-50/10"
+          : "hover:border-slate-900"
+      }`}
+    >
+      {item.bundleId && (
+        <div className="flex items-center gap-1 -mt-1 -mx-3 px-3 py-1 bg-blue-100/50 rounded-t-lg border-b border-blue-200 mb-2">
+          <span className="text-[8px] font-black uppercase text-blue-600 tracking-widest">
+            Item de Pack
+          </span>
+        </div>
+      )}
       {/* 1. Header: Nombre y Variantes */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col">
@@ -242,14 +255,38 @@ export function PosCartItem({ item }: PosCartItemProps) {
           <div className="text-[10px] text-muted-foreground font-medium">
             {isRent && item.product.rent_unit !== "evento" ? (
               <span className="text-blue-500 font-bold">
+                {item.listPrice && item.listPrice > item.unitPrice && (
+                  <span className="line-through opacity-50 mr-1 text-slate-400">
+                    {formatCurrency(item.listPrice)}
+                  </span>
+                )}
                 {formatCurrency(item.unitPrice)} x {days}{" "}
                 {days === 1 ? "día" : "días"}
               </span>
             ) : (
-              `${formatCurrency(item.unitPrice)} c/u`
+              <div className="flex flex-col">
+                {item.listPrice && item.listPrice > item.unitPrice && (
+                  <span className="line-through opacity-50 text-[9px] text-slate-400">
+                    {formatCurrency(item.listPrice)}
+                  </span>
+                )}
+                <span>{formatCurrency(item.unitPrice)} c/u</span>
+              </div>
             )}
           </div>
-          <div className="text-sm font-black text-slate-700">
+
+          {item.discountAmount && item.discountAmount > 0 ? (
+            <div className="text-[9px] text-emerald-600 font-bold mt-0.5 animate-pulse">
+              Ahorras {formatCurrency(item.discountAmount * item.quantity)}
+              {item.discountReason && (
+                <span className="block italic opacity-80 font-medium">
+                  ({item.discountReason})
+                </span>
+              )}
+            </div>
+          ) : null}
+
+          <div className="text-sm font-black text-slate-700 mt-1">
             {formatCurrency(item.subtotal)}
           </div>
         </div>

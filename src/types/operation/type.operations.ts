@@ -4,6 +4,7 @@ import { paymentSchema } from "../payments/type.payments";
 //Qué se debía y qué se pagó para ESA operación
 export const operationSchema = z.object({
   id: z.string(),
+  referenceCode: z.string(),
   branchId: z.string(), // ¡NUEVO! Dónde se hizo la transacción
   sellerId: z.string(), // ¡NUEVO! Quién la hizo (userSchema.id)
   customerId: z.string(),

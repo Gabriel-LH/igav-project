@@ -143,7 +143,6 @@ export function PosCartSection() {
                 onTimeClick={() => {}}
                 placeholderDate="Hoy"
                 placeholderTime="Ahora"
-            
               />
               {/* No renderizamos el calendario ni el timepicker ocultos aquí */}
             </div>
@@ -216,8 +215,31 @@ export function PosCartSection() {
         <div className="space-y-1 mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>{formatCurrency(total)}</span>
+            <span>
+              {formatCurrency(
+                items.reduce(
+                  (acc, curr) =>
+                    acc + (curr.listPrice || curr.unitPrice) * curr.quantity,
+                  0,
+                ),
+              )}
+            </span>
           </div>
+          {items.some((i) => (i.discountAmount || 0) > 0) && (
+            <div className="flex justify-between text-sm text-emerald-600 font-bold">
+              <span>Descuentos</span>
+              <span>
+                -
+                {formatCurrency(
+                  items.reduce(
+                    (acc, curr) =>
+                      acc + (curr.discountAmount || 0) * curr.quantity,
+                    0,
+                  ),
+                )}
+              </span>
+            </div>
+          )}
           <Separator className="my-2" />
           <div className="flex justify-between items-end">
             <span className="text-lg font-bold">Total a Pagar</span>

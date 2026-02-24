@@ -2,6 +2,8 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useSaleReversalStore } from "@/src/store/useSaleReversalStore";
 import { differenceInHours } from "date-fns";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useOperationStore } from "@/src/store/useOperationStore";
+import { usePaymentStore } from "@/src/store/usePaymentStore";
 
 export function cancelSaleUseCase({
   saleId,
@@ -15,6 +17,7 @@ export function cancelSaleUseCase({
   const saleStore = useSaleStore.getState();
   const reversalStore = useSaleReversalStore.getState();
   const inventory = useInventoryStore.getState();
+  const paymentStore = usePaymentStore.getState();
 
   const sale = saleStore.sales.find((s) => s.id === saleId);
   if (!sale) throw new Error("Venta no encontrada");
@@ -32,7 +35,7 @@ export function cancelSaleUseCase({
     throw new Error("Solo se puede anular ventas dentro de las 24h");
   }
 
-   const saleWithItems = saleStore.getSaleWithItems(saleId);
+  const saleWithItems = saleStore.getSaleWithItems(saleId);
 
   const reversal = {
     id: `REV-${crypto.randomUUID()}`,
@@ -46,11 +49,15 @@ export function cancelSaleUseCase({
 
   reversalStore.addReversal(reversal);
 
-    // 2️⃣ Stock vuelve a disponible (por item)
+  // 2️⃣ Stock vuelve a disponible (por item)
   saleWithItems.items.forEach((item) => {
-    inventory.updateItemStatus(item.stockId, "disponible", sale.branchId, userId);
+    inventory.updateItemStatus(
+      item.stockId,
+      "disponible",
+      sale.branchId,
+      userId,
+    );
   });
-
 
   saleStore.updateSale(sale.id, {
     status: "cancelado",
@@ -60,5 +67,22 @@ export function cancelSaleUseCase({
     updatedBy: userId,
   });
 
-
+  const payments = paymentStore.payments.filter(
+    (p) => p.operationId === sale.operationId,
+  );
+  payments.forEach((payment) => {
+    paymentStore.addPayment({
+      id: `PAY-${crypto.randomUUID()}`,
+      operationId: sale.operationId,
+      amount: payment.amount,
+      method: payment.method,
+      direction: "out",
+      status: "posted",
+      category: "correction",
+      date: new Date(),
+      notes: `Anulación de venta: ${reason}`,
+      receivedById: userId,
+      branchId: sale.branchId,
+    });
+  });
 }

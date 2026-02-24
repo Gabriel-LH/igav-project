@@ -21,6 +21,11 @@ export interface RentalDTO extends BaseOperation {
     sizeId: string;
     colorId: string;
     priceAtMoment: number;
+    listPrice?: number;
+    discountAmount?: number;
+    discountReason?: string;
+    bundleId?: string;
+    promotionId?: string;
   }[];
   financials: {
     totalRent: number;

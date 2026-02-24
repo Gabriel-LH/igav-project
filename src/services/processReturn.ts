@@ -43,7 +43,6 @@ export function processReturn(input: ProcessReturnInput) {
   // Actualizamos cabecera del contrato
   rentalStore.updateRental(rental.id, {
     status: input.rentalStatus,
-    totalPenalty: input.totalPenalty,
     actualReturnDate: now,
     notes: input.notes,
   });

@@ -1,5 +1,5 @@
 import { RentalDTO } from "../interfaces/RentalDTO";
-import { ReservationDTO } from "../interfaces/reservationDTO";
+import { ReservationDTO } from "../interfaces/ReservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
 import { useInventoryStore } from "../store/useInventoryStore";
@@ -22,6 +22,7 @@ import { useSaleStore } from "../store/useSaleStore";
 import { calculateOperationPaymentStatus } from "../utils/payment-helpers";
 import { manageLoyaltyPoints } from "./use-cases/manageLoyaltyPoints";
 import { addClientCredit } from "./use-cases/addClientCredit.usecase";
+import { generateOperationReference } from "../utils/operation/generateOperationReference";
 
 function getFinancials(
   dto:
@@ -91,13 +92,19 @@ export function processTransaction(
     | SaleFromReservationDTO,
 ) {
   const now = new Date();
-  const operationId = `OP-${Math.random()
-    .toString(36)
-    .toUpperCase()
-    .substring(2, 9)}`;
-  const gId = `GUA-${Math.random().toString(36).toUpperCase().substring(2, 9)}`;
-  const rentalId = `RENT-${operationId}`;
+  const operations = useOperationStore.getState().operations;
 
+  const todayString = now.toISOString().split("T")[0];
+
+  const todayOperationsByType = operations.filter(
+    (op) =>
+      op.type === dto.type &&
+      op.date.toISOString().split("T")[0] === todayString,
+  );
+
+  const sequence = todayOperationsByType.length + 1;
+
+  const referenceCode = generateOperationReference(dto.type, now, sequence);
   const reservationStore = useReservationStore.getState();
 
   const {
@@ -114,16 +121,6 @@ export function processTransaction(
   let specificData: any = {};
   let guaranteeData: any = null;
 
-  // 1. Crédito (Vuelto del pago inicial)
-  if (overpayment > 0 && keepAsCredit) {
-    addClientCredit(
-      dto.customerId,
-      overpayment,
-      "overpayment",
-      String(operationId),
-    );
-  }
-
   // 1️⃣ OPERACIÓN MADRE
 
   const initialNetPaid = downPayment > 0 ? downPayment : 0;
@@ -132,7 +129,8 @@ export function processTransaction(
     initialNetPaid,
   );
   const operationData = operationSchema.parse({
-    id: String(operationId),
+    id: crypto.randomUUID(),
+    referenceCode,
     branchId: dto.branchId,
     sellerId: dto.sellerId,
     customerId: dto.customerId,
@@ -145,6 +143,18 @@ export function processTransaction(
   });
 
   useOperationStore.getState().addOperation(operationData);
+
+  const operationId = operationData.id;
+
+  // Crédito (Vuelto del pago inicial)
+  if (overpayment > 0 && keepAsCredit) {
+    addClientCredit(
+      dto.customerId,
+      overpayment,
+      "overpayment",
+      String(operationId),
+    );
+  }
 
   let paymentData: any = null;
   // 2️⃣ PAGO INICIAL (solo si hay algo que pagar)
@@ -205,12 +215,15 @@ export function processTransaction(
             stockId: item.stockId,
             quantity: reservationItem.quantity ?? 1,
             priceAtMoment: reservationItem.priceAtMoment,
-            discountAmount: 0,
+            listPrice: reservationItem.listPrice,
+            discountAmount: reservationItem.discountAmount ?? 0,
+            discountReason: reservationItem.discountReason,
+            bundleId: reservationItem.bundleId,
+            promotionId: reservationItem.promotionId,
             // productName: reservationItem.productName,
             // variantCode: reservationItem.variantCode,
             // serialCode: reservationItem.serialCode,
             // isSerial: reservationItem.isSerial,
-            restockingFee: 0,
             isReturned: false,
           };
         })
@@ -221,8 +234,11 @@ export function processTransaction(
           stockId: item.stockId,
           quantity: item.quantity ?? 1,
           priceAtMoment: item.priceAtMoment,
-          discountAmount: 0,
-          restockingFee: 0,
+          listPrice: item.listPrice,
+          discountAmount: item.discountAmount ?? 0,
+          discountReason: item.discountReason,
+          bundleId: item.bundleId,
+          promotionId: item.promotionId,
           isReturned: false,
         }));
 
@@ -310,6 +326,11 @@ export function processTransaction(
           item.priceAtMoment ||
           dto.financials.totalPrice /
             dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0),
+        listPrice: item.listPrice,
+        discountAmount: item.discountAmount ?? 0,
+        discountReason: item.discountReason,
+        bundleId: item.bundleId,
+        promotionId: item.promotionId,
         itemStatus: "confirmada",
         notes: dto.notes ?? "",
       })),
@@ -350,7 +371,7 @@ export function processTransaction(
       dto.financials.guarantee.type !== "no_aplica"
     ) {
       guaranteeData = guaranteeSchema.parse({
-        id: gId,
+        id: crypto.randomUUID(),
         operationId: String(operationId),
         branchId: dto.branchId,
         receivedById: dto.sellerId,
@@ -385,7 +406,7 @@ export function processTransaction(
     }
 
     const rental = rentalSchema.parse({
-      id: rentalId,
+      id: crypto.randomUUID(),
       operationId: String(operationId),
       reservationId: fromReservation ? dto.reservationId : undefined,
       customerId: dto.customerId,
@@ -394,11 +415,12 @@ export function processTransaction(
       expectedReturnDate: dto.endDate,
       status: dto.status,
       guaranteeId: guaranteeData ? guaranteeData.id : undefined,
-      totalPenalty: 0,
       createdAt: now,
       updatedAt: now,
       notes: !fromReservation ? (dto.notes ?? "") : "",
     });
+
+    const rentalId = rental.id;
 
     // CORRECCIÓN: Mapeo masivo de items para alquiler directo
     const rentalItems = fromReservation
@@ -411,7 +433,7 @@ export function processTransaction(
               throw new Error(`ReservationItem no encontrado`);
 
             return {
-              id: `RITEM-${item.reservationItemId}`,
+              id: crypto.randomUUID(),
               rentalId,
               operationId: String(operationId),
               productId: reservationItem.productId,
@@ -420,6 +442,11 @@ export function processTransaction(
               sizeId: reservationItem.sizeId,
               colorId: reservationItem.colorId,
               priceAtMoment: dto.financials.totalRent,
+              listPrice: reservationItem.listPrice,
+              discountAmount: reservationItem.discountAmount ?? 0,
+              discountReason: reservationItem.discountReason,
+              bundleId: reservationItem.bundleId,
+              promotionId: reservationItem.promotionId,
               conditionOut: "Excelente",
               itemStatus: "alquilado",
               notes: "",
@@ -437,6 +464,11 @@ export function processTransaction(
             sizeId: item.sizeId,
             colorId: item.colorId,
             priceAtMoment: item.priceAtMoment ?? dto.financials.totalRent, // Mejor precio unitario si existe
+            listPrice: item.listPrice,
+            discountAmount: item.discountAmount ?? 0,
+            discountReason: item.discountReason,
+            bundleId: item.bundleId,
+            promotionId: item.promotionId,
             conditionOut: "Excelente",
             itemStatus: "alquilado",
             notes: (dto as any).notes ?? "",

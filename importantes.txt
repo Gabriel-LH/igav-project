@@ -283,4 +283,3 @@ export const saleItemSchema = z.object({
 
   // ...
 });
-Estás construyendo un sistema muy robusto. ¡Sigue así!

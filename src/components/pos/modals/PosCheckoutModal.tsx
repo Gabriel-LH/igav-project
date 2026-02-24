@@ -67,7 +67,10 @@ export function PosCheckoutModal({
 
   // Obtenemos al cliente actual desde tu store
   const selectedClient = useCustomerStore(
-    (state) => state.getCustomerById(useCartStore.getState().customerId!), // O como saques tu customerId actual
+    (state) =>
+      selectedCustomer?.id
+        ? state.getCustomerById(selectedCustomer.id)
+        : undefined,
   );
 
   // Configuraciones (Idealmente vienen de tus businessRules)
@@ -223,7 +226,7 @@ export function PosCheckoutModal({
                 l.sizeId === (cartItem.selectedSizeId || "") &&
                 l.colorId === (cartItem.selectedColorId || "") &&
                 l.branchId === currentBranchId &&
-                l.status === "disponible" &&
+                l.quantity >= cartItem.quantity &&
                 (opType === "venta" ? l.isForSale : l.isForRent),
             );
 
@@ -237,6 +240,7 @@ export function PosCheckoutModal({
                 quantity: take,
                 sizeId: cartItem.selectedSizeId ?? "",
                 colorId: cartItem.selectedColorId ?? "",
+                priceList: cartItem.product.priceList,
                 priceAtMoment: (cartItem.subtotal / cartItem.quantity) * take,
               });
               remaining -= take;
@@ -260,10 +264,10 @@ export function PosCheckoutModal({
           financials: {
             totalAmount: totalVentas,
             paymentMethod: paymentMethod as PaymentMethodType,
-            receivedAmount: Number(receivedAmount),
+            // En checkout POS la venta se cobra completa al confirmar.
+            receivedAmount: totalVentas,
             keepAsCredit: false,
             totalPrice: totalVentas,
-            downPayment: 0,
           },
           id: "",
           operationId: "",

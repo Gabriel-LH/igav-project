@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Sale, SaleWithItems } from "@/src/types/sales/type.sale";
 import { SaleItem } from "@/src/types/sales/type.saleItem";
+import { useSaleChargeStore } from "./useSaleChargeStore";
 
 interface SaleStore {
   sales: Sale[];
@@ -66,10 +67,12 @@ export const useSaleStore = create<SaleStore>((set, get) => ({
     }
 
     const items = get().saleItems.filter((item) => item.saleId === id);
+    const charges = useSaleChargeStore.getState().getBySaleId(id);
 
     return {
       ...sale,
       items,
+      charges,
     };
   },
 

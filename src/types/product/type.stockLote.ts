@@ -10,6 +10,9 @@ export const stockLotSchema = z.object({
   quantity: z.number().min(0),
   isForRent: z.boolean(), // Algunos productos no serializados podrían alquilarse por lote
   isForSale: z.boolean(),
+  status: z
+    .enum(["disponible", "bajo_pedido", "discontinuado"])
+    .default("disponible"),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

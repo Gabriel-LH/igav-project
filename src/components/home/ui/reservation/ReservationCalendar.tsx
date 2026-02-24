@@ -23,19 +23,20 @@ export function ReservationCalendar({
   dateRange,
   setDateRange,
   productId,
-  size,
-  color,
+  sizeId,
+  colorId,
   type,
-  quantity, // <--- CORRECCIÓN: Usamos 'quantity' para coincidir con tu Formulario
+  quantity,
+  quantityDesired,
 }: any) {
   
   // 1. Obtener datos unificados (Reservas + Alquileres + Lavandería)
   const availabilityData = useMemo(() => {
-    if (!productId || !size || !color) {
+    if (!productId || !sizeId || !colorId) {
       return { totalPhysicalStock: 0, activeReservations: [] };
     }
-    return getReservationDataByAttributes(productId, size, color, type);
-  }, [productId, size, color, type]);
+    return getReservationDataByAttributes(productId, sizeId, colorId, type);
+  }, [productId, sizeId, colorId, type]);
 
   // 2. CORRECCIÓN CLAVE:
   // Renombramos 'activeReservations' a 'occupiedIntervals' para que tenga sentido semántico
@@ -53,7 +54,7 @@ export function ReservationCalendar({
       .reduce((sum: number, r: any) => sum + (r.quantity || 1), 0);
 
     // B. Sumar lo que YO quiero llevarme ahora
-    const currentRequest = quantity || 1; 
+    const currentRequest = quantity ?? quantityDesired ?? 1; 
 
     // C. Comparar con el total físico
     return (reservedCount + currentRequest) > totalPhysicalStock;

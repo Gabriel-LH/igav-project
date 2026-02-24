@@ -21,6 +21,11 @@ export interface SaleDTO extends BaseOperation {
     sizeId: string;
     colorId: string;
     priceAtMoment: number;
+    listPrice?: number;
+    discountAmount?: number;
+    discountReason?: string;
+    bundleId?: string;
+    promotionId?: string;
   }[];
 
   financials: {

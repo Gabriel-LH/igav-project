@@ -3,6 +3,7 @@ import { Operation } from "../types/operation/type.operations";
 export const OPERATIONS_MOCK: Operation[] = [
   {
     id: "op-001",
+    referenceCode: "RES-20260101-0002",
     branchId: "branch-001",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_001",
@@ -15,6 +16,7 @@ export const OPERATIONS_MOCK: Operation[] = [
   },
   {
     id: "op-002",
+    referenceCode: "ALQ-20260110-0001",
     branchId: "branch-001",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_002",
@@ -27,6 +29,7 @@ export const OPERATIONS_MOCK: Operation[] = [
   },
   {
     id: "op-003",
+    referenceCode: "ALQ-20260110-0001",
     branchId: "branch-002",
     sellerId: "550e8400-e29b-41d4-a716-446655440000",
     customerId: "cl_002",
@@ -36,5 +39,5 @@ export const OPERATIONS_MOCK: Operation[] = [
     totalAmount: 2000,
     date: new Date(2026, 0, 10),
     createdAt: new Date(2026, 0, 1),
-  }
+  },
 ];

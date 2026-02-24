@@ -1,6 +1,7 @@
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { useSaleReversalStore } from "@/src/store/useSaleReversalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { usePaymentStore } from "@/src/store/usePaymentStore";
 
 export function returnSaleItemsUseCase({
   saleId,
@@ -20,6 +21,8 @@ export function returnSaleItemsUseCase({
   const reversalStore = useSaleReversalStore.getState();
 
   const sale = useSaleStore.getState().sales.find((s) => s.id === saleId);
+
+  const paymentStore = usePaymentStore.getState();
 
   if (!sale) throw new Error("Venta no encontrada");
   if (sale.status === "cancelado") {
@@ -66,7 +69,6 @@ export function returnSaleItemsUseCase({
       isReturned: true,
       returnedAt: new Date(),
       returnCondition: ri.condition,
-      restockingFee: ri.restockingFee,
     });
   });
 
@@ -85,18 +87,34 @@ export function returnSaleItemsUseCase({
   });
 
   reversalItems.forEach((ri) => {
-  const saleItem = saleWithItems.items.find(
-    (i) => i.id === ri.saleItemId
-  )!;
+    const saleItem = saleWithItems.items.find((i) => i.id === ri.saleItemId)!;
 
-  // Regla de venta: solo perfecto vuelve a stock, mas adelante se implementara cosas como de reacondicionamiento
-  if (ri.condition !== "perfecto") {
-    throw new Error("No se aceptan devoluciones en este estado");
-  }
+    // Regla de venta: solo perfecto vuelve a stock, mas adelante se implementara cosas como de reacondicionamiento
+    if (ri.condition !== "perfecto") {
+      throw new Error("No se aceptan devoluciones en este estado");
+    }
 
-  useInventoryStore.getState().updateItemStatus(saleItem.stockId, "disponible");
-});
+    useInventoryStore
+      .getState()
+      .updateItemStatus(saleItem.stockId, "disponible");
 
-  
-  
+    const payments = paymentStore.payments.filter(
+      (p) => p.operationId === sale.operationId,
+    );
+    payments.forEach((payment) => {
+      paymentStore.addPayment({
+        id: `PAY-${crypto.randomUUID()}`,
+        operationId: sale.operationId,
+        amount: payment.amount,
+        method: payment.method,
+        direction: "out",
+        status: "posted",
+        category: "refund",
+        date: new Date(),
+        notes: `Reembolso por devolución de venta: ${reason}`,
+        receivedById: userId,
+        branchId: sale.branchId,
+      });
+    });
+  });
 }
