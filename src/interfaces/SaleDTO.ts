@@ -27,7 +27,6 @@ export interface SaleDTO extends BaseOperation {
     totalAmount: number;
     receivedAmount: number;
     keepAsCredit: boolean;
-    downPayment: number;
     totalPrice: number;
     paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
   };

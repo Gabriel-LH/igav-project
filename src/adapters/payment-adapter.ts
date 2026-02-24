@@ -3,12 +3,11 @@ import { Operation } from "../types/operation/type.operations";
 import { Payment } from "../types/payments/type.payments";
 import { User } from "../types/user/type.user";
 import { MethodPaymentType } from "../utils/status-type/MethodPaymentType";
-import { OperationType } from "../utils/status-type/OperationType";
 
 export interface PaymentTableRow {
   id: string;
   clientName: string;
-  operationType: OperationType;
+  operationType: string;
   receivedBy: string;
   amount: number;
   direction: "in" | "out";
@@ -45,7 +44,7 @@ export const mapPaymentsToTable = (
       return {
         id: payment.id,
         clientName: `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim(),
-        operationType: operation.type,
+        operationType: operation.id,
         receivedBy: receivedBy
           ? `${receivedBy.firstName} ${receivedBy.lastName}`
           : "",

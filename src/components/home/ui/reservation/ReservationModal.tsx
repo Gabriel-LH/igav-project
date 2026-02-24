@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
+import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";

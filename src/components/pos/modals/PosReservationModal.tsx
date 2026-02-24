@@ -22,7 +22,7 @@ import { processTransaction } from "@/src/services/transactionServices";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
+import { ReservationDTO } from "@/src/interfaces/reservationDTO";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "@/src/components/home/ui/direct-transaction/TimePicker";

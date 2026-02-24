@@ -61,7 +61,7 @@ export function PaymentHeader({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5">
         <Card className="py-4">
           <CardContent>
             <p className="text-xs text-muted-foreground">Ingresos {periodLabel}</p>
@@ -81,7 +81,7 @@ export function PaymentHeader({
         </Card>
 
         <Card className="py-4">
-          <CardContent>
+          <CardContent className="px-2">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">Reembolsos {periodLabel}</p>
               <p className="text-xs text-muted-foreground">Correcciones</p>
@@ -113,7 +113,7 @@ export function PaymentHeader({
         </Card>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5">
         {methodStats.map((item) => (
           <Card key={item.method} className="py-4">
             <CardContent className=" space-y-1">

@@ -132,7 +132,7 @@ export function DirectTransactionModal({
           String(s.productId) === productId &&
           s.sizeId === sizeId &&
           s.colorId === colorId &&
-          s.status === "disponible" &&
+          s.quantity > 0 &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
     }
@@ -315,7 +315,6 @@ export function DirectTransactionModal({
           receivedAmount: Number(receivedAmount),
           keepAsCredit: false,
           totalPrice: totalOperacion,
-          downPayment: 0,
         },
         notes,
         status: !checklist.deliverAfter

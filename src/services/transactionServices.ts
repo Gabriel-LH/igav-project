@@ -1,5 +1,5 @@
 import { RentalDTO } from "../interfaces/RentalDTO";
-import { ReservationDTO } from "../interfaces/ReservationDTO";
+import { ReservationDTO } from "../interfaces/reservationDTO";
 import { SaleDTO } from "../interfaces/SaleDTO";
 import { useGuaranteeStore } from "../store/useGuaranteeStore";
 import { useInventoryStore } from "../store/useInventoryStore";
@@ -11,7 +11,6 @@ import { paymentSchema } from "../types/payments/type.payments";
 import { rentalSchema } from "../types/rentals/type.rentals";
 import { reservationSchema } from "../types/reservation/type.reservation";
 import { saleSchema } from "../types/sales/type.sale";
-import { useClientCreditStore } from "../store/useClientCreditStore";
 import { rentalItemSchema } from "../types/rentals/type.rentalsItem";
 import { useReservationStore } from "../store/useReservationStore";
 import { reservationItemSchema } from "../types/reservation/type.reservationItem";
@@ -20,6 +19,7 @@ import { useOperationStore } from "../store/useOperationStore";
 import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
 import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
 import { useSaleStore } from "../store/useSaleStore";
+import { calculateOperationPaymentStatus } from "../utils/payment-helpers";
 import { manageLoyaltyPoints } from "./use-cases/manageLoyaltyPoints";
 import { addClientCredit } from "./use-cases/addClientCredit.usecase";
 
@@ -35,9 +35,9 @@ function getFinancials(
     return {
       totalAmount: dto.financials.totalAmount,
       paymentMethod: dto.financials.paymentMethod,
-      downPayment: dto.financials.downPayment ?? 0,
-      receivedAmount: dto.financials.receivedAmount,
-      keepAsCredit: dto.financials.keepAsCredit,
+      downPayment: dto.financials.receivedAmount ?? 0,
+      receivedAmount: dto.financials.receivedAmount ?? 0,
+      keepAsCredit: dto.financials.keepAsCredit ?? false,
     };
   }
 
@@ -126,7 +126,11 @@ export function processTransaction(
 
   // 1️⃣ OPERACIÓN MADRE
 
-  const isPaid = dto.type === "venta" && receivedAmount >= totalAmount;
+  const initialNetPaid = downPayment > 0 ? downPayment : 0;
+  const operationPaymentStatus = calculateOperationPaymentStatus(
+    totalAmount,
+    initialNetPaid,
+  );
   const operationData = operationSchema.parse({
     id: String(operationId),
     branchId: dto.branchId,
@@ -134,7 +138,7 @@ export function processTransaction(
     customerId: dto.customerId,
     type: dto.type,
     status: "en_progreso",
-    paymentStatus: isPaid ? "pagado" : "parcial",
+    paymentStatus: operationPaymentStatus,
     totalAmount,
     date: now,
     createdAt: now,
@@ -151,8 +155,10 @@ export function processTransaction(
       branchId: dto.branchId,
       receivedById: dto.sellerId,
       amount: downPayment,
+      direction: "in",
       method: paymentMethod,
-      type: dto.type === "reserva" ? "adelanto" : "saldo_total",
+      status: "posted",
+      category: "payment",
       date: now,
     });
 

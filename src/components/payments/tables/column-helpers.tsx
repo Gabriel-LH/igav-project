@@ -6,7 +6,6 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   BankIcon,
-  Calendar01Icon,
   Calendar03Icon,
   CreditCardIcon,
   Repeat,
@@ -103,22 +102,7 @@ export const operationColumn = (
     const operationType = getValue() as string;
     return (
       <div className={`w-32 ${extraClassName ?? ""}`}>
-        {operationType === "alquiler" ? (
-          <Badge variant="outline" className="px-1.5">
-            <HugeiconsIcon icon={Repeat} />
-            ALQUILER
-          </Badge>
-        ) : operationType === "venta" ? (
-          <Badge variant="outline" className="px-1.5">
-            <HugeiconsIcon icon={SaleTag01Icon} />
-            VENTA
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="px-1.5">
-            <HugeiconsIcon icon={Calendar03Icon} />
-            RESERVA
-          </Badge>
-        )}
+        {operationType}
       </div>
     );
   },

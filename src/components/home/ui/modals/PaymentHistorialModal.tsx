@@ -14,7 +14,7 @@ import { Payment } from "../../../../types/payments/type.payments";
 import { USER_MOCK } from "../../../../mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { Badge } from "@/components/badge";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/button";
 import { AddPaymentForm } from "../forms/AddPaymentForm";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
@@ -29,20 +29,24 @@ interface PaymentHistoryModalProps {
   onOpenChange: (open: boolean) => void;
   payments: Payment[];
   totalOperation: number;
-  operationId?: number | string; // Agregado
+  operationId?: number | string;
   calculatedBalance: number;
   calculatedIsCredit: boolean;
   customerName: string;
   onAddPayment: (paymentData: any) => Payment;
 }
 
-export function PaymentHistoryModal({
+const formatUserName = (receivedById: string) => {
+  const user = USER_MOCK.find((currentUser) => currentUser.id === receivedById);
+  return user ? `${user.firstName} ${user.lastName}` : "Sin registros";
+};
 
+export function PaymentHistoryModal({
   open,
   onOpenChange,
   payments,
   operationId,
-  totalOperation, // Este es el costo total (ej. 180)
+  totalOperation,
   calculatedBalance,
   calculatedIsCredit,
   customerName,
@@ -53,32 +57,24 @@ export function PaymentHistoryModal({
   const [ticketToPrint, setTicketToPrint] = useState<string | null>(null);
 
   const { guarantees } = useGuaranteeStore.getState();
+  const guaranteeData = guarantees.find((guarantee) => guarantee.operationId === operationId);
 
-  const guaranteeData = guarantees.find((g) => g.operationId === operationId);
+  const { totalPaid, creditAmount } = getOperationBalances(
+    String(operationId || ""),
+    payments,
+    totalOperation,
+  );
 
-  const {
-    balance: currentBalance,
-    creditAmount: currentCredit,
-    isCredit,
-    totalPaid,
-  } = getOperationBalances(String(operationId || ""), payments, totalOperation);
-
-  const totalPagadoAlquiler = payments.reduce((acc, p) => acc + p.amount, 0);
-
-  const creditAmount = calculatedIsCredit
-    ? totalPagadoAlquiler - totalOperation
-    : 0;
-
-  const receivedByName =
-    payments.length > 0
-      ? USER_MOCK.find((u) => u.id === payments[0].receivedById)?.name
-      : "Sin registros";
-
+  const resolvedCreditAmount = calculatedIsCredit ? creditAmount : 0;
   const currentUser = USER_MOCK[0];
 
-  const buildTicketHtml = (p: Payment) => buildPaymentTicketHtml(p, currentUser, customerName);
-  
-  const fullHistoryTicket = payments.map(buildTicketHtml).join("");
+  const buildTicketHtml = (payment: Payment) =>
+    buildPaymentTicketHtml(payment, currentUser, customerName);
+
+  const fullHistoryTicket = useMemo(
+    () => payments.map(buildTicketHtml).join(""),
+    [payments],
+  );
 
   return (
     <>
@@ -93,11 +89,10 @@ export function PaymentHistoryModal({
               />
               Historial de Pagos
             </DialogTitle>
-            <DialogDescription></DialogDescription>
+            <DialogDescription />
           </DialogHeader>
 
           <div className="p-6 pt-0 space-y-4">
-            {/* SI EL FORM ESTÁ ABIERTO, SE MUESTRA */}
             {showAddForm ? (
               <AddPaymentForm
                 remainingBalance={calculatedBalance}
@@ -111,7 +106,6 @@ export function PaymentHistoryModal({
               />
             ) : (
               <>
-                {/* BOTÓN PARA ABRIR FORM (Solo si hay deuda) */}
                 {calculatedBalance > 0 && (
                   <Button
                     variant="outline"
@@ -123,79 +117,64 @@ export function PaymentHistoryModal({
                       strokeWidth={2.2}
                       className="text-blue-600"
                       size={22}
-                    />{" "}
+                    />
                     Registrar Nuevo Abono
                   </Button>
                 )}
               </>
             )}
+
             <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
               <div className="max-h-[280px] overflow-y-auto">
                 <table className="w-full text-sm text-left border-collapse">
                   <thead className="bg-muted/50 text-[10px] uppercase text-muted-foreground sticky top-0">
                     <tr>
-                      <th className="px-4 py-2.5 font-bold">Fecha / Recibió</th>
-                      <th className="px-4 py-2.5 font-bold">
-                        Método / Detalle
-                      </th>
+                      <th className="px-4 py-2.5 font-bold">Fecha / Recibio</th>
+                      <th className="px-4 py-2.5 font-bold">Metodo / Estado</th>
                       <th className="px-4 py-2.5 text-right font-bold">
                         Monto
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {payments.map((p) => (
+                    {payments.map((payment) => (
                       <tr
-                        key={`${p.id}-${p.type}`}
+                        key={payment.id}
                         className="hover:bg-muted/30 transition-colors"
                       >
                         <td className="px-4 py-3">
                           <p className="font-bold text-[12px]">
-                            {p.date.toLocaleDateString()}
+                            {payment.date.toLocaleDateString()}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
-                            {receivedByName}
+                            {formatUserName(payment.receivedById)}
                           </p>
                         </td>
                         <td className="px-4 py-3">
                           <p className="italic text-[11px] capitalize">
-                            {p.method}
+                            {payment.method}
                           </p>
-                          {/* ESTO MUESTRA EL VUELTO EN LA TABLA */}
-                          {p.changeAmount
-                            ? p.changeAmount > 0 && (
-                                <p className="text-[9px] text-orange-500 font-medium mt-0.5">
-                                  Recibió:{" "}
-                                  {formatCurrency(p.receivedAmount || 0)} |
-                                  Vuelto: -{formatCurrency(p.changeAmount)}
-                                </p>
-                              )
-                            : null}
+                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5">
+                            {payment.category.toUpperCase()} |{" "}
+                            {payment.status.toUpperCase()}
+                          </p>
                         </td>
                         <td
                           className={`px-4 py-3 text-right font-black ${
-                            p.type === "cuota"
-                              ? "text-amber-500"
+                            payment.direction === "out"
+                              ? "text-red-500"
                               : "text-emerald-600"
                           }`}
                         >
-                          {formatCurrency(p.amount)}
+                          {payment.direction === "out" ? "-" : "+"}{" "}
+                          {formatCurrency(payment.amount)}
                         </td>
-                        {/* BOTÓN DE IMPRESIÓN */}
                         <td className="px-2 py-3 text-center">
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-primary"
-                            onClick={() => {
-                              const paymentWithName = {
-                                ...p,
-                                receivedByName:
-                                  USER_MOCK.find((u) => u.id === p.receivedById)
-                                    ?.name || "Desconocido",
-                              };
-                              printTicket(buildTicketHtml(paymentWithName));
-                            }}
+                            onClick={() => printTicket(buildTicketHtml(payment))}
                           >
                             <HugeiconsIcon icon={PrinterIcon} size={16} />
                           </Button>
@@ -215,16 +194,15 @@ export function PaymentHistoryModal({
                 </span>
               </div>
               <div className="flex justify-between text-xs text-emerald-600 font-bold">
-                <span>Pagos procesados:</span>
-                <span>- {formatCurrency(totalPagadoAlquiler)}</span>
+                <span>Pagos netos procesados:</span>
+                <span>{formatCurrency(totalPaid)}</span>
               </div>
 
               <div className="h-px w-full bg-border my-2" />
 
-              {/* Sección de Saldo/Crédito dinámica */}
               <div className="flex justify-between items-center">
                 <span className="text-sm font-bold uppercase">
-                  {calculatedIsCredit ? "Crédito a favor:" : "Saldo Pendiente:"}
+                  {calculatedIsCredit ? "Credito a favor:" : "Saldo Pendiente:"}
                 </span>
                 <span
                   className={`text-lg font-black ${
@@ -236,18 +214,17 @@ export function PaymentHistoryModal({
                   }`}
                 >
                   {calculatedIsCredit
-                    ? `+ ${formatCurrency(creditAmount)}`
+                    ? `+ ${formatCurrency(resolvedCreditAmount)}`
                     : calculatedBalance === 0
                       ? "PAGADO"
                       : formatCurrency(calculatedBalance)}
                 </span>
               </div>
 
-              {/* GARANTÍA - Solo visual, no afecta saldos */}
               {guaranteeData && (
-                <div className="mt-4 p-3 rounded-lg border bg-card/50 ">
+                <div className="mt-4 p-3 rounded-lg border bg-card/50">
                   <p className="text-[9px] font-black uppercase mb-1 opacity-70">
-                    Garantía en Resguardo
+                    Garantia en Resguardo
                   </p>
                   <div className="flex text-amber-500 justify-between items-center text-sm font-bold">
                     <span>
@@ -276,7 +253,7 @@ export function PaymentHistoryModal({
                 strokeWidth={2.2}
                 className="text-blue-600"
                 size={22}
-              />{" "}
+              />
               Imprimir Historial
             </Button>
           </div>

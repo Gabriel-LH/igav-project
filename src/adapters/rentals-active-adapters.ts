@@ -1,4 +1,5 @@
 import { BRANCH_MOCKS } from "../mocks/mock.branch";
+import { OPERATIONS_MOCK } from "../mocks/mock.operation";
 import { USER_MOCK } from "../mocks/mock.user";
 import { useAttributeStore } from "../store/useAttributeStore";
 import { Client } from "../types/clients/type.client";
@@ -43,15 +44,44 @@ export const mapRentalToTable = (
   rentalItems: RentalItem[],
   products: Product[],
 ): RentalTableRow[] => {
+  const { colors, sizes } = useAttributeStore.getState();
+  const usersById = new Map(USER_MOCK.map((user) => [user.id, user]));
+  const sellerIdByOperationId = new Map(
+    OPERATIONS_MOCK.map((operation) => [operation.id, operation.sellerId]),
+  );
+
   return rentals.map((rental) => {
     const branch = BRANCH_MOCKS.find((b) => b.id === rental.branchId);
     const customer = customers.find((c) => c.id === rental.customerId);
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);
-    const seller = USER_MOCK[0]; // TODO: Buscar seller real si está disponible
+    const sellerId =
+      (
+        rental as Rental & {
+          sellerId?: string;
+          userId?: string;
+          createdBy?: string;
+        }
+      ).sellerId ||
+      (
+        rental as Rental & {
+          sellerId?: string;
+          userId?: string;
+          createdBy?: string;
+        }
+      ).userId ||
+      sellerIdByOperationId.get(rental.operationId) ||
+      rental.updatedBy ||
+      (
+        rental as Rental & {
+          sellerId?: string;
+          userId?: string;
+          createdBy?: string;
+        }
+      ).createdBy;
+    const seller = (sellerId && usersById.get(sellerId)) || USER_MOCK[0];
 
     const currentItems = rentalItems.filter((r) => r.rentalId === rental.id);
 
-    const { colors, sizes } = useAttributeStore();
     // Enriquecer items
     const itemsWithNames = currentItems.map((item) => {
       const prod = products.find((p) => p.id === item.productId);
@@ -97,7 +127,7 @@ export const mapRentalToTable = (
     return {
       id: rental.id,
       branchName: branch?.name || "Principal",
-      sellerName: seller?.name || "",
+      sellerName: seller?.firstName + " " + seller?.lastName || "---",
       outDate: rental.outDate
         ? new Date(rental.outDate).toLocaleDateString()
         : "---",
