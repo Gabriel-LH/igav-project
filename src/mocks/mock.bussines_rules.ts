@@ -16,6 +16,9 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
   },
   daysInLaundry: 2,
   daysInMaintenance: 1,
+  maxDiscountPercentageAllowed: 0.3,
+  requireAdminAuthForDiscountOver: 0.15,
+  allowStackingDiscounts: false,
   transferRoutes: [
     {
       originBranchId: "branch-001",
@@ -27,5 +30,12 @@ export const BUSINESS_RULES_MOCK: BusinessRules = {
       destinationBranchId: "branch-003",
       estimatedTime: 4 // Entrega interprovincial tarda más
     }
-  ]
+  ],
+  loyalty: {
+    enabled: true,
+    earnRate: 0.1,
+    redemptionValue: 0.01,
+    minPointsToRedeem: 100,
+    expirePointsAfterDays: 365,
+  },
 };

@@ -1,0 +1,258 @@
+Sistema de Descuentos, Promociones y Bundles
+
+Eres un agente de código trabajando en un sistema POS en TypeScript con Zod.
+
+Tu tarea es implementar un sistema profesional de descuentos y bundles sin alterar la arquitectura existente.
+
+🔒 RESTRICCIÓN ABSOLUTA DE MODIFICACIÓN
+
+NO modificar, reestructurar ni refactorizar:
+
+productSchema
+
+inventorySchema
+
+stockSchema
+
+Estructuras base ya existentes
+
+Relaciones entre modelos actuales
+
+Nombres de archivos existentes
+
+NO renombrar campos.
+NO mover archivos.
+NO crear carpetas nuevas innecesarias.
+NO cambiar tipos existentes si no es estrictamente requerido.
+
+Solo modificar lo que se indica explícitamente.
+
+🎯 OBJETIVO
+
+Implementar:
+
+Descuentos individuales
+
+Promociones dinámicas
+
+Bundles estructurados
+
+Reglas de seguridad
+
+Soporte para venta y alquiler
+
+Sin romper compatibilidad con el sistema actual.
+
+1️⃣ MODIFICACIÓN PERMITIDA EN saleItemSchema
+
+SI y SOLO SI los campos no existen, agregar:
+
+listPrice: number
+
+priceAtMoment: number
+
+discountAmount: number
+
+discountReason?: string
+
+promotionId?: string
+
+bundleId?: string
+
+No eliminar nada existente.
+No cambiar tipos actuales.
+Solo extender el schema si falta alguno.
+
+2️⃣ MODIFICACIÓN EN rentalItemSchema
+
+Replicar exactamente los mismos campos financieros que en saleItemSchema.
+
+No alterar lógica de fechas ni penalidades existentes.
+
+3️⃣ CREAR ENTIDAD Promotion (SI NO EXISTE)
+
+Crear archivo:
+
+types/promotion/type.promotion.ts
+
+No modificar otros modelos.
+
+Definir:
+
+id: string
+
+name: string
+
+type: "percentage" | "fixed_amount" | "bundle"
+
+scope: "global" | "category" | "product_specific" | "pack"
+
+value?: number
+
+bundleConfig?:
+
+requiredProductIds: string[]
+
+bundlePrice: number
+
+prorateStrategy: "proportional" | "equal"
+
+isExclusive: boolean (default true)
+
+startDate: Date
+
+endDate?: Date
+
+isActive: boolean
+
+No mezclar Promotion con BusinessRules.
+
+4️⃣ MODIFICACIÓN PERMITIDA EN businessRulesSchema
+
+Solo agregar si no existen:
+
+maxDiscountPercentageAllowed: number
+
+requireAdminAuthForDiscountOver: number
+
+allowStackingDiscounts: boolean
+
+No agregar lógica de promociones aquí.
+BusinessRules es solo seguridad.
+
+5️⃣ DIFERENCIAS OBLIGATORIAS
+
+promotionId:
+
+Representa la regla de marketing aplicada
+
+Se usa para reportes
+
+bundleId:
+
+Representa la instancia específica del pack en esta venta
+
+Se genera con crypto.randomUUID()
+
+Permite múltiples packs iguales en una transacción
+
+Nunca eliminar bundleId.
+Nunca usar promotionId para agrupar visualmente.
+
+6️⃣ MOTOR DE PRICING (IMPLEMENTAR COMO FUNCIÓN AISLADA)
+
+Crear función pura:
+
+applyPricingEngine()
+
+No mezclar con UI.
+No mezclar con base de datos.
+
+Orden obligatorio:
+
+Tomar listPrice
+
+Si acción explícita de bundle → aplicar bundle
+
+Si no es exclusivo → evaluar promociones automáticas
+
+Elegir mejor promoción
+
+Validar stacking con BusinessRules
+
+Validar descuento manual contra límites
+
+Retornar snapshot final
+
+La función debe ser determinística y sin efectos secundarios.
+
+7️⃣ BUNDLES
+
+NO detectar bundles automáticamente por coincidencia de productos.
+
+Debe existir función explícita:
+
+addBundleToCart(promotionId: string)
+
+Proceso:
+
+Obtener bundleConfig
+
+Insertar productos requeridos
+
+Calcular totalList
+
+factor = bundlePrice / totalList
+
+priceAtMoment = listPrice * factor
+
+discountAmount = listPrice - priceAtMoment
+
+Asignar promotionId
+
+Generar bundleId único por pack
+
+Permitir múltiples bundles iguales con distinto bundleId.
+
+8️⃣ REGLAS DE EXCLUSIVIDAD
+
+Si promotion.isExclusive === true:
+
+Bloquear promociones adicionales
+
+Bloquear descuento manual
+
+Ignorar promociones globales
+
+Si allowStackingDiscounts === false:
+
+Aplicar únicamente el mejor descuento
+
+Nunca aplicar stacking si está deshabilitado.
+
+9️⃣ RESTRICCIONES DE SEGURIDAD
+
+No:
+
+Modificar precios base
+
+Aplicar descuentos múltiples sin validación
+
+Alterar datos históricos
+
+Crear lógica oculta dentro de modelos
+
+Introducir dependencias innecesarias
+
+Cambiar estructura de base de datos existente
+
+🔟 PRINCIPIO DE MODIFICACIÓN MÍNIMA
+
+Antes de modificar cualquier archivo:
+
+Verificar si el campo ya existe.
+
+Si existe, no modificarlo.
+
+Si no existe, extender sin romper compatibilidad.
+
+No eliminar código previo.
+
+🧠 DEFINICIÓN FINAL
+
+Implementar:
+
+Mixed Bundling con prorrateo proporcional y exclusividad configurable.
+
+Mantener separación estricta:
+
+Product → Precio base inmutable
+Promotion → Marketing dinámico
+BusinessRules → Seguridad
+Pricing Engine → Cálculo aislado
+SaleItem → Snapshot financiero
+bundleId → Agrupación transaccional
+
+No improvisar arquitectura.
+No reestructurar proyecto.
+Modificar solo lo estrictamente necesario.

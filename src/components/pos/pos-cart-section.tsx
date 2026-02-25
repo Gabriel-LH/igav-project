@@ -11,12 +11,14 @@ import { PosCheckoutModal } from "./modals/PosCheckoutModal";
 import { PosReservationModal } from "./modals/PosReservationModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ShoppingCart02Icon, Calendar02Icon } from "@hugeicons/core-free-icons";
-import { addDays, format, differenceInDays } from "date-fns";
+import { addDays, differenceInDays } from "date-fns";
 import { DateTimeContainer } from "../home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "../home/ui/direct-transaction/TimePicker";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { toast } from "sonner";
+import { USER_MOCK } from "@/src/mocks/mock.user";
+import { PosBundlesPanel } from "./ui/PosBundlePanel";
 
 export function PosCartSection() {
   const {
@@ -27,6 +29,7 @@ export function PosCartSection() {
     setGlobalDates,
     globalRentalTimes,
     setGlobalTimes,
+    clearBundleAssignments,
   } = useCartStore();
 
   const total = getTotal();
@@ -34,7 +37,6 @@ export function PosCartSection() {
   // ─── MODALES ───
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [reservationOpen, setReservationOpen] = React.useState(false);
-
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
@@ -94,6 +96,18 @@ export function PosCartSection() {
     dateRange.from && dateRange.to
       ? differenceInDays(dateRange.to, dateRange.from)
       : 0;
+  const branchId = USER_MOCK[0].branchId;
+
+  const getMultiplier = (
+    operationType: "venta" | "alquiler",
+    rentUnit?: string,
+  ) => {
+    if (operationType !== "alquiler") return 1;
+    if (rentUnit === "evento") return 1;
+    return Math.max(days, 1);
+  };
+
+  const hasAppliedBundles = items.some((i) => i.bundleId);
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -122,13 +136,6 @@ export function PosCartSection() {
       {/* 2. FECHAS GLOBALES (Solo si hay alquileres) */}
       {hasRentals && (
         <div className="p-3  border-b space-y-2">
-          <div className="flex items-center gap-1.5 text-blue-700 mb-1">
-            <HugeiconsIcon icon={Calendar02Icon} className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-wider">
-              Período de Alquiler ({days} {days === 1 ? "día" : "días"})
-            </span>
-          </div>
-
           <div className="grid grid-cols-2 gap-2">
             <div className="relative opacity-60 pointer-events-none grayscale">
               {/* Le ponemos pointer-events-none para que no se pueda clickear */}
@@ -147,7 +154,7 @@ export function PosCartSection() {
 
             <div className="relative">
               <DateTimeContainer
-                label="Fin"
+                label={`Fin (${days} ${days === 1 ? "día" : "días"})`}
                 date={dateRange.to}
                 time={returnTime}
                 onDateClick={() => returnDateRef.current?.click()}
@@ -209,20 +216,52 @@ export function PosCartSection() {
       </div>
 
       {/* 4. FOOTER DE TOTALES Y ACCIONES */}
-      <div className="p-4 bg-background border-t shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] z-10">
-        <div className="space-y-1 mb-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
-            <span>
-              {formatCurrency(
-                items.reduce(
-                  (acc, curr) =>
-                    acc + (curr.listPrice || curr.unitPrice) * curr.quantity,
-                  0,
-                ),
+      <div className="px-1 py-2 bg-background border-t shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] z-10">
+        {items.length > 0 && (
+          <div className="pb-2">
+            <div className="flex w-full justify-center items-center">
+              {hasAppliedBundles ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-fit px-20"
+                  onClick={() => {
+                    clearBundleAssignments();
+                    toast.info("Pack removido. Carrito recalculado.");
+                  }}
+                >
+                  Quitar pack
+                </Button>
+              ) : (
+                <div className="flex flex-wrap w-full gap-1">
+                  {!hasAppliedBundles && <PosBundlesPanel />}
+                </div>
               )}
-            </span>
+            </div>
           </div>
+        )}
+
+        <div className="space-y-1 mb-4">
+          {hasAppliedBundles && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span>
+                {formatCurrency(
+                  items.reduce(
+                    (acc, curr) =>
+                      acc +
+                      (curr.listPrice || curr.unitPrice) *
+                        curr.quantity *
+                        getMultiplier(
+                          curr.operationType,
+                          curr.product.rent_unit,
+                        ),
+                    0,
+                  ),
+                )}
+              </span>
+            </div>
+          )}
           {items.some((i) => (i.discountAmount || 0) > 0) && (
             <div className="flex justify-between text-sm text-emerald-600 font-bold">
               <span>Descuentos</span>
@@ -231,17 +270,22 @@ export function PosCartSection() {
                 {formatCurrency(
                   items.reduce(
                     (acc, curr) =>
-                      acc + (curr.discountAmount || 0) * curr.quantity,
+                      acc +
+                      (curr.discountAmount || 0) *
+                        curr.quantity *
+                        getMultiplier(
+                          curr.operationType,
+                          curr.product.rent_unit,
+                        ),
                     0,
                   ),
                 )}
               </span>
             </div>
           )}
-          <Separator className="my-2" />
           <div className="flex justify-between items-end">
-            <span className="text-lg font-bold">Total a Pagar</span>
-            <span className="text-2xl font-black text-emerald-600 tracking-tight">
+            <span className="text-lg font-semibold">Total a Pagar</span>
+            <span className="text-2xl font-semibold text-green-600 tracking-tight">
               {formatCurrency(total)}
             </span>
           </div>
@@ -250,7 +294,7 @@ export function PosCartSection() {
         {/* --- BOTONES DE ACCIÓN --- */}
         <div className="grid grid-cols-4 gap-2 h-12">
           <Button
-            className="col-span-1 h-full bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
+            className="col-span-1 h-10 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
             onClick={() => setReservationOpen(true)}
             disabled={items.length === 0}
           >
@@ -259,7 +303,7 @@ export function PosCartSection() {
           </Button>
 
           <Button
-            className={`col-span-3 h-full text-lg text-white font-bold shadow-lg ${hasRentals ? " text-xs bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"}`}
+            className={`col-span-3 h-10 text-lg text-white font-bold shadow-lg ${hasRentals ? " text-xs bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"}`}
             onClick={() => setCheckoutOpen(true)}
             disabled={items.length === 0 || text.length > 0}
           >

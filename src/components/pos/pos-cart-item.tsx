@@ -99,15 +99,11 @@ export function PosCartItem({ item }: PosCartItemProps) {
 
   return (
     <div
-      className={`flex flex-col gap-2 p-3 border rounded-lg shadow-sm transition-all group ${
-        item.bundleId
-          ? "border-blue-200 bg-blue-50/10"
-          : "hover:border-slate-900"
-      }`}
+      className={`flex flex-col gap-2 p-3 border rounded-lg shadow-sm transition-all group ${"hover:border-slate-900"}`}
     >
       {item.bundleId && (
-        <div className="flex items-center gap-1 -mt-1 -mx-3 px-3 py-1 bg-blue-100/50 rounded-t-lg border-b border-blue-200 mb-2">
-          <span className="text-[8px] font-black uppercase text-blue-600 tracking-widest">
+        <div className="flex items-center gap-1 -mt-2 -mx-3 px-3 py-1 border-b">
+          <span className="text-[8px] font-semibold uppercase text-blue-300 tracking-widest">
             Item de Pack
           </span>
         </div>
@@ -266,17 +262,19 @@ export function PosCartItem({ item }: PosCartItemProps) {
             ) : (
               <div className="flex flex-col">
                 {item.listPrice && item.listPrice > item.unitPrice && (
-                  <span className="line-through opacity-50 text-[9px] text-slate-400">
+                  <span className="line-through  text-[9px]">
                     {formatCurrency(item.listPrice)}
                   </span>
                 )}
-                <span>{formatCurrency(item.unitPrice)} c/u</span>
+                <span className="text-slate-100">
+                  {formatCurrency(item.unitPrice)} c/u
+                </span>
               </div>
             )}
           </div>
 
           {item.discountAmount && item.discountAmount > 0 ? (
-            <div className="text-[9px] text-emerald-600 font-bold mt-0.5 animate-pulse">
+            <div className="text-[9px] text-green-300 font-bold mt-0.5 animate-pulse">
               Ahorras {formatCurrency(item.discountAmount * item.quantity)}
               {item.discountReason && (
                 <span className="block italic opacity-80 font-medium">
@@ -286,7 +284,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
             </div>
           ) : null}
 
-          <div className="text-sm font-black text-slate-700 mt-1">
+          <div className="text-sm font-black text-slate-400 mt-1">
             {formatCurrency(item.subtotal)}
           </div>
         </div>

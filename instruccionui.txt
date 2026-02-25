@@ -1,0 +1,224 @@
+Los sistemas grandes NO dependen de matching implícito al momento del pago.
+Lo resuelven antes o fuerzan una acción explícita.
+
+Te explico cómo lo manejan realmente.
+
+🔵 1️⃣ Cómo lo hacen los sistemas grandes (retail real)
+
+En retail serio (Zara, H&M, Falabella, etc.) hay tres estrategias comunes:
+
+✅ Estrategia A — Botón explícito de bundle (la más usada en POS físico)
+
+El vendedor no escanea productos esperando que el sistema “adivine”.
+
+Hace:
+
+Click en “Agregar Pack Terno”
+
+El sistema pide seleccionar:
+
+Saco (escanea)
+
+Pantalón (escanea)
+
+Camisa (escanea)
+
+Se agrupan inmediatamente
+
+Se asigna bundleId
+
+Se bloquea como pack
+
+No hay matching automático ambiguo.
+
+👉 El POS no “detecta”, el operador “declara”.
+
+Esto elimina el 80% de la complejidad.
+
+✅ Estrategia B — SKU de campaña (solo en promociones simples)
+
+Ejemplo:
+
+“Compra 2 y paga 1”
+
+Aquí sí se hace matching automático porque:
+
+Son productos homogéneos
+
+No requieren estructura rígida
+
+No dependen de combinación específica
+
+Pero packs estructurados (terno completo, combo formal, kit de 5 piezas) casi nunca se manejan por detección automática en POS físico.
+
+⚠️ Estrategia C — Matching automático (más común en e-commerce)
+
+En web sí se hace matching automático porque:
+
+No hay operador humano
+
+El cliente arma su carrito
+
+El motor promocional analiza combinaciones
+
+Pero incluso en e-commerce grande, el motor:
+
+No corre matching cada vez que pagas
+
+Corre matching incremental cada vez que se modifica el carrito
+
+Marca internamente qué items fueron “consumidos” por un bundle
+
+🔴 Ahora vamos a tu caso específico
+
+“El cliente ya armó su pack y llega al POS, se escanea todo y recién ahí se hace match.”
+
+Sí, ahí es donde se vuelve complejo si lo haces automático.
+
+Porque necesitas:
+
+Detectar coincidencias
+
+Calcular cuántos packs completos hay
+
+Separar productos en grupos
+
+Evitar que un mismo producto cuente para dos packs
+
+Recalcular si quitan uno
+
+Eso ya es un pequeño motor combinatorio.
+
+🧠 Cómo lo resuelven correctamente
+🔷 En POS físico profesional
+
+NO esperan al momento del pago.
+
+El flujo real es:
+
+Escaneo → motor promocional corre → precio se ajusta en tiempo real.
+
+No se espera al “checkout final”.
+
+Cada vez que entra un producto:
+
+onItemAddedToCart() {
+   recalculatePromotions()
+}
+
+Nunca se deja para el final.
+
+🔷 Cómo debería hacerlo tu sistema
+
+Tienes 2 opciones sólidas:
+
+🟢 Opción Recomendada (POS físico)
+
+NO hacer matching automático.
+
+Crear acción explícita:
+
+“Aplicar Pack Terno”
+
+Flujo:
+
+Vendedor escanea productos normalmente.
+
+Click en “Aplicar Pack”.
+
+El sistema valida:
+
+¿Están los 4 productos?
+
+¿Hay suficientes cantidades?
+
+Si sí:
+
+Se asigna bundleId
+
+Se aplica descuento
+
+Si no:
+
+Mensaje: “Faltan productos para completar pack”
+
+Es simple y controlado.
+
+🟡 Opción Avanzada (Matching automático controlado)
+
+Si quieres hacerlo automático:
+
+Debes implementar algoritmo de consumo.
+
+Conceptualmente:
+
+1. Agrupar carrito por productId
+2. Calcular número máximo de packs posibles
+3. Iterar N veces (por cada pack posible):
+   - Tomar 1 unidad de cada producto requerido
+   - Marcar esas unidades como consumidas
+   - Crear bundleId nuevo
+4. Lo que sobra queda como venta normal
+
+Clave:
+Los items deben tener estado temporal interno tipo:
+
+isConsumedByBundle: boolean
+
+Pero solo en memoria del motor, no en base de datos.
+
+🔥 Aquí está el verdadero problema
+
+Si haces matching automático:
+
+¿Qué pasa si quitan un producto?
+
+Debes:
+
+Desarmar bundles afectados
+
+Recalcular
+
+Reasignar bundleId
+
+Recalcular descuentos
+
+Eso complica la UX.
+🎯 Por eso en POS físicos reales:
+
+La mayoría usa:
+
+✔ Acción explícita
+✔ Validación inmediata
+✔ Agrupación controlada
+✔ Sin heurísticas mágicas
+
+📌 Respuesta directa a tu duda
+
+Sí, el sistema debe hacer match solo cuando estén todos los productos.
+
+Pero en POS físico profesional:
+
+No se deja al “momento del pago”
+
+Se resuelve en el momento que se completa la combinación
+
+O se fuerza con botón explícito
+
+🧩 Mi recomendación técnica para tu arquitectura
+
+Para tu sistema (que ya tiene bundleId y promotionId):
+
+Implementa:
+
+Matching automático solo si quieres UX avanzada.
+
+Pero agrega botón “Aplicar Pack”.
+
+Haz que el botón sea la forma oficial.
+
+El matching automático solo sugiera:
+
+“Se detectó un pack posible. ¿Aplicar?”
+
+Eso combina lo mejor de ambos mundos.

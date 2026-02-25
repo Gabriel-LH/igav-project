@@ -37,6 +37,10 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
+import {
+  reserveBundledItems,
+  reserveStockUsingInventory,
+} from "@/src/services/bundleService";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -122,6 +126,10 @@ export function PosCheckoutModal({
   );
 
   const hasRentals = alquilerItems.length > 0;
+  const getMultiplier = (item: CartItem) =>
+    item.operationType === "alquiler" && item.product.rent_unit !== "evento"
+      ? Math.max(differenceInDays(dateRange.to, dateRange.from), 1)
+      : 1;
 
   // ─── CÁLCULOS DE PRECIO ───
   const totalVentas = useMemo(
@@ -136,11 +144,15 @@ export function PosCheckoutModal({
 
   const IGV_RATE = BUSINESS_RULES_MOCK.taxRate; // 0.18
 
-  const subtotalBruto = totalVentas + totalAlquileres;
-
-  const totalDiscount = pointsDiscount; // aquí puedes sumar descuentos manuales también
-
-  const totalBrutoConIGV = subtotalBruto - totalDiscount;
+  const subtotalBruto = items.reduce(
+    (acc, item) =>
+      acc + (item.listPrice ?? item.unitPrice) * item.quantity * getMultiplier(item),
+    0,
+  );
+  const subtotalConPromos = totalVentas + totalAlquileres;
+  const discountFromItems = Math.max(subtotalBruto - subtotalConPromos, 0);
+  const totalDiscount = discountFromItems + pointsDiscount;
+  const totalBrutoConIGV = Math.max(subtotalConPromos - pointsDiscount, 0);
 
   // Base imponible (sin IGV)
   const subtotalSinIGV = totalBrutoConIGV / (1 + IGV_RATE);
@@ -204,19 +216,6 @@ export function PosCheckoutModal({
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
 
-    const getUnitPrice = (cartItem: CartItem, opType: "venta" | "alquiler") => {
-      if (opType === "venta") {
-        if (!cartItem.product.price_sell)
-          throw new Error("Producto sin precio de venta");
-        return cartItem.product.price_sell;
-      }
-
-      if (!cartItem.product.price_rent)
-        throw new Error("Producto sin precio de alquiler");
-
-      return cartItem.product.price_rent;
-    };
-
     const baseData = {
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
@@ -229,6 +228,16 @@ export function PosCheckoutModal({
 
     setIsProcessing(true);
     try {
+      if (items.some((item) => item.bundleId)) {
+        await reserveBundledItems(
+          items,
+          currentBranchId,
+          dateRange.from,
+          dateRange.to,
+          reserveStockUsingInventory,
+        );
+      }
+
       const { stockLots } = useInventoryStore.getState();
 
       const prepareItems = (
@@ -238,7 +247,12 @@ export function PosCheckoutModal({
         const results: SaleDTO["items"] = [];
 
         cartItems.forEach((cartItem) => {
-          const unitPrice = getUnitPrice(cartItem, opType);
+          const unitPrice = cartItem.unitPrice;
+          const listPrice = cartItem.listPrice ?? unitPrice;
+          const discountAmount = cartItem.discountAmount ?? 0;
+          const discountReason = cartItem.discountReason;
+          const promotionId = cartItem.appliedPromotionId;
+          const bundleId = cartItem.bundleId;
 
           if (cartItem.product.is_serial) {
             cartItem.selectedCodes.forEach((code: string) => {
@@ -250,7 +264,11 @@ export function PosCheckoutModal({
                 sizeId: cartItem.selectedSizeId ?? "",
                 colorId: cartItem.selectedColorId ?? "",
                 priceAtMoment: unitPrice,
-                listPrice: unitPrice,
+                listPrice,
+                discountAmount,
+                discountReason,
+                promotionId,
+                bundleId,
               });
             });
 
@@ -276,12 +294,16 @@ export function PosCheckoutModal({
             results.push({
               productId: cartItem.product.id,
               productName: cartItem.product.name,
-              stockId: lot.variantCode,
+              stockId: lot.id,
               quantity: take,
               sizeId: cartItem.selectedSizeId ?? "",
               colorId: cartItem.selectedColorId ?? "",
               priceAtMoment: unitPrice,
-              listPrice: unitPrice,
+              listPrice,
+              discountAmount,
+              discountReason,
+              promotionId,
+              bundleId,
             });
 
             remaining -= take;

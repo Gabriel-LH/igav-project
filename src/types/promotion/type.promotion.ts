@@ -2,32 +2,30 @@ import { z } from "zod";
 
 export const promotionSchema = z.object({
   id: z.string(),
-  name: z.string(), // Ej: "Campaña Día del Padre", "Liquidación Verano"
-  code: z.string().optional(), // Ej: "PADRE2026" (si quieres usar cupones)
-
-  // ¿De qué tipo es el descuento?
-  type: z.enum(["percentage", "fixed_amount"]),
-  value: z.number().min(0), // Ej: 10 (para 10%) o 50 (para S/ 50.00)
-
-  // ¿A quién aplica? (Scope)
+  name: z.string(),
+  type: z.enum(["percentage", "fixed_amount", "bundle"]),
   scope: z.enum(["global", "category", "product_specific", "pack"]),
-
-  // IDs a los que aplica (Si es category -> IDs de categorías, Si es product -> IDs de productos)
+  value: z.number().min(0).optional(),
+  appliesTo: z.array(z.enum(["venta", "alquiler"])),
+  bundleConfig: z
+    .object({
+      requiredProductIds: z.array(z.string()),
+      bundlePrice: z.number().min(0),
+      prorateStrategy: z.enum(["proportional", "equal"]),
+    })
+    .optional(),
+  isExclusive: z.boolean().default(true),
+  // Compatibilidad con implementación previa
+  code: z.string().optional(),
   targetIds: z.array(z.string()).optional(),
-
-  // Vigencia
   startDate: z.date(),
-  endDate: z.date().optional(), // Si es null, es indefinido
-
-  // Restricciones
+  endDate: z.date().optional(),
   isActive: z.boolean().default(true),
-  branchIds: z.array(z.string()).optional(), // ¿Aplica solo en algunas tiendas?
-  minPurchaseAmount: z.number().optional(), // "Descuento válido por compras mayores a S/ 200"
-
+  branchIds: z.array(z.string()).optional(),
+  minPurchaseAmount: z.number().optional(),
   maxUses: z.number().int().optional(),
   usedCount: z.number().int().default(0),
   combinable: z.boolean().default(true),
-
   createdAt: z.date(),
   createdBy: z.string().optional(),
   updatedAt: z.date().optional(),

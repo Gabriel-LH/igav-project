@@ -37,6 +37,10 @@ import {
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
+import {
+  reserveBundledItems,
+  reserveStockUsingInventory,
+} from "@/src/services/bundleService";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -125,6 +129,15 @@ export function PosReservationModal({
     () => ventaItems.reduce((sum, i) => sum + i.subtotal, 0),
     [ventaItems],
   );
+  const totalVentasLista = useMemo(
+    () =>
+      ventaItems.reduce(
+        (sum, item) =>
+          sum + (item.listPrice ?? item.unitPrice) * item.quantity,
+        0,
+      ),
+    [ventaItems],
+  );
 
   const totalAlquileres = useMemo(() => {
     if (!hasRentals) return 0;
@@ -134,7 +147,7 @@ export function PosReservationModal({
             Math.ceil(
               (dateRange.to.getTime() - dateRange.from.getTime()) /
                 (1000 * 60 * 60 * 24),
-            ) + 1,
+            ),
             1,
           )
         : 1;
@@ -143,8 +156,31 @@ export function PosReservationModal({
       return sum + item.unitPrice * item.quantity * (isEvent ? 1 : days);
     }, 0);
   }, [alquilerItems, dateRange, hasRentals]);
+  const totalAlquileresLista = useMemo(() => {
+    if (!hasRentals) return 0;
+    const days =
+      dateRange?.from && dateRange?.to
+        ? Math.max(
+            Math.ceil(
+              (dateRange.to.getTime() - dateRange.from.getTime()) /
+                (1000 * 60 * 60 * 24),
+            ),
+            1,
+          )
+        : 1;
+    return alquilerItems.reduce((sum, item) => {
+      const isEvent = item.product.rent_unit === "evento";
+      return (
+        sum +
+        (item.listPrice ?? item.unitPrice) *
+          item.quantity *
+          (isEvent ? 1 : days)
+      );
+    }, 0);
+  }, [alquilerItems, dateRange, hasRentals]);
 
   const totalOperacion = totalVentas + totalAlquileres;
+  const totalOperacionLista = totalVentasLista + totalAlquileresLista;
   const pendingAmount = Math.max(totalOperacion - Number(downPayment || 0), 0);
 
   const operationType = hasRentals ? "alquiler" : "venta";
@@ -179,6 +215,11 @@ export function PosReservationModal({
               sizeId: stockFound?.sizeId || cartItem.selectedSizeId || "---",
               colorId: stockFound?.colorId || cartItem.selectedColorId || "---",
               priceAtMoment: cartItem.unitPrice,
+              listPrice: cartItem.listPrice ?? cartItem.unitPrice,
+              discountAmount: cartItem.discountAmount ?? 0,
+              discountReason: cartItem.discountReason,
+              promotionId: cartItem.appliedPromotionId,
+              bundleId: cartItem.bundleId,
             });
           });
         } else {
@@ -206,6 +247,11 @@ export function PosReservationModal({
               sizeId: lot.sizeId || cartItem.selectedSizeId || "---",
               colorId: lot.colorId || cartItem.selectedColorId || "---",
               priceAtMoment: cartItem.unitPrice,
+              listPrice: cartItem.listPrice ?? cartItem.unitPrice,
+              discountAmount: cartItem.discountAmount ?? 0,
+              discountReason: cartItem.discountReason,
+              promotionId: cartItem.appliedPromotionId,
+              bundleId: cartItem.bundleId,
             });
             remaining -= take;
           }
@@ -227,6 +273,11 @@ export function PosReservationModal({
             sizeId: cartItem.selectedSizeId || "---",
             colorId: cartItem.selectedColorId || "---",
             priceAtMoment: cartItem.unitPrice,
+            listPrice: cartItem.listPrice ?? cartItem.unitPrice,
+            discountAmount: cartItem.discountAmount ?? 0,
+            discountReason: cartItem.discountReason,
+            promotionId: cartItem.appliedPromotionId,
+            bundleId: cartItem.bundleId,
           });
         }
       }
@@ -236,7 +287,7 @@ export function PosReservationModal({
   };
 
   // ─── CONFIRMAR ───
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
     if (items.length === 0) return toast.error("El carrito está vacío");
     if (!dateRange?.from) return toast.error("Seleccione una fecha");
@@ -248,6 +299,15 @@ export function PosReservationModal({
     }
 
     const totalDP = Number(downPayment);
+    if (items.some((item) => item.bundleId)) {
+      await reserveBundledItems(
+        items,
+        currentBranchId,
+        dateRange.from,
+        dateRange.to,
+        reserveStockUsingInventory,
+      );
+    }
 
     if (hasSales && hasRentals) {
       const saleShare = totalVentas / totalOperacion;
@@ -265,8 +325,8 @@ export function PosReservationModal({
         status: "confirmada",
         notes: notes + " (Venta de operacion mixta)",
         financials: {
-          subtotal: totalVentas,
-          totalDiscount: 0,
+          subtotal: totalVentasLista,
+          totalDiscount: Math.max(totalVentasLista - totalVentas, 0),
           taxAmount: 0,
           totalAmount: totalVentas,
           receivedAmount: saleDP,
@@ -297,8 +357,8 @@ export function PosReservationModal({
         status: "confirmada",
         notes: notes + " (Alquiler de operacion mixta)",
         financials: {
-          subtotal: totalAlquileres,
-          totalDiscount: 0,
+          subtotal: totalAlquileresLista,
+          totalDiscount: Math.max(totalAlquileresLista - totalAlquileres, 0),
           taxAmount: 0,
           totalAmount: totalAlquileres,
           receivedAmount: rentalDP,
@@ -340,8 +400,8 @@ export function PosReservationModal({
         status: "confirmada",
         notes,
         financials: {
-          subtotal: totalOperacion,
-          totalDiscount: 0,
+          subtotal: totalOperacionLista,
+          totalDiscount: Math.max(totalOperacionLista - totalOperacion, 0),
           taxAmount: 0,
           totalAmount: totalOperacion,
           receivedAmount: totalDP,

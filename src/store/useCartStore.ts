@@ -2,6 +2,18 @@ import { create } from "zustand";
 import { Product } from "@/src/types/product/type.product";
 import { CartItem, CartOperationType } from "@/src/types/cart/type.cart";
 import { differenceInDays } from "date-fns";
+import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { USER_MOCK } from "@/src/mocks/mock.user";
+import {
+  applyBundleToCart,
+  BundleDefinition,
+  clearBundleAssignments,
+  createBundleDefinitionsFromPromotions,
+  detectBundleEligibility,
+} from "@/src/services/bundleService";
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
@@ -9,29 +21,30 @@ const calculateSubtotal = (
     product: Product;
     unitPrice: number;
     quantity: number;
-    discountAmount?: number;
   },
   dates: { from: Date; to: Date } | null,
   opType: CartOperationType,
 ) => {
-  const discount = item.discountAmount ?? 0;
+  // 1. Si es Venta -> Precio final x Cantidad
+  if (opType === "venta") return item.unitPrice * item.quantity;
 
-  // 1. Si es Venta -> (Precio - Descuento) x Cantidad
-  if (opType === "venta") return (item.unitPrice - discount) * item.quantity;
-
-  // 2. Si es Alquiler -> (Precio - Descuento) x Cantidad x Días
+  // 2. Si es Alquiler -> Precio final x Cantidad x Días
   const isEvent = item.product.rent_unit === "evento";
 
   const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
 
   const multiplier = isEvent ? 1 : days;
 
-  return (item.unitPrice - discount) * item.quantity * multiplier;
+  return item.unitPrice * item.quantity * multiplier;
 };
+
+const getProductListPrice = (product: Product, type: CartOperationType) =>
+  type === "venta" ? (product.price_sell ?? 0) : (product.price_rent ?? 0);
 
 interface CartState {
   items: CartItem[];
   customerId: string | null;
+  activeBundles: string[];
 
   // 📅 FECHAS GLOBALES
   globalRentalDates: { from: Date; to: Date } | null;
@@ -49,7 +62,21 @@ interface CartState {
       discountReason?: string;
       bundleId?: string;
       appliedPromotionId?: string;
+      priceAtMoment?: number;
     },
+  ) => void;
+  addBundleToCart: (promotionId: string) => void;
+  applyBundleDefinition: (
+    bundleDefinition: BundleDefinition,
+    branchId: string,
+    startDate: Date,
+    endDate: Date,
+  ) => ReturnType<typeof detectBundleEligibility>;
+  clearBundleAssignments: () => void;
+  reevaluateActiveBundle: (
+    branchId: string,
+    startDate: Date,
+    endDate: Date,
   ) => void;
 
   removeItem: (cartId: string) => void;
@@ -66,6 +93,7 @@ interface CartState {
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   customerId: null,
+  activeBundles: [],
   globalRentalDates: null, // Inicialmente null
   globalRentalTimes: null,
 
@@ -78,10 +106,35 @@ export const useCartStore = create<CartState>((set, get) => ({
     customData,
   ) => {
     set((state) => {
-      const unitPrice =
-        type === "venta"
-          ? (product.price_sell ?? 0)
-          : (product.price_rent ?? 0);
+      const listPrice =
+        customData?.listPrice ?? getProductListPrice(product, type);
+      const isExplicitBundle = Boolean(
+        customData?.bundleId && customData?.appliedPromotionId,
+      );
+      const pricing = isExplicitBundle
+        ? applyPricingEngine({
+            product,
+            operationType: type,
+            listPrice,
+            promotions: [],
+            businessRules: BUSINESS_RULES_MOCK,
+            explicitBundle: {
+              promotionId: customData!.appliedPromotionId!,
+              bundleId: customData!.bundleId!,
+              priceAtMoment: customData?.priceAtMoment ?? listPrice,
+            },
+            manualDiscountReason: customData?.discountReason,
+          })
+        : {
+            listPrice,
+            priceAtMoment: listPrice,
+            discountAmount: 0,
+            discountReason: undefined,
+            promotionId: undefined,
+            bundleId: undefined,
+            requiresAdminAuth: false,
+          };
+      const finalUnitPrice = pricing.priceAtMoment;
 
       // 1. Buscar si ya existe el ítem (mismo producto + variante + tipo)
       const existingIndex = state.items.findIndex((i) => {
@@ -89,8 +142,20 @@ export const useCartStore = create<CartState>((set, get) => ({
         const sameType = i.operationType === type;
         const sameSize = i.selectedSizeId === variant?.size;
         const sameColor = i.selectedColorId === variant?.color;
+        const sameBundle = (i.bundleId ?? null) === (pricing.bundleId ?? null);
+        const samePromotion =
+          (i.appliedPromotionId ?? null) === (pricing.promotionId ?? null);
+        const sameUnitPrice = i.unitPrice === finalUnitPrice;
 
-        return sameProduct && sameType && sameSize && sameColor;
+        return (
+          sameProduct &&
+          sameType &&
+          sameSize &&
+          sameColor &&
+          sameBundle &&
+          samePromotion &&
+          sameUnitPrice
+        );
       });
 
       // A. SI YA EXISTE -> ACTUALIZAR
@@ -138,18 +203,17 @@ export const useCartStore = create<CartState>((set, get) => ({
         product,
         operationType: type,
         quantity: 1,
-        unitPrice,
-        listPrice: customData?.listPrice || unitPrice,
-        discountAmount: customData?.discountAmount || 0,
-        discountReason: customData?.discountReason,
-        bundleId: customData?.bundleId,
-        appliedPromotionId: customData?.appliedPromotionId,
+        unitPrice: finalUnitPrice,
+        listPrice: pricing.listPrice,
+        discountAmount: pricing.discountAmount,
+        discountReason: pricing.discountReason,
+        bundleId: pricing.bundleId,
+        appliedPromotionId: pricing.promotionId,
         subtotal: calculateSubtotal(
           {
             product,
-            unitPrice,
+            unitPrice: finalUnitPrice,
             quantity: 1,
-            discountAmount: customData?.discountAmount,
           },
           state.globalRentalDates,
           type,
@@ -163,6 +227,176 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
+  addBundleToCart: (promotionId) => {
+    const promotion = PROMOTIONS_MOCK.find((p) => p.id === promotionId);
+    if (!promotion || promotion.type !== "bundle" || !promotion.bundleConfig) {
+      return;
+    }
+
+    const cartOperationTypes = Array.from(
+      new Set(get().items.map((i) => i.operationType)),
+    );
+
+    const operationType = cartOperationTypes.find((type) =>
+      promotion.appliesTo.includes(type),
+    );
+
+    if (!operationType) return;
+    const bundleId = crypto.randomUUID();
+    const { products, inventoryItems, stockLots } =
+      useInventoryStore.getState();
+    const currentBranchId = USER_MOCK[0].branchId;
+    const requiredProducts = promotion.bundleConfig.requiredProductIds
+      .map((id) => products.find((product) => product.id === id))
+      .filter((p): p is Product => Boolean(p));
+
+    const listPrices = requiredProducts.map((product) =>
+      getProductListPrice(product, operationType),
+    );
+    const totalList = listPrices.reduce((sum, value) => sum + value, 0);
+    if (requiredProducts.length === 0 || totalList <= 0) return;
+
+    const normalizedBundlePrice = Math.max(
+      0,
+      promotion.bundleConfig.bundlePrice,
+    );
+
+    requiredProducts.forEach((product, index) => {
+      if (!promotion.appliesTo?.length) return;
+
+      const operationType = promotion.appliesTo.find((type) =>
+        get().items.some((item) => item.operationType === type),
+      );
+
+      if (!operationType) return;
+      const source = product.is_serial ? inventoryItems : stockLots;
+      const candidates = source.filter((item) => {
+        const forOperation =
+          operationType === "venta" ? item.isForSale : item.isForRent;
+        return (
+          item.productId === product.id &&
+          item.branchId === currentBranchId &&
+          item.status === "disponible" &&
+          forOperation
+        );
+      });
+
+      if (candidates.length === 0) return;
+
+      const firstCandidate = candidates[0];
+      const maxQuantity = product.is_serial
+        ? candidates.length
+        : (candidates as Array<{ quantity: number }>).reduce(
+            (sum, lot) => sum + lot.quantity,
+            0,
+          );
+      const itemList = listPrices[index];
+      const factor = normalizedBundlePrice / totalList;
+      const proratedPrice =
+        promotion.bundleConfig?.prorateStrategy === "equal"
+          ? normalizedBundlePrice / requiredProducts.length
+          : itemList * factor;
+
+      const discountAmount = Math.max(0, itemList - proratedPrice);
+
+      get().addItem(
+        product,
+        operationType,
+        product.is_serial ? firstCandidate.id : undefined,
+        maxQuantity,
+        {
+          size: firstCandidate.sizeId,
+          color: firstCandidate.colorId,
+        },
+        {
+          listPrice: itemList,
+          priceAtMoment: proratedPrice,
+          discountAmount,
+          discountReason: promotion.name,
+          bundleId,
+          appliedPromotionId: promotion.id,
+        },
+      );
+    });
+  },
+
+  applyBundleDefinition: (bundleDefinition, branchId, startDate, endDate) => {
+    const { cart, eligibility } = applyBundleToCart(
+      get().items,
+      bundleDefinition,
+      branchId,
+      startDate,
+      endDate,
+    );
+
+    set((state) => {
+      if (!eligibility.eligible) {
+        return { items: cart };
+      }
+
+      const alreadyActive = state.activeBundles.includes(bundleDefinition.id);
+
+      return {
+        items: cart,
+        activeBundles: alreadyActive
+          ? state.activeBundles
+          : [...state.activeBundles, bundleDefinition.id],
+      };
+    });
+
+    return eligibility;
+  },
+
+  clearBundleAssignments: () => {
+    const dates = get().globalRentalDates;
+    if (!dates) {
+      set((state) => ({
+        activeBundles: [],
+        items: state.items.map((item) => ({
+          ...item,
+          bundleId: undefined,
+        })),
+      }));
+      return;
+    }
+
+    const cart = clearBundleAssignments(get().items, dates.from, dates.to);
+
+    set({
+      items: cart,
+      activeBundles: [],
+    });
+  },
+
+  reevaluateActiveBundle: (branchId, startDate, endDate) => {
+    const activeBundles = get().activeBundles;
+    if (!activeBundles.length) return;
+
+    let updatedCart: CartItem[] = get().items.map((item) => {
+      const { bundleId, ...rest } = item;
+      return rest as CartItem;
+    });
+
+    const definitions = createBundleDefinitionsFromPromotions();
+
+    activeBundles.forEach((bundleId) => {
+      const bundleDefinition = definitions.find((b) => b.id === bundleId);
+
+      if (!bundleDefinition) return;
+
+      const { cart } = applyBundleToCart(
+        updatedCart,
+        bundleDefinition,
+        branchId,
+        startDate,
+        endDate,
+      );
+
+      updatedCart = cart;
+    });
+    set({ items: updatedCart });
+  },
+
   updateQuantity: (cartId, quantity) => {
     set((state) => ({
       items: state.items.map((item) => {
@@ -170,15 +404,26 @@ export const useCartStore = create<CartState>((set, get) => ({
         return {
           ...item,
           quantity,
+          bundleId: undefined,
           // Recalcular subtotal al cambiar cantidad
           subtotal: calculateSubtotal(
-            { product: item.product, unitPrice: item.unitPrice, quantity },
+            {
+              product: item.product,
+              unitPrice: item.unitPrice,
+              quantity,
+            },
             state.globalRentalDates,
             item.operationType,
           ),
         };
       }),
     }));
+
+    const dates = get().globalRentalDates;
+    const activeBundles = get().activeBundles;
+    if (dates && activeBundles.length) {
+      get().reevaluateActiveBundle(USER_MOCK[0].branchId, dates.from, dates.to);
+    }
   },
 
   updateSelectedStock: (cartId, stockIds) => {
@@ -197,30 +442,47 @@ export const useCartStore = create<CartState>((set, get) => ({
   setGlobalDates: (range) => {
     set((state) => ({
       globalRentalDates: range,
-      // 🔥 MAGIA: Recalcular TODOS los subtotales de items de alquiler
+      // Cambio de fechas: limpiar agrupaciones y recalcular
       items: state.items.map((item) => ({
         ...item,
+        bundleId: undefined,
         subtotal: calculateSubtotal(
           {
             product: item.product,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
           },
-          range, // Usamos las NUEVAS fechas
+          range,
           item.operationType,
         ),
       })),
     }));
+
+    if (get().activeBundles.length) {
+      get().reevaluateActiveBundle(USER_MOCK[0].branchId, range.from, range.to);
+    }
   },
 
   setGlobalTimes: (times) => set({ globalRentalTimes: times }),
   setCustomer: (id) => set({ customerId: id }),
-  removeItem: (id) =>
-    set((s) => ({ items: s.items.filter((i) => i.cartId !== id) })),
+  removeItem: (id) => {
+    set((s) => ({
+      items: s.items
+        .filter((i) => i.cartId !== id)
+        .map((item) => ({ ...item, bundleId: undefined })),
+    }));
+
+    const dates = get().globalRentalDates;
+    const active = get().activeBundles.length;
+    if (dates && active) {
+      get().reevaluateActiveBundle(USER_MOCK[0].branchId, dates.from, dates.to);
+    }
+  },
   clearCart: () =>
     set({
       items: [],
       customerId: null,
+      activeBundles: [],
       globalRentalDates: null,
       globalRentalTimes: null,
     }),
