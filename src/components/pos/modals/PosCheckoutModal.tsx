@@ -36,6 +36,7 @@ import { Badge } from "@/components/badge";
 import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
+import { CartItem } from "@/src/types/cart/type.cart";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -66,16 +67,15 @@ export function PosCheckoutModal({
   const [usePoints, setUsePoints] = React.useState(false);
 
   // Obtenemos al cliente actual desde tu store
-  const selectedClient = useCustomerStore(
-    (state) =>
-      selectedCustomer?.id
-        ? state.getCustomerById(selectedCustomer.id)
-        : undefined,
+  const selectedClient = useCustomerStore((state) =>
+    selectedCustomer?.id
+      ? state.getCustomerById(selectedCustomer.id)
+      : undefined,
   );
 
   // Configuraciones (Idealmente vienen de tus businessRules)
   const availablePoints = selectedClient?.loyaltyPoints || 0;
-  const pointValueInMoney = 0.1; // 1 punto = S/ 0.10
+  const pointValueInMoney = 0.01; // 1 punto = S/ 0.01
   const pointsDiscount = usePoints ? availablePoints * pointValueInMoney : 0;
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
@@ -134,13 +134,28 @@ export function PosCheckoutModal({
     [alquilerItems],
   );
 
-  const totalOperacion = totalVentas + totalAlquileres;
+  const IGV_RATE = BUSINESS_RULES_MOCK.taxRate; // 0.18
+
+  const subtotalBruto = totalVentas + totalAlquileres;
+
+  const totalDiscount = pointsDiscount; // aquí puedes sumar descuentos manuales también
+
+  const totalBrutoConIGV = subtotalBruto - totalDiscount;
+
+  // Base imponible (sin IGV)
+  const subtotalSinIGV = totalBrutoConIGV / (1 + IGV_RATE);
+
+  // IGV contenido
+  const taxAmount = totalBrutoConIGV - subtotalSinIGV;
+
+  // Total final (ya incluye IGV)
 
   const totalACobrarHoy = useMemo(() => {
     const guaranteeValue =
       guaranteeType === "dinero" ? Number(guarantee || 0) : 0;
-    return totalOperacion + (hasRentals ? guaranteeValue : 0) - pointsDiscount;
-  }, [totalOperacion, guarantee, guaranteeType, hasRentals, pointsDiscount]);
+
+    return totalBrutoConIGV + (hasRentals ? guaranteeValue : 0);
+  }, [totalBrutoConIGV, guarantee, guaranteeType, hasRentals]);
 
   const changeAmount = useMemo(() => {
     if (paymentMethod !== "cash") return 0;
@@ -189,6 +204,19 @@ export function PosCheckoutModal({
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
 
+    const getUnitPrice = (cartItem: CartItem, opType: "venta" | "alquiler") => {
+      if (opType === "venta") {
+        if (!cartItem.product.price_sell)
+          throw new Error("Producto sin precio de venta");
+        return cartItem.product.price_sell;
+      }
+
+      if (!cartItem.product.price_rent)
+        throw new Error("Producto sin precio de alquiler");
+
+      return cartItem.product.price_rent;
+    };
+
     const baseData = {
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
@@ -203,54 +231,66 @@ export function PosCheckoutModal({
     try {
       const { stockLots } = useInventoryStore.getState();
 
-      const prepareItems = (cartItems: any[], opType: "venta" | "alquiler") => {
-        const results: any[] = [];
+      const prepareItems = (
+        cartItems: CartItem[],
+        opType: "venta" | "alquiler",
+      ) => {
+        const results: SaleDTO["items"] = [];
+
         cartItems.forEach((cartItem) => {
+          const unitPrice = getUnitPrice(cartItem, opType);
+
           if (cartItem.product.is_serial) {
             cartItem.selectedCodes.forEach((code: string) => {
               results.push({
                 productId: cartItem.product.id,
                 productName: cartItem.product.name,
-                stockId: code, // Usamos code as stockId for serials
+                stockId: code,
                 quantity: 1,
                 sizeId: cartItem.selectedSizeId ?? "",
                 colorId: cartItem.selectedColorId ?? "",
-                priceAtMoment: cartItem.subtotal / cartItem.quantity,
+                priceAtMoment: unitPrice,
+                listPrice: unitPrice,
               });
             });
-          } else {
-            let remaining = cartItem.quantity;
-            const candidates = stockLots.filter(
-              (l) =>
-                l.productId === cartItem.product.id &&
-                l.sizeId === (cartItem.selectedSizeId || "") &&
-                l.colorId === (cartItem.selectedColorId || "") &&
-                l.branchId === currentBranchId &&
-                l.quantity >= cartItem.quantity &&
-                (opType === "venta" ? l.isForSale : l.isForRent),
-            );
 
-            for (const lot of candidates) {
-              if (remaining <= 0) break;
-              const take = Math.min(remaining, lot.quantity);
-              results.push({
-                productId: cartItem.product.id,
-                productName: cartItem.product.name,
-                stockId: lot.variantCode, // Usamos variantCode as stockId for lots
-                quantity: take,
-                sizeId: cartItem.selectedSizeId ?? "",
-                colorId: cartItem.selectedColorId ?? "",
-                priceList: cartItem.product.priceList,
-                priceAtMoment: (cartItem.subtotal / cartItem.quantity) * take,
-              });
-              remaining -= take;
-            }
-            if (remaining > 0)
-              throw new Error(
-                `Stock insuficiente para lote de ${cartItem.product.name}`,
-              );
+            return;
           }
+
+          let remaining = cartItem.quantity;
+
+          const candidates = stockLots.filter(
+            (l) =>
+              l.productId === cartItem.product.id &&
+              l.sizeId === (cartItem.selectedSizeId || "") &&
+              l.colorId === (cartItem.selectedColorId || "") &&
+              l.branchId === currentBranchId &&
+              (opType === "venta" ? l.isForSale : l.isForRent),
+          );
+
+          for (const lot of candidates) {
+            if (remaining <= 0) break;
+
+            const take = Math.min(remaining, lot.quantity);
+
+            results.push({
+              productId: cartItem.product.id,
+              productName: cartItem.product.name,
+              stockId: lot.variantCode,
+              quantity: take,
+              sizeId: cartItem.selectedSizeId ?? "",
+              colorId: cartItem.selectedColorId ?? "",
+              priceAtMoment: unitPrice,
+              listPrice: unitPrice,
+            });
+
+            remaining -= take;
+          }
+
+          if (remaining > 0)
+            throw new Error(`Stock insuficiente para ${cartItem.product.name}`);
         });
+
         return results;
       };
 
@@ -258,46 +298,61 @@ export function PosCheckoutModal({
       if (ventaItems.length > 0) {
         const saleDTO: SaleDTO = {
           ...baseData,
-          type: "venta",
-          status: "vendido",
-          items: prepareItems(ventaItems, "venta"),
-          financials: {
-            totalAmount: totalVentas,
-            paymentMethod: paymentMethod as PaymentMethodType,
-            // En checkout POS la venta se cobra completa al confirmar.
-            receivedAmount: totalVentas,
-            keepAsCredit: false,
-            totalPrice: totalVentas,
-          },
           id: "",
           operationId: "",
+          type: "venta",
+          status: "vendido",
+
+          items: prepareItems(ventaItems, "venta"),
+
+          financials: {
+            subtotal: subtotalBruto,
+            totalDiscount: totalDiscount,
+            taxAmount: taxAmount,
+            totalAmount: totalBrutoConIGV,
+            keepAsCredit: false,
+            receivedAmount: Number(receivedAmount) || 0,
+            paymentMethod: paymentMethod as PaymentMethodType,
+          },
         };
+
         await processTransaction(saleDTO);
       }
 
-      // B. PROCESAR ALQUILER
       if (alquilerItems.length > 0) {
+        const guaranteeAmount =
+          guaranteeType === "dinero" ? Number(guarantee || 0) : 0;
+
         const rentalDTO: RentalDTO = {
           ...baseData,
-          type: "alquiler",
-          status: "alquilado",
-          startDate: withTime(dateRange.from, pickupTime),
-          endDate: withTime(dateRange.to, returnTime),
-          items: prepareItems(alquilerItems, "alquiler"),
-          financials: {
-            totalRent: totalAlquileres,
-            paymentMethod: paymentMethod as PaymentMethodType,
-            receivedAmount: ventaItems.length > 0 ? 0 : Number(receivedAmount),
-            keepAsCredit: false,
-            guarantee: {
-              type: guaranteeType,
-              value: guaranteeType === "dinero" ? guarantee : undefined,
-              description: guaranteeType !== "dinero" ? guarantee : undefined,
-            },
-          },
           id: "",
           operationId: "",
+          type: "alquiler",
+          status: "alquilado",
+
+          startDate: withTime(dateRange.from, pickupTime),
+          endDate: withTime(dateRange.to, returnTime),
+
+          items: prepareItems(alquilerItems, "alquiler"),
+
+          financials: {
+            subtotal: subtotalBruto,
+            totalDiscount: totalDiscount,
+            taxAmount: taxAmount,
+            totalAmount: totalBrutoConIGV,
+            keepAsCredit: false,
+            receivedAmount: Number(receivedAmount) || 0,
+            paymentMethod: paymentMethod as PaymentMethodType,
+          },
+
+          guarantee: {
+            type: guaranteeType,
+            value: guaranteeType === "dinero" ? guarantee : undefined,
+            description: guaranteeType !== "dinero" ? guarantee : undefined,
+            amount: guaranteeAmount,
+          },
         };
+
         await processTransaction(rentalDTO);
       }
 
@@ -506,7 +561,7 @@ export function PosCheckoutModal({
                 Total Operación
               </span>
               <span className="text-xl font-black text-primary">
-                {formatCurrency(totalOperacion)}
+                {formatCurrency(totalBrutoConIGV)}
               </span>
             </div>
           </div>
@@ -543,9 +598,8 @@ export function PosCheckoutModal({
             disabled={items.some(
               (i) =>
                 (i.product.is_serial && i.selectedCodes.length < i.quantity) ||
-                (hasRentals &&
-                  Number(receivedAmount) + Number(guarantee) <
-                    totalACobrarHoy) ||
+                (hasRentals && Number(receivedAmount) <= 0) ||
+                Number(receivedAmount) > totalBrutoConIGV ||
                 (hasRentals && guarantee.length === 0),
             )}
             className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"

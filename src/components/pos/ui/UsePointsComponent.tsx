@@ -16,7 +16,7 @@ export const UsePointsComponent = ({
       <div
         className={`p-3 rounded-md border flex items-center justify-between mt-2 mb-4 transition-colors ${
           usePoints
-            ? "bg-amber-50 border-amber-300"
+            ? " border-amber-300"
             : "bg-muted/50 border-border"
         }`}
       >

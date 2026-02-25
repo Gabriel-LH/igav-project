@@ -35,9 +35,7 @@ export function PosCartSection() {
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [reservationOpen, setReservationOpen] = React.useState(false);
 
-  // ─── FECHAS ───
-  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
-  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
+
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 

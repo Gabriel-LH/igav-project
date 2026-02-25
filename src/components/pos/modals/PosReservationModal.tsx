@@ -262,18 +262,18 @@ export function PosReservationModal({
         type: "reserva",
         operationType: "venta",
         customerId: selectedCustomer.id,
-        customerName:
-          selectedCustomer.firstName + " " + selectedCustomer.lastName,
         status: "confirmada",
         notes: notes + " (Venta de operacion mixta)",
         financials: {
+          subtotal: totalVentas,
+          totalDiscount: 0,
+          taxAmount: 0,
+          totalAmount: totalVentas,
           receivedAmount: saleDP,
           keepAsCredit: false,
-          totalPrice: totalVentas,
-          downPayment: saleDP,
           paymentMethod,
-          pendingAmount: Math.max(totalVentas - saleDP, 0),
         },
+
         sellerId,
         reservationDateRange: {
           from: startOfDay(dateRange.from),
@@ -294,18 +294,18 @@ export function PosReservationModal({
         type: "reserva",
         operationType: "alquiler",
         customerId: selectedCustomer.id,
-        customerName:
-          selectedCustomer.firstName + " " + selectedCustomer.lastName,
         status: "confirmada",
         notes: notes + " (Alquiler de operacion mixta)",
         financials: {
+          subtotal: totalAlquileres,
+          totalDiscount: 0,
+          taxAmount: 0,
+          totalAmount: totalAlquileres,
           receivedAmount: rentalDP,
           keepAsCredit: false,
-          totalPrice: totalAlquileres,
-          downPayment: rentalDP,
           paymentMethod,
-          pendingAmount: Math.max(totalAlquileres - rentalDP, 0),
         },
+
         sellerId,
         reservationDateRange: {
           from: startOfDay(dateRange.from),
@@ -337,18 +337,18 @@ export function PosReservationModal({
         type: "reserva",
         operationType,
         customerId: selectedCustomer.id,
-        customerName:
-          selectedCustomer.firstName + " " + selectedCustomer.lastName,
         status: "confirmada",
         notes,
         financials: {
+          subtotal: totalOperacion,
+          totalDiscount: 0,
+          taxAmount: 0,
+          totalAmount: totalOperacion,
           receivedAmount: totalDP,
           keepAsCredit: false,
-          totalPrice: totalOperacion,
-          downPayment: totalDP,
           paymentMethod,
-          pendingAmount,
         },
+
         sellerId,
         reservationDateRange: {
           from: startOfDay(dateRange.from),
@@ -639,6 +639,7 @@ export function PosReservationModal({
               items.length === 0 ||
               !selectedCustomer ||
               Number(downPayment) <= 0 ||
+              Number(downPayment) > totalOperacion ||
               conflicts.length > 0
             }
             className="w-full h-12 font-black text-white bg-linear-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 shadow-lg"

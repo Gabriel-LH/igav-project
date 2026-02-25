@@ -69,7 +69,7 @@ export const PRODUCTS_MOCK: Product[] = [
     deleteReason: null,
   },
   {
-    id: "combo-camisa-1",
+    id: "4",
     name: "Camisa de Seda Blanca",
     image:
       "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=400",
@@ -92,10 +92,10 @@ export const PRODUCTS_MOCK: Product[] = [
     deleteReason: null,
   },
   {
-    id: "combo-pantalon-1",
+    id: "5",
     name: "Pantalón de Vestir Azul",
     image:
-      "https://images.unsplash.com/photo-1594932224456-75a779401e07?q=80&w=400",
+      "https://imgs.search.brave.com/ol9r-R8HdJwCpSYeJHrtYuixmZ22n0oZwly5A0Eqpko/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMWZ1/ZnZ5NHhhbzZrOS5j/bG91ZGZyb250Lm5l/dC9mZWVkL2ltZy93/b21hbl9wYW50cy82/NTIzMC9mcm9udF9z/bWFsbC5wbmc",
     sku: "SKU-PAN-001",
     categoryId: "CAT-PANTALONES",
     description: "Pantalón de vestir corte liso.",
@@ -115,10 +115,10 @@ export const PRODUCTS_MOCK: Product[] = [
     deleteReason: null,
   },
   {
-    id: "combo-saco-1",
+    id: "6",
     name: "Saco de Blazer Moderno",
     image:
-      "https://images.unsplash.com/photo-1598808503744-44d8122d9a58?q=80&w=400",
+      "https://imgs.search.brave.com/Ou1-5Ud9NltvHoC2zTj3qjmLUjc-vcQn5b5ughubVms/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzY4OTM4Ni1NTE03/MzMzODgyOTUwOV8x/MjIwMjMtRS1zYWNv/LWJsYXplci1ob21i/cmUtbW9kZXJub3Mt/Zm9ybWFsLWNhc3Vh/bC1zbGltLWZpdC1t/b2RhLndlYnA",
     sku: "SKU-SAC-001",
     categoryId: "CAT-SACOS",
     description: "Saco con solapa de muesca.",
@@ -138,7 +138,7 @@ export const PRODUCTS_MOCK: Product[] = [
     deleteReason: null,
   },
   {
-    id: "combo-zapato-1",
+    id: "7",
     name: "Zapatos Oxford Cuero",
     image:
       "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=400",

@@ -32,34 +32,35 @@ function getFinancials(
     | RentalFromReservationDTO
     | SaleFromReservationDTO,
 ) {
+  const keepAsCredit = dto.financials.keepAsCredit ?? false;
+
   if (dto.type === "venta") {
     return {
       totalAmount: dto.financials.totalAmount,
       paymentMethod: dto.financials.paymentMethod,
       downPayment: dto.financials.receivedAmount ?? 0,
       receivedAmount: dto.financials.receivedAmount ?? 0,
-      keepAsCredit: dto.financials.keepAsCredit ?? false,
+      keepAsCredit,
     };
   }
 
   if (dto.type === "reserva") {
     return {
-      totalAmount: dto.financials.totalPrice,
-      downPayment: dto.financials.downPayment,
+      totalAmount: dto.financials.totalAmount,
+      downPayment: dto.financials.receivedAmount ?? 0,
       paymentMethod: dto.financials.paymentMethod,
-      receivedAmount:
-        dto.financials.receivedAmount ?? dto.financials.downPayment,
-      keepAsCredit: dto.financials.keepAsCredit ?? false,
+      receivedAmount: dto.financials.receivedAmount ?? 0,
+      keepAsCredit,
     };
   }
 
   // alquiler
   return {
-    totalAmount: dto.financials.totalRent,
-    downPayment: dto.financials.totalRent,
+    totalAmount: dto.financials.totalAmount,
+    downPayment: dto.financials.receivedAmount ?? 0,
     paymentMethod: dto.financials.paymentMethod,
-    receivedAmount: dto.financials.receivedAmount ?? dto.financials.totalRent,
-    keepAsCredit: dto.financials.keepAsCredit ?? false,
+    receivedAmount: dto.financials.receivedAmount ?? 0,
+    keepAsCredit,
   };
 }
 
@@ -220,10 +221,6 @@ export function processTransaction(
             discountReason: reservationItem.discountReason,
             bundleId: reservationItem.bundleId,
             promotionId: reservationItem.promotionId,
-            // productName: reservationItem.productName,
-            // variantCode: reservationItem.variantCode,
-            // serialCode: reservationItem.serialCode,
-            // isSerial: reservationItem.isSerial,
             isReturned: false,
           };
         })
@@ -293,6 +290,8 @@ export function processTransaction(
   }
   // ---------------- RESERVA -------------------
   if (dto.type === "reserva") {
+    const totalUnits = dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0);
+
     const reservation = reservationSchema.parse({
       id: `RES-${operationId}`,
       operationId,
@@ -324,8 +323,7 @@ export function processTransaction(
         // CORRECCIÓN: Usar precio unitario si existe en el item, o calcularlo proporcionalmente
         priceAtMoment:
           item.priceAtMoment ||
-          dto.financials.totalPrice /
-            dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0),
+          (totalUnits > 0 ? dto.financials.totalAmount / totalUnits : 0),
         listPrice: item.listPrice,
         discountAmount: item.discountAmount ?? 0,
         discountReason: item.discountReason,
@@ -366,21 +364,17 @@ export function processTransaction(
     const fromReservation = isRentalFromReservation(dto);
 
     // Garantía
-    if (
-      dto.financials.guarantee &&
-      dto.financials.guarantee.type !== "no_aplica"
-    ) {
+    if (!fromReservation && dto.guarantee && dto.guarantee.type !== "no_aplica") {
       guaranteeData = guaranteeSchema.parse({
         id: crypto.randomUUID(),
         operationId: String(operationId),
         branchId: dto.branchId,
         receivedById: dto.sellerId,
-        type: dto.financials.guarantee.type,
-        value: dto.financials.guarantee.value || "",
-        description:
-          dto.financials.guarantee.description || "Garantía de alquiler",
+        type: dto.guarantee.type,
+        value: dto.guarantee.value || "",
+        description: dto.guarantee.description || "Garantía de alquiler",
         status:
-          dto.financials.guarantee.type === "por_cobrar"
+          dto.guarantee.type === "por_cobrar"
             ? "pendiente"
             : "custodia",
         createdAt: now,
@@ -441,7 +435,7 @@ export function processTransaction(
               quantity: reservationItem.quantity ?? 1,
               sizeId: reservationItem.sizeId,
               colorId: reservationItem.colorId,
-              priceAtMoment: dto.financials.totalRent,
+              priceAtMoment: reservationItem.priceAtMoment,
               listPrice: reservationItem.listPrice,
               discountAmount: reservationItem.discountAmount ?? 0,
               discountReason: reservationItem.discountReason,
@@ -463,7 +457,7 @@ export function processTransaction(
             quantity: item.quantity ?? 1, // Típicamente 1 por línea
             sizeId: item.sizeId,
             colorId: item.colorId,
-            priceAtMoment: item.priceAtMoment ?? dto.financials.totalRent, // Mejor precio unitario si existe
+            priceAtMoment: item.priceAtMoment ?? 0, // Mejor precio unitario si existe
             listPrice: item.listPrice,
             discountAmount: item.discountAmount ?? 0,
             discountReason: item.discountReason,

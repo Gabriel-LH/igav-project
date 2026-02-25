@@ -1,3 +1,5 @@
+import { GuaranteeType } from "../utils/status-type/GuaranteeType";
+import { PaymentMethodType } from "../utils/status-type/PaymentMethodType";
 import { BaseOperation } from "./BaseOperation";
 
 export interface RentalDTO extends BaseOperation {
@@ -5,13 +7,17 @@ export interface RentalDTO extends BaseOperation {
   status:
     | "alquilado"
     | "reservado"
-    | "vendido_pendiente_entrega"
+    | "pendiente_entrega"
     | "devuelto"
     | "atrasado"
     | "reservado_fisico";
   startDate: Date;
   endDate: Date;
   actualReturnDate?: Date;
+  latePenalty?: number;
+  damageCharge?: number;
+  extensionAmount?: number;
+
   items: {
     id?: string; // RentalItem ID
     productId: string;
@@ -28,21 +34,18 @@ export interface RentalDTO extends BaseOperation {
     promotionId?: string;
   }[];
   financials: {
-    totalRent: number;
-    receivedAmount: number;
+    subtotal: number;
+    totalDiscount: number;
+    taxAmount?: number;
+    totalAmount: number;
     keepAsCredit: boolean;
-    paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
-    guarantee: {
-      type?:
-        | "dinero"
-        | "dni"
-        | "joyas"
-        | "reloj"
-        | "otros"
-        | "no_aplica"
-        | "por_cobrar";
-      value?: string;
-      description?: string;
-    };
+    receivedAmount: number;
+    paymentMethod: PaymentMethodType;
+  };
+  guarantee?: {
+    type?: GuaranteeType | "por_cobrar";
+    value?: string;
+    description?: string;
+    amount?: number;
   };
 }

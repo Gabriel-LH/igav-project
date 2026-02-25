@@ -1,3 +1,4 @@
+import { PaymentMethodType } from "../utils/status-type/PaymentMethodType";
 import { BaseOperation } from "./BaseOperation";
 
 export interface ReservationDTO extends BaseOperation {
@@ -24,11 +25,12 @@ export interface ReservationDTO extends BaseOperation {
     hourFrom: string;
   };
   financials: {
-    receivedAmount?: number;
+    subtotal: number;
+    totalDiscount: number;
+    taxAmount?: number;
+    totalAmount: number;
+    receivedAmount: number;
+    paymentMethod: PaymentMethodType;
     keepAsCredit?: boolean;
-    totalPrice: number;
-    downPayment: number;
-    pendingAmount: number;
-    paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
   };
 }

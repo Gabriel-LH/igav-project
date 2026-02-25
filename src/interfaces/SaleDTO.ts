@@ -1,3 +1,4 @@
+import { PaymentMethodType } from "../utils/status-type/PaymentMethodType";
 import { BaseOperation } from "./BaseOperation";
 
 export interface SaleDTO extends BaseOperation {
@@ -29,11 +30,13 @@ export interface SaleDTO extends BaseOperation {
   }[];
 
   financials: {
+    subtotal: number;
+    totalDiscount: number;
+    taxAmount?: number;
     totalAmount: number;
     receivedAmount: number;
     keepAsCredit: boolean;
-    totalPrice: number;
-    paymentMethod: "cash" | "card" | "transfer" | "yape" | "plin";
+    paymentMethod: PaymentMethodType;
   };
   notes?: string;
 }

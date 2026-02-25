@@ -46,6 +46,7 @@ import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -104,6 +105,8 @@ export function DetailsReservedViewer({
   const currentClient = customers.find((c) => c.id === activeRes?.customerId);
   const seller = USER_MOCK[0];
 
+  const {colors, sizes} = useAttributeStore();
+
   // Agrupamos items por "clave compuesta" para mostrarlos juntos
   const groupedItems = useMemo(() => {
     const groups: Record<
@@ -112,7 +115,7 @@ export function DetailsReservedViewer({
     > = {};
 
     activeResItems.forEach((item) => {
-      const key = `${item.productId}-${item.size}-${item.color}`;
+      const key = `${item.productId}-${item.sizeId}-${item.colorId}`;
       if (!groups[key]) {
         groups[key] = { items: [], totalQty: 0 };
       }
@@ -433,6 +436,9 @@ export function DetailsReservedViewer({
                   return [];
                 });
 
+                const color = colors.find((c) => c.id === refItem.colorId);
+                const size = sizes.find((s) => s.id === refItem.sizeId);
+
                 return (
                   <div
                     key={`${refItem.id}-group`}
@@ -447,10 +453,10 @@ export function DetailsReservedViewer({
                         <p className="text-sm font-bold">{prod?.name}</p>
                         <div className="flex gap-2 mt-1">
                           <Badge variant="outline" className="text-[10px]">
-                            {refItem.size}
+                            {size?.name}
                           </Badge>
                           <Badge variant="outline" className="text-[10px]">
-                            {refItem.color}
+                            {color?.name}
                           </Badge>
                           {group.totalQty > 1 && (
                             <Badge className="text-[10px] bg-orange-100 text-orange-700">
@@ -464,8 +470,8 @@ export function DetailsReservedViewer({
                     {/* UN SOLO WIDGET QUE MANEJA LOS N SELECTS */}
                     <StockAssignmentWidget
                       productId={refItem.productId}
-                      size={refItem.size}
-                      color={refItem.color}
+                      sizeId={refItem.sizeId}
+                      colorId={refItem.colorId}
                       quantity={group.totalQty} // 👈 Cantidad total del grupo
                       operationType={activeRes?.operationType || "alquiler"}
                       dateRange={{
