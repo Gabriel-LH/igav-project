@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCartStore } from "@/src/store/useCartStore";
@@ -10,14 +10,25 @@ import { PosCartSection } from "./pos-cart-section";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
+import { ensurePromotionsLoaded } from "@/src/services/promotionService";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 
 export function PosLayout() {
   const { products, inventoryItems, stockLots } = useInventoryStore();
-  const { addItem, items } = useCartStore();
+  const { addItem, applyPromotions, items } = useCartStore();
 
   const [preferredMode, setPreferredMode] = useState<"venta" | "alquiler">(
     "alquiler",
   );
+
+  useEffect(() => {
+    ensurePromotionsLoaded();
+  }, []);
+
+  useEffect(() => {
+    if (items.length === 0) return;
+    applyPromotions(USER_MOCK[0].branchId);
+  }, [items, applyPromotions]);
 
   useBarcodeScanner({
     onScan: (code) => {

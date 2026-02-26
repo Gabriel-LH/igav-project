@@ -14,6 +14,8 @@ import {
   createBundleDefinitionsFromPromotions,
   detectBundleEligibility,
 } from "@/src/services/bundleService";
+import { getActivePromotions } from "../services/promotionService";
+import { applyPromotionsUseCase } from "../services/use-cases/promotion.usecase";
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
@@ -88,6 +90,7 @@ interface CartState {
   setCustomer: (id: string | null) => void;
   clearCart: () => void;
   getTotal: () => number;
+  applyPromotions: (branchId: string) => void;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -487,4 +490,60 @@ export const useCartStore = create<CartState>((set, get) => ({
       globalRentalTimes: null,
     }),
   getTotal: () => get().items.reduce((acc, item) => acc + item.subtotal, 0),
+  applyPromotions: (branchId: string) => {
+    const state = get();
+    const promotions = getActivePromotions();
+    const rentalDates = state.globalRentalDates;
+
+    const cartSubtotal = state.items.reduce(
+      (acc, item) =>
+        acc +
+        calculateSubtotal(
+          {
+            product: item.product,
+            unitPrice: item.listPrice ?? item.unitPrice,
+            quantity: item.quantity,
+          },
+          rentalDates,
+          item.operationType,
+        ),
+      0,
+    );
+
+    const promotedItems = applyPromotionsUseCase(state.items, promotions, {
+      branchId,
+      cartSubtotal,
+      now: new Date(),
+    });
+
+    const updatedItems = promotedItems.map((item) => ({
+      ...item,
+      subtotal: calculateSubtotal(
+        {
+          product: item.product,
+          unitPrice: item.unitPrice,
+          quantity: item.quantity,
+        },
+        rentalDates,
+        item.operationType,
+      ),
+    }));
+
+    const hasChanges = updatedItems.some((item, index) => {
+      const previous = state.items[index];
+      if (!previous) return true;
+      return (
+        item.unitPrice !== previous.unitPrice ||
+        (item.discountAmount ?? 0) !== (previous.discountAmount ?? 0) ||
+        (item.discountReason ?? "") !== (previous.discountReason ?? "") ||
+        (item.appliedPromotionId ?? "") !== (previous.appliedPromotionId ?? "") ||
+        item.subtotal !== previous.subtotal
+      );
+    });
+
+    if (hasChanges) {
+      set({ items: updatedItems });
+    }
+  },
+
 }));

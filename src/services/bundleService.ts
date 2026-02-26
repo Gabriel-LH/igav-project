@@ -67,7 +67,6 @@ export type CheckAvailabilityFn = (
 export type ReserveStockFn = (input: AvailabilityInput) => Promise<void> | void;
 
 export function createBundleDefinitionsFromPromotions() {
-  const { products } = useInventoryStore.getState();
   return PROMOTIONS_MOCK.filter(isBundlePromotion).map((promotion) => {
     const cfg = promotion.bundleConfig as PromotionBundleConfig;
     const requiredItemsMap = new Map<string, number>();
