@@ -66,8 +66,9 @@ export function ReservationModal({
   );
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
-  const [operationType, setOperationType] =
-    React.useState<OperationType>("alquiler");
+  const [operationType, setOperationType] = React.useState<
+    "venta" | "alquiler"
+  >("alquiler");
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
@@ -101,13 +102,7 @@ export function ReservationModal({
         if (operationType === "venta") {
           return s.isForSale === true && s.status === "disponible";
         } else {
-          return (
-            s.isForRent === true &&
-            s.status !== "baja" &&
-            s.status !== "vendido" &&
-            s.status !== "agotado" &&
-            s.status !== "vendido_pendiente_entrega"
-          );
+          return s.isForRent === true;
         }
       });
     } else {
@@ -124,11 +119,9 @@ export function ReservationModal({
         } else {
           return (
             s.isForRent === true &&
-            s.status !== "baja" &&
-            s.status !== "vendido" &&
-            s.status !== "agotado" &&
-            s.status !== "vendido_pendiente_entrega" &&
-            s.quantity > 0
+            (s.status as any) !== "vendido" &&
+            (s.status as any) !== "vendido_pendiente_entrega" &&
+            (s as any).quantity > 0
           );
         }
       });
@@ -286,7 +279,6 @@ export function ReservationModal({
       type: "reserva",
       operationType,
       customerId: selectedCustomer.id,
-      customerName: selectedCustomer.name,
       status: "confirmada",
       notes,
       financials: {
@@ -296,7 +288,7 @@ export function ReservationModal({
         downPayment: Number(downPayment),
         paymentMethod,
         pendingAmount: Math.max(totalOperacion - Number(downPayment), 0),
-      },
+      } as any,
       sellerId,
       reservationDateRange: {
         from: startOfDay(dateRange.from) || new Date(),

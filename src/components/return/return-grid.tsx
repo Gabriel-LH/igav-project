@@ -98,28 +98,30 @@ export const ReturnGrid = () => {
               id: gItem.id, // ID del RentalItem
               productId: gItem.productId,
               stockId: gItem.stockId,
-              size: gItem.size,
-              color: gItem.color,
+              sizeId: (gItem as any).sizeId || (gItem as any).size,
+              colorId: (gItem as any).colorId || (gItem as any).color,
               quantity: gItem.quantity, // Should be 1 per item usually
               priceAtMoment: gItem.priceAtMoment,
               productName: productInfo?.name || "Vestido",
             })),
             type: "alquiler",
 
-            // 3. Reconstrucción de Financials (Lo que faltaba)
+            // 3. Reconstrucción de Financials
             financials: {
-              totalRent: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
-              paymentMethod: "cash", // Como no se guarda en el Rental, puedes poner un default o extender el Rental type
-              guarantee: {
-                type: (realGuarantee?.type as any) || "otros",
-                value: String(realGuarantee?.value || "0"),
-                description: realGuarantee?.description || "Sin descripción",
-              },
+              subtotal: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
+              totalDiscount: 0,
+              totalAmount: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
+              paymentMethod: "cash",
               receivedAmount: 0,
               keepAsCredit: false,
             },
+            guarantee: {
+              type: (realGuarantee?.type as any) || "otros",
+              value: String(realGuarantee?.value || "0"),
+              description: realGuarantee?.description || "Sin descripción",
+            },
             updatedAt: new Date(),
-          };
+          } as any;
 
           return (
             <div key={`grid-group-${item.rentalId}-${item.productId}`}>

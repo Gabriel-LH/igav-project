@@ -72,7 +72,7 @@ export function StockAssignmentWidget({
           i.productId === productId &&
           i.sizeId === sizeId &&
           i.colorId === colorId &&
-          i.status !== "baja" &&
+          i.status !== "retirado" &&
           i.status !== "vendido";
 
         if (!isBaseMatch) return false;
@@ -92,8 +92,8 @@ export function StockAssignmentWidget({
           l.productId === productId &&
           l.sizeId === sizeId &&
           l.colorId === colorId &&
-          l.status !== "baja" &&
-          l.status !== "vendido";
+          (l.status as any) !== "retirado" &&
+          (l.status as any) !== "vendido";
 
         if (!isBaseMatch) return false;
         if (operationType === "venta" && !l.isForSale) return false;

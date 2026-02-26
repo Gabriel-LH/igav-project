@@ -5,6 +5,7 @@ import { rentalChargeSchema } from "./rentalCharge";
 
 export const rentalSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   operationId: z.string(), // Conecta con la transacción financiera
   reservationId: z.string().optional(), // Puede venir de una reserva o ser alquiler directo
   customerId: z.string(),

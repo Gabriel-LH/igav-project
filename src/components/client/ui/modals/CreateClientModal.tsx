@@ -16,8 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/label";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { useCreateClient } from "@/src/services/use-cases/createClient.usecase";
+import { useCreateClientWithReferral } from "@/src/services/use-cases/createReferral";
 import { Client } from "@/src/types/clients/type.client";
 
 // 1️⃣ Schema de validación Zod
@@ -29,6 +28,8 @@ const createClientSchema = z.object({
   email: z.string().email("Correo inválido").optional().or(z.literal("")),
   address: z.string().min(1, "Dirección requerida"),
   city: z.string().min(1, "Distrito requerido"),
+
+  referralCode: z.string().optional(),
 });
 
 type CreateClientValues = z.infer<typeof createClientSchema>;
@@ -46,7 +47,7 @@ export function CreateClientModal({
 }: CreateClientModalProps) {
   const [open, setOpen] = useState(false);
 
-  const { createClient } = useCreateClient();
+  const { create } = useCreateClientWithReferral();
 
   // 2️⃣ Estados del formulario
   const [values, setValues] = useState<CreateClientValues>({
@@ -57,6 +58,7 @@ export function CreateClientModal({
     email: "",
     address: "",
     city: "",
+    referralCode: "",
   });
 
   const [errors, setErrors] = useState<
@@ -82,7 +84,10 @@ export function CreateClientModal({
       return;
     }
 
-    const newClient = createClient(result.data);
+    const newClient = create({
+      ...result.data,
+      usedReferralCode: result.data.referralCode,
+    });
 
     setErrors({});
 
@@ -203,6 +208,21 @@ export function CreateClientModal({
             />
             {errors.city && (
               <span className="text-xs text-red-500">{errors.city}</span>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label>Código de Referencia (opcional)</Label>
+            <Input
+              value={values.referralCode}
+              onChange={(e) =>
+                setValues({ ...values, referralCode: e.target.value })
+              }
+            />
+            {errors.referralCode && (
+              <span className="text-xs text-red-500">
+                {errors.referralCode}
+              </span>
             )}
           </div>
         </ScrollArea>

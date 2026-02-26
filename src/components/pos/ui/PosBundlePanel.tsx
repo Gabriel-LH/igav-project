@@ -12,20 +12,27 @@ import {
 import { Gift } from "lucide-react";
 
 export function PosBundlesPanel() {
-  const { items, globalRentalDates, applyBundleDefinition } = useCartStore();
+  const { items, globalRentalDates, applyBundleDefinition, activeTenantId } =
+    useCartStore();
 
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = USER_MOCK[0].branchId!;
 
   const startDate = globalRentalDates?.from ?? new Date();
   const endDate = globalRentalDates?.to ?? new Date();
 
-  const bundles = useMemo(() => createBundleDefinitionsFromPromotions(), []);
+  const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+  const bundles = useMemo(() => {
+    if (!tenantId) return [];
+    return createBundleDefinitionsFromPromotions(tenantId);
+  }, [tenantId]);
 
   const evaluations = useMemo(() => {
+    if (!tenantId) return [];
     return bundles.map((bundle) => {
       const eligibility = detectBundleEligibility(
         items,
         bundle,
+        tenantId,
         currentBranchId,
         startDate,
         endDate,
@@ -33,7 +40,7 @@ export function PosBundlesPanel() {
 
       return { bundle, eligibility };
     });
-  }, [items, bundles, currentBranchId, startDate, endDate]);
+  }, [items, bundles, tenantId, currentBranchId, startDate, endDate]);
 
   const relevantBundles = useMemo(() => {
     return evaluations.filter(({ eligibility }) => eligibility.eligible);

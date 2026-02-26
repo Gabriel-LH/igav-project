@@ -41,7 +41,7 @@ export function DetailsProductViewer({
 }) {
   const isMobile = useIsMobile();
   const user = USER_MOCK;
-  const currentBranchId = user[0].branchId;
+  const currentBranchId = user[0].branchId!;
   const { getSizeById, getColorById, getModelById, getCategoryById } =
     useAttributeStore();
 
@@ -165,7 +165,7 @@ export function DetailsProductViewer({
       ...externalBranches.map((s) =>
         getEstimatedTransferTime(
           s.branchId,
-          currentBranchId,
+          currentBranchId!,
           BUSINESS_RULES_MOCK,
         ),
       ),
@@ -378,7 +378,7 @@ export function DetailsProductViewer({
                 const transferTime = !isLocal
                   ? getEstimatedTransferTime(
                       branchId,
-                      currentBranchId,
+                      currentBranchId!,
                       BUSINESS_RULES_MOCK,
                     )
                   : 0;
@@ -529,7 +529,7 @@ export function DetailsProductViewer({
                 currentBranchId={currentBranchId}
                 originBranchId={
                   variantLocations.find((v) => v.branchId !== currentBranchId)
-                    ?.branchId || currentBranchId
+                    ?.branchId || currentBranchId!
                 }
                 onSuccess={() => setDrawerOpen(false)}
               >

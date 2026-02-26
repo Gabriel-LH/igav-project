@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const promotionSchema = z.object({
   id: z.string(),
+  tenantId: z.string().optional(),
   name: z.string(),
   type: z.enum(["percentage", "fixed_amount", "bundle"]),
   scope: z.enum(["global", "category", "product_specific", "pack"]),
@@ -26,6 +27,9 @@ export const promotionSchema = z.object({
   maxUses: z.number().int().optional(),
   usedCount: z.number().int().default(0),
   combinable: z.boolean().default(true),
+  requiresCode: z.boolean().default(false),
+  singleUsePerCustomer: z.boolean().default(false),
+  usageType: z.enum(["automatic", "coupon", "referral"]).default("automatic").optional(),
   createdAt: z.date(),
   createdBy: z.string().optional(),
   updatedAt: z.date().optional(),

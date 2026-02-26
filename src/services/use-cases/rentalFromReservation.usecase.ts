@@ -50,15 +50,16 @@ export async function rentalFromReservationUseCase({
     status: "alquilado",
   };
 
-  if (financials.guarantee && financials.guarantee.type !== "no_aplica") {
+  const guaranteeInput = (financials as any).guarantee;
+  if (guaranteeInput && guaranteeInput.type !== "no_aplica") {
     const guarantee = guaranteeSchema.parse({
       id: `GUA-${crypto.randomUUID()}`,
       operationId: reservation.operationId,
       branchId: reservation.branchId,
       receivedById: sellerId,
-      type: financials.guarantee.type,
-      value: financials.guarantee.value ?? 0,
-      description: financials.guarantee.description ?? "Garantía de alquiler",
+      type: guaranteeInput.type,
+      value: guaranteeInput.value ?? 0,
+      description: guaranteeInput.description ?? "Garantía de alquiler",
       status: "custodia",
       createdAt: new Date(),
     });

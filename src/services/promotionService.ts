@@ -22,12 +22,17 @@ export function ensurePromotionsLoaded() {
   state.setPromotions(validatedPromotions);
 }
 
-export function getActivePromotions() {
+export function getActivePromotions(
+  tenantId?: string,
+  usageTypes: Array<"automatic" | "coupon" | "referral"> = ["automatic"],
+) {
   ensurePromotionsLoaded();
   return usePromotionStore
     .getState()
     .promotions.filter(
       (promotion) =>
+        (!tenantId || !promotion.tenantId || promotion.tenantId === tenantId) &&
+        usageTypes.includes(promotion.usageType ?? "automatic") &&
         promotion.isActive &&
         isPromotionActiveAtDate(promotion.startDate, promotion.endDate),
     );

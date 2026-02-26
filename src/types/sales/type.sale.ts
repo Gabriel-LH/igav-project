@@ -5,6 +5,7 @@ import { saleChargeSchema } from "./saleCharge";
 
 export const saleSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   operationId: z.string(), // Conecta con la transacción financiera
   customerId: z.string(),
   branchId: z.string(),

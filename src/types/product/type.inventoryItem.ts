@@ -3,6 +3,7 @@ import { inventoryItemStatusHistorySchema } from "./type.inventoryItemStatusHist
 
 export const inventoryItemSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   serialCode: z.string(), // Código único físico (para QR)
   variantCode: z.string(), // Relación a variante de producto
   productId: z.string(),
@@ -19,6 +20,7 @@ export const inventoryItemSchema = z.object({
     "en_mantenimiento",
     "alquilado",
     "reservado",
+    "alquilado_pendiente_entrega",
     "vendido_pendiente_entrega",
     "en_lavanderia",
     "retirado",
@@ -31,7 +33,6 @@ export const inventoryItemSchema = z.object({
 
 export type InventoryItem = z.infer<typeof inventoryItemSchema>;
 
-export const inventoryItemWithHistorySchema =
-  inventoryItemSchema.extend({
-    statusHistory: z.array(inventoryItemStatusHistorySchema),
-  });
+export const inventoryItemWithHistorySchema = inventoryItemSchema.extend({
+  statusHistory: z.array(inventoryItemStatusHistorySchema),
+});

@@ -16,6 +16,8 @@ import {
 } from "@/src/services/bundleService";
 import { getActivePromotions } from "../services/promotionService";
 import { applyPromotionsUseCase } from "../services/use-cases/promotion.usecase";
+import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
+import { Promotion } from "../types/promotion/type.promotion";
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
@@ -47,10 +49,18 @@ interface CartState {
   items: CartItem[];
   customerId: string | null;
   activeBundles: string[];
+  activeTenantId: string | null;
 
   // 📅 FECHAS GLOBALES
   globalRentalDates: { from: Date; to: Date } | null;
   globalRentalTimes: { pickup: string; return: string } | null;
+
+  appliedCouponCode: string | null;
+  manualPromotionId: string | null; // promo activada manualmente
+  referralRewardAmount: number; // saldo tipo reward
+
+  setCouponCode: (code: string | null) => void;
+  setReferralReward: (amount: number) => void;
 
   addItem: (
     product: Product,
@@ -97,8 +107,22 @@ export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   customerId: null,
   activeBundles: [],
+  activeTenantId: null,
   globalRentalDates: null, // Inicialmente null
   globalRentalTimes: null,
+  appliedCouponCode: null,
+  manualPromotionId: null,
+  referralRewardAmount: 0,
+
+  setCouponCode: (code) => {
+    set({ appliedCouponCode: code });
+    get().applyPromotions(USER_MOCK[0].branchId!);
+  },
+
+  setReferralReward: (amount) => {
+    set({ referralRewardAmount: amount });
+    get().applyPromotions(USER_MOCK[0].branchId!);
+  },
 
   addItem: (
     product,
@@ -109,6 +133,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     customData,
   ) => {
     set((state) => {
+      const incomingTenantId = product.tenantId;
+      if (state.activeTenantId && state.activeTenantId !== incomingTenantId) {
+        return state;
+      }
+
       const listPrice =
         customData?.listPrice ?? getProductListPrice(product, type);
       const isExplicitBundle = Boolean(
@@ -226,7 +255,10 @@ export const useCartStore = create<CartState>((set, get) => ({
         selectedColorId: variant?.color,
       };
 
-      return { items: [...state.items, newItem] };
+      return {
+        items: [...state.items, newItem],
+        activeTenantId: state.activeTenantId ?? incomingTenantId,
+      };
     });
   },
 
@@ -235,6 +267,9 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!promotion || promotion.type !== "bundle" || !promotion.bundleConfig) {
       return;
     }
+    const tenantId =
+      get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+    if (!tenantId) return;
 
     const cartOperationTypes = Array.from(
       new Set(get().items.map((i) => i.operationType)),
@@ -251,7 +286,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     const currentBranchId = USER_MOCK[0].branchId;
     const requiredProducts = promotion.bundleConfig.requiredProductIds
       .map((id) => products.find((product) => product.id === id))
-      .filter((p): p is Product => Boolean(p));
+      .filter((p): p is Product => Boolean(p && p.tenantId === tenantId));
 
     const listPrices = requiredProducts.map((product) =>
       getProductListPrice(product, operationType),
@@ -324,9 +359,28 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   applyBundleDefinition: (bundleDefinition, branchId, startDate, endDate) => {
+    const tenantId =
+      get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+    if (!tenantId) {
+      return {
+        eligible: false,
+        possibleCount: 0,
+        missingProducts: [],
+        availabilityIssues: [
+          {
+            productId: "tenant_scope",
+            required: 0,
+            available: 0,
+            reason: "No se pudo resolver tenant activo",
+          },
+        ],
+      };
+    }
+
     const { cart, eligibility } = applyBundleToCart(
       get().items,
       bundleDefinition,
+      tenantId,
       branchId,
       startDate,
       endDate,
@@ -374,13 +428,16 @@ export const useCartStore = create<CartState>((set, get) => ({
   reevaluateActiveBundle: (branchId, startDate, endDate) => {
     const activeBundles = get().activeBundles;
     if (!activeBundles.length) return;
+    const tenantId =
+      get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+    if (!tenantId) return;
 
     let updatedCart: CartItem[] = get().items.map((item) => {
       const { bundleId, ...rest } = item;
       return rest as CartItem;
     });
 
-    const definitions = createBundleDefinitionsFromPromotions();
+    const definitions = createBundleDefinitionsFromPromotions(tenantId);
 
     activeBundles.forEach((bundleId) => {
       const bundleDefinition = definitions.find((b) => b.id === bundleId);
@@ -390,6 +447,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const { cart } = applyBundleToCart(
         updatedCart,
         bundleDefinition,
+        tenantId,
         branchId,
         startDate,
         endDate,
@@ -425,7 +483,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     const dates = get().globalRentalDates;
     const activeBundles = get().activeBundles;
     if (dates && activeBundles.length) {
-      get().reevaluateActiveBundle(USER_MOCK[0].branchId, dates.from, dates.to);
+      get().reevaluateActiveBundle(
+        USER_MOCK[0].branchId!,
+        dates.from,
+        dates.to,
+      );
     }
   },
 
@@ -462,23 +524,35 @@ export const useCartStore = create<CartState>((set, get) => ({
     }));
 
     if (get().activeBundles.length) {
-      get().reevaluateActiveBundle(USER_MOCK[0].branchId, range.from, range.to);
+      get().reevaluateActiveBundle(
+        USER_MOCK[0].branchId!,
+        range.from,
+        range.to,
+      );
     }
   },
 
   setGlobalTimes: (times) => set({ globalRentalTimes: times }),
   setCustomer: (id) => set({ customerId: id }),
   removeItem: (id) => {
-    set((s) => ({
-      items: s.items
+    set((s) => {
+      const nextItems = s.items
         .filter((i) => i.cartId !== id)
-        .map((item) => ({ ...item, bundleId: undefined })),
-    }));
+        .map((item) => ({ ...item, bundleId: undefined }));
+      return {
+        items: nextItems,
+        activeTenantId: nextItems[0]?.product.tenantId ?? null,
+      };
+    });
 
     const dates = get().globalRentalDates;
     const active = get().activeBundles.length;
     if (dates && active) {
-      get().reevaluateActiveBundle(USER_MOCK[0].branchId, dates.from, dates.to);
+      get().reevaluateActiveBundle(
+        USER_MOCK[0].branchId!,
+        dates.from,
+        dates.to,
+      );
     }
   },
   clearCart: () =>
@@ -486,16 +560,58 @@ export const useCartStore = create<CartState>((set, get) => ({
       items: [],
       customerId: null,
       activeBundles: [],
+      activeTenantId: null,
       globalRentalDates: null,
       globalRentalTimes: null,
     }),
   getTotal: () => get().items.reduce((acc, item) => acc + item.subtotal, 0),
   applyPromotions: (branchId: string) => {
     const state = get();
-    const promotions = getActivePromotions();
     const rentalDates = state.globalRentalDates;
+    const now = new Date();
 
-    const cartSubtotal = state.items.reduce(
+    const tenantId =
+      state.activeTenantId ?? state.items[0]?.product.tenantId ?? null;
+    let promotions = getActivePromotions(tenantId ?? undefined, ["automatic"]);
+
+    // 🔹 1. Resolver cupón manual
+    if (state.appliedCouponCode) {
+      const couponPromo = resolveCouponPromotion(
+        state.appliedCouponCode,
+        promotions,
+        now,
+      );
+
+      if (couponPromo) {
+        promotions = [...promotions, couponPromo];
+      }
+    }
+
+    // 🔹 2. Convertir referral reward en promoción temporal
+    if (state.referralRewardAmount > 0) {
+      promotions = [
+        ...promotions,
+        {
+          id: "referral-reward",
+          name: "Reward por referido",
+          type: "fixed_amount",
+          scope: "global",
+          value: state.referralRewardAmount,
+          appliesTo: ["venta", "alquiler"],
+          startDate: now,
+          isActive: true,
+          createdAt: now,
+          usedCount: 0,
+        } as Promotion,
+      ];
+    }
+
+    const tenantSafeItems = tenantId
+      ? state.items.filter((i) => i.product.tenantId === tenantId)
+      : state.items;
+
+    // 🔹 3. Calcular subtotal base
+    const cartSubtotal = tenantSafeItems.reduce(
       (acc, item) =>
         acc +
         calculateSubtotal(
@@ -510,11 +626,19 @@ export const useCartStore = create<CartState>((set, get) => ({
       0,
     );
 
-    const promotedItems = applyPromotionsUseCase(state.items, promotions, {
+    const tenantSafePromotions = promotions.filter(
+      (promotion) => !promotion.tenantId || promotion.tenantId === tenantId,
+    );
+
+    const promotedItems = applyPromotionsUseCase(
+      tenantSafeItems,
+      tenantSafePromotions,
+      {
       branchId,
       cartSubtotal,
-      now: new Date(),
-    });
+      now,
+      },
+    );
 
     const updatedItems = promotedItems.map((item) => ({
       ...item,
@@ -529,21 +653,26 @@ export const useCartStore = create<CartState>((set, get) => ({
       ),
     }));
 
-    const hasChanges = updatedItems.some((item, index) => {
-      const previous = state.items[index];
-      if (!previous) return true;
-      return (
-        item.unitPrice !== previous.unitPrice ||
-        (item.discountAmount ?? 0) !== (previous.discountAmount ?? 0) ||
-        (item.discountReason ?? "") !== (previous.discountReason ?? "") ||
-        (item.appliedPromotionId ?? "") !== (previous.appliedPromotionId ?? "") ||
-        item.subtotal !== previous.subtotal
-      );
-    });
+    const currentItems = state.items;
+    const hasSameLength = currentItems.length === updatedItems.length;
+    const hasChanges =
+      !hasSameLength ||
+      updatedItems.some((next, index) => {
+        const prev = currentItems[index];
+        if (!prev) return true;
+        return (
+          next.cartId !== prev.cartId ||
+          next.unitPrice !== prev.unitPrice ||
+          (next.discountAmount ?? 0) !== (prev.discountAmount ?? 0) ||
+          (next.discountReason ?? "") !== (prev.discountReason ?? "") ||
+          (next.appliedPromotionId ?? "") !==
+            (prev.appliedPromotionId ?? "") ||
+          next.subtotal !== prev.subtotal
+        );
+      });
 
     if (hasChanges) {
       set({ items: updatedItems });
     }
   },
-
 }));

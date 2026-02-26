@@ -20,6 +20,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/home/ui/direct-transaction/CashPaymentSummary";
 import { processTransaction } from "@/src/services/transactionServices";
+import { manageLoyaltyPoints } from "@/src/services/use-cases/manageLoyaltyPoints";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -41,6 +42,9 @@ import {
   reserveBundledItems,
   reserveStockUsingInventory,
 } from "@/src/services/bundleService";
+import { UseCouponComponent } from "../ui/UseCouponComponent";
+import { Coupon } from "@/src/types/coupon/type.coupon";
+import { useCouponStore } from "@/src/store/useCouponStore";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -54,6 +58,7 @@ export function PosCheckoutModal({
   const {
     items,
     clearCart,
+    activeTenantId,
     globalRentalDates,
     setGlobalDates,
     globalRentalTimes,
@@ -62,13 +67,14 @@ export function PosCheckoutModal({
 
   const businessRules = BUSINESS_RULES_MOCK;
   const sellerId = USER_MOCK[0].id;
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = USER_MOCK[0].branchId!;
 
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [notes, setNotes] = useState("");
 
   const [usePoints, setUsePoints] = React.useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   // Obtenemos al cliente actual desde tu store
   const selectedClient = useCustomerStore((state) =>
@@ -80,7 +86,6 @@ export function PosCheckoutModal({
   // Configuraciones (Idealmente vienen de tus businessRules)
   const availablePoints = selectedClient?.loyaltyPoints || 0;
   const pointValueInMoney = 0.01; // 1 punto = S/ 0.01
-  const pointsDiscount = usePoints ? availablePoints * pointValueInMoney : 0;
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
@@ -146,13 +151,36 @@ export function PosCheckoutModal({
 
   const subtotalBruto = items.reduce(
     (acc, item) =>
-      acc + (item.listPrice ?? item.unitPrice) * item.quantity * getMultiplier(item),
+      acc +
+      (item.listPrice ?? item.unitPrice) * item.quantity * getMultiplier(item),
     0,
   );
   const subtotalConPromos = totalVentas + totalAlquileres;
+  const pointsConsumed = usePoints
+    ? Math.min(
+        availablePoints,
+        Math.ceil(subtotalConPromos / pointValueInMoney),
+      )
+    : 0;
+  const pointsDiscount = pointsConsumed * pointValueInMoney;
+
+  let couponDiscount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      couponDiscount = Math.floor(
+        subtotalConPromos * (appliedCoupon.discountValue / 100),
+      );
+    } else {
+      couponDiscount = Math.min(subtotalConPromos, appliedCoupon.discountValue);
+    }
+  }
+
   const discountFromItems = Math.max(subtotalBruto - subtotalConPromos, 0);
-  const totalDiscount = discountFromItems + pointsDiscount;
-  const totalBrutoConIGV = Math.max(subtotalConPromos - pointsDiscount, 0);
+  const totalDiscount = discountFromItems + pointsDiscount + couponDiscount;
+  const totalBrutoConIGV = Math.max(
+    subtotalConPromos - pointsDiscount - couponDiscount,
+    0,
+  );
 
   // Base imponible (sin IGV)
   const subtotalSinIGV = totalBrutoConIGV / (1 + IGV_RATE);
@@ -217,6 +245,7 @@ export function PosCheckoutModal({
     if (missingSerials) return toast.error("Faltan asignar series");
 
     const baseData = {
+      tenantId: activeTenantId ?? items[0]?.product.tenantId,
       customerId: selectedCustomer.id,
       customerName: selectedCustomer.name,
       sellerId,
@@ -229,8 +258,11 @@ export function PosCheckoutModal({
     setIsProcessing(true);
     try {
       if (items.some((item) => item.bundleId)) {
+        const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+        if (!tenantId) throw new Error("Tenant no resuelto para bundle");
         await reserveBundledItems(
           items,
+          tenantId,
           currentBranchId,
           dateRange.from,
           dateRange.to,
@@ -333,7 +365,10 @@ export function PosCheckoutModal({
             taxAmount: taxAmount,
             totalAmount: totalBrutoConIGV,
             keepAsCredit: false,
-            receivedAmount: Number(receivedAmount) || 0,
+            receivedAmount:
+              paymentMethod === "cash"
+                ? Number(receivedAmount) || 0
+                : totalBrutoConIGV,
             paymentMethod: paymentMethod as PaymentMethodType,
           },
         };
@@ -363,7 +398,10 @@ export function PosCheckoutModal({
             taxAmount: taxAmount,
             totalAmount: totalBrutoConIGV,
             keepAsCredit: false,
-            receivedAmount: Number(receivedAmount) || 0,
+            receivedAmount:
+              paymentMethod === "cash"
+                ? Number(receivedAmount) || 0
+                : totalBrutoConIGV + guaranteeAmount,
             paymentMethod: paymentMethod as PaymentMethodType,
           },
 
@@ -376,6 +414,19 @@ export function PosCheckoutModal({
         };
 
         await processTransaction(rentalDTO);
+      }
+
+      if (usePoints && pointsConsumed > 0) {
+        manageLoyaltyPoints({
+          clientId: selectedCustomer.id,
+          points: pointsConsumed,
+          type: "redeemed",
+          description: "Canje de puntos en POS",
+        });
+      }
+
+      if (appliedCoupon) {
+        useCouponStore.getState().markAsUsed(appliedCoupon.id);
       }
 
       toast.success("Operación exitosa");
@@ -572,6 +623,19 @@ export function PosCheckoutModal({
             </div>
           )}
 
+          {hasRentals && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center text-xs font-semibold">
+                <span className="text-muted-foreground">
+                  Garantía Requerida:
+                </span>
+                <span className="font-black text-amber-600">
+                  Obligatorio registrar garantía
+                </span>
+              </div>
+            </div>
+          )}
+
           <CustomerSelector
             selected={selectedCustomer}
             onSelect={setSelectedCustomer}
@@ -588,16 +652,23 @@ export function PosCheckoutModal({
             </div>
           </div>
 
-          {/* --- INICIO UI DE PUNTOS --- */}
-          {selectedClient && availablePoints >= 0 && (
-            <UsePointsComponent
-              usePoints={usePoints}
-              setUsePoints={setUsePoints}
-              availablePoints={availablePoints}
-              pointValueInMoney={pointValueInMoney}
+          {/* SECCIÓN FIDELIDAD / CUPONES */}
+          <div className="pt-2 border-t flex flex-col gap-2">
+            {selectedClient && availablePoints > 0 && (
+              <UsePointsComponent
+                usePoints={usePoints}
+                setUsePoints={setUsePoints}
+                availablePoints={availablePoints}
+                pointValueInMoney={pointValueInMoney}
+              />
+            )}
+            <UseCouponComponent
+              tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
+              selectedClientId={selectedCustomer?.id}
+              appliedCoupon={appliedCoupon}
+              onApplyCoupon={setAppliedCoupon}
             />
-          )}
-          {/* --- FIN UI DE PUNTOS --- */}
+          </div>
 
           <CashPaymentSummary
             type={hasRentals ? "alquiler" : "venta"}

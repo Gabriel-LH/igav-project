@@ -2,6 +2,7 @@ import z from "zod";
 
 export const userAttendanceSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   userId: z.string(), // vinculado al usuario
   checkIn: z.date(), // cuándo entró
   checkOut: z.date().optional(), // cuándo salió, puede ser null si aún no sale

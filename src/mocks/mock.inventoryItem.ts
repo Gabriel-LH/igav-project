@@ -3,6 +3,7 @@ import { InventoryItem } from "../types/product/type.inventoryItem";
 export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   {
     id: "inv-uuid-001",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0001",
     variantCode: "VEST-NOC-NEG-S-BR003",
     productId: "1",
@@ -21,6 +22,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-002",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0002",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -39,6 +41,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
 
   {
     id: "inv-uuid-003",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0003",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -56,6 +59,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-004",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0004",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -73,6 +77,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-005",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0005",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -90,6 +95,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-006",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0006",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -107,6 +113,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-007",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0007",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -124,6 +131,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-008",
+    tenantId: "tenant-a",
     serialCode: "VEST-NOC-NEG-BR001-0008",
     variantCode: "VEST-NOC-NEG-M-BR001",
     productId: "1",
@@ -141,6 +149,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-009",
+    tenantId: "tenant-a",
     serialCode: "TUX-SLIM-L-BR001-0009",
     variantCode: "TUXEDO-SLIM-L-BR001",
     productId: "2",
@@ -157,6 +166,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-uuid-010",
+    tenantId: "tenant-a",
     serialCode: "TUX-SLIM-M-BR002-0010",
     variantCode: "TUXEDO-SLIM-M-BR002",
     productId: "2",
@@ -174,6 +184,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
 
   {
     id: "inv-combo-camisa-001",
+    tenantId: "tenant-a",
     serialCode: "CAM-SEDA-0001",
     variantCode: "CAM-SEDA-M",
     productId: "4",
@@ -190,6 +201,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-combo-pantalon-001",
+    tenantId: "tenant-a",
     serialCode: "PAN-AZUL-0001",
     variantCode: "PAN-AZUL-32",
     productId: "5",
@@ -206,6 +218,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-combo-saco-001",
+    tenantId: "tenant-a",
     serialCode: "SAC-MOD-0001",
     variantCode: "SAC-MOD-40",
     productId: "6",
@@ -222,6 +235,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
   },
   {
     id: "inv-combo-zapato-001",
+    tenantId: "tenant-a",
     serialCode: "ZAP-OXF-0001",
     variantCode: "ZAP-OXF-42",
     productId: "7",

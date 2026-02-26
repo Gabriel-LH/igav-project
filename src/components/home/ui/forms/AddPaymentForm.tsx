@@ -10,10 +10,10 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Banknote, CreditCard, Smartphone, Wallet } from "lucide-react";
-import { PaymentMethod } from "../direct-transaction/CashPaymentSummary";
 import { Input } from "@/components/input";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 
 interface AddPaymentFormProps {
   remainingBalance: number;
@@ -94,7 +94,7 @@ export function AddPaymentForm({
           </Label>
           <Select
             value={method}
-            onValueChange={(val) => setMethod(val as PaymentMethod)}
+            onValueChange={(val) => setMethod(val as PaymentMethodType)}
           >
             <SelectTrigger className="h-9 text-[11px] font-bold">
               <SelectValue placeholder="Seleccionar..." />

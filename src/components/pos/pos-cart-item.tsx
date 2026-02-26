@@ -27,7 +27,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
     useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
 
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = USER_MOCK[0].branchId!;
   const isRent = item.operationType === "alquiler";
   const isSerial = item.product.is_serial;
 

@@ -9,6 +9,7 @@ import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvaila
 
 export interface BundleDefinition {
   id: string;
+  tenantId?: string;
   name: string;
   requiredItems: Array<{ productId: string; quantity: number }>;
   discountType: "percentage" | "fixed";
@@ -66,38 +67,55 @@ export type CheckAvailabilityFn = (
 
 export type ReserveStockFn = (input: AvailabilityInput) => Promise<void> | void;
 
-export function createBundleDefinitionsFromPromotions() {
-  return PROMOTIONS_MOCK.filter(isBundlePromotion).map((promotion) => {
-    const cfg = promotion.bundleConfig as PromotionBundleConfig;
-    const requiredItemsMap = new Map<string, number>();
-    cfg.requiredProductIds.forEach((productId) => {
-      requiredItemsMap.set(
-        productId,
-        (requiredItemsMap.get(productId) ?? 0) + 1,
-      );
-    });
+export function createBundleDefinitionsFromPromotions(tenantId?: string) {
+  const { products } = useInventoryStore.getState();
 
-    const discountType: "percentage" | "fixed" =
-      typeof promotion.value === "number" && promotion.value > 0
-        ? "percentage"
-        : "fixed";
+  return PROMOTIONS_MOCK.filter(isBundlePromotion)
+    .filter(
+      (promotion) =>
+        !tenantId || !promotion.tenantId || promotion.tenantId === tenantId,
+    )
+    .map((promotion) => {
+      const bundleProducts = promotion.bundleConfig.requiredProductIds
+        .map((id) => products.find((p) => p.id === id))
+        .filter((p): p is (typeof products)[number] => Boolean(p));
 
-    const discountValue =
-      discountType === "percentage"
-        ? promotion.value!
-        : promotion.bundleConfig.bundlePrice;
+      if (tenantId && bundleProducts.some((p) => p.tenantId !== tenantId)) {
+        return null;
+      }
 
-    return {
-      id: promotion.id,
-      name: promotion.name,
-      requiredItems: Array.from(requiredItemsMap.entries()).map(
-        ([productId, quantity]) => ({ productId, quantity }),
-      ),
-      discountType,
-      discountValue,
-      appliesTo: promotion.appliesTo,
-    } satisfies BundleDefinition;
-  });
+      const cfg = promotion.bundleConfig as PromotionBundleConfig;
+      const requiredItemsMap = new Map<string, number>();
+      cfg.requiredProductIds.forEach((productId) => {
+        requiredItemsMap.set(
+          productId,
+          (requiredItemsMap.get(productId) ?? 0) + 1,
+        );
+      });
+
+      const discountType: "percentage" | "fixed" =
+        typeof promotion.value === "number" && promotion.value > 0
+          ? "percentage"
+          : "fixed";
+
+      const discountValue =
+        discountType === "percentage"
+          ? promotion.value!
+          : promotion.bundleConfig.bundlePrice;
+
+      return {
+        id: promotion.id,
+        tenantId: promotion.tenantId,
+        name: promotion.name,
+        requiredItems: Array.from(requiredItemsMap.entries()).map(
+          ([productId, quantity]) => ({ productId, quantity }),
+        ),
+        discountType,
+        discountValue,
+        appliesTo: promotion.appliesTo,
+      } as BundleDefinition;
+    })
+    .filter((v): v is BundleDefinition => Boolean(v));
 }
 
 const defaultCheckAvailability: CheckAvailabilityFn = (input) => {
@@ -187,13 +205,50 @@ const isItemInBranch = (item: CartItem, branchId: string) => {
 export function detectBundleEligibility(
   cart: CartItem[],
   bundleDefinition: BundleDefinition,
+  tenantId: string,
   branchId: string,
   startDate: Date,
   endDate: Date,
   checkAvailability: CheckAvailabilityFn = defaultCheckAvailability,
 ): BundleEligibilityResult {
+  const hasCrossTenantItem = cart.some(
+    (item) => item.product.tenantId !== tenantId,
+  );
+  if (hasCrossTenantItem) {
+    return {
+      eligible: false,
+      possibleCount: 0,
+      missingProducts: [],
+      availabilityIssues: [
+        {
+          productId: "tenant_scope",
+          required: 0,
+          available: 0,
+          reason: "El carrito tiene productos de otro tenant",
+        },
+      ],
+    };
+  }
+
+  if (bundleDefinition.tenantId && bundleDefinition.tenantId !== tenantId) {
+    return {
+      eligible: false,
+      possibleCount: 0,
+      missingProducts: [],
+      availabilityIssues: [
+        {
+          productId: "tenant_scope",
+          required: 0,
+          available: 0,
+          reason: "El bundle no pertenece al tenant activo",
+        },
+      ],
+    };
+  }
+
   const eligibleItems = cart.filter(
     (item) =>
+      item.product.tenantId === tenantId &&
       operationMatchesBundle(bundleDefinition, item.operationType) &&
       isItemInBranch(item, branchId),
   );
@@ -296,6 +351,7 @@ export function detectBundleEligibility(
 export function applyBundleToCart(
   cart: CartItem[],
   bundleDefinition: BundleDefinition,
+  tenantId: string,
   branchId: string,
   startDate: Date,
   endDate: Date,
@@ -304,6 +360,7 @@ export function applyBundleToCart(
   const eligibility = detectBundleEligibility(
     cart,
     bundleDefinition,
+    tenantId,
     branchId,
     startDate,
     endDate,
@@ -328,6 +385,7 @@ export function applyBundleToCart(
     const remainingForProduct =
       requiredTotalByProduct.get(line.product.id) ?? 0;
     if (remainingForProduct <= 0) return;
+    if (line.product.tenantId !== tenantId) return;
     if (!operationMatchesBundle(bundleDefinition, line.operationType)) return;
     const consume = Math.min(line.quantity, remainingForProduct);
     if (consume > 0) {
@@ -491,6 +549,7 @@ export function clearBundleAssignments(
 
 export async function reserveBundledItems(
   cart: CartItem[],
+  tenantId: string,
   branchId: string,
   startDate: Date,
   endDate: Date,
@@ -499,7 +558,7 @@ export async function reserveBundledItems(
   const grouped = new Map<string, { item: CartItem; quantity: number }>();
 
   cart
-    .filter((item) => item.bundleId)
+    .filter((item) => item.bundleId && item.product.tenantId === tenantId)
     .forEach((item) => {
       const key = [
         item.bundleId,
@@ -534,11 +593,17 @@ export async function reserveBundledItems(
 export const reserveStockUsingInventory: ReserveStockFn = (input) => {
   const inventoryStore = useInventoryStore.getState();
   const { inventoryItems, stockLots } = inventoryStore;
+  const { products } = inventoryStore;
+  const expectedTenantId = products.find(
+    (p) => p.id === input.productId,
+  )?.tenantId;
+  if (!expectedTenantId) return;
   let remaining = input.quantity;
 
   const serialCandidates = inventoryItems.filter(
     (item) =>
       item.productId === input.productId &&
+      item.tenantId === expectedTenantId &&
       item.branchId === input.branchId &&
       item.status === "disponible" &&
       (input.operationType === "alquiler" ? item.isForRent : item.isForSale) &&
@@ -558,6 +623,9 @@ export const reserveStockUsingInventory: ReserveStockFn = (input) => {
     .filter(
       (lot) =>
         lot.productId === input.productId &&
+        products.some(
+          (p) => p.id === lot.productId && p.tenantId === expectedTenantId,
+        ) &&
         lot.branchId === input.branchId &&
         lot.status === "disponible" &&
         (input.operationType === "alquiler" ? lot.isForRent : lot.isForSale) &&
@@ -579,11 +647,17 @@ export const reserveStockUsingInventory: ReserveStockFn = (input) => {
 export const releaseStockUsingInventory: ReserveStockFn = (input) => {
   const inventoryStore = useInventoryStore.getState();
   const { inventoryItems, stockLots } = inventoryStore;
+  const { products } = inventoryStore;
+  const expectedTenantId = products.find(
+    (p) => p.id === input.productId,
+  )?.tenantId;
+  if (!expectedTenantId) return;
   let remaining = input.quantity;
 
   const serialCandidates = inventoryItems.filter(
     (item) =>
       item.productId === input.productId &&
+      item.tenantId === expectedTenantId &&
       item.branchId === input.branchId &&
       item.status === "reservado" &&
       (input.operationType === "alquiler" ? item.isForRent : item.isForSale) &&
@@ -602,6 +676,9 @@ export const releaseStockUsingInventory: ReserveStockFn = (input) => {
   const lotCandidates = stockLots.filter(
     (lot) =>
       lot.productId === input.productId &&
+      products.some(
+        (p) => p.id === lot.productId && p.tenantId === expectedTenantId,
+      ) &&
       lot.branchId === input.branchId &&
       (input.operationType === "alquiler" ? lot.isForRent : lot.isForSale) &&
       (!input.sizeId || lot.sizeId === input.sizeId) &&

@@ -3,6 +3,7 @@ import { Product } from "../types/product/type.product";
 export const PRODUCTS_MOCK: Product[] = [
   {
     id: "1",
+    tenantId: "tenant-a",
     name: "Vestido de Noche Gala",
     image:
       "https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=400",
@@ -27,6 +28,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "2",
+    tenantId: "tenant-a",
     name: "Tuxedo Slim Fit",
     image: "https://m.media-amazon.com/images/I/610HVuZJefL._AC_SX569_.jpg",
     sku: "SKU-002",
@@ -48,6 +50,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "3",
+    tenantId: "tenant-a",
     name: "Traje Clásico",
     image: "https://m.media-amazon.com/images/I/51oBfmmnrdL._AC_SX342_.jpg",
     sku: "SKU-003",
@@ -70,6 +73,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "4",
+    tenantId: "tenant-a",
     name: "Camisa de Seda Blanca",
     image:
       "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=400",
@@ -93,6 +97,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "5",
+    tenantId: "tenant-a",
     name: "Pantalón de Vestir Azul",
     image:
       "https://imgs.search.brave.com/ol9r-R8HdJwCpSYeJHrtYuixmZ22n0oZwly5A0Eqpko/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMWZ1/ZnZ5NHhhbzZrOS5j/bG91ZGZyb250Lm5l/dC9mZWVkL2ltZy93/b21hbl9wYW50cy82/NTIzMC9mcm9udF9z/bWFsbC5wbmc",
@@ -116,6 +121,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "6",
+    tenantId: "tenant-a",
     name: "Saco de Blazer Moderno",
     image:
       "https://imgs.search.brave.com/Ou1-5Ud9NltvHoC2zTj3qjmLUjc-vcQn5b5ughubVms/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzY4OTM4Ni1NTE03/MzMzODgyOTUwOV8x/MjIwMjMtRS1zYWNv/LWJsYXplci1ob21i/cmUtbW9kZXJub3Mt/Zm9ybWFsLWNhc3Vh/bC1zbGltLWZpdC1t/b2RhLndlYnA",
@@ -139,6 +145,7 @@ export const PRODUCTS_MOCK: Product[] = [
   },
   {
     id: "7",
+    tenantId: "tenant-a",
     name: "Zapatos Oxford Cuero",
     image:
       "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=400",

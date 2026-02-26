@@ -8,8 +8,8 @@ export const RentalsTab = () => {
 
   // Cálculo de métricas rápidas (Auditoría)
   const totalIngresos = rentals.reduce(
-    (acc, res) => acc + (res.totalPenalty || 0),
-    0
+    (acc, res) => acc + (res.operationId ? 0 : 0), // Adjust this if there's a specific field to sum
+    0,
   );
   return (
     <>

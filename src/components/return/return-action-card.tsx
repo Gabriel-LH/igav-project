@@ -22,8 +22,7 @@ export function ReturnActionCard({ rental }: Props) {
   // 1. HIDRATACIÓN: Buscamos al cliente
   const client = CLIENTS_MOCK.find((c) => c.id === rental.customerId);
 
-  // 2. EXTRACCIÓN LIMPIA DE GARANTÍA
-  const { guarantee } = rental.financials;
+  const guarantee = rental.guarantee;
 
   console.log("garantia que llega al return action card", guarantee);
 
@@ -73,7 +72,7 @@ export function ReturnActionCard({ rental }: Props) {
             <p className="font-bold text-sm text-foreground">
               {client
                 ? `${client.firstName} ${client.lastName}`
-                : rental.customerName}
+                : (rental as any).customerName}
             </p>
             <p className="text-[10px] text-muted-foreground font-medium">
               DNI {client?.dni || "---"} • {client?.phone || "Sin teléfono"}
@@ -148,7 +147,11 @@ export function ReturnActionCard({ rental }: Props) {
                 <HugeiconsIcon icon={Information} size={12} strokeWidth={2} />
                 {(() => {
                   const sizes = Array.from(
-                    new Set(rental.items?.map((i) => i.size)),
+                    new Set(
+                      rental.items?.map(
+                        (i) => (i as any).sizeId || (i as any).size,
+                      ),
+                    ),
                   );
                   return sizes.length === 1 ? `Talla ${sizes[0]}` : "Mixto";
                 })()}
@@ -157,7 +160,11 @@ export function ReturnActionCard({ rental }: Props) {
                 <HugeiconsIcon icon={ColorsIcon} size={12} strokeWidth={2} />
                 {(() => {
                   const colors = Array.from(
-                    new Set(rental.items?.map((i) => i.color)),
+                    new Set(
+                      rental.items?.map(
+                        (i) => (i as any).colorId || (i as any).color,
+                      ),
+                    ),
                   );
                   return colors.length === 1 ? colors[0] : "Mixto";
                 })()}

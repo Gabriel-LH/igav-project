@@ -1,7 +1,8 @@
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { Client } from "@/src/types/clients/type.client"; 
+import { Client } from "@/src/types/clients/type.client";
+import { generateUniqueReferralCode } from "@/src/utils/referral/generateReferralCode";
 
-interface CreateClientDTO {
+export interface CreateClientDTO {
   dni: string;
   firstName: string;
   lastName: string;
@@ -9,12 +10,20 @@ interface CreateClientDTO {
   email?: string;
   address: string;
   city: string;
+  usedReferralCode?: string;
 }
 
 export function useCreateClient() {
   const addCustomer = useCustomerStore((s) => s.addCustomer);
 
+  const customers = useCustomerStore((s) => s.customers);
+
   const createClient = (data: CreateClientDTO) => {
+    const existingCodes = new Set(customers.map((c) => c.referralCode));
+
+    // 2️⃣ Generar código único
+    const referralCode = generateUniqueReferralCode(existingCodes);
+
     const newClient: Client = {
       id: "CLi-" + crypto.randomUUID(),
       userName: undefined,
@@ -32,6 +41,13 @@ export function useCreateClient() {
       createdAt: new Date(),
       updatedAt: new Date(),
       status: "active",
+      type: "individual",
+      referralCode: referralCode,
+      referredByClientId: null,
+      isDeleted: false,
+      deletedAt: null,
+      deletedBy: null,
+      deleteReason: null,
     };
 
     addCustomer(newClient);

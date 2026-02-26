@@ -67,7 +67,7 @@ export function ReservationProductCard({ reservation }: Props) {
         {Object.values(
           specificItems.reduce(
             (acc, item) => {
-              const key = `${item.productId}-${item.size}-${item.color}`;
+              const key = `${item.productId}-${item.sizeId}-${item.colorId}`;
               if (!acc[key]) {
                 acc[key] = { ...item, quantity: 0 };
               }
@@ -82,10 +82,12 @@ export function ReservationProductCard({ reservation }: Props) {
             (p) => p.id.toString() === item.productId,
           );
 
-          const itemColorHex = [...inventoryItems, ...stockLots].find(
+          const itemColorHex = (
+            [...inventoryItems, ...stockLots] as any[]
+          ).find(
             (s) =>
               s.productId.toString() === item.productId.toString() &&
-              s.color === item.color,
+              s.colorId === item.colorId,
           )?.colorHex;
 
           return (
@@ -116,7 +118,7 @@ export function ReservationProductCard({ reservation }: Props) {
                 </div>
                 <div className="flex gap-2 items-center mt-1">
                   <span className="text-[10px] text-muted-foreground uppercase">
-                    Talla {item.size}
+                    Talla {item.sizeId}
                   </span>
                   <div
                     className="h-2.5 w-2.5 rounded-full border border-black/10"
@@ -124,7 +126,7 @@ export function ReservationProductCard({ reservation }: Props) {
                   />
 
                   <span className="md:text-[10px] text-[8px] text-muted-foreground font-medium uppercase">
-                    {item.color}
+                    {item.colorId}
                   </span>
                 </div>
                 {item.quantity > 1 && (

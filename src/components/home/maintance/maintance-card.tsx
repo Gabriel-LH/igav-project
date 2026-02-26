@@ -7,20 +7,20 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import Image from "next/image";
 import { Badge } from "@/components/badge";
-import { Product } from "@/src/types/product/type.product"; 
+import { Product } from "@/src/types/product/type.product";
 
 export function MaintenanceActionCard({ item }: { item: any }) {
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateItemStatus
+    (state) => state.updateItemStatus,
   );
 
   const { products } = useInventoryStore();
 
   const productName = products.find(
-    (product: Product) => product.id === item.productId
+    (product: Product) => product.id === item.productId,
   )?.name;
   const sku = products.find(
-    (product: Product) => product.id === item.productId
+    (product: Product) => product.id === item.productId,
   )?.sku;
 
   return (
@@ -56,12 +56,8 @@ export function MaintenanceActionCard({ item }: { item: any }) {
       </div>
 
       <div className="flex  items-center gap-3">
-        <p className="text-[10px] uppercase font-black">
-          Talla: {item.size}
-        </p>
-        <p className="text-[10px] uppercase font-black">
-          Color: {item.color}
-        </p>
+        <p className="text-[10px] uppercase font-black">Talla: {item.size}</p>
+        <p className="text-[10px] uppercase font-black">Color: {item.color}</p>
         <p className="text-[10px] uppercase font-black">
           Cantidad: {item.quantity}
         </p>
@@ -82,21 +78,21 @@ export function MaintenanceActionCard({ item }: { item: any }) {
 
       <div className="flex items-center gap-3">
         <Button
-        onClick={() => updateStockStatus(item.id, "disponible")}
-        variant="outline"
-        className="border-amber-500 uppercase tracking-wider text-amber-600 hover:bg-amber-500 hover:text-amber-500 font-black text-[10px] "
-      >
-        Listo
-      </Button>
-      <Button
-        onClick={() => updateStockStatus(item.id, "en_lavanderia")}
-        variant="outline"
-        className="border-blue-500 uppercase tracking-wider text-blue-600 hover:bg-blue-500 hover:text-blue-500 font-black text-[10px] "
-      >
-        Lavandería
-      </Button>
+          onClick={() => updateStockStatus(item.id, "disponible")}
+          variant="outline"
+          className="border-amber-500 uppercase tracking-wider text-amber-600 hover:bg-amber-500 hover:text-amber-500 font-black text-[10px] "
+        >
+          Listo
+        </Button>
         <Button
-          onClick={() => updateStockStatus(item.id, "baja")}
+          onClick={() => updateStockStatus(item.id, "en_lavanderia")}
+          variant="outline"
+          className="border-blue-500 uppercase tracking-wider text-blue-600 hover:bg-blue-500 hover:text-blue-500 font-black text-[10px] "
+        >
+          Lavandería
+        </Button>
+        <Button
+          onClick={() => updateStockStatus(item.id, "retirado")}
           variant="outline"
           className="border-red-500 border text-red-600 hover:bg-red-500 hover:text-red-500 font-black text-[10px] uppercase flex gap-0 group"
         >

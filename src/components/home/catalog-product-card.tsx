@@ -27,7 +27,7 @@ interface Props {
 
 export function CatalogProductCard({ product }: Props) {
   const user = USER_MOCK;
-  const currentBranchId = user[0].branchId;
+  const currentBranchId = user[0].branchId!;
   const { getSizeById, getColorById, getModelById, getCategoryById } =
     useAttributeStore();
 

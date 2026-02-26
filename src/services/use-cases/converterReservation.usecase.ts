@@ -42,7 +42,9 @@ export async function convertReservationUseCase(
       selectedStocks: input.selectedStocks,
       sellerId: input.sellerId,
       financials: {
-        totalRent: input.totalCalculated,
+        subtotal: input.totalCalculated,
+        totalAmount: input.totalCalculated,
+        totalDiscount: 0,
         paymentMethod: "cash",
         receivedAmount: input.totalPaid,
         keepAsCredit: input.isCredit,
@@ -51,7 +53,7 @@ export async function convertReservationUseCase(
           value: input.guarantee?.value,
           description: input.guarantee?.description,
         },
-      },
+      } as any,
     });
   }
 
@@ -65,11 +67,10 @@ export async function convertReservationUseCase(
       financials: {
         totalAmount: input.totalCalculated,
         paymentMethod: "cash",
-        downPayment: input.downPayment,
         receivedAmount: input.totalPaid,
         keepAsCredit: input.isCredit,
         totalPrice: 0,
-      },
+      } as any,
       notes: input.notes,
       status: input.shouldDeliverImmediately
         ? "vendido"

@@ -22,7 +22,9 @@ export const CLIENTS_MOCK: Client[] = [
     isDeleted: false,
     deletedAt: null,
     deletedBy: null,
-    deleteReason: null
+    deleteReason: null,
+    referralCode: "YAL5T3",
+    referredByClientId: null,
   },
   {
     id: "cl_002",
@@ -41,7 +43,9 @@ export const CLIENTS_MOCK: Client[] = [
     isDeleted: false,
     deletedAt: null,
     deletedBy: null,
-    deleteReason: null
+    deleteReason: null,
+    referralCode: "",
+    referredByClientId: null,
   },
   {
     id: "cl_003",
@@ -64,6 +68,8 @@ export const CLIENTS_MOCK: Client[] = [
     type: "individual",
     isDeleted: false,
     deletedBy: null,
-    deleteReason: null
+    deleteReason: null,
+    referralCode: "",
+    referredByClientId: null,
   },
 ];

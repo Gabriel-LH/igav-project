@@ -33,7 +33,11 @@ import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 
-type StockTarget = "disponible" | "en_lavanderia" | "en_mantenimiento" | "baja";
+type StockTarget =
+  | "disponible"
+  | "en_lavanderia"
+  | "en_mantenimiento"
+  | "retirado";
 
 export function ReturnInspectionDrawer({
   rental,
@@ -68,7 +72,7 @@ export function ReturnInspectionDrawer({
       id: item.id || rental.id, // Fallback if needed, but item.id should be present from Grid
       productId: item.productId,
       name: item.productName,
-      size: item.size,
+      sizeId: (item as any).sizeId || (item as any).size,
     }));
   }, [rental.items]);
 
@@ -174,7 +178,7 @@ export function ReturnInspectionDrawer({
     const totalToPay =
       penaltyAmount + extraDamageCharge + Number(penaltyCharge);
 
-    const guarantee = rental.financials.guarantee;
+    const guarantee = rental.guarantee;
     const isCash = guarantee?.type === "dinero";
     const guaranteeValue = isCash ? Number(guarantee?.value) || 0 : 0;
 
@@ -218,7 +222,7 @@ export function ReturnInspectionDrawer({
       rental,
       client!,
       itemsToInspect, // This was original summary usage, might need update?
-      rental.financials.guarantee,
+      rental.guarantee,
       { itemsInspection, damageNotes: damageNotes || undefined },
       { ...summary, extraDamageCharge },
     );
@@ -228,7 +232,12 @@ export function ReturnInspectionDrawer({
   };
 
   const counts = useMemo(() => {
-    const stats = { lavanderia: 0, mantenimiento: 0, baja: 0, disponible: 0 };
+    const stats = {
+      lavanderia: 0,
+      mantenimiento: 0,
+      retirado: 0,
+      disponible: 0,
+    };
     Object.values(itemsInspection).forEach((status) => {
       if (status in stats) stats[status as keyof typeof stats]++;
     });
@@ -338,7 +347,7 @@ export function ReturnInspectionDrawer({
                                       bg: "bg-amber-100",
                                     },
                                     {
-                                      id: "baja",
+                                      id: "retirado",
                                       icon: <Trash2 size={14} />,
                                       color: "text-red-500",
                                       bg: "bg-red-100",
@@ -426,11 +435,11 @@ export function ReturnInspectionDrawer({
                     </span>
                   </div>
                 )}
-                {counts.baja > 0 && (
+                {counts.retirado > 0 && (
                   <div className="flex items-center gap-2 text-[11px] bg-red-100/10 border border-red-100/10 font-bold text-red-600 px-2 py-1 rounded-lg">
                     <span className="flex items-center gap-1">
                       <Trash2 size={16} className="text-red-600" />{" "}
-                      {counts.baja} de Baja
+                      {counts.retirado} de Baja
                     </span>
                   </div>
                 )}
@@ -564,7 +573,7 @@ export function ReturnInspectionDrawer({
                   Garantía Actual
                 </span>
                 <Badge variant="outline" className="text-white border-white/20">
-                  {rental.financials?.guarantee?.type === "dinero"
+                  {rental.guarantee?.type === "dinero"
                     ? "Efectivo"
                     : "Documento / Objeto"}
                 </Badge>
@@ -616,7 +625,7 @@ export function ReturnInspectionDrawer({
                     </div>
                     <p className="text-[10px] text-white/70 italic text-center">
                       * Cobrar antes de devolver:{" "}
-                      {rental.financials?.guarantee?.description}
+                      {rental.guarantee?.description}
                     </p>
                   </div>
                 )}

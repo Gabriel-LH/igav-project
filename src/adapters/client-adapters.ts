@@ -14,6 +14,8 @@ export interface ClientTableRow {
   province?: string;
   zipCode?: string;
 
+  referralCode: string;
+
   // Dinero real a favor del cliente (por devoluciones o vueltos)
   walletBalance: number;
 
@@ -57,6 +59,7 @@ export const mapClientToTable = (customers: Client[]): ClientTableRow[] => {
       deletedAt: customer.deletedAt,
       status: customer.status,
       searchContent,
+      referralCode: customer.referralCode,
     };
   });
 };

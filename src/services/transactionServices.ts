@@ -23,6 +23,7 @@ import { calculateOperationPaymentStatus } from "../utils/payment-helpers";
 import { manageLoyaltyPoints } from "./use-cases/manageLoyaltyPoints";
 import { addClientCredit } from "./use-cases/addClientCredit.usecase";
 import { generateOperationReference } from "../utils/operation/generateOperationReference";
+import { processReferrals } from "./use-cases/processReferrals";
 
 function getFinancials(
   dto:
@@ -84,6 +85,53 @@ function isSaleFromReservation(
   );
 }
 
+function resolveTenantId(
+  dto:
+    | SaleDTO
+    | RentalDTO
+    | ReservationDTO
+    | RentalFromReservationDTO
+    | SaleFromReservationDTO,
+): string {
+  if ((dto as any).tenantId) return (dto as any).tenantId as string;
+
+  const inventoryStore = useInventoryStore.getState();
+
+  if ("items" in dto && Array.isArray((dto as any).items)) {
+    const firstItem = (dto as any).items.find((i: any) => i?.productId);
+    if (firstItem?.productId) {
+      const product = inventoryStore.products.find(
+        (p) => p.id === firstItem.productId,
+      );
+      if (product?.tenantId) return product.tenantId;
+    }
+  }
+
+  if (
+    "reservationItems" in dto &&
+    Array.isArray((dto as any).reservationItems) &&
+    (dto as any).reservationItems.length > 0
+  ) {
+    const firstStockId = (dto as any).reservationItems[0]?.stockId;
+    if (firstStockId) {
+      const serial = inventoryStore.inventoryItems.find(
+        (s) => s.id === firstStockId,
+      );
+      if (serial?.tenantId) return serial.tenantId;
+
+      const lot = inventoryStore.stockLots.find((l) => l.id === firstStockId);
+      if (lot) {
+        const lotProduct = inventoryStore.products.find(
+          (p) => p.id === lot.productId,
+        );
+        if (lotProduct?.tenantId) return lotProduct.tenantId;
+      }
+    }
+  }
+
+  throw new Error("No se pudo resolver tenantId para la transacción");
+}
+
 export function processTransaction(
   dto:
     | SaleDTO
@@ -93,6 +141,7 @@ export function processTransaction(
     | SaleFromReservationDTO,
 ) {
   const now = new Date();
+  const tenantId = resolveTenantId(dto);
   const operations = useOperationStore.getState().operations;
 
   const todayString = now.toISOString().split("T")[0];
@@ -185,6 +234,7 @@ export function processTransaction(
 
     specificData = saleSchema.parse({
       id: `SALE-${operationId}`,
+      tenantId,
       operationId: String(operationId),
       customerId: dto.customerId,
       reservationId: fromReservation ? dto.reservationId : undefined,
@@ -364,7 +414,11 @@ export function processTransaction(
     const fromReservation = isRentalFromReservation(dto);
 
     // Garantía
-    if (!fromReservation && dto.guarantee && dto.guarantee.type !== "no_aplica") {
+    if (
+      !fromReservation &&
+      dto.guarantee &&
+      dto.guarantee.type !== "no_aplica"
+    ) {
       guaranteeData = guaranteeSchema.parse({
         id: crypto.randomUUID(),
         operationId: String(operationId),
@@ -373,10 +427,7 @@ export function processTransaction(
         type: dto.guarantee.type,
         value: dto.guarantee.value || "",
         description: dto.guarantee.description || "Garantía de alquiler",
-        status:
-          dto.guarantee.type === "por_cobrar"
-            ? "pendiente"
-            : "custodia",
+        status: dto.guarantee.type === "por_cobrar" ? "pendiente" : "custodia",
         createdAt: now,
       });
 
@@ -401,6 +452,7 @@ export function processTransaction(
 
     const rental = rentalSchema.parse({
       id: crypto.randomUUID(),
+      tenantId,
       operationId: String(operationId),
       reservationId: fromReservation ? dto.reservationId : undefined,
       customerId: dto.customerId,
@@ -500,8 +552,9 @@ export function processTransaction(
 
   // 2. 🌟 Lógica de Puntos por el pago inicial
   // Usamos downPayment (lo que amortizó hoy) para darle puntos
-  if (downPayment > 0) {
-    const pointsEarned = Math.floor(downPayment / 10);
+  const actualPaidForPoints = Math.min(downPayment, totalAmount);
+  if (actualPaidForPoints > 0) {
+    const pointsEarned = Math.floor(actualPaidForPoints / 10);
     if (pointsEarned > 0) {
       manageLoyaltyPoints({
         clientId: dto.customerId,
@@ -512,6 +565,16 @@ export function processTransaction(
       });
     }
   }
+
+  // 3. 🌟 Referral logic (if this is their first purchase or they have a pending referral)
+  // Get tenantId safely (some DTOs like SaleFromReservationDTO don't have items array)
+  // Rely on the outer-scoped tenantId that was already resolved at the top of the function
+
+  if (tenantId && tenantId !== "UNKNOWN_TENANT") {
+    // Assuming this might be their first purchase, pass first_purchase trigger
+    processReferrals(dto.customerId, tenantId, "first_purchase");
+  }
+
   return {
     operation: operationData,
     payment: paymentData,

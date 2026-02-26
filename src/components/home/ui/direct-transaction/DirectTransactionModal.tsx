@@ -146,7 +146,6 @@ export function DirectTransactionModal({
     type,
   ]);
 
-
   const colorName = getColorById(colorId)?.name;
   const sizeName = getSizeById(sizeId)?.name;
 
@@ -274,15 +273,17 @@ export function DirectTransactionModal({
         startDate: dateRange.from,
         endDate: dateRange.to,
         financials: {
-          totalRent: totalOperacion,
-          guarantee: {
-            type: !checklist.guaranteeAfter ? guaranteeType : "por_cobrar",
-            value: guaranteeType === "dinero" ? guarantee : undefined,
-            description: guaranteeType !== "dinero" ? guarantee : undefined,
-          },
-          paymentMethod,
-          receivedAmount: Number(receivedAmount),
+          subtotal: Number(totalOperacion),
+          totalDiscount: 0,
+          taxAmount: 0,
+          totalAmount: Number(totalOperacion),
+          receivedAmount:
+            paymentMethod === "cash"
+              ? Number(receivedAmount)
+              : Number(totalOperacion) +
+                (guaranteeType === "dinero" ? Number(guarantee) : 0),
           keepAsCredit: false,
+          paymentMethod,
         },
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
@@ -310,11 +311,16 @@ export function DirectTransactionModal({
         branchId: currentBranchId,
         items: transactionItems,
         financials: {
-          totalAmount: totalOperacion,
-          paymentMethod,
-          receivedAmount: Number(receivedAmount),
+          subtotal: Number(totalOperacion),
+          totalDiscount: 0,
+          taxAmount: 0,
+          totalAmount: Number(totalOperacion),
+          receivedAmount:
+            paymentMethod === "cash"
+              ? Number(receivedAmount)
+              : Number(totalOperacion),
           keepAsCredit: false,
-          totalPrice: totalOperacion,
+          paymentMethod,
         },
         notes,
         status: !checklist.deliverAfter

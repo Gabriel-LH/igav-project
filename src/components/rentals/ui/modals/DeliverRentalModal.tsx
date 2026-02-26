@@ -71,13 +71,13 @@ export const DeliverRentalModal = ({
     (acc, item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) return acc;
-      const key = `${item.productId}-${item.size || "S"}-${item.color || "C"}`;
+      const key = `${item.productId}-${item.sizeId || "S"}-${item.colorId || "C"}`;
       if (!acc[key]) {
         acc[key] = {
           id: key,
           product,
-          size: item.size,
-          color: item.color,
+          size: item.sizeId,
+          color: item.colorId,
           items: [],
           quantity: 0,
           isSerial: product.is_serial || false,
@@ -163,7 +163,7 @@ export const DeliverRentalModal = ({
       await onConfirm(
         rental.id,
         {
-          value: guarantee!,
+          value: String(guarantee!),
           type: guaranteeType,
         },
         idsToDeliver,
@@ -297,7 +297,7 @@ export const DeliverRentalModal = ({
         </div>
 
         <GuaranteeSection
-          guarantee={guarantee!}
+          guarantee={String(guarantee!)}
           setGuarantee={setGuarantee}
           guaranteeType={guaranteeType}
           setGuaranteeType={setGuaranteeType}

@@ -2,6 +2,7 @@ import z from "zod";
 
 export const branchSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   name: z.string(),
   city: z.string(),
   address: z.string(),

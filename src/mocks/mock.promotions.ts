@@ -17,23 +17,28 @@ export const PROMOTIONS_MOCK: Promotion[] = [
     createdAt: new Date(),
     usedCount: 4,
     combinable: false,
-    appliesTo: ["alquiler"]
+    appliesTo: ["alquiler"],
+    requiresCode: false,
+    singleUsePerCustomer: false,
   },
   {
     id: "PROMO-FIJA-002",
-    name: "Bono Amigo S/ 50",
-    type: "fixed_amount" as const,
-    value: 50, // S/ 50.00 exactos
-    scope: "global" as const,
-    targetIds: [],
+    name: "Día del Padre - Sacos",
+    type: "percentage" as const,
+    value: 15, // 15% de descuento
+    scope: "category" as const,
+    targetIds: ["CAT-SACOS"],
     isActive: true,
-    isExclusive: true,
+    isExclusive: false,
     startDate: new Date("2026-01-01"),
     endDate: new Date("2026-12-31"),
     createdAt: new Date(),
     usedCount: 10,
-    combinable: false,
-    appliesTo: ["venta", "alquiler"]
+    combinable: true,
+    appliesTo: ["venta", "alquiler"],
+    requiresCode: false,
+    singleUsePerCustomer: false,
+    usageType: "automatic",
   },
   {
     id: "BUNDLE-ALQUILER-ELEGANTE-001",
@@ -54,5 +59,7 @@ export const PROMOTIONS_MOCK: Promotion[] = [
     createdAt: new Date(),
     usedCount: 0,
     combinable: false,
+    requiresCode: false,
+    singleUsePerCustomer: false,
   },
 ];

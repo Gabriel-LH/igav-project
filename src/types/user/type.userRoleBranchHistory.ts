@@ -2,6 +2,7 @@ import z from "zod";
 
 export const userRoleBranchHistorySchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   userId: z.string(), // Usuario afectado
 
   fromRole: z.string(),

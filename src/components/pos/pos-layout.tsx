@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCartStore } from "@/src/store/useCartStore";
@@ -25,10 +25,30 @@ export function PosLayout() {
     ensurePromotionsLoaded();
   }, []);
 
+  const promotionsFingerprint = useMemo(
+    () =>
+      items
+        .map(
+          (i) =>
+            [
+              i.cartId,
+              i.product.id,
+              i.product.tenantId,
+              i.operationType,
+              i.quantity,
+              i.listPrice ?? 0,
+              i.bundleId ?? "",
+              i.appliedPromotionId ?? "",
+            ].join("::"),
+        )
+        .join("|"),
+    [items],
+  );
+
   useEffect(() => {
     if (items.length === 0) return;
-    applyPromotions(USER_MOCK[0].branchId);
-  }, [items, applyPromotions]);
+    applyPromotions(USER_MOCK[0].branchId!);
+  }, [promotionsFingerprint, items.length, applyPromotions]);
 
   useBarcodeScanner({
     onScan: (code) => {
@@ -73,7 +93,7 @@ export function PosLayout() {
         ).length;
       } else if (lotItem) {
         // --- CASO 2: LOTE ---
-        if (lotItem.status === "agotado" || lotItem.quantity <= 0) {
+        if ((lotItem.status as any) === "agotado" || lotItem.quantity <= 0) {
           toast.error("Este lote está agotado.");
           return;
         }

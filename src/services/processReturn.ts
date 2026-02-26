@@ -1,6 +1,6 @@
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { StockStatus } from "../utils/status-type/InventoryItemStatusType";
+import { InventoryItemStatus } from "../utils/status-type/InventoryItemStatusType";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
 
@@ -12,7 +12,7 @@ interface ProcessReturnInput {
   items: {
     rentalItemId: string;
     itemStatus: "devuelto" | "en_lavanderia" | "en_mantenimiento" | "baja"; // Estado en el contrato
-    stockTarget: StockStatus; // Estado físico destino (disponible, mantenimiento, etc.)
+    stockTarget: InventoryItemStatus; // Estado físico destino (disponible, mantenimiento, etc.)
   }[];
 
   totalPenalty: number;

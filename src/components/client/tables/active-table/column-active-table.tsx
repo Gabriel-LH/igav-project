@@ -96,6 +96,11 @@ export const columnsClientActive: ColumnDef<
     cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
   },
   {
+    accessorKey: "referralCode",
+    header: "Codigo de Referencia",
+    cell: ({ getValue }) => <div className="w-32">{getValue<string>()}</div>,
+  },
+  {
     accessorKey: "status",
     header: "Estado",
     cell: ({ getValue }) => {

@@ -4,6 +4,7 @@ import { InventoryItem } from "./type.inventoryItem";
 
 export const productSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   name: z.string(),
   image: z.string(),
   modelId: z.string(),

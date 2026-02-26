@@ -50,6 +50,7 @@ import { NavRRHH } from "../nav-bar/nav-rrhh";
 import { NavAdmin } from "../nav-bar/nav-admin";
 import { ShoppingBasket } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { usePlanFeatures } from "@/src/hooks/usePlanFeatures";
 
 const data = {
   user: {
@@ -197,6 +198,67 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const { hasFeature } = usePlanFeatures();
+
+  const filteredNavMain = React.useMemo(
+    () =>
+      data.navMain.filter((item) => {
+        if (item.url === "/pos")
+          return hasFeature("sales") || hasFeature("rentals");
+        if (item.url === "/dashboard" || item.url === "/analytics")
+          return (
+            hasFeature("sales") ||
+            hasFeature("rentals") ||
+            hasFeature("inventory")
+          );
+        if (item.url === "/clients") return hasFeature("clients");
+        return true; // home always accessible
+      }),
+    [hasFeature],
+  );
+
+  const filteredNavInventory = React.useMemo(
+    () =>
+      data.navInventory.filter((item) => {
+        if (item.title === "Catálogos") return hasFeature("products");
+        if (item.title === "Inventario") return hasFeature("inventory");
+        return true;
+      }),
+    [hasFeature],
+  );
+
+  const filteredNavOperation = React.useMemo(
+    () =>
+      data.navOperation.filter((item) => {
+        if (item.url === "/sales") return hasFeature("sales");
+        if (item.url === "/rentals" || item.url === "/returns")
+          return hasFeature("rentals");
+        if (item.url === "/payments") return hasFeature("payments");
+        return true;
+      }),
+    [hasFeature],
+  );
+
+  const filteredNavRRHH = React.useMemo(
+    () =>
+      data.navRRHH.filter((item) => {
+        if (item.url === "/attendance" || item.url === "/shifts")
+          return hasFeature("userAttendance");
+        if (item.url === "/permissions") return hasFeature("permissions");
+        if (item.url === "/branches") return hasFeature("branches");
+        if (item.url === "/users") return hasFeature("users");
+        return true;
+      }),
+    [hasFeature],
+  );
+
+  const filteredNavAdmin = React.useMemo(
+    () =>
+      data.navAdmin.filter((item) => {
+        return hasFeature("tenants") || hasFeature("permissions");
+      }),
+    [hasFeature],
+  );
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -218,11 +280,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} pathname={pathname} />
-        <NavInventory items={data.navInventory} pathname={pathname} />
-        <NavOperation items={data.navOperation} pathname={pathname} />
-        <NavRRHH items={data.navRRHH} pathname={pathname} />
-        <NavAdmin items={data.navAdmin} pathname={pathname} />
+        {filteredNavMain.length > 0 && (
+          <NavMain items={filteredNavMain} pathname={pathname} />
+        )}
+        {filteredNavInventory.length > 0 && (
+          <NavInventory items={filteredNavInventory} pathname={pathname} />
+        )}
+        {filteredNavOperation.length > 0 && (
+          <NavOperation items={filteredNavOperation} pathname={pathname} />
+        )}
+        {filteredNavRRHH.length > 0 && (
+          <NavRRHH items={filteredNavRRHH} pathname={pathname} />
+        )}
+        {filteredNavAdmin.length > 0 && (
+          <NavAdmin items={filteredNavAdmin} pathname={pathname} />
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

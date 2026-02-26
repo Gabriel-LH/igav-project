@@ -38,27 +38,25 @@ export function ProductGrid() {
   const filteredCatalog = useMemo(() => {
     return products.filter((product) => {
       // Stock total del producto en esta sucursal (combinando seriales y lotes)
-      let branchStockQuantity = 0;
-
+      let isAvailable = true;
       if (product.is_serial) {
-        branchStockQuantity = inventoryItems.filter(
+        isAvailable = inventoryItems.some(
           (i) =>
             String(i.productId) === String(product.id) &&
             i.branchId === currentUser.branchId &&
             i.status === "disponible",
-        ).length;
+        );
       } else {
-        branchStockQuantity = stockLots
-          .filter(
-            (l) =>
-              String(l.productId) === String(product.id) &&
-              l.branchId === currentUser.branchId &&
-              l.status === "disponible",
-          )
-          .reduce((acc, curr) => acc + curr.quantity, 0);
+        isAvailable = stockLots.some(
+          (l) =>
+            String(l.productId) === String(product.id) &&
+            l.branchId === currentUser.branchId &&
+            l.status === "disponible" &&
+            l.quantity > 0,
+        );
       }
 
-      if (branchStockQuantity <= 0) return false;
+      if (!isAvailable) return false;
 
       const matchesSearch =
         product.name.toLowerCase().includes(query) ||
@@ -112,11 +110,13 @@ export function ProductGrid() {
     return [
       ...inventoryItems.filter(
         (i) =>
-          i.branchId === currentUser.branchId && i.status === "en_lavanderia",
+          i.branchId === currentUser.branchId &&
+          (i.status as any) === "en_lavanderia",
       ),
       ...stockLots.filter(
         (l) =>
-          l.branchId === currentUser.branchId && l.status === "en_lavanderia",
+          l.branchId === currentUser.branchId &&
+          (l.status as any) === "en_lavanderia",
       ),
     ];
   }, [inventoryItems, stockLots, currentUser.branchId]);
@@ -126,12 +126,12 @@ export function ProductGrid() {
       ...inventoryItems.filter(
         (i) =>
           i.branchId === currentUser.branchId &&
-          i.status === "en_mantenimiento",
+          (i.status as any) === "en_mantenimiento",
       ),
       ...stockLots.filter(
         (l) =>
           l.branchId === currentUser.branchId &&
-          l.status === "en_mantenimiento",
+          (l.status as any) === "en_mantenimiento",
       ),
     ];
   }, [inventoryItems, stockLots, currentUser.branchId]);

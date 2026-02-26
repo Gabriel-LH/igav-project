@@ -22,6 +22,10 @@ export const clientSchema = z.object({
   // Puntos acumulados por compras (gamificación)
   loyaltyPoints: z.number().default(0),
 
+  // Referidos
+  referralCode: z.string(),
+  referredByClientId: z.string().nullable().default(null),
+
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().optional(),

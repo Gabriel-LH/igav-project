@@ -16,6 +16,9 @@ export function applyPromotionsUseCase(
   promotions: Promotion[],
   context: PromotionContext,
 ): CartItem[] {
+  // Configurable a futuro (por tenant/regla): por ahora NO acumular promos sobre packs.
+  const allowDiscountsOnBundleItems = false;
+
   const validPromotions = promotions.filter((promo) => {
     if (!promo.isActive) return false;
     if (promo.startDate && new Date(promo.startDate) > context.now)
@@ -37,7 +40,7 @@ export function applyPromotionsUseCase(
   });
 
   return items.map((item) => {
-    if (item.bundleId) return item; // no tocar bundles
+    if (item.bundleId && !allowDiscountsOnBundleItems) return item; // no tocar bundles
 
     const applicablePromotions = validPromotions.filter((promo) =>
       promo.appliesTo.includes(item.operationType),

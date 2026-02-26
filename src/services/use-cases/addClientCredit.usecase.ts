@@ -17,9 +17,11 @@ export const addClientCredit = (
     id: `CCL-${crypto.randomUUID().slice(0, 8)}`, // Generamos ID aquí
     clientId,
     amount,
-    reason,
+    reason: reason as any,
     operationId,
     createdAt: new Date(),
+    direction: "credit",
+    status: "confirmed",
     // paymentId? si lo tuvieras en el schema
   };
 

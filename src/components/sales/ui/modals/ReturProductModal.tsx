@@ -48,12 +48,25 @@ export function ReturnProductModal({
 
   // Estado para manejar qué items se están devolviendo y sus condiciones
   const [returnItems, setReturnItems] = useState<
-    Record<string, Partial<SaleItem> & { quantityToReturn?: number }>
+    Record<
+      string,
+      Partial<SaleItem> & {
+        quantityToReturn?: number;
+        restockingFee?: number;
+        returnCondition?: string;
+        isReturned?: boolean;
+      }
+    >
   >(() => {
     // Inicializamos usando el ID único de la fila (RITEM-xxx o SITEM-xxx)
     const init: Record<
       string,
-      Partial<SaleItem> & { quantityToReturn?: number }
+      Partial<SaleItem> & {
+        quantityToReturn?: number;
+        restockingFee?: number;
+        returnCondition?: string;
+        isReturned?: boolean;
+      }
     > = {};
     sale.items.forEach((item) => {
       init[item.id] = {
@@ -167,8 +180,8 @@ export function ReturnProductModal({
 
         const product = products.find((p) => p.id === item.productId);
 
-        const size = physicalItem?.size || "Única";
-        const color = physicalItem?.color || "N/A";
+        const size = (physicalItem as any)?.sizeId || "Única";
+        const color = (physicalItem as any)?.colorId || "N/A";
         // Unique key for grouping
         const key = `${item.productId}-${size}-${color}`;
 

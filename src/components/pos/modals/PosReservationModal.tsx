@@ -51,12 +51,12 @@ export function PosReservationModal({
   open,
   onOpenChange,
 }: PosReservationModalProps) {
-  const { items, clearCart } = useCartStore();
+  const { items, clearCart, activeTenantId } = useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
 
   const businessRules = BUSINESS_RULES_MOCK;
   const sellerId = USER_MOCK[0].id;
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = USER_MOCK[0].branchId!;
 
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = React.useState<Client | null>(
@@ -132,8 +132,7 @@ export function PosReservationModal({
   const totalVentasLista = useMemo(
     () =>
       ventaItems.reduce(
-        (sum, item) =>
-          sum + (item.listPrice ?? item.unitPrice) * item.quantity,
+        (sum, item) => sum + (item.listPrice ?? item.unitPrice) * item.quantity,
         0,
       ),
     [ventaItems],
@@ -300,8 +299,11 @@ export function PosReservationModal({
 
     const totalDP = Number(downPayment);
     if (items.some((item) => item.bundleId)) {
+      const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+      if (!tenantId) throw new Error("Tenant no resuelto para bundle");
       await reserveBundledItems(
         items,
+        tenantId,
         currentBranchId,
         dateRange.from,
         dateRange.to,
@@ -317,6 +319,7 @@ export function PosReservationModal({
       const saleItems = buildReservationItems("venta");
       if (!saleItems) return;
       const saleDTO: ReservationDTO = {
+        tenantId: activeTenantId ?? items[0]?.product.tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
         type: "reserva",
@@ -349,6 +352,7 @@ export function PosReservationModal({
       const rentalItems = buildReservationItems("alquiler");
       if (!rentalItems) return;
       const rentalDTO: ReservationDTO = {
+        tenantId: activeTenantId ?? items[0]?.product.tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
         type: "reserva",
@@ -392,6 +396,7 @@ export function PosReservationModal({
       if (!transactionItems) return;
 
       const newReservation: ReservationDTO = {
+        tenantId: activeTenantId ?? items[0]?.product.tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
         type: "reserva",

@@ -34,9 +34,8 @@ export function getTotalStock(
         String(s.productId) === String(productId) &&
         s.sizeId === sizeId &&
         s.colorId === colorId &&
-        s.status !== "baja" &&
+        s.status !== "retirado" &&
         s.status !== "vendido" &&
-        s.status !== "agotado" &&
         s.status !== "vendido_pendiente_entrega" &&
         (type === "venta"
           ? s.isForSale === true && s.status === "disponible"
@@ -50,10 +49,9 @@ export function getTotalStock(
           String(s.productId) === String(productId) &&
           s.sizeId === sizeId &&
           s.colorId === colorId &&
-          s.status !== "baja" &&
-          s.status !== "vendido" &&
-          s.status !== "agotado" &&
-          s.status !== "vendido_pendiente_entrega" &&
+          s.status !== ("retirado" as any) &&
+          s.status !== ("vendido" as any) &&
+          s.status !== ("vendido_pendiente_entrega" as any) &&
           (type === "venta"
             ? s.isForSale === true && s.status === "disponible"
             : s.isForRent === true),
@@ -164,7 +162,8 @@ function getAllOccupiedIntervals(
             String(s.productId) === String(productId) &&
             s.sizeId === sizeId &&
             s.colorId === colorId &&
-            (s.status === "en_lavanderia" || s.status === "en_mantenimiento") &&
+            ((s.status as any) === "en_lavanderia" ||
+              (s.status as any) === "en_mantenimiento") &&
             s.isForRent === true,
         )
         .forEach((lot) => {

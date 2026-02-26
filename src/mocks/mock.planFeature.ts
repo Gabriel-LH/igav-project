@@ -1,0 +1,53 @@
+import { PlanFeature } from "../types/plan/planFeature";
+
+export const PLAN_FEATURES_MOCK: PlanFeature[] = [
+  // Sales plan
+  { id: "pf-1", planId: "plan-sales", featureKey: "sales" },
+  { id: "pf-2", planId: "plan-sales", featureKey: "reservations" },
+  { id: "pf-3", planId: "plan-sales", featureKey: "clients" },
+  { id: "pf-4", planId: "plan-sales", featureKey: "inventory" },
+  { id: "pf-5", planId: "plan-sales", featureKey: "products" },
+  { id: "pf-6", planId: "plan-sales", featureKey: "promotions" },
+  { id: "pf-7", planId: "plan-sales", featureKey: "referrals" },
+  { id: "pf-8", planId: "plan-sales", featureKey: "payments" },
+  { id: "pf-9", planId: "plan-sales", featureKey: "referralRewards" },
+  { id: "pf-10", planId: "plan-sales", featureKey: "userAttendance" },
+  { id: "pf-11", planId: "plan-sales", featureKey: "userBranchAccess" },
+  { id: "pf-12", planId: "plan-sales", featureKey: "userTenantMembership" },
+  { id: "pf-13", planId: "plan-sales", featureKey: "permissions" },
+
+  // Rentals plan
+  { id: "pf-14", planId: "plan-rentals", featureKey: "rentals" },
+  { id: "pf-15", planId: "plan-rentals", featureKey: "reservations" },
+  { id: "pf-16", planId: "plan-rentals", featureKey: "clients" },
+  { id: "pf-17", planId: "plan-rentals", featureKey: "inventory" },
+  { id: "pf-18", planId: "plan-rentals", featureKey: "products" },
+  { id: "pf-19", planId: "plan-rentals", featureKey: "promotions" },
+  { id: "pf-20", planId: "plan-rentals", featureKey: "referrals" },
+  { id: "pf-21", planId: "plan-rentals", featureKey: "payments" },
+  { id: "pf-22", planId: "plan-rentals", featureKey: "referralRewards" },
+  { id: "pf-23", planId: "plan-rentals", featureKey: "userAttendance" },
+  { id: "pf-24", planId: "plan-rentals", featureKey: "userBranchAccess" },
+  { id: "pf-25", planId: "plan-rentals", featureKey: "userTenantMembership" },
+  { id: "pf-26", planId: "plan-rentals", featureKey: "permissions" },
+
+  // Full plan
+  { id: "pf-27", planId: "plan-full", featureKey: "sales" },
+  { id: "pf-28", planId: "plan-full", featureKey: "rentals" },
+  { id: "pf-29", planId: "plan-full", featureKey: "reservations" },
+  { id: "pf-30", planId: "plan-full", featureKey: "inventory" },
+  { id: "pf-31", planId: "plan-full", featureKey: "users" },
+  { id: "pf-32", planId: "plan-full", featureKey: "roles" },
+  { id: "pf-33", planId: "plan-full", featureKey: "tenants" },
+  { id: "pf-34", planId: "plan-full", featureKey: "branches" },
+  { id: "pf-35", planId: "plan-full", featureKey: "clients" },
+  { id: "pf-36", planId: "plan-full", featureKey: "products" },
+  { id: "pf-37", planId: "plan-full", featureKey: "promotions" },
+  { id: "pf-38", planId: "plan-full", featureKey: "referrals" },
+  { id: "pf-39", planId: "plan-full", featureKey: "payments" },
+  { id: "pf-40", planId: "plan-full", featureKey: "referralRewards" },
+  { id: "pf-41", planId: "plan-full", featureKey: "userAttendance" },
+  { id: "pf-42", planId: "plan-full", featureKey: "userBranchAccess" },
+  { id: "pf-43", planId: "plan-full", featureKey: "userTenantMembership" },
+  { id: "pf-44", planId: "plan-full", featureKey: "permissions" },
+];

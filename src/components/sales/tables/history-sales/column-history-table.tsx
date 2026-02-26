@@ -141,7 +141,7 @@ function ActionCell({
 
   // 3. Creamos el objeto unificado (SaleWithItems)
   const fullSaleData: SaleWithItems | undefined = baseSale
-    ? { ...baseSale, items: itemsOfSale }
+    ? { ...baseSale, items: itemsOfSale, charges: [] }
     : undefined;
 
   const handleCancelConfirm = async (id: string, reason: string) => {
