@@ -28,6 +28,7 @@ import {
 import { Separator } from "@/components/separator";
 import { z } from "zod";
 import { clientSchema } from "../type";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { IconTrendingUp } from "@tabler/icons-react";
 
@@ -151,23 +152,36 @@ export function TableCellViewer({
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
+              <FeatureGuard feature="rentals">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="operationsRent">
+                    No. Operaciones alquiler
+                  </Label>
+                  <Input
+                    id="operationsRent"
+                    defaultValue={item.operationsRent}
+                  />
+                </div>
+              </FeatureGuard>
+              <FeatureGuard feature="sales">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="operationsBuy">No. Operaciones compra</Label>
+                  <Input id="operationsBuy" defaultValue={item.operationsBuy} />
+                </div>
+              </FeatureGuard>
+            </div>
+            <FeatureGuard feature="rentals">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="operationsRent">No. Operaciones alquiler</Label>
-                <Input id="operationsRent" defaultValue={item.operationsRent} />
+                <Label htmlFor="totalRent">Valor total alquiler</Label>
+                <Input id="totalRent" defaultValue={item.totalRent} />
               </div>
+            </FeatureGuard>
+            <FeatureGuard feature="sales">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="operationsBuy">No. Operaciones compra</Label>
-                <Input id="operationsBuy" defaultValue={item.operationsBuy} />
+                <Label htmlFor="totalBuy">Valor total compra</Label>
+                <Input id="totalBuy" defaultValue={item.totalBuy} />
               </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="totalRent">Valor total alquiler</Label>
-              <Input id="totalRent" defaultValue={item.totalRent} />
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="totalBuy">Valor total compra</Label>
-              <Input id="totalBuy" defaultValue={item.totalBuy} />
-            </div>
+            </FeatureGuard>
             <div className="flex flex-col gap-3">
               <Label htmlFor="lastOperation">Ultima operacion</Label>
               <Input id="lastOperation" defaultValue={item.lastOperation} />

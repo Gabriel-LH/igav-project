@@ -15,7 +15,6 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   type ChartConfig,
 } from "@/components/chart";
 import {
@@ -27,106 +26,12 @@ import {
 } from "@/components/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/toggle-group";
 import { SortedTooltipContent } from "./ui/sorted-tootip-content";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
+
+import { getChartAreaMetrics } from "@/src/utils/dashboard/metrics";
+import { useOperationStore } from "@/src/store/useOperationStore";
 
 export const description = "An interactive area chart";
-
-const chartData = [
-  { date: "2025-04-01", alquiler: 222, venta: 150 },
-  { date: "2025-04-02", alquiler: 97, venta: 180 },
-  { date: "2025-04-03", alquiler: 167, venta: 120 },
-  { date: "2025-04-04", alquiler: 242, venta: 260 },
-  { date: "2025-04-05", alquiler: 373, venta: 290 },
-  { date: "2025-04-06", alquiler: 301, venta: 340 },
-  { date: "2025-04-07", alquiler: 245, venta: 180 },
-  { date: "2025-04-08", alquiler: 409, venta: 320 },
-  { date: "2025-04-09", alquiler: 59, venta: 110 },
-  { date: "2025-04-10", alquiler: 261, venta: 190 },
-  { date: "2025-04-11", alquiler: 327, venta: 350 },
-  { date: "2025-04-12", alquiler: 292, venta: 210 },
-  { date: "2025-04-13", alquiler: 342, venta: 380 },
-  { date: "2025-04-14", alquiler: 137, venta: 220 },
-  { date: "2025-04-15", alquiler: 120, venta: 170 },
-  { date: "2025-04-16", alquiler: 138, venta: 190 },
-  { date: "2025-04-17", alquiler: 446, venta: 360 },
-  { date: "2025-04-18", alquiler: 364, venta: 410 },
-  { date: "2025-04-19", alquiler: 243, venta: 180 },
-  { date: "2025-04-20", alquiler: 89, venta: 150 },
-  { date: "2025-04-21", alquiler: 137, venta: 200 },
-  { date: "2025-04-22", alquiler: 224, venta: 170 },
-  { date: "2025-04-23", alquiler: 138, venta: 230 },
-  { date: "2025-04-24", alquiler: 387, venta: 290 },
-  { date: "2025-04-25", alquiler: 215, venta: 250 },
-  { date: "2025-04-26", alquiler: 75, venta: 130 },
-  { date: "2025-04-27", alquiler: 383, venta: 420 },
-  { date: "2025-04-28", alquiler: 122, venta: 180 },
-  { date: "2025-04-29", alquiler: 315, venta: 240 },
-  { date: "2025-04-30", alquiler: 454, venta: 380 },
-  { date: "2025-05-01", alquiler: 165, venta: 220 },
-  { date: "2025-05-02", alquiler: 293, venta: 310 },
-  { date: "2025-05-03", alquiler: 247, venta: 190 },
-  { date: "2025-05-04", alquiler: 385, venta: 420 },
-  { date: "2025-05-05", alquiler: 481, venta: 390 },
-  { date: "2025-05-06", alquiler: 498, venta: 520 },
-  { date: "2025-05-07", alquiler: 388, venta: 300 },
-  { date: "2025-05-08", alquiler: 149, venta: 210 },
-  { date: "2025-05-09", alquiler: 227, venta: 180 },
-  { date: "2025-05-10", alquiler: 293, venta: 330 },
-  { date: "2025-05-11", alquiler: 335, venta: 270 },
-  { date: "2025-05-12", alquiler: 197, venta: 240 },
-  { date: "2025-05-13", alquiler: 197, venta: 160 },
-  { date: "2025-05-14", alquiler: 448, venta: 490 },
-  { date: "2025-05-15", alquiler: 473, venta: 380 },
-  { date: "2025-05-16", alquiler: 338, venta: 400 },
-  { date: "2025-05-17", alquiler: 499, venta: 420 },
-  { date: "2025-05-18", alquiler: 315, venta: 350 },
-  { date: "2025-05-19", alquiler: 235, venta: 180 },
-  { date: "2025-05-20", alquiler: 177, venta: 230 },
-  { date: "2025-05-21", alquiler: 82, venta: 140 },
-  { date: "2025-05-22", alquiler: 81, venta: 120 },
-  { date: "2025-05-23", alquiler: 252, venta: 290 },
-  { date: "2025-05-24", alquiler: 294, venta: 220 },
-  { date: "2025-05-25", alquiler: 201, venta: 250 },
-  { date: "2025-05-26", alquiler: 213, venta: 170 },
-  { date: "2025-05-27", alquiler: 420, venta: 460 },
-  { date: "2025-05-28", alquiler: 233, venta: 190 },
-  { date: "2025-05-29", alquiler: 78, venta: 130 },
-  { date: "2025-05-30", alquiler: 340, venta: 280 },
-  { date: "2025-05-31", alquiler: 178, venta: 230 },
-  { date: "2025-06-01", alquiler: 178, venta: 200 },
-  { date: "2025-06-02", alquiler: 470, venta: 410 },
-  { date: "2025-06-03", alquiler: 103, venta: 160 },
-  { date: "2025-06-04", alquiler: 439, venta: 380 },
-  { date: "2025-06-05", alquiler: 88, venta: 140 },
-  { date: "2025-06-06", alquiler: 294, venta: 250 },
-  { date: "2025-06-07", alquiler: 323, venta: 370 },
-  { date: "2025-06-08", alquiler: 385, venta: 320 },
-  { date: "2025-06-09", alquiler: 438, venta: 480 },
-  { date: "2025-06-10", alquiler: 155, venta: 200 },
-  { date: "2025-06-11", alquiler: 92, venta: 150 },
-  { date: "2025-06-12", alquiler: 492, venta: 420 },
-  { date: "2025-06-13", alquiler: 81, venta: 130 },
-  { date: "2025-06-14", alquiler: 426, venta: 380 },
-  { date: "2025-06-15", alquiler: 307, venta: 350 },
-  { date: "2025-06-16", alquiler: 371, venta: 310 },
-  { date: "2025-06-17", alquiler: 475, venta: 520 },
-  { date: "2025-06-18", alquiler: 107, venta: 170 },
-  { date: "2025-06-19", alquiler: 341, venta: 290 },
-  { date: "2025-06-20", alquiler: 408, venta: 450 },
-  { date: "2025-06-21", alquiler: 169, venta: 210 },
-  { date: "2025-06-22", alquiler: 317, venta: 270 },
-  { date: "2025-06-23", alquiler: 480, venta: 530 },
-  { date: "2025-06-24", alquiler: 132, venta: 180 },
-  { date: "2025-06-25", alquiler: 141, venta: 190 },
-  { date: "2025-06-26", alquiler: 434, venta: 380 },
-  { date: "2025-06-27", alquiler: 448, venta: 490 },
-  { date: "2025-06-28", alquiler: 149, venta: 200 },
-  { date: "2025-06-29", alquiler: 103, venta: 160 },
-  { date: "2025-06-30", alquiler: 446, venta: 400 },
-  { date: "2025-06-30", alquiler: 400, venta: 34 },
-  { date: "2025-06-30", alquiler: 44, venta: 40 },
-  { date: "2025-06-30", alquiler: 64, venta: 39 },
-  { date: "2025-06-30", alquiler: 200, venta: 100 },
-];
 
 const chartConfig = {
   clientes: {
@@ -144,6 +49,12 @@ const chartConfig = {
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
+  const operations = useOperationStore((s) => s.operations);
+  const chartData = React.useMemo(
+    () => getChartAreaMetrics(operations),
+    [operations],
+  );
+
   const [timeRange, setTimeRange] = React.useState("now");
   const [timeRange2, setTimeRange2] = React.useState("hoy");
 
@@ -154,11 +65,17 @@ export function ChartAreaInteractive() {
   }, [isMobile]);
 
   const filteredData = chartData.filter((item) => {
+    if (chartData.length === 0) return false;
     const date = new Date(item.date);
     const referenceDate = new Date(chartData[chartData.length - 1].date);
 
     if (timeRange === "now") {
-      return date.getTime() === referenceDate.getTime();
+      // Using only pure YYYY-MM-DD string comparisons might be safer, but Date objects work for range if parsed safely.
+      // Easiest is to compare the ISO strings up to day
+      return (
+        date.toISOString().split("T")[0] ===
+        referenceDate.toISOString().split("T")[0]
+      );
     }
 
     let daysToSubtract = 90;
@@ -284,18 +201,22 @@ export function ChartAreaInteractive() {
               }}
             />
             <ChartTooltip cursor={false} content={<SortedTooltipContent />} />
-            <Area
-              dataKey="venta"
-              type="natural"
-              fill="url(#fillVenta)"
-              stroke="var(--color-venta)"
-            />
-            <Area
-              dataKey="alquiler"
-              type="natural"
-              fill="url(#fillAlquiler)"
-              stroke="var(--color-alquiler)"
-            />
+            <FeatureGuard feature="sales">
+              <Area
+                dataKey="venta"
+                type="natural"
+                fill="url(#fillVenta)"
+                stroke="var(--color-venta)"
+              />
+            </FeatureGuard>
+            <FeatureGuard feature="rentals">
+              <Area
+                dataKey="alquiler"
+                type="natural"
+                fill="url(#fillAlquiler)"
+                stroke="var(--color-alquiler)"
+              />
+            </FeatureGuard>
           </AreaChart>
         </ChartContainer>
       </CardContent>

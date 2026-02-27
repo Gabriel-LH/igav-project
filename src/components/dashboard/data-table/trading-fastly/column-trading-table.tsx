@@ -2,7 +2,6 @@
 
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { z } from "zod";
 
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
@@ -14,10 +13,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
 import { DragHandle } from "../ui/DragHandle";
-import { tradingSchema } from "../type.trading";
+
+export type ProductTrading = {
+  id: string | number;
+  item: string;
+  lastweek: number;
+  thisweek: number;
+  difference: string | number;
+};
 import { TableCellViewerTrading } from "./table-cell-viewer";
 
-export const columnsTrading: ColumnDef<z.infer<typeof tradingSchema>>[] = [
+export const columnsTrading: ColumnDef<ProductTrading>[] = [
   {
     id: "drag",
     header: () => null,

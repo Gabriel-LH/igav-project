@@ -17,14 +17,9 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
-const data = [
-  { name: "Vestido A", price: 120, rotation: 12, type: "rental" },
-  { name: "Vestido B", price: 250, rotation: 4, type: "sale" },
-  { name: "Traje C", price: 180, rotation: 8, type: "rental" },
-  { name: "Vestido D", price: 90, rotation: 20, type: "sale" },
-  { name: "Traje E", price: 210, rotation: 14, type: "rental" },
-];
+import { useAnalyticsData } from "@/src/hooks/useAnalyticsData";
 
 const chartConfig = {
   rentals: { label: "Alquileres", color: "#22c55e" },
@@ -33,8 +28,10 @@ const chartConfig = {
 
 export function PriceVsRotationChart() {
   const [mode, setMode] = useState<"rentals" | "sales" | "both">("rentals");
+  const { priceRotationData: data, hasSalesFeature } = useAnalyticsData();
 
-  // Filtramos los datos según el tab seleccionado
+  const activeMode = !hasSalesFeature && mode !== "rentals" ? "rentals" : mode;
+
   const rentalsData = data.filter((d) => d.type === "rental");
   const salesData = data.filter((d) => d.type === "sale");
 
@@ -44,9 +41,15 @@ export function PriceVsRotationChart() {
         <CardTitle>Precio vs. Rotación</CardTitle>
         <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
           <TabsList>
-            <TabsTrigger value="rentals">Alquileres</TabsTrigger>
-            <TabsTrigger value="sales">Ventas</TabsTrigger>
-            <TabsTrigger value="both">Ambos</TabsTrigger>
+            <FeatureGuard feature="rentals">
+              <TabsTrigger value="rentals">Alquileres</TabsTrigger>
+            </FeatureGuard>
+            <FeatureGuard feature="sales">
+              <TabsTrigger value="sales">Ventas</TabsTrigger>
+            </FeatureGuard>
+            <FeatureGuard feature={["rentals", "sales"]} requireAll>
+              <TabsTrigger value="both">Ambos</TabsTrigger>
+            </FeatureGuard>
           </TabsList>
         </Tabs>
       </CardHeader>
@@ -85,7 +88,7 @@ export function PriceVsRotationChart() {
               content={<ChartTooltipContent />}
             />
 
-            {(mode === "rentals" || mode === "both") && (
+            {(activeMode === "rentals" || activeMode === "both") && (
               <Scatter
                 name="Alquileres"
                 data={rentalsData}
@@ -94,7 +97,7 @@ export function PriceVsRotationChart() {
               />
             )}
 
-            {(mode === "sales" || mode === "both") && (
+            {(activeMode === "sales" || activeMode === "both") && (
               <Scatter
                 name="Ventas"
                 data={salesData}

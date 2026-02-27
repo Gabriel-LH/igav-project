@@ -11,6 +11,8 @@ export const operationSchema = z.object({
   type: z.enum(["alquiler", "venta", "reserva"]),
   status: z.enum(["pendiente", "en_progreso", "completado", "cancelado"]),
   paymentStatus: z.enum(["pendiente", "parcial", "pagado"]),
+  subtotal: z.number().min(0).optional(),
+  discountAmount: z.number().min(0).optional(),
   totalAmount: z.number().min(0),
   date: z.date(),
   createdAt: z.date(),

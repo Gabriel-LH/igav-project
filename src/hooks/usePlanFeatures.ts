@@ -1,3 +1,5 @@
+"use client";
+
 import { useTenantStore } from "@/src/store/useTenantStore";
 import { useTenantSubscriptionStore } from "@/src/store/useTenantSubscriptionStore";
 import { PLAN_FEATURES_MOCK } from "@/src/mocks/mock.planFeature";

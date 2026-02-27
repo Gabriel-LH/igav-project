@@ -19,6 +19,7 @@ import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { PosBundlesPanel } from "./ui/PosBundlePanel";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
 export function PosCartSection() {
   const {
@@ -293,22 +294,38 @@ export function PosCartSection() {
 
         {/* --- BOTONES DE ACCIÓN --- */}
         <div className="grid grid-cols-4 gap-2 h-12">
-          <Button
-            className="col-span-1 h-10 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
-            onClick={() => setReservationOpen(true)}
-            disabled={items.length === 0}
-          >
-            <span className="text-[10px] font-bold uppercase">Reservar</span>
-            <span className="text-[9px] opacity-80">(Adelanto)</span>
-          </Button>
+          <FeatureGuard feature="reservations">
+            <Button
+              className="col-span-1 h-10 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
+              onClick={() => setReservationOpen(true)}
+              disabled={items.length === 0}
+            >
+              <span className="text-[10px] font-bold uppercase">Reservar</span>
+              <span className="text-[9px] opacity-80">(Adelanto)</span>
+            </Button>
+          </FeatureGuard>
 
-          <Button
-            className={`col-span-3 h-10 text-lg text-white font-bold shadow-lg ${hasRentals ? " text-xs bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"}`}
-            onClick={() => setCheckoutOpen(true)}
-            disabled={items.length === 0 || text.length > 0}
-          >
-            {hasRentals ? (text.length > 0 ? text : "COBRAR") : "COBRAR"}
-          </Button>
+          {hasRentals ? (
+            <FeatureGuard feature="rentals">
+              <Button
+                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg text-xs bg-blue-600 hover:bg-blue-700"
+                onClick={() => setCheckoutOpen(true)}
+                disabled={items.length === 0 || text.length > 0}
+              >
+                {text.length > 0 ? text : "COBRAR"}
+              </Button>
+            </FeatureGuard>
+          ) : (
+            <FeatureGuard feature="sales">
+              <Button
+                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
+                onClick={() => setCheckoutOpen(true)}
+                disabled={items.length === 0}
+              >
+                COBRAR
+              </Button>
+            </FeatureGuard>
+          )}
         </div>
       </div>
 

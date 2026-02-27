@@ -43,18 +43,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { popularSchema } from "../type.popular";
-import z from "zod";
+
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { columnsPopular } from "./column-popular-table";
+import { columnsPopular, Product } from "./column-popular-table";
 import { DraggableRowPopular } from "./draggable-row-popular";
 
 export function TopMostPopularTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof popularSchema>[];
-  table: TanstackTable<z.infer<typeof popularSchema>>;
+  data: Product[];
+  table: TanstackTable<Product>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 

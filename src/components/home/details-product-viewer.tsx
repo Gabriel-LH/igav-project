@@ -33,6 +33,7 @@ import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
 export function DetailsProductViewer({
   item,
@@ -482,70 +483,76 @@ export function DetailsProductViewer({
         <DrawerFooter className="border-t bg-muted/30">
           <div className="flex flex-col gap-2 w-full">
             <div className="grid grid-cols-2 gap-2 w-full">
-              <DirectTransactionModal
-                item={item}
-                sizeId={selectedSize || ""}
-                colorId={selectedColor?.id || ""}
-                type="alquiler"
-                currentBranchId={currentBranchId}
-                onSuccess={() => setDrawerOpen(false)}
-              >
-                <Button
-                  disabled={stockRentQty === 0}
-                  className="bg-blue-600 text-white hover:bg-blue-700 font-bold"
+              <FeatureGuard feature="rentals">
+                <DirectTransactionModal
+                  item={item}
+                  sizeId={selectedSize || ""}
+                  colorId={selectedColor?.id || ""}
+                  type="alquiler"
+                  currentBranchId={currentBranchId}
+                  onSuccess={() => setDrawerOpen(false)}
                 >
-                  <HugeiconsIcon
-                    icon={Calendar03Icon}
-                    className="w-4 h-4 mr-2"
-                  />
-                  Alquilar
-                </Button>
-              </DirectTransactionModal>
+                  <Button
+                    disabled={stockRentQty === 0}
+                    className="bg-blue-600 text-white hover:bg-blue-700 font-bold"
+                  >
+                    <HugeiconsIcon
+                      icon={Calendar03Icon}
+                      className="w-4 h-4 mr-2"
+                    />
+                    Alquilar
+                  </Button>
+                </DirectTransactionModal>
+              </FeatureGuard>
 
-              <DirectTransactionModal
-                item={item}
-                sizeId={selectedSize || ""}
-                colorId={selectedColor?.id || ""}
-                type="venta"
-                currentBranchId={currentBranchId}
-                onSuccess={() => setDrawerOpen(false)}
-              >
-                <Button
-                  disabled={stockSellQty === 0}
-                  className="bg-orange-600 text-white hover:bg-orange-700 font-bold"
+              <FeatureGuard feature="sales">
+                <DirectTransactionModal
+                  item={item}
+                  sizeId={selectedSize || ""}
+                  colorId={selectedColor?.id || ""}
+                  type="venta"
+                  currentBranchId={currentBranchId}
+                  onSuccess={() => setDrawerOpen(false)}
                 >
-                  <HugeiconsIcon
-                    icon={SaleTag02Icon}
-                    className="w-4 h-4 mr-2"
-                  />
-                  Vender
-                </Button>
-              </DirectTransactionModal>
+                  <Button
+                    disabled={stockSellQty === 0}
+                    className="bg-orange-600 text-white hover:bg-orange-700 font-bold"
+                  >
+                    <HugeiconsIcon
+                      icon={SaleTag02Icon}
+                      className="w-4 h-4 mr-2"
+                    />
+                    Vender
+                  </Button>
+                </DirectTransactionModal>
+              </FeatureGuard>
 
-              <ReservationModal
-                item={item}
-                sizeId={selectedSize || ""}
-                colorId={selectedColor?.id || ""}
-                currentBranchId={currentBranchId}
-                originBranchId={
-                  variantLocations.find((v) => v.branchId !== currentBranchId)
-                    ?.branchId || currentBranchId!
-                }
-                onSuccess={() => setDrawerOpen(false)}
-              >
-                <Button
-                  disabled={!canReserveCurrentSelection}
-                  className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+              <FeatureGuard feature="reservations">
+                <ReservationModal
+                  item={item}
+                  sizeId={selectedSize || ""}
+                  colorId={selectedColor?.id || ""}
+                  currentBranchId={currentBranchId}
+                  originBranchId={
+                    variantLocations.find((v) => v.branchId !== currentBranchId)
+                      ?.branchId || currentBranchId!
+                  }
+                  onSuccess={() => setDrawerOpen(false)}
                 >
-                  <HugeiconsIcon
-                    icon={CalendarLock01Icon}
-                    className="w-4 h-4 mr-2"
-                  />
-                  {localStock > 0
-                    ? "Realizar una reserva"
-                    : `Solicitar traslado y reservar (${maxTransferTime} días)`}
-                </Button>
-              </ReservationModal>
+                  <Button
+                    disabled={!canReserveCurrentSelection}
+                    className="col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                  >
+                    <HugeiconsIcon
+                      icon={CalendarLock01Icon}
+                      className="w-4 h-4 mr-2"
+                    />
+                    {localStock > 0
+                      ? "Realizar una reserva"
+                      : `Solicitar traslado y reservar (${maxTransferTime} días)`}
+                  </Button>
+                </ReservationModal>
+              </FeatureGuard>
             </div>
           </div>
         </DrawerFooter>

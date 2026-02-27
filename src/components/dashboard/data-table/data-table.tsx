@@ -1,5 +1,4 @@
 "use client";
-import z from "zod";
 import {
   IconChevronDown,
   IconLayoutColumns,
@@ -23,7 +22,6 @@ import {
 } from "@/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { TopClientTable } from "./top-client/top-client-table";
-import { clientSchema } from "./type";
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -39,21 +37,34 @@ import {
 import React from "react";
 import { columns } from "./top-client/column-client-table";
 import { columnsPopular } from "./most-popular/column-popular-table";
-import { popularSchema } from "./type.popular";
 import { TopMostPopularTable } from "./most-popular/most-popular-table";
 import { columnsTrading } from "./trading-fastly/column-trading-table";
-import { tradingSchema } from "./type.trading";
 import { TradingFastTable } from "./trading-fastly/trading-fast-table";
 
-export function DataTable({
-  dataClient,
-  dataPopular,
-  dataTrading,
-}: {
-  dataClient: z.infer<typeof clientSchema>[];
-  dataPopular: z.infer<typeof popularSchema>[];
-  dataTrading: z.infer<typeof tradingSchema>[];
-}) {
+import { useOperationStore } from "@/src/store/useOperationStore";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import {
+  getTopClientsMetrics,
+  getMostPopularMetrics,
+  getTradingFastMetrics,
+} from "@/src/utils/dashboard/metrics";
+
+export function DataTable() {
+  const operations = useOperationStore((s) => s.operations);
+  const customers = useCustomerStore((s) => s.customers);
+
+  const dataClient = React.useMemo(
+    () => getTopClientsMetrics(operations, customers),
+    [operations, customers],
+  );
+  const dataPopular = React.useMemo(
+    () => getMostPopularMetrics(operations),
+    [operations],
+  );
+  const dataTrading = React.useMemo(
+    () => getTradingFastMetrics(operations),
+    [operations],
+  );
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

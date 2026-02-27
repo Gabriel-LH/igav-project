@@ -11,27 +11,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { SortedTooltipContent } from "../../dashboard/ui/sorted-tootip-content";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
-// mock data
-const rentalsData = [
-  { month: "Enero", revenue: 1200 },
-  { month: "Febrero", revenue: 800 },
-  { month: "Marzo", revenue: 1600 },
-  { month: "Abril", revenue: 1400 },
-];
-
-const salesData = [
-  { month: "Enero", revenue: 1300 },
-  { month: "Febrero", revenue: 1200 },
-  { month: "Marzo", revenue: 1800 },
-  { month: "Abril", revenue: 2000 },
-];
-
-const chartData = rentalsData.map((item, index) => ({
-  month: item.month,
-  rentals: item.revenue,
-  sales: salesData[index].revenue,
-}));
+import { useAnalyticsData } from "@/src/hooks/useAnalyticsData";
 
 const chartConfig = {
   rentals: {
@@ -45,7 +27,10 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function RentalsLineChart() {
-  const [mode, setMode] = useState<"rentals" | "sales" | "both">("rentals");
+  const [mode, setMode] = useState<"rentals" | "sales" | "both">("both");
+  const { lineChartData: chartData, hasSalesFeature } = useAnalyticsData();
+
+  const activeMode = !hasSalesFeature && mode !== "rentals" ? "rentals" : mode;
 
   return (
     <Card>
@@ -53,9 +38,15 @@ export function RentalsLineChart() {
         <CardTitle>Ingresos por fecha</CardTitle>
         <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
           <TabsList>
-            <TabsTrigger value="rentals">Alquileres</TabsTrigger>
-            <TabsTrigger value="sales">Ventas</TabsTrigger>
-            <TabsTrigger value="both">Ambos</TabsTrigger>
+            <FeatureGuard feature="rentals">
+              <TabsTrigger value="rentals">Alquileres</TabsTrigger>
+            </FeatureGuard>
+            <FeatureGuard feature="sales">
+              <TabsTrigger value="sales">Ventas</TabsTrigger>
+            </FeatureGuard>
+            <FeatureGuard feature={["rentals", "sales"]} requireAll>
+              <TabsTrigger value="both">Ambos</TabsTrigger>
+            </FeatureGuard>
           </TabsList>
         </Tabs>
       </CardHeader>
@@ -76,14 +67,14 @@ export function RentalsLineChart() {
                 0,
                 chartData.reduce(
                   (max, item) => Math.max(max, item.rentals, item.sales) + 200,
-                  0
+                  0,
                 ),
               ]}
             />
             <ChartTooltip content={<SortedTooltipContent />} />
 
             {/* Renderizado condicional basado en el modo */}
-            {(mode === "rentals" || mode === "both") && (
+            {(activeMode === "rentals" || activeMode === "both") && (
               <Line
                 dataKey="rentals"
                 type="natural"
@@ -92,7 +83,7 @@ export function RentalsLineChart() {
                 dot={false}
               />
             )}
-            {(mode === "sales" || mode === "both") && (
+            {(activeMode === "sales" || activeMode === "both") && (
               <Line
                 dataKey="sales"
                 type="natural"

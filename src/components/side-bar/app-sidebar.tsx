@@ -37,7 +37,6 @@ import {
   SaleTag02Icon,
   Settings01Icon,
   ShieldUserIcon,
-  ShoppingBag03Icon,
   StoreLocation01Icon,
   Undo03Icon,
   UserGroupIcon,

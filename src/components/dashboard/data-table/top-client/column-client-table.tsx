@@ -22,6 +22,7 @@ import {
   CancelCircleIcon,
   CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
 export const columns: ColumnDef<z.infer<typeof clientSchema>>[] = [
   {
@@ -65,25 +66,47 @@ export const columns: ColumnDef<z.infer<typeof clientSchema>>[] = [
   },
   {
     accessorKey: "operationsRent",
-    header: "No. Operaciones alquiler",
+    header: () => (
+      <FeatureGuard feature="rentals">No. Operaciones alquiler</FeatureGuard>
+    ),
     cell: ({ row }) => (
-      <div className="w-32">{row.original.operationsRent}</div>
+      <FeatureGuard feature="rentals">
+        <div className="w-32">{row.original.operationsRent}</div>
+      </FeatureGuard>
     ),
   },
   {
     accessorKey: "operationsBuy",
-    header: "No. Operaciones compra",
-    cell: ({ row }) => <div className="w-32">{row.original.operationsBuy}</div>,
+    header: () => (
+      <FeatureGuard feature="sales">No. Operaciones compra</FeatureGuard>
+    ),
+    cell: ({ row }) => (
+      <FeatureGuard feature="sales">
+        <div className="w-32">{row.original.operationsBuy}</div>
+      </FeatureGuard>
+    ),
   },
   {
     accessorKey: "totalRent",
-    header: "Valor total alquiler",
-    cell: ({ row }) => <div className="w-32">{row.original.totalRent}</div>,
+    header: () => (
+      <FeatureGuard feature="rentals">Valor total alquiler</FeatureGuard>
+    ),
+    cell: ({ row }) => (
+      <FeatureGuard feature="rentals">
+        <div className="w-32">{row.original.totalRent}</div>
+      </FeatureGuard>
+    ),
   },
   {
     accessorKey: "totalBuy",
-    header: "Valor total compra",
-    cell: ({ row }) => <div className="w-32">{row.original.totalBuy}</div>,
+    header: () => (
+      <FeatureGuard feature="sales">Valor total compra</FeatureGuard>
+    ),
+    cell: ({ row }) => (
+      <FeatureGuard feature="sales">
+        <div className="w-32">{row.original.totalBuy}</div>
+      </FeatureGuard>
+    ),
   },
   {
     accessorKey: "lastOperation",

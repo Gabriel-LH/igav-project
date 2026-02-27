@@ -2,7 +2,6 @@
 
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { z } from "zod";
 
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
@@ -15,12 +14,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
 import { DragHandle } from "../ui/DragHandle";
-import { popularSchema } from "../type.popular";
+export type Product = {
+  id: string | number;
+  name: string;
+  type: string;
+  count: number;
+  income: number;
+};
 import { TableCellViewerPopular } from "./table-cell-viewer";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { RepeatIcon, SaleTag02Icon } from "@hugeicons/core-free-icons";
 
-export const columnsPopular: ColumnDef<z.infer<typeof popularSchema>>[] = [
+export const columnsPopular: ColumnDef<Product>[] = [
   {
     id: "drag",
     header: () => null,

@@ -1,12 +1,6 @@
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Button } from "@/components/button";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/chart";
-import {
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -18,7 +12,6 @@ import {
 } from "@/components/drawer";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
-import { Separator } from "@/components/separator";
 import { z } from "zod";
 import { clientActiveSchema } from "../type/type.active";
 import { useCouponStore } from "@/src/store/useCouponStore";
@@ -70,27 +63,22 @@ export function TableCellViewerActive({
                 <Label htmlFor="count">DNI</Label>
                 <Input id="count" defaultValue={item.dni} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Teléfono</Label>
                 <Input id="income" defaultValue={item.phone.toString()} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Email</Label>
                 <Input id="income" defaultValue={item.email} />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Dirección</Label>
                 <Input id="income" defaultValue={item.address} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Saldo a Favor</Label>
                 <Input
@@ -98,8 +86,7 @@ export function TableCellViewerActive({
                   defaultValue={item.walletBalance.toString()}
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Puntos de Lealtad</Label>
                 <Input
@@ -107,20 +94,12 @@ export function TableCellViewerActive({
                   defaultValue={item.loyaltyPoints.toString()}
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="income">Codigo de Referencia</Label>
                 <Input id="income" defaultValue={item.referralCode} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="income">Estado</Label>
-                <Input id="income" defaultValue={item.status} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="coupon">Codigo de Cupon Activo</Label>
                 <Input
@@ -133,6 +112,11 @@ export function TableCellViewerActive({
                       : "text-muted-foreground"
                   }
                 />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="income">Estado</Label>
+                <Input id="income" defaultValue={item.status} />
               </div>
             </div>
           </form>

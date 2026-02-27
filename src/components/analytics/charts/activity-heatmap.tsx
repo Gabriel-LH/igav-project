@@ -13,24 +13,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
-// Mock data extendido para probar paginación
-const categories = [
-  "Vestidos",
-  "Trajes",
-  "Casual",
-  "Deportivo",
-  "Fiesta",
-  "Abrigos",
-  "Informal",
-  "Formal",
-  "Niños",
-  "Accesorios",
-  "Zapatos",
-  "Joyas",
-  "Relojes",
-  "Sombreros",
-];
+import { useAnalyticsData } from "@/src/hooks/useAnalyticsData";
+
 const dates = [
   "01/01",
   "02/01",
@@ -65,15 +51,9 @@ const dates = [
   "31/01",
 ];
 
-const mockRevenue = [
-  { name: "Item 1", category: "Vestidos", date: "01/01", rentals: 8, sales: 2 },
-  { name: "Item 2", category: "Trajes", date: "01/01", rentals: 2, sales: 5 },
-  // ... más datos
-];
-
 interface HeatmapProps {
-  dataLevel?: "category" | "product"; // Controla qué se muestra en el eje Y
-  selectedProduct?: string; // Si viene de un filtro externo
+  dataLevel?: "category" | "product";
+  selectedProduct?: string;
 }
 
 export function ActivityHeatmap({
@@ -84,29 +64,39 @@ export function ActivityHeatmap({
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
 
-  // 1. Identificar qué etiquetas mostrar en el eje Y (Dinamismo)
+  const { heatmapData: mockRevenue, hasSalesFeature } = useAnalyticsData();
+
+  const activeMode = !hasSalesFeature && mode !== "rentals" ? "rentals" : mode;
+
   const yAxisLabels = useMemo(() => {
     if (selectedProduct) return [selectedProduct];
     if (dataLevel === "product") {
-      // Extrae nombres únicos de productos del mockRevenue
-      return Array.from(new Set(mockRevenue.map((item) => item.name)));
+      return Array.from(new Set(mockRevenue.map((item: any) => item.name)));
     }
-    return categories; // Por defecto categorías
-  }, [dataLevel, selectedProduct]);
+    const cats = Array.from(
+      new Set(mockRevenue.map((item: any) => item.category)),
+    );
+    return cats.length > 0 ? cats : ["General"];
+  }, [dataLevel, selectedProduct, mockRevenue]);
 
-  // 2. Procesar Matriz
   const { matrix, maxTotal } = useMemo(() => {
     const dataMatrix = yAxisLabels.map((label) => ({
-      label: label,
+      label: label as string,
       values: dates.map((date) => {
         const items = mockRevenue.filter(
-          (r) =>
+          (r: any) =>
             (dataLevel === "category"
               ? r.category === label
-              : r.name === label) && r.date === date
+              : r.name === label) && r.date === date,
         );
-        const rentals = items.reduce((sum, i) => sum + i.rentals, 0);
-        const sales = items.reduce((sum, i) => sum + i.sales, 0);
+        const rentals = items.reduce(
+          (sum: number, i: any) => sum + (i.rentals || 0),
+          0,
+        );
+        const sales = items.reduce(
+          (sum: number, i: any) => sum + (i.sales || 0),
+          0,
+        );
         return { date, rentals, sales };
       }),
     }));
@@ -114,23 +104,23 @@ export function ActivityHeatmap({
     const max = Math.max(
       ...dataMatrix.flatMap((row) =>
         row.values.map((v) =>
-          mode === "rentals"
+          activeMode === "rentals"
             ? v.rentals
-            : mode === "sales"
-            ? v.sales
-            : v.rentals + v.sales
-        )
+            : activeMode === "sales"
+              ? v.sales
+              : v.rentals + v.sales,
+        ),
       ),
-      1
+      1,
     );
 
     return { matrix: dataMatrix, maxTotal: max };
-  }, [mode, yAxisLabels, dataLevel]);
+  }, [activeMode, yAxisLabels, dataLevel, mockRevenue]);
 
   const totalPages = Math.ceil(yAxisLabels.length / itemsPerPage);
   const paginatedMatrix = matrix.slice(
     page * itemsPerPage,
-    (page + 1) * itemsPerPage
+    (page + 1) * itemsPerPage,
   );
 
   return (
@@ -141,14 +131,24 @@ export function ActivityHeatmap({
           {selectedProduct
             ? "Producto"
             : dataLevel === "category"
-            ? "Categoría"
-            : "Producto"}
+              ? "Categoría"
+              : "Producto"}
         </CardTitle>
         <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
           <TabsList>
-            <TabsTrigger value="rentals">Alquileres</TabsTrigger>
-            <TabsTrigger value="sales">Ventas</TabsTrigger>
-            <TabsTrigger value="both">Ambos</TabsTrigger>
+            <FeatureGuard feature="rentals">
+              <TabsTrigger value="rentals">Alquileres</TabsTrigger>
+            </FeatureGuard>
+            {hasSalesFeature && (
+              <FeatureGuard feature="sales">
+                <TabsTrigger value="sales">Ventas</TabsTrigger>
+              </FeatureGuard>
+            )}
+            {hasSalesFeature && (
+              <FeatureGuard feature={["rentals", "sales"]} requireAll>
+                <TabsTrigger value="both">Ambos</TabsTrigger>
+              </FeatureGuard>
+            )}
           </TabsList>
         </Tabs>
       </CardHeader>
@@ -162,7 +162,6 @@ export function ActivityHeatmap({
                 gridTemplateColumns: `180px repeat(${dates.length}, 1fr)`,
               }}
             >
-              {/* Header con fechas */}
               <div className="text-[10px] font-bold uppercase text-muted-foreground self-center">
                 Identificador
               </div>
@@ -175,7 +174,6 @@ export function ActivityHeatmap({
                 </div>
               ))}
 
-              {/* Render de Filas */}
               {paginatedMatrix.map((row) => (
                 <div key={row.label} className="contents group">
                   <div className="text-sm font-medium py-2 truncate pr-4 text-foreground group-hover:text-primary transition-colors">
@@ -184,11 +182,11 @@ export function ActivityHeatmap({
 
                   {row.values.map((cell) => {
                     const val =
-                      mode === "rentals"
+                      activeMode === "rentals"
                         ? cell.rentals
-                        : mode === "sales"
-                        ? cell.sales
-                        : cell.rentals + cell.sales;
+                        : activeMode === "sales"
+                          ? cell.sales
+                          : cell.rentals + cell.sales;
                     const intensity = val / maxTotal;
 
                     return (
@@ -198,18 +196,18 @@ export function ActivityHeatmap({
                             <div
                               className={cn(
                                 "h-10 w-full rounded-[4px] transition-all flex overflow-hidden border border-transparent shadow-sm",
-                                val === 0 ? "bg-muted/40" : ""
+                                val === 0 ? "bg-muted/40" : "",
                               )}
                               style={{
                                 backgroundColor:
                                   val > 0
-                                    ? mode === "sales"
+                                    ? activeMode === "sales"
                                       ? `rgba(59, 130, 246, ${intensity})`
                                       : `rgba(34, 197, 94, ${intensity})`
                                     : undefined,
                               }}
                             >
-                              {mode === "both" && val > 0 && (
+                              {activeMode === "both" && val > 0 && (
                                 <>
                                   <div
                                     className="bg-green-500/60"
@@ -225,7 +223,6 @@ export function ActivityHeatmap({
                           </div>
                         </TooltipTrigger>
 
-                        {/* CONTENIDO DINÁMICO DEL TOOLTIP */}
                         <TooltipContent
                           side="top"
                           className="bg-popover text-popover-foreground border-border shadow-xl"
@@ -235,8 +232,8 @@ export function ActivityHeatmap({
                               {row.label}
                             </p>
 
-                            {/* Mostrar solo lo que corresponde al modo */}
-                            {(mode === "rentals" || mode === "both") && (
+                            {(activeMode === "rentals" ||
+                              activeMode === "both") && (
                               <div className="flex justify-between gap-6 text-[11px]">
                                 <span className="text-muted-foreground font-medium">
                                   Alquileres:
@@ -247,7 +244,8 @@ export function ActivityHeatmap({
                               </div>
                             )}
 
-                            {(mode === "sales" || mode === "both") && (
+                            {(activeMode === "sales" ||
+                              activeMode === "both") && (
                               <div className="flex justify-between gap-6 text-[11px]">
                                 <span className="text-muted-foreground font-medium">
                                   Ventas:
@@ -258,7 +256,7 @@ export function ActivityHeatmap({
                               </div>
                             )}
 
-                            {mode === "both" && (
+                            {activeMode === "both" && (
                               <div className="flex justify-between gap-6 text-[11px] pt-1 border-t border-border mt-1">
                                 <span className="font-bold">Total:</span>
                                 <span className="font-bold">
@@ -278,7 +276,6 @@ export function ActivityHeatmap({
           </ScrollArea>
         </TooltipProvider>
 
-        {/* Paginación y Leyenda adaptativa */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Button
@@ -297,7 +294,7 @@ export function ActivityHeatmap({
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              onClick={() => setPage((p) => Math.max(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1 || totalPages === 0}
             >
               <ChevronRight className="h-4 w-4" />
@@ -320,12 +317,18 @@ export function ActivityHeatmap({
             </div>
             <div className="h-3 w-px bg-border" />
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-green-500" /> Alquiler
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-blue-500" /> Venta
-              </div>
+              <FeatureGuard feature="rentals">
+                <div className="flex items-center gap-1">
+                  <div className="h-2 w-2 rounded-full bg-green-500" /> Alquiler
+                </div>
+              </FeatureGuard>
+              {hasSalesFeature && (
+                <FeatureGuard feature="sales">
+                  <div className="flex items-center gap-1">
+                    <div className="h-2 w-2 rounded-full bg-blue-500" /> Venta
+                  </div>
+                </FeatureGuard>
+              )}
             </div>
           </div>
         </div>

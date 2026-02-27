@@ -43,18 +43,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { tradingSchema } from "../type.trading";
-import z from "zod";
+
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { columnsTrading } from "./column-trading-table";
+import { columnsTrading, ProductTrading } from "./column-trading-table";
 import { DraggableRowTrading } from "./draggable-row-trading";
 
 export function TradingFastTable({
   data: initialData,
   table,
 }: {
-  data: z.infer<typeof tradingSchema>[];
-  table: TanstackTable<z.infer<typeof tradingSchema>>;
+  data: ProductTrading[];
+  table: TanstackTable<ProductTrading>;
 }) {
   const [data, setData] = React.useState(() => initialData);
 

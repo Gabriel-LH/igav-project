@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 import { ensurePromotionsLoaded } from "@/src/services/promotionService";
 import { USER_MOCK } from "@/src/mocks/mock.user";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
 export function PosLayout() {
   const { products, inventoryItems, stockLots } = useInventoryStore();
@@ -28,18 +29,17 @@ export function PosLayout() {
   const promotionsFingerprint = useMemo(
     () =>
       items
-        .map(
-          (i) =>
-            [
-              i.cartId,
-              i.product.id,
-              i.product.tenantId,
-              i.operationType,
-              i.quantity,
-              i.listPrice ?? 0,
-              i.bundleId ?? "",
-              i.appliedPromotionId ?? "",
-            ].join("::"),
+        .map((i) =>
+          [
+            i.cartId,
+            i.product.id,
+            i.product.tenantId,
+            i.operationType,
+            i.quantity,
+            i.listPrice ?? 0,
+            i.bundleId ?? "",
+            i.appliedPromotionId ?? "",
+          ].join("::"),
         )
         .join("|"),
     [items],
@@ -215,26 +215,32 @@ export function PosLayout() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Label
-            htmlFor="mode-switch"
-            className={`text-xs cursor-pointer ${preferredMode === "alquiler" ? "text-white font-bold" : "text-slate-400"}`}
-          >
-            Alquiler
-          </Label>
-          <Switch
-            id="mode-switch"
-            checked={preferredMode === "venta"}
-            onCheckedChange={(checked) =>
-              setPreferredMode(checked ? "venta" : "alquiler")
-            }
-            className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-blue-600"
-          />
-          <Label
-            htmlFor="mode-switch"
-            className={`text-xs cursor-pointer ${preferredMode === "venta" ? "text-white font-bold" : "text-slate-400"}`}
-          >
-            Venta
-          </Label>
+          <FeatureGuard feature="rentals">
+            <Label
+              htmlFor="mode-switch"
+              className={`text-xs cursor-pointer ${preferredMode === "alquiler" ? "text-white font-bold" : "text-slate-400"}`}
+            >
+              Alquiler
+            </Label>
+          </FeatureGuard>
+          <FeatureGuard feature={["sales", "rentals"]} requireAll>
+            <Switch
+              id="mode-switch"
+              checked={preferredMode === "venta"}
+              onCheckedChange={(checked) =>
+                setPreferredMode(checked ? "venta" : "alquiler")
+              }
+              className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-blue-600"
+            />
+          </FeatureGuard>
+          <FeatureGuard feature="sales">
+            <Label
+              htmlFor="mode-switch"
+              className={`text-xs cursor-pointer ${preferredMode === "venta" ? "text-white font-bold" : "text-slate-400"}`}
+            >
+              Venta
+            </Label>
+          </FeatureGuard>
         </div>
       </div>
 

@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { USER_MOCK } from "@/src/mocks/mock.user";
+import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
 interface PosProductCardProps {
   product: Product;
@@ -361,73 +362,77 @@ export function PosProductCard({ product }: PosProductCardProps) {
           </div>
 
           <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {product.can_sell ? (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={remainingForSale <= 0}
-                className={cn(
-                  "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-emerald-50/50 hover:bg-emerald-100/60 hover:scale-105 transition-transform relative overflow-hidden",
-                  remainingForSale <= 0 &&
-                    "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
-                )}
-                onClick={() => handleClick("venta")}
-              >
-                {inCartSale > 0 && stockForSale > 0 && (
-                  <div
-                    className="absolute bottom-0 left-0 h-1 bg-emerald-400/50 transition-all duration-300"
-                    style={{ width: `${(inCartSale / stockForSale) * 100}%` }}
-                  />
-                )}
-                <div className="flex justify-between w-full text-xs font-semibold text-emerald-600 items-center">
-                  <span>Vender</span>
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] h-4 px-1 bg-white/50 text-emerald-700"
-                  >
-                    {remainingForSale} disp.
-                  </Badge>
+            <FeatureGuard feature="sales">
+              {product.can_sell ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={remainingForSale <= 0}
+                  className={cn(
+                    "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-emerald-50/50 hover:bg-emerald-100/60 hover:scale-105 transition-transform relative overflow-hidden",
+                    remainingForSale <= 0 &&
+                      "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
+                  )}
+                  onClick={() => handleClick("venta")}
+                >
+                  {inCartSale > 0 && stockForSale > 0 && (
+                    <div
+                      className="absolute bottom-0 left-0 h-1 bg-emerald-400/50 transition-all duration-300"
+                      style={{ width: `${(inCartSale / stockForSale) * 100}%` }}
+                    />
+                  )}
+                  <div className="flex justify-between w-full text-xs font-semibold text-emerald-600 items-center">
+                    <span>Vender</span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] h-4 px-1 bg-white/50 text-emerald-700"
+                    >
+                      {remainingForSale} disp.
+                    </Badge>
+                  </div>
+                </Button>
+              ) : (
+                <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
+                  NO VENTA
                 </div>
-              </Button>
-            ) : (
-              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
-                NO VENTA
-              </div>
-            )}
+              )}
+            </FeatureGuard>
 
-            {product.can_rent ? (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={remainingForRent <= 0}
-                className={cn(
-                  "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-blue-50/50 hover:bg-blue-100/60 hover:scale-105 transition-transform relative overflow-hidden",
-                  remainingForRent <= 0 &&
-                    "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
-                )}
-                onClick={() => handleClick("alquiler")}
-              >
-                {inCartRent > 0 && stockForRent > 0 && (
-                  <div
-                    className="absolute bottom-0 left-0 h-1 bg-blue-400/50 transition-all duration-300"
-                    style={{ width: `${(inCartRent / stockForRent) * 100}%` }}
-                  />
-                )}
-                <div className="flex justify-between w-full text-xs font-semibold text-blue-600 items-center">
-                  <span>Alquilar</span>
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] h-4 px-1 bg-white/50 text-blue-700"
-                  >
-                    {remainingForRent} disp.
-                  </Badge>
+            <FeatureGuard feature="rentals">
+              {product.can_rent ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={remainingForRent <= 0}
+                  className={cn(
+                    "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-blue-50/50 hover:bg-blue-100/60 hover:scale-105 transition-transform relative overflow-hidden",
+                    remainingForRent <= 0 &&
+                      "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
+                  )}
+                  onClick={() => handleClick("alquiler")}
+                >
+                  {inCartRent > 0 && stockForRent > 0 && (
+                    <div
+                      className="absolute bottom-0 left-0 h-1 bg-blue-400/50 transition-all duration-300"
+                      style={{ width: `${(inCartRent / stockForRent) * 100}%` }}
+                    />
+                  )}
+                  <div className="flex justify-between w-full text-xs font-semibold text-blue-600 items-center">
+                    <span>Alquilar</span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] h-4 px-1 bg-white/50 text-blue-700"
+                    >
+                      {remainingForRent} disp.
+                    </Badge>
+                  </div>
+                </Button>
+              ) : (
+                <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
+                  NO RENTA
                 </div>
-              </Button>
-            ) : (
-              <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
-                NO RENTA
-              </div>
-            )}
+              )}
+            </FeatureGuard>
           </div>
         </div>
       </div>
