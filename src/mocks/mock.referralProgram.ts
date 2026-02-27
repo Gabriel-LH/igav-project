@@ -8,8 +8,8 @@ export const mockReferralProgram: ReferralProgram = {
 
   isActive: true,
 
-  rewardType: "discount_coupon",
-  rewardValue: 5,
+  rewardType: "loyalty_points",
+  rewardValue: 100,
 
   triggerCondition: "first_purchase",
 

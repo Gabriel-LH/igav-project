@@ -10,7 +10,8 @@ import { PosCartSection } from "./pos-cart-section";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
-import { ensurePromotionsLoaded } from "@/src/services/promotionService";
+import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
+import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 
@@ -23,7 +24,10 @@ export function PosLayout() {
   );
 
   useEffect(() => {
-    ensurePromotionsLoaded();
+    const loaderService = new PromotionLoaderService(
+      new ZustandPromotionRepository(),
+    );
+    loaderService.ensurePromotionsLoaded();
   }, []);
 
   const promotionsFingerprint = useMemo(

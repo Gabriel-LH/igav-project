@@ -43,6 +43,7 @@ export function usePriceCalculation({
       : priceRent * quantity * days;
 
   const creditApplied = useCredit ? Math.min(availableCredit, subtotal) : 0;
+  
   const totalOperacion = subtotal - creditApplied;
 
   // 💰 INGRESO DE HOY (Lo que entra a caja físicamente)

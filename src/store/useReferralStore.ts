@@ -1,15 +1,7 @@
 import { create } from "zustand";
 import { MOCK_REFERRALS } from "../mocks/mock.referral";
 
-export interface Referral {
-  id: string;
-  tenantId: string;
-  referrerClientId: string;
-  referredClientId: string;
-  status: "pending" | "completed";
-  createdAt: Date;
-  rewardedAt: Date | null;
-}
+import { Referral } from "../types/referral/type.referral";
 
 interface ReferralState {
   referrals: Referral[];

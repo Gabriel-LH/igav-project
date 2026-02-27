@@ -13,7 +13,7 @@ import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
 import { ReservationDTO } from "@/src/interfaces/ReservationDTO";
-import { processTransaction } from "@/src/services/transactionServices";
+import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
@@ -72,6 +72,8 @@ export function ReservationModal({
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
+
+
   const [paymentMethod, setPaymentMethod] =
     React.useState<PaymentMethodType>("cash");
 
@@ -85,6 +87,8 @@ export function ReservationModal({
   const sellerId = USER_MOCK[0].id;
 
   const { inventoryItems, stockLots } = useInventoryStore();
+
+  console.log("downPayment", downPayment);
 
   // Buscar stock físico exacto
   const validStockCandidates = useMemo(() => {
@@ -188,6 +192,8 @@ export function ReservationModal({
 
   const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
 
+    console.log("totalOperacion", totalOperacion);
+
   React.useEffect(() => {
     if (open) {
       const hasRentStock = validStockCandidates.some((s: any) => s.isForRent);
@@ -284,7 +290,7 @@ export function ReservationModal({
       financials: {
         receivedAmount: realPaidAmount,
         keepAsCredit,
-        totalPrice: totalOperacion,
+        totalAmount: totalOperacion,
         downPayment: Number(downPayment),
         paymentMethod,
         pendingAmount: Math.max(totalOperacion - Number(downPayment), 0),
@@ -300,6 +306,8 @@ export function ReservationModal({
       items: transactionItems,
       updatedAt: new Date(),
     };
+
+    console.log("newReservation", newReservation);
 
     try {
       processTransaction(newReservation);

@@ -10,6 +10,7 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { clientInactiveSchema } from "../type/type.inactive";
 import { ArrowUpDown, BadgeX } from "lucide-react";
 import { TableCellViewerInactive } from "./inactive-table-cell-viewer";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 
 
@@ -85,12 +86,7 @@ export const columnsClientInactive: ColumnDef<
   {
     accessorKey: "walletBalance",
     header: "Saldo a Favor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
-  },
-  {
-    accessorKey: "loyaltyPoints",
-    header: "Puntos de Lealtad",
-    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+    cell: ({ getValue }) => <div className="w-32">{formatCurrency(getValue<number>())}</div>,
   },
   {
     accessorKey: "status",

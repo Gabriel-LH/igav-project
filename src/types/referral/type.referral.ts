@@ -9,7 +9,8 @@ export const referralSchema = z.object({
 
   status: z.enum(["pending", "qualified", "rewarded"]),
 
-  createdAt: z.date()
+  createdAt: z.date(),
+  rewardedAt: z.date().nullable().optional(),
 });
 
 export type Referral = z.infer<typeof referralSchema>;

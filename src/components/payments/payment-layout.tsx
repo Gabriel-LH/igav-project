@@ -85,6 +85,8 @@ export function PaymentLayout() {
   const { operations } = useOperationStore();
   const users = USER_MOCK;
 
+  console.log("payments", payments);
+
   const [datePreset, setDatePreset] = useState<PaymentDatePreset>("today");
   const [customFrom, setCustomFrom] = useState<Date>(new Date());
   const [customTo, setCustomTo] = useState<Date>(new Date());

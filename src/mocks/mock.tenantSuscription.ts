@@ -2,7 +2,7 @@ import { TenantSubscription } from "../types/tenant/tenantSuscription";
 
 export const TENTANT_SUBSCRIPTIONS_MOCK: TenantSubscription[] = [
   {
-    tenantId: "tenant-b",
+    tenantId: "tenant-c",
     planId: "plan-sales",
     status: "active",
     startedAt: new Date(),
@@ -10,7 +10,7 @@ export const TENTANT_SUBSCRIPTIONS_MOCK: TenantSubscription[] = [
     id: "tenant-sub-a",
   },
   {
-    tenantId: "tenant-a",
+    tenantId: "tenant-b",
     planId: "plan-rentals",
     status: "active",
     startedAt: new Date(),
@@ -18,7 +18,7 @@ export const TENTANT_SUBSCRIPTIONS_MOCK: TenantSubscription[] = [
     id: "tenant-sub-b",
   },
   {
-    tenantId: "tenant-c",
+    tenantId: "tenant-a",
     planId: "plan-full",
     status: "active",
     startedAt: new Date(),

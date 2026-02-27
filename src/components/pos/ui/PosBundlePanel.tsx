@@ -6,9 +6,12 @@ import { Badge } from "@/components/badge";
 import { useCartStore } from "@/src/store/useCartStore";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
-  createBundleDefinitionsFromPromotions,
-  detectBundleEligibility,
-} from "@/src/services/bundleService";
+  BundleDomainService,
+  BundleDefinition,
+} from "@/src/domain/services/bundle.service";
+import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
+import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Gift } from "lucide-react";
 
 export function PosBundlesPanel() {
@@ -21,26 +24,46 @@ export function PosBundlesPanel() {
   const endDate = globalRentalDates?.to ?? new Date();
 
   const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+
+  const { products, inventoryItems, stockLots } = useInventoryStore();
+  const bundleService = useMemo(() => new BundleDomainService(), []);
+
   const bundles = useMemo(() => {
     if (!tenantId) return [];
-    return createBundleDefinitionsFromPromotions(tenantId);
-  }, [tenantId]);
+    return bundleService.createBundleDefinitionsFromPromotions(
+      PROMOTIONS_MOCK,
+      products,
+      tenantId,
+    );
+  }, [tenantId, bundleService, products]);
 
   const evaluations = useMemo(() => {
     if (!tenantId) return [];
-    return bundles.map((bundle) => {
-      const eligibility = detectBundleEligibility(
+    return bundles.map((bundle: BundleDefinition) => {
+      const eligibility = bundleService.detectBundleEligibility(
         items,
         bundle,
         tenantId,
         currentBranchId,
         startDate,
         endDate,
+        inventoryItems,
+        stockLots,
       );
 
       return { bundle, eligibility };
     });
-  }, [items, bundles, tenantId, currentBranchId, startDate, endDate]);
+  }, [
+    items,
+    bundles,
+    tenantId,
+    currentBranchId,
+    startDate,
+    endDate,
+    bundleService,
+    inventoryItems,
+    stockLots,
+  ]);
 
   const relevantBundles = useMemo(() => {
     return evaluations.filter(({ eligibility }) => eligibility.eligible);

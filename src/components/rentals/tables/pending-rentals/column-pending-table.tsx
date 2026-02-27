@@ -16,22 +16,24 @@ import {
 } from "@/components/dropdown-menu";
 import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle";
 import { rentalsPendingSchema } from "../type/type.pending";
-import {
-  ArrowUpDown,
-  BadgeX,
-  CircleDashed,
-  Handbag,
-} from "lucide-react";
+import { ArrowUpDown, BadgeX, CircleDashed, Handbag } from "lucide-react";
 import { TableCellViewerPending } from "./pending-table-cell-viewer";
-import { cancelRentalTransaction } from "@/src/services/cancelRental";
+import { CancelRentalUseCase } from "@/src/application/use-cases/cancelRental.usecase";
 import { toast } from "sonner";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useState } from "react";
 import { RentalWithItems } from "@/src/types/rentals/type.rentals";
 import { CancelRentalModal } from "../../ui/modals/CancelRentalModal";
-import { deliverRentalUseCase } from "@/src/services/use-cases/deliverRental.usecase";
+import { DeliverRentalUseCase } from "@/src/application/use-cases/deliverRental.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandReservationRepository } from "@/src/infrastructure/stores-adapters/ZustandReservationRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
 import { DeliverRentalModal } from "../../ui/modals/DeliverRentalModal";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 
 export const columnsRentalsPending: ColumnDef<
   z.infer<typeof rentalsPendingSchema>
@@ -174,7 +176,13 @@ function ActionCell({
 
   const handleConfirm = async (rentalId: string, reason: string) => {
     try {
-      await cancelRentalTransaction(rentalId, reason);
+      const cancelUseCase = new CancelRentalUseCase(
+        new ZustandRentalRepository(),
+        new ZustandGuaranteeRepository(),
+        new ZustandOperationRepository(),
+        new ZustandPaymentRepository(),
+      );
+      cancelUseCase.execute(rentalId, reason, USER_MOCK[0].id);
       toast.success("Alquiler cancelado exitosamente");
       setOpenCancel(false);
     } catch (error) {
@@ -184,9 +192,18 @@ function ActionCell({
 
   if (!fullRentalData) return null;
 
-  const handleDeliverRental = async (id: string, guaranteeData: { type: GuaranteeType; value: string }) => {
+  const handleDeliverRental = async (
+    id: string,
+    guaranteeData: { type: GuaranteeType; value: string },
+  ) => {
     try {
-      await deliverRentalUseCase(id, guaranteeData);
+      const deliverUseCase = new DeliverRentalUseCase(
+        new ZustandRentalRepository(),
+        new ZustandInventoryRepository(),
+        new ZustandReservationRepository(),
+        new ZustandGuaranteeRepository(),
+      );
+      deliverUseCase.execute(id, guaranteeData, "user_1");
 
       toast.success("Alquiler entregado", {
         description: "El alquiler fue entregado correctamente",

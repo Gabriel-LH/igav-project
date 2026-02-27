@@ -28,7 +28,12 @@ import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
 import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { RentalDTO } from "@/src/interfaces/RentalDTO";
-import { processReturn } from "@/src/services/processReturn";
+import { ProcessReturnUseCase } from "@/src/application/use-cases/processReturn.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -202,13 +207,21 @@ export function ReturnInspectionDrawer({
 
     if (itemsToProcess.length === 0) return;
 
-    processReturn({
+    const processReturnUseCase = new ProcessReturnUseCase(
+      new ZustandRentalRepository(),
+      new ZustandInventoryRepository(),
+      new ZustandGuaranteeRepository(),
+      new ZustandOperationRepository(),
+    );
+
+    processReturnUseCase.execute({
       rentalId: rental.id,
       rentalStatus: !itemsStatus.noPhysicalDamage ? "con_daños" : "devuelto", // This logic might need review if partial return
       items: itemsToProcess.map((item) => ({
         rentalItemId: String(item.id),
         itemStatus: "devuelto",
-        stockTarget: itemsInspection[String(item.id)] || "en_lavanderia",
+        stockTarget: (itemsInspection[String(item.id)] ||
+          "en_lavanderia") as any,
       })),
 
       totalPenalty: summary.totalToPay,
@@ -216,6 +229,7 @@ export function ReturnInspectionDrawer({
         summary.refundAmount > 0 || !summary.isCash ? "devuelta" : "retenida",
 
       notes: damageNotes,
+      adminId: USER_MOCK[0].id,
     });
 
     const ticketHtml = buildReturnTicketHtml(

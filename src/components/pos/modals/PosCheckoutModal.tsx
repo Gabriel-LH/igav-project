@@ -19,8 +19,8 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/home/ui/direct-transaction/CashPaymentSummary";
-import { processTransaction } from "@/src/services/transactionServices";
-import { manageLoyaltyPoints } from "@/src/services/use-cases/manageLoyaltyPoints";
+import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -38,10 +38,9 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
-import {
-  reserveBundledItems,
-  reserveStockUsingInventory,
-} from "@/src/services/bundleService";
+import { ApplyBundleOrchestrator } from "@/src/application/orchestrators/applyBundle.orchestrator";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
 import { useCouponStore } from "@/src/store/useCouponStore";
@@ -130,6 +129,7 @@ export function PosCheckoutModal({
     [items],
   );
 
+  const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
   const getMultiplier = (item: CartItem) =>
     item.operationType === "alquiler" && item.product.rent_unit !== "evento"
@@ -260,13 +260,16 @@ export function PosCheckoutModal({
       if (items.some((item) => item.bundleId)) {
         const tenantId = activeTenantId ?? items[0]?.product.tenantId;
         if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-        await reserveBundledItems(
+        const bundleOrchestrator = new ApplyBundleOrchestrator(
+          new ZustandInventoryRepository(),
+          new ZustandPromotionRepository(),
+        );
+        await bundleOrchestrator.reserveBundledItems(
           items,
           tenantId,
           currentBranchId,
           dateRange.from,
           dateRange.to,
-          reserveStockUsingInventory,
         );
       }
 
@@ -348,6 +351,42 @@ export function PosCheckoutModal({
         return results;
       };
 
+      const saleShare =
+        hasSales && hasRentals && subtotalConPromos > 0
+          ? totalVentas / subtotalConPromos
+          : hasSales
+            ? 1
+            : 0;
+      const rentalShare =
+        hasSales && hasRentals && subtotalConPromos > 0
+          ? totalAlquileres / subtotalConPromos
+          : hasRentals
+            ? 1
+            : 0;
+
+      const saleTotalAmount =
+        Math.round(totalBrutoConIGV * saleShare * 100) / 100;
+      const guaranteeAmount =
+        guaranteeType === "dinero" ? Number(guarantee || 0) : 0;
+      const rentalTotalAmount =
+        Math.round(totalBrutoConIGV * rentalShare * 100) / 100 +
+        guaranteeAmount;
+
+      let remainingCash =
+        paymentMethod === "cash"
+          ? Number(receivedAmount) || 0
+          : totalACobrarHoy;
+
+      let saleReceived =
+        paymentMethod === "cash"
+          ? Math.min(saleTotalAmount, remainingCash)
+          : saleTotalAmount;
+      if (paymentMethod === "cash")
+        remainingCash = Math.max(0, remainingCash - saleReceived);
+
+      let rentalReceived =
+        paymentMethod === "cash" ? remainingCash : rentalTotalAmount;
+
       // A. PROCESAR VENTA
       if (ventaItems.length > 0) {
         const saleDTO: SaleDTO = {
@@ -360,15 +399,12 @@ export function PosCheckoutModal({
           items: prepareItems(ventaItems, "venta"),
 
           financials: {
-            subtotal: subtotalBruto,
-            totalDiscount: totalDiscount,
-            taxAmount: taxAmount,
-            totalAmount: totalBrutoConIGV,
+            subtotal: Math.round(subtotalBruto * saleShare * 100) / 100,
+            totalDiscount: Math.round(totalDiscount * saleShare * 100) / 100,
+            taxAmount: Math.round(taxAmount * saleShare * 100) / 100,
+            totalAmount: saleTotalAmount,
             keepAsCredit: false,
-            receivedAmount:
-              paymentMethod === "cash"
-                ? Number(receivedAmount) || 0
-                : totalBrutoConIGV,
+            receivedAmount: saleReceived,
             paymentMethod: paymentMethod as PaymentMethodType,
           },
         };
@@ -377,9 +413,6 @@ export function PosCheckoutModal({
       }
 
       if (alquilerItems.length > 0) {
-        const guaranteeAmount =
-          guaranteeType === "dinero" ? Number(guarantee || 0) : 0;
-
         const rentalDTO: RentalDTO = {
           ...baseData,
           id: "",
@@ -393,15 +426,12 @@ export function PosCheckoutModal({
           items: prepareItems(alquilerItems, "alquiler"),
 
           financials: {
-            subtotal: subtotalBruto,
-            totalDiscount: totalDiscount,
-            taxAmount: taxAmount,
-            totalAmount: totalBrutoConIGV,
+            subtotal: Math.round(subtotalBruto * rentalShare * 100) / 100,
+            totalDiscount: Math.round(totalDiscount * rentalShare * 100) / 100,
+            taxAmount: Math.round(taxAmount * rentalShare * 100) / 100,
+            totalAmount: rentalTotalAmount,
             keepAsCredit: false,
-            receivedAmount:
-              paymentMethod === "cash"
-                ? Number(receivedAmount) || 0
-                : totalBrutoConIGV + guaranteeAmount,
+            receivedAmount: rentalReceived,
             paymentMethod: paymentMethod as PaymentMethodType,
           },
 
@@ -417,12 +447,13 @@ export function PosCheckoutModal({
       }
 
       if (usePoints && pointsConsumed > 0) {
-        manageLoyaltyPoints({
-          clientId: selectedCustomer.id,
-          points: pointsConsumed,
-          type: "redeemed",
-          description: "Canje de puntos en POS",
-        });
+        new ZustandLoyaltyRepository().addPoints(
+          selectedCustomer.id,
+          pointsConsumed,
+          "redeemed",
+          undefined,
+          "Canje de puntos en POS",
+        );
       }
 
       if (appliedCoupon) {

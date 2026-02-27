@@ -18,12 +18,18 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { rentalsActiveSchema } from "../type/type.active";
 import { ArrowUpDown, CircleDashed, CircleX, PencilLine } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
-import { cancelRentalTransaction } from "@/src/services/cancelRental";
+import { CancelRentalUseCase } from "@/src/application/use-cases/cancelRental.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
 import { useState } from "react";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { toast } from "sonner";
 import { RentalWithItems } from "@/src/types/rentals/type.rentals";
 import { CancelRentalModal } from "../../ui/modals/CancelRentalModal";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 
 export const columnsRentalsActive: ColumnDef<
   z.infer<typeof rentalsActiveSchema>
@@ -130,7 +136,9 @@ export const columnsRentalsActive: ColumnDef<
   {
     accessorKey: "gurantee_type",
     header: "Garantia",
-    cell: ({ getValue }) => <div className="w-32">{getValue<string>().toUpperCase()}</div>,
+    cell: ({ getValue }) => (
+      <div className="w-32">{getValue<string>().toUpperCase()}</div>
+    ),
   },
   {
     accessorKey: "guarantee_status",
@@ -177,7 +185,13 @@ function ActionCell({
 
   const handleConfirm = async (rentalId: string, reason: string) => {
     try {
-      await cancelRentalTransaction(rentalId, reason);
+      const cancelUseCase = new CancelRentalUseCase(
+        new ZustandRentalRepository(),
+        new ZustandGuaranteeRepository(),
+        new ZustandOperationRepository(),
+        new ZustandPaymentRepository(),
+      );
+      cancelUseCase.execute(rentalId, reason, USER_MOCK[0].id);
       toast.success("Alquiler cancelado exitosamente");
       setOpen(false);
     } catch (error) {

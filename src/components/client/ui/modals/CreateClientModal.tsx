@@ -16,8 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/label";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCreateClientWithReferral } from "@/src/services/use-cases/createReferral";
 import { Client } from "@/src/types/clients/type.client";
+import { CreateClientUseCase } from "@/src/application/use-cases/createClient.usecase";
+import { ZustandClientRepository } from "@/src/infrastructure/stores-adapters/ZustandClientRepository";
+import { ZustandReferralRepository } from "@/src/infrastructure/stores-adapters/ZustandReferralRepository";
+import { USER_MOCK } from "@/src/mocks/mock.user";
 
 // 1️⃣ Schema de validación Zod
 const createClientSchema = z.object({
@@ -46,8 +49,6 @@ export function CreateClientModal({
   defaultValues,
 }: CreateClientModalProps) {
   const [open, setOpen] = useState(false);
-
-  const { create } = useCreateClientWithReferral();
 
   // 2️⃣ Estados del formulario
   const [values, setValues] = useState<CreateClientValues>({
@@ -84,9 +85,18 @@ export function CreateClientModal({
       return;
     }
 
-    const newClient = create({
+    // Instanciar dependencias y Use Case
+    const clientRepo = new ZustandClientRepository();
+    const referralRepo = new ZustandReferralRepository();
+    const createClientUC = new CreateClientUseCase(clientRepo, referralRepo);
+
+    // Obtener tenantId del usuario actual (mock)
+    const tenantId = (USER_MOCK[0] as any).tenantId || "UNKNOWN_TENANT";
+
+    const newClient = createClientUC.execute({
       ...result.data,
       usedReferralCode: result.data.referralCode,
+      tenantId,
     });
 
     setErrors({});

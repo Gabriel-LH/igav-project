@@ -26,8 +26,8 @@ import { SaleDTO } from "@/src/interfaces/SaleDTO";
 import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
-import { processTransaction } from "@/src/services/transactionServices";
-import { DialogDescription } from "@radix-ui/react-dialog";
+import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
@@ -39,6 +39,13 @@ import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { UsePointsComponent } from "@/src/components/pos/ui/UsePointsComponent";
+import { UseCouponComponent } from "@/src/components/pos/ui/UseCouponComponent";
+import { Coupon } from "@/src/types/coupon/type.coupon";
+import { usePromotionStore } from "@/src/store/usePromotionStore";
+import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 export function DirectTransactionModal({
   item,
@@ -65,6 +72,17 @@ export function DirectTransactionModal({
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
+
+  const [usePoints, setUsePoints] = React.useState(false);
+  const [appliedCoupon, setAppliedCoupon] = React.useState<Coupon | null>(null);
+
+  const selectedClient = useCustomerStore((state) =>
+    selectedCustomer?.id
+      ? state.getCustomerById(selectedCustomer.id)
+      : undefined,
+  );
+  const availablePoints = selectedClient?.loyaltyPoints || 0;
+  const pointValueInMoney = 0.01;
 
   const [assignedStockIds, setAssignedStockIds] = React.useState<string[]>([]);
 
@@ -163,10 +181,42 @@ export function DirectTransactionModal({
 
   const hasStock = stockCount >= quantity;
 
+  // Evaluacion de promociones automaticas
+  const { promotions } = usePromotionStore();
+
+  const activePromos = useMemo(() => {
+    const now = new Date();
+    return promotions.filter((promo) => {
+      if (!promo.isActive) return false;
+      if (promo.startDate && new Date(promo.startDate) > now) return false;
+      if (promo.endDate && new Date(promo.endDate) < now) return false;
+      if (promo.branchIds?.length && !promo.branchIds.includes(currentBranchId))
+        return false;
+      if (promo.usageType && promo.usageType !== "automatic") return false;
+      if (!promo.appliesTo.includes(type)) return false;
+      return true;
+    });
+  }, [promotions, currentBranchId, type]);
+
+  const bestPromo = useMemo(() => {
+    const defaultPrice =
+      type === "venta" ? item.price_sell || 0 : item.price_rent || 0;
+    return calculateBestPromotionForProduct(item, defaultPrice, activePromos);
+  }, [activePromos, item, type]);
+
+  const originalPriceSell = item.price_sell || 0;
+  const originalPriceRent = item.price_rent || 0;
+  const unitFinalPrice = bestPromo
+    ? bestPromo.finalPrice
+    : type === "venta"
+      ? originalPriceSell
+      : originalPriceRent;
+  const unitDiscountAmount = bestPromo ? bestPromo.discount : 0;
+
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType: type,
-    priceSell: item.price_sell,
-    priceRent: item.price_rent,
+    priceSell: type === "venta" ? unitFinalPrice : originalPriceSell, // Passed the discounted price
+    priceRent: type === "alquiler" ? unitFinalPrice : originalPriceRent,
     quantity,
     startDate: withTime(dateRange.from, pickupTime),
     endDate:
@@ -176,13 +226,36 @@ export function DirectTransactionModal({
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
   });
 
+  const pointsConsumed = usePoints
+    ? Math.min(availablePoints, Math.ceil(totalOperacion / pointValueInMoney))
+    : 0;
+  const pointsDiscount = pointsConsumed * pointValueInMoney;
+
+  let couponDiscount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      couponDiscount = Math.floor(
+        totalOperacion * (appliedCoupon.discountValue / 100),
+      );
+    } else {
+      couponDiscount = Math.min(totalOperacion, appliedCoupon.discountValue);
+    }
+  }
+
+  const totalDescuentoExtra = pointsDiscount + couponDiscount;
+  const totalOperacionConDescuento = Math.max(
+    totalOperacion - totalDescuentoExtra,
+    0,
+  );
+
   const totalACobrarHoy = useMemo(() => {
-    if (type === "venta") return totalOperacion;
+    if (type === "venta") return totalOperacionConDescuento;
 
     return (
-      totalOperacion + (guaranteeType === "dinero" ? Number(guarantee || 0) : 0)
+      totalOperacionConDescuento +
+      (guaranteeType === "dinero" ? Number(guarantee || 0) : 0)
     );
-  }, [type, totalOperacion, guaranteeType, guarantee]);
+  }, [type, totalOperacionConDescuento, guaranteeType, guarantee]);
 
   const changeAmount = useMemo(() => {
     if (paymentMethod !== "cash") return 0;
@@ -236,7 +309,10 @@ export function DirectTransactionModal({
           quantity: 1,
           sizeId: sizeId,
           colorId: colorId,
-          priceAtMoment: isVenta ? item.price_sell : item.price_rent,
+          priceAtMoment: unitFinalPrice,
+          listPrice: isVenta ? originalPriceSell : originalPriceRent,
+          discountAmount: unitDiscountAmount,
+          discountReason: bestPromo?.reason || "",
         };
       });
     } else {
@@ -251,7 +327,10 @@ export function DirectTransactionModal({
           quantity: take,
           sizeId: sizeId,
           colorId: colorId,
-          priceAtMoment: isVenta ? item.price_sell : item.price_rent,
+          priceAtMoment: unitFinalPrice,
+          listPrice: isVenta ? originalPriceSell : originalPriceRent,
+          discountAmount: unitDiscountAmount,
+          discountReason: bestPromo?.reason || "",
         });
         remainingQty -= take;
       }
@@ -274,13 +353,20 @@ export function DirectTransactionModal({
         endDate: dateRange.to,
         financials: {
           subtotal: Number(totalOperacion),
-          totalDiscount: 0,
+          totalDiscount: Number(
+            totalDescuentoExtra +
+              unitDiscountAmount *
+                quantity *
+                (type === "alquiler" && item.rent_unit !== "evento"
+                  ? days || 1
+                  : 1),
+          ),
           taxAmount: 0,
-          totalAmount: Number(totalOperacion),
+          totalAmount: Number(totalOperacionConDescuento),
           receivedAmount:
             paymentMethod === "cash"
               ? Number(receivedAmount)
-              : Number(totalOperacion) +
+              : Number(totalOperacionConDescuento) +
                 (guaranteeType === "dinero" ? Number(guarantee) : 0),
           keepAsCredit: false,
           paymentMethod,
@@ -312,13 +398,15 @@ export function DirectTransactionModal({
         items: transactionItems,
         financials: {
           subtotal: Number(totalOperacion),
-          totalDiscount: 0,
+          totalDiscount: Number(
+            totalDescuentoExtra + unitDiscountAmount * quantity,
+          ),
           taxAmount: 0,
-          totalAmount: Number(totalOperacion),
+          totalAmount: Number(totalOperacionConDescuento),
           receivedAmount:
             paymentMethod === "cash"
               ? Number(receivedAmount)
-              : Number(totalOperacion),
+              : Number(totalOperacionConDescuento),
           keepAsCredit: false,
           paymentMethod,
         },
@@ -531,14 +619,41 @@ export function DirectTransactionModal({
             onSelect={setSelectedCustomer}
           />
 
+          {selectedCustomer && (
+            <div className="flex flex-col gap-2 mt-2">
+              <UsePointsComponent
+                usePoints={usePoints}
+                setUsePoints={setUsePoints}
+                availablePoints={availablePoints}
+                pointValueInMoney={pointValueInMoney}
+              />
+              <UseCouponComponent
+                tenantId={item.tenantId || ""}
+                selectedClientId={selectedCustomer.id}
+                appliedCoupon={appliedCoupon}
+                onApplyCoupon={setAppliedCoupon}
+              />
+            </div>
+          )}
+
           <div className="space-y-4">
             <PriceBreakdownBase
-              unitPrice={isVenta ? item.price_sell : item.price_rent}
+              unitPrice={unitFinalPrice}
               quantity={quantity}
               days={days}
               isEvent={isEvent}
               total={totalOperacion}
             />
+            {totalDescuentoExtra > 0 && (
+              <div className="flex justify-between items-center text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded">
+                <span>Descuento Extra (Puntos/Cupón)</span>
+                <span>- {formatCurrency(totalDescuentoExtra)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center text-base font-black">
+              <span>Total Operación</span>
+              <span>{formatCurrency(totalOperacionConDescuento)}</span>
+            </div>
           </div>
 
           <CashPaymentSummary

@@ -23,7 +23,7 @@ export const PROMOTIONS_MOCK: Promotion[] = [
   },
   {
     id: "PROMO-FIJA-002",
-    name: "Día del Padre - Sacos",
+    name: "Día del Padre",
     type: "percentage" as const,
     value: 15, // 15% de descuento
     scope: "category" as const,

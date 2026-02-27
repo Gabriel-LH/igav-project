@@ -13,6 +13,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 
 
@@ -88,7 +89,7 @@ export const columnsClientActive: ColumnDef<
   {
     accessorKey: "walletBalance",
     header: "Saldo a Favor",
-    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+    cell: ({ getValue }) => <div className="w-32">{formatCurrency(getValue<number>())}</div>,
   },
   {
     accessorKey: "status",

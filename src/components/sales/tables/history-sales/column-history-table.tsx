@@ -23,11 +23,16 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useState } from "react";
 import { ReturnProductModal } from "../../ui/modals/ReturProductModal";
 import { SaleWithItems } from "@/src/types/sales/type.sale";
-import { cancelSaleUseCase } from "@/src/services/use-cases/cancelSale.usecase";
+import { CancelSaleUseCase } from "@/src/application/use-cases/cancelSale.usecase";
+import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
+import { ZustandSaleReversalRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleReversalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
-import { returnSaleItemsUseCase } from "@/src/services/use-cases/returnSaleItems.usecase";
+import { ReturnSaleItemsUseCase } from "@/src/application/use-cases/returnSaleItems.usecase";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>
@@ -146,7 +151,15 @@ function ActionCell({
 
   const handleCancelConfirm = async (id: string, reason: string) => {
     try {
-      await cancelSaleUseCase({
+      const cancelSaleUC = new CancelSaleUseCase(
+        new ZustandSaleRepository(),
+        new ZustandSaleReversalRepository(),
+        new ZustandInventoryRepository(),
+        new ZustandPaymentRepository(),
+        new ZustandOperationRepository(),
+      );
+
+      cancelSaleUC.execute({
         saleId: id,
         reason,
         userId: user.id,
@@ -174,7 +187,14 @@ function ActionCell({
     }[],
   ) => {
     try {
-      returnSaleItemsUseCase({
+      const returnSaleItemsUC = new ReturnSaleItemsUseCase(
+        new ZustandSaleRepository(),
+        new ZustandSaleReversalRepository(),
+        new ZustandInventoryRepository(),
+        new ZustandPaymentRepository(),
+      );
+
+      returnSaleItemsUC.execute({
         saleId,
         reason,
         items,

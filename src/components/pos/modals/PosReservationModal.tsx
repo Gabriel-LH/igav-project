@@ -18,7 +18,7 @@ import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
-import { processTransaction } from "@/src/services/transactionServices";
+import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -37,10 +37,9 @@ import {
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
-import {
-  reserveBundledItems,
-  reserveStockUsingInventory,
-} from "@/src/services/bundleService";
+import { ApplyBundleOrchestrator } from "@/src/application/orchestrators/applyBundle.orchestrator";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -301,13 +300,16 @@ export function PosReservationModal({
     if (items.some((item) => item.bundleId)) {
       const tenantId = activeTenantId ?? items[0]?.product.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-      await reserveBundledItems(
+      const bundleOrchestrator = new ApplyBundleOrchestrator(
+        new ZustandInventoryRepository(),
+        new ZustandPromotionRepository(),
+      );
+      await bundleOrchestrator.reserveBundledItems(
         items,
         tenantId,
         currentBranchId,
         dateRange.from,
         dateRange.to,
-        reserveStockUsingInventory,
       );
     }
 

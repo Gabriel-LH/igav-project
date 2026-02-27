@@ -8,16 +8,23 @@ import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
-  applyBundleToCart,
+  BundleDomainService,
   BundleDefinition,
-  clearBundleAssignments,
-  createBundleDefinitionsFromPromotions,
-  detectBundleEligibility,
-} from "@/src/services/bundleService";
-import { getActivePromotions } from "../services/promotionService";
-import { applyPromotionsUseCase } from "../services/use-cases/promotion.usecase";
+} from "@/src/domain/services/bundle.service";
+import { PromotionService } from "../domain/services/promotion.service";
+import { ZustandPromotionRepository } from "../infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PromotionLoaderService } from "../domain/services/promotionLoader.service";
 import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
 import { Promotion } from "../types/promotion/type.promotion";
+
+const bundleService = new BundleDomainService();
+const promotionLoader = new PromotionLoaderService(
+  new ZustandPromotionRepository(),
+);
+const promotionService = new PromotionService(
+  new ZustandPromotionRepository(),
+  promotionLoader,
+);
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
@@ -83,7 +90,7 @@ interface CartState {
     branchId: string,
     startDate: Date,
     endDate: Date,
-  ) => ReturnType<typeof detectBundleEligibility>;
+  ) => ReturnType<typeof bundleService.detectBundleEligibility>;
   clearBundleAssignments: () => void;
   reevaluateActiveBundle: (
     branchId: string,
@@ -377,13 +384,17 @@ export const useCartStore = create<CartState>((set, get) => ({
       };
     }
 
-    const { cart, eligibility } = applyBundleToCart(
+    const { cart, eligibility } = bundleService.applyBundleToCart(
       get().items,
       bundleDefinition,
       tenantId,
       branchId,
       startDate,
       endDate,
+      PROMOTIONS_MOCK, // Passing mocks or empty arrays according to old signatures
+      [BUSINESS_RULES_MOCK] as any[],
+      useInventoryStore.getState().inventoryItems,
+      useInventoryStore.getState().stockLots,
     );
 
     set((state) => {
@@ -417,7 +428,12 @@ export const useCartStore = create<CartState>((set, get) => ({
       return;
     }
 
-    const cart = clearBundleAssignments(get().items, dates.from, dates.to);
+    const cart = bundleService.clearBundleAssignments(
+      get().items,
+      dates.from,
+      dates.to,
+      [BUSINESS_RULES_MOCK] as any[],
+    );
 
     set({
       items: cart,
@@ -437,20 +453,31 @@ export const useCartStore = create<CartState>((set, get) => ({
       return rest as CartItem;
     });
 
-    const definitions = createBundleDefinitionsFromPromotions(tenantId);
+    const products = useInventoryStore.getState().products;
+    const definitions = bundleService.createBundleDefinitionsFromPromotions(
+      PROMOTIONS_MOCK,
+      products,
+      tenantId,
+    );
 
     activeBundles.forEach((bundleId) => {
-      const bundleDefinition = definitions.find((b) => b.id === bundleId);
+      const bundleDefinition = definitions.find(
+        (b: BundleDefinition) => b.id === bundleId,
+      );
 
       if (!bundleDefinition) return;
 
-      const { cart } = applyBundleToCart(
+      const { cart } = bundleService.applyBundleToCart(
         updatedCart,
         bundleDefinition,
         tenantId,
         branchId,
         startDate,
         endDate,
+        PROMOTIONS_MOCK,
+        [BUSINESS_RULES_MOCK] as any[],
+        useInventoryStore.getState().inventoryItems,
+        useInventoryStore.getState().stockLots,
       );
 
       updatedCart = cart;
@@ -572,7 +599,10 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     const tenantId =
       state.activeTenantId ?? state.items[0]?.product.tenantId ?? null;
-    let promotions = getActivePromotions(tenantId ?? undefined, ["automatic"]);
+    let promotions = promotionService.getActivePromotions(
+      tenantId ?? undefined,
+      ["automatic"],
+    );
 
     // 🔹 1. Resolver cupón manual
     if (state.appliedCouponCode) {
@@ -627,16 +657,17 @@ export const useCartStore = create<CartState>((set, get) => ({
     );
 
     const tenantSafePromotions = promotions.filter(
-      (promotion) => !promotion.tenantId || promotion.tenantId === tenantId,
+      (promotion: Promotion) =>
+        !promotion.tenantId || promotion.tenantId === tenantId,
     );
 
-    const promotedItems = applyPromotionsUseCase(
+    const promotedItems = promotionService.applyPromotionsUseCase(
       tenantSafeItems,
       tenantSafePromotions,
       {
-      branchId,
-      cartSubtotal,
-      now,
+        branchId,
+        cartSubtotal,
+        now,
       },
     );
 
@@ -665,8 +696,7 @@ export const useCartStore = create<CartState>((set, get) => ({
           next.unitPrice !== prev.unitPrice ||
           (next.discountAmount ?? 0) !== (prev.discountAmount ?? 0) ||
           (next.discountReason ?? "") !== (prev.discountReason ?? "") ||
-          (next.appliedPromotionId ?? "") !==
-            (prev.appliedPromotionId ?? "") ||
+          (next.appliedPromotionId ?? "") !== (prev.appliedPromotionId ?? "") ||
           next.subtotal !== prev.subtotal
         );
       });

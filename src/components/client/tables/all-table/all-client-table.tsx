@@ -45,7 +45,7 @@ import {
 } from "@/components/table";
 import z from "zod";
 import { Table as TanstackTable } from "@tanstack/react-table";
-import { columnsClientAll } from "./column-active-table";
+import { columnsClientAll } from "./column-all-table";
 import { clientAllSchema } from "../type/type.all";
 import { DraggableRowAll } from "./dragrable-row-all";
 

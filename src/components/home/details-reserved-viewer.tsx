@@ -35,7 +35,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
-import { registerPayment } from "@/src/services/paymentService";
+import { RegisterPaymentInput } from "@/src/application/use-cases/registerPayment.usecase";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { Label } from "@/components/label";
@@ -43,10 +43,23 @@ import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { convertReservationUseCase } from "@/src/services/use-cases/converterReservation.usecase";
+import { ConvertReservationUseCase } from "@/src/application/use-cases/convertReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { ZustandReservationRepository } from "@/src/infrastructure/stores-adapters/ZustandReservationRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
+import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
+import { ZustandClientCreditRepository } from "@/src/infrastructure/stores-adapters/ZustandClientCreditRepository";
+import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
+import { AddClientCreditUseCase } from "@/src/application/use-cases/addClientCredit.usecase";
+import { RewardLoyaltyUseCase } from "@/src/application/use-cases/rewardLoyalty.usecase";
+import { RegisterPaymentUseCase } from "@/src/application/use-cases/registerPayment.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
+import { CancelReservationUseCase } from "@/src/application/use-cases/cancelReservation.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
@@ -105,7 +118,7 @@ export function DetailsReservedViewer({
   const currentClient = customers.find((c) => c.id === activeRes?.customerId);
   const seller = USER_MOCK[0];
 
-  const {colors, sizes} = useAttributeStore();
+  const { colors, sizes } = useAttributeStore();
 
   // Agrupamos items por "clave compuesta" para mostrarlos juntos
   const groupedItems = useMemo(() => {
@@ -173,8 +186,19 @@ export function DetailsReservedViewer({
       setChecklist({ limpieza: false, garantia: false });
       setIsDrawerOpen(false);
 
-      await convertReservationUseCase({
-        reservation: activeRes,
+      // Instanciar repositorios y el Use Case
+      const reservationRepo = new ZustandReservationRepository();
+      const inventoryRepo = new ZustandInventoryRepository();
+      const guaranteeRepo = new ZustandGuaranteeRepository();
+
+      const convertUseCase = new ConvertReservationUseCase(
+        reservationRepo,
+        inventoryRepo,
+        guaranteeRepo,
+      );
+
+      await convertUseCase.execute({
+        reservation: activeRes as any,
         reservationItems: activeResItems,
         selectedStocks,
         sellerId: currentUser.id,
@@ -209,10 +233,34 @@ export function DetailsReservedViewer({
   };
 
   const handleAddPayment = (data: any): Payment => {
-    return registerPayment({
+    // 1. Instanciar los repositorios
+    const operationRepo = new ZustandOperationRepository();
+    const paymentRepo = new ZustandPaymentRepository();
+    const saleRepo = new ZustandSaleRepository();
+    const rentalRepo = new ZustandRentalRepository();
+    const clientCreditRepo = new ZustandClientCreditRepository();
+    const loyaltyRepo = new ZustandLoyaltyRepository();
+
+    // 2. Instanciar casos de uso
+    const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
+    const rewardLoyaltyUC = new RewardLoyaltyUseCase(loyaltyRepo);
+
+    const registerPaymentUC = new RegisterPaymentUseCase(
+      operationRepo,
+      paymentRepo,
+      saleRepo,
+      rentalRepo,
+      addClientCreditUC,
+      rewardLoyaltyUC,
+    );
+
+    return registerPaymentUC.execute({
       operationId: operation?.id || "",
-      ...data,
-    });
+      amount: data.amount,
+      method: data.paymentMethod,
+      receivedAmount: data.receivedAmount,
+      userId: currentUser.id,
+    }) as unknown as Payment; // Cast to match expected React component signature if needed
   };
 
   const handleConfirmReschedule = (newStartDate: Date, newEndDate: Date) => {
@@ -225,10 +273,23 @@ export function DetailsReservedViewer({
 
   const handleConfirmCancel = () => {
     if (!activeRes) return;
-    cancelReservation(activeRes.id);
-    toast.success("Reserva anulada");
-    setIsCancelOpen(false);
-    setIsDrawerOpen(false);
+    try {
+      const cancelUseCase = new CancelReservationUseCase(
+        new ZustandReservationRepository(),
+        new ZustandPaymentRepository(),
+        new ZustandOperationRepository(),
+      );
+      cancelUseCase.execute(
+        activeRes.id,
+        "Cancelado por el usuario",
+        USER_MOCK[0].id,
+      );
+      toast.success("Reserva anulada");
+      setIsCancelOpen(false);
+      setIsDrawerOpen(false);
+    } catch (error) {
+      toast.error("Error al anular la reserva");
+    }
   };
 
   const sedeName =

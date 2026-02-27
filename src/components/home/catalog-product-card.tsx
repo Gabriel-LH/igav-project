@@ -19,7 +19,11 @@ import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
+import { usePromotionStore } from "@/src/store/usePromotionStore";
+import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
+import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
+import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -32,6 +36,70 @@ export function CatalogProductCard({ product }: Props) {
     useAttributeStore();
 
   const { inventoryItems, stockLots } = useInventoryStore();
+
+  const { promotions } = usePromotionStore();
+
+  useEffect(() => {
+    const promotionRepo = new ZustandPromotionRepository();
+    const promotionLoader = new PromotionLoaderService(promotionRepo);
+    promotionLoader.ensurePromotionsLoaded();
+  }, []);
+
+  const activePromos = useMemo(() => {
+    const now = new Date();
+    return promotions.filter((promo) => {
+      if (!promo.isActive) return false;
+      if (promo.startDate && new Date(promo.startDate) > now) return false;
+      if (promo.endDate && new Date(promo.endDate) < now) return false;
+      if (promo.branchIds?.length && !promo.branchIds.includes(currentBranchId))
+        return false;
+      if (promo.usageType && promo.usageType !== "automatic") return false;
+      return true;
+    });
+  }, [promotions, currentBranchId]);
+
+  const bestPromoRent = useMemo(() => {
+    if (!product.can_rent) return null;
+    const applicable = activePromos.filter((p) =>
+      p.appliesTo.includes("alquiler"),
+    );
+    return calculateBestPromotionForProduct(
+      product,
+      product.price_rent || 0,
+      applicable,
+    );
+  }, [activePromos, product]);
+
+  const bestPromoSell = useMemo(() => {
+    if (!product.can_sell) return null;
+    const applicable = activePromos.filter((p) =>
+      p.appliesTo.includes("venta"),
+    );
+    return calculateBestPromotionForProduct(
+      product,
+      product.price_sell || 0,
+      applicable,
+    );
+  }, [activePromos, product]);
+
+  const bestOverallDiscount = useMemo(() => {
+    let best = { discount: 0, finalPrice: 0, isRent: false, reason: "" };
+    if (bestPromoSell && bestPromoSell.discount > best.discount) {
+      best = {
+        ...bestPromoSell,
+        isRent: false,
+        reason: bestPromoSell.reason || "",
+      };
+    }
+    if (bestPromoRent && bestPromoRent.discount > best.discount) {
+      best = {
+        ...bestPromoRent,
+        isRent: true,
+        reason: bestPromoRent.reason || "",
+      };
+    }
+    return best.discount > 0 ? best : null;
+  }, [bestPromoRent, bestPromoSell]);
 
   // 1. Obtener candidatos disponibles (Global)
   const productStock = useMemo(() => {
@@ -122,17 +190,23 @@ export function CatalogProductCard({ product }: Props) {
         </div>
 
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
+          {bestOverallDiscount && (
+            <Badge className="bg-red-500 hover:bg-red-600 text-white border-none text-[10px] uppercase font-black px-2 shadow-sm animate-pulse w-fit  text-center">
+              {bestOverallDiscount.reason || "DESCUENTO APLICADO!"}{" - "}
+              {bestOverallDiscount.discount}% DSCTO.
+            </Badge>
+          )}
           {hasLocal ? (
-            <Badge className="bg-emerald-500/90 text-white border-none text-[8px] uppercase">
+            <Badge className="bg-emerald-500/90 text-white border-none text-[8px] uppercase w-fit">
               En esta sede
             </Badge>
           ) : hasRemote ? (
-            <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse">
+            <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse w-fit">
               Disponible para traslado (Llega en {days}{" "}
               {days === 1 ? "día" : "días"}) 🚚
             </Badge>
           ) : (
-            <Badge variant="destructive" className="text-[8px] uppercase">
+            <Badge variant="destructive" className="text-[8px] uppercase w-fit">
               Agotado
             </Badge>
           )}
@@ -221,26 +295,73 @@ export function CatalogProductCard({ product }: Props) {
 
         <div className="mt-2 flex flex-col gap-0.5">
           {product.can_rent && (
-            <div className="flex items-center justify-between text-[13px]">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <HugeiconsIcon icon={Calendar03Icon} className="h-3.5 w-3.5" />
-                <span>Alquiler</span>
+            <div
+              className={`flex items-center justify-between text-[13px] ${bestPromoRent && bestPromoRent.discount > 0 ? "text-green-600" : ""}`}
+            >
+              <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
+                <HugeiconsIcon
+                  icon={Calendar03Icon}
+                  className="h-3.5 w-3.5 shrink-0"
+                />
+                <span>
+                  Alquiler{" "}
+                  {bestPromoRent && bestPromoRent.discount > 0 && (
+                    <span className="text-[9px] font-bold text-red-500 ml-1">
+                      (-{formatCurrency(bestPromoRent.discount)})
+                    </span>
+                  )}
+                </span>
               </div>
-              <span className="font-bold">
-                {formatCurrency(product.price_rent || 0)} / {product.rent_unit}
-              </span>
+              <div className="flex flex-col items-end">
+                {bestPromoRent && bestPromoRent.discount > 0 && (
+                  <span className="text-[10px] line-through text-muted-foreground/60">
+                    {formatCurrency(product.price_rent || 0)}
+                  </span>
+                )}
+                <span className="font-bold">
+                  {formatCurrency(
+                    bestPromoRent
+                      ? bestPromoRent.finalPrice
+                      : product.price_rent || 0,
+                  )}{" "}
+                  / {product.rent_unit}
+                </span>
+              </div>
             </div>
           )}
 
           {product.can_sell && (
-            <div className="flex items-center justify-between text-[13px]">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <HugeiconsIcon icon={SaleTag02Icon} className="h-3.5 w-3.5" />
-                <span>Venta</span>
+            <div
+              className={`flex items-center justify-between text-[13px] ${bestPromoSell && bestPromoSell.discount > 0 ? "text-green-600" : ""}`}
+            >
+              <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
+                <HugeiconsIcon
+                  icon={SaleTag02Icon}
+                  className="h-3.5 w-3.5 shrink-0"
+                />
+                <span>
+                  Venta{" "}
+                  {bestPromoSell && bestPromoSell.discount > 0 && (
+                    <span className="text-[9px] font-bold text-red-500 ml-1">
+                      (-{formatCurrency(bestPromoSell.discount)})
+                    </span>
+                  )}
+                </span>
               </div>
-              <span className="font-bold text-primary">
-                {formatCurrency(product.price_sell || 0)}
-              </span>
+              <div className="flex flex-col items-end">
+                {bestPromoSell && bestPromoSell.discount > 0 && (
+                  <span className="text-[10px] line-through text-muted-foreground/60">
+                    {formatCurrency(product.price_sell || 0)}
+                  </span>
+                )}
+                <span className="font-bold text-primary">
+                  {formatCurrency(
+                    bestPromoSell
+                      ? bestPromoSell.finalPrice
+                      : product.price_sell || 0,
+                  )}
+                </span>
+              </div>
             </div>
           )}
         </div>

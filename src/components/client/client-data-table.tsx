@@ -48,7 +48,7 @@ import { CreateClientModal } from "./ui/modals/CreateClientModal";
 import { UserPlus2 } from "lucide-react";
 import { clientAllSchema } from "./tables/type/type.all";
 import { ClientsActiveTable } from "./tables/all-table/all-client-table";
-import { columnsClientAll } from "./tables/all-table/column-active-table";
+import { columnsClientAll } from "./tables/all-table/column-all-table";
 
 export function ClientDataTable({
   dataClientActive,

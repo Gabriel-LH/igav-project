@@ -21,10 +21,16 @@ import { TableCellViewerPending } from "./pending-table-cell-viewer";
 import { useState } from "react";
 import { CancelSaleModal } from "../../ui/modals/CancelSaleModal";
 import { useSaleStore } from "@/src/store/useSaleStore";
-import { cancelSaleUseCase } from "@/src/services/use-cases/cancelSale.usecase";
+import { CancelSaleUseCase } from "@/src/application/use-cases/cancelSale.usecase";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { deliverSaleUseCase } from "@/src/services/use-cases/deliverSale.usecase";
+import { DeliverSaleUseCase } from "@/src/application/use-cases/deliverSale.usecase";
+import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
+import { ZustandSaleReversalRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleReversalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
+import { ZustandReservationRepository } from "@/src/infrastructure/stores-adapters/ZustandReservationRepository";
 import { DeliverSaleModal } from "../../ui/modals/DeliverSaleModal";
 
 export const columnsSalesPending: ColumnDef<
@@ -127,7 +133,14 @@ function ActionCell({
 
   const handleCancelConfirm = async (id: string, reason: string) => {
     try {
-      await cancelSaleUseCase({
+      const cancelUseCase = new CancelSaleUseCase(
+        new ZustandSaleRepository(),
+        new ZustandSaleReversalRepository(),
+        new ZustandInventoryRepository(),
+        new ZustandPaymentRepository(),
+        new ZustandOperationRepository(),
+      );
+      cancelUseCase.execute({
         saleId: id,
         reason,
         userId: user.id,
@@ -151,7 +164,12 @@ function ActionCell({
 
   const handleDeliverSale = async (id: string) => {
     try {
-      await deliverSaleUseCase(id);
+      const deliverUseCase = new DeliverSaleUseCase(
+        new ZustandSaleRepository(),
+        new ZustandInventoryRepository(),
+        new ZustandReservationRepository(),
+      );
+      deliverUseCase.execute(id, user.id);
 
       toast.success("Venta entregada", {
         description: "La venta fue entregada correctamente",
