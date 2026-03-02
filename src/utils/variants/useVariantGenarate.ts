@@ -6,7 +6,7 @@ import {
   VariantOverride,
   ComputedVariant,
   SelectedValue,
-} from "@/src/interfaces/ProductForm";
+} from "@/src/application/interfaces/ProductForm";
 
 interface UseVariantGeneratorReturn {
   variants: ComputedVariant[];

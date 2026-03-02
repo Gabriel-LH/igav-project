@@ -1,81 +1,89 @@
 // src/utils/barcode.ts
 
-import { SelectedValue } from "@/src/components/inventory/inventory/products/selected-atribute";
-import { SelectedAttributeConfig } from "@/src/interfaces/ProductForm";
-
 /**
- * Genera un código de barras EAN-13 único basado en SKU, atributos e índice
+ * Genera un código de barras EAN-13 válido (13 dígitos numéricos)
  */
 export function generateBarcode(
   baseSku: string,
   attributes: Record<string, string>,
-  variantIndex: number,
+  variantIndex: number
 ): string {
-  // 1. Tomar 2 dígitos del SKU base (limpiado)
-  const skuPart = baseSku
-    .replace(/[^A-Z0-9]/gi, "")
-    .slice(0, 2)
-    .toUpperCase()
-    .padStart(2, "0");
+  // Limpiar SKU: solo números, máximo 3 dígitos
+  const skuNumbers = baseSku.replace(/\D/g, "").slice(0, 3).padStart(3, "0");
+  
+  // Si no hay números en el SKU, usar hash del nombre (convertido a número)
+  const skuPart = skuNumbers === "000" 
+    ? String(baseSku.charCodeAt(0) % 900 + 100) // 100-999
+    : skuNumbers;
 
-  // Convertir letras a números (A=1, B=2, etc.) para hacerlo numérico
-  const skuNumeric = skuPart
-    .split("")
-    .map((char) => {
-      const code = char.charCodeAt(0);
-      // Si es letra (A-Z), convertir a 1-26, si es número usarlo directo
-      if (code >= 65 && code <= 90) return String((code - 64) % 10);
-      return char;
-    })
-    .join("")
-    .padStart(2, "0")
-    .slice(0, 2);
-
-  // 2. Códigos de atributos (2 dígitos por cada atributo)
-  const attrPart = Object.values(attributes)
-    .map((value, idx) => {
-      // Tomar primera letra del valor, convertir a número
-      const firstChar = value.charAt(0).toUpperCase();
+  // Atributos: convertir primera letra de cada valor a número (01-26)
+  const attrCodes = Object.values(attributes)
+    .map((val, idx) => {
+      const firstChar = val.charAt(0).toUpperCase();
       const charCode = firstChar.charCodeAt(0);
+      // A=1, B=2, ..., Z=26, pero como string "01" a "26"
       if (charCode >= 65 && charCode <= 90) {
-        return String((charCode - 64 + idx) % 10); // +idx para diferenciar atributos
+        return String(charCode - 64).padStart(2, "0");
       }
-      return firstChar;
+      // Si no es letra, usar los últimos 2 dígitos del charCode
+      return String(charCode % 100).padStart(2, "0");
     })
     .join("")
-    .padStart(4, "0")
-    .slice(0, 4);
+    .slice(0, 4)
+    .padStart(4, "0");
 
-  // 3. Índice de variante (2 dígitos) - ESTO ES CLAVE
-  const indexPart = String(variantIndex + 1).padStart(2, "0");
+  // Índice de variante (2 dígitos: 01-99)
+  const indexPart = String((variantIndex % 99) + 1).padStart(2, "0");
 
-  // 4. Número aleatorio de 4 dígitos basado en el índice (no timestamp)
-  // Usamos un algoritmo determinístico pero único por variante
-  const randomPart = String(
-    ((variantIndex * 997) % 9000) + 1000, // Números entre 1000-9999
-  ).padStart(4, "0");
-
-  // Combinar: 2 + 4 + 2 + 4 = 12 dígitos
-  const barcode12 = `${skuNumeric}${attrPart}${indexPart}${randomPart}`;
-
-  // Calcular dígito de verificación para hacerlo EAN-13
+  // Combinar: 3 + 4 + 2 = 9 dígitos, necesitamos 12 para EAN-13
+  // Rellenar con dígitos del índice y un offset
+  const filler = String(variantIndex * 7).padStart(3, "0").slice(0, 3);
+  
+  const barcode12 = `${skuPart}${attrCodes}${indexPart}${filler}`.slice(0, 12);
+  
+  // Calcular checksum
   const checksum = calculateEANChecksum(barcode12);
-
+  
   return barcode12 + checksum;
 }
 
 /**
  * Calcula el dígito de verificación EAN-13
+ * El input debe ser exactamente 12 dígitos numéricos
  */
-function calculateEANChecksum(barcode12: string): string {
+export function calculateEANChecksum(barcode12: string): string {
+  // Validar que solo contenga números
+  if (!/^\d{12}$/.test(barcode12)) {
+    console.error("Invalid barcode for checksum (must be 12 digits):", barcode12);
+    // Fallback: retornar "0" si no es válido
+    return "0";
+  }
+
   let sum = 0;
   for (let i = 0; i < 12; i++) {
-    const digit = parseInt(barcode12[i]);
-    // Posiciones impares (1,3,5...) se multiplican por 1, pares por 3
-    sum += i % 2 === 0 ? digit : digit * 3;
+    const digit = parseInt(barcode12[i], 10);
+    // Posiciones pares (0,2,4...) se multiplican por 1, impares por 3
+    sum += (i % 2 === 0) ? digit : digit * 3;
   }
+  
   const checksum = (10 - (sum % 10)) % 10;
-  return checksum.toString();
+  return String(checksum);
+}
+
+/**
+ * Genera un código CODE-128 (formato alfanumérico, no EAN-13)
+ * Usar cuando se necesita texto en el código
+ */
+export function generateCode128(
+  baseSku: string,
+  variantIndex: number
+): string {
+  // Formato: SKU-TIMESTAMP-INDEX (sin NaN)
+  const cleanSku = baseSku.replace(/[^A-Z0-9]/gi, "").slice(0, 6);
+  const timestamp = Date.now().toString().slice(-6); // 6 dígitos numéricos
+  const index = String(variantIndex).padStart(3, "0");
+  
+  return `${cleanSku}-${timestamp}-${index}`;
 }
 
 /**
@@ -83,41 +91,10 @@ function calculateEANChecksum(barcode12: string): string {
  */
 export function isValidEAN13(barcode: string): boolean {
   if (!barcode || barcode.length !== 13) return false;
-  if (!/^\d+$/.test(barcode)) return false;
+  if (!/^\d{13}$/.test(barcode)) return false; // Solo 13 dígitos exactos
 
   const withoutChecksum = barcode.slice(0, 12);
   const checksum = barcode[12];
-
+  
   return calculateEANChecksum(withoutChecksum) === checksum;
 }
-
-/**
- * Genera un código de barras CODE-128 (cuando EAN-13 no es posible)
- */
-export function generateCode128(baseSku: string, variantIndex: number): string {
-  const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
-  const index = String(variantIndex).padStart(3, "0");
-  return `${baseSku.slice(0, 4)}-${timestamp}-${index}`;
-}
-
-export const createSignature = (
-  attrs: SelectedAttributeConfig[],
-  combination: SelectedValue[],
-): string => {
-  return attrs
-    .map((attr, idx) => `${attr.attributeName}:${combination[idx].value}`)
-    .join("|");
-};
-
-export const generateSku = (
-  base: string,
-  attrs: SelectedAttributeConfig[],
-  combination: SelectedValue[],
-  index: number,
-): string => {
-  // Usar códigos de atributo para generar SKU compacto
-  const attrCodes = combination
-    .map((val) => val.code.substring(0, 5).toUpperCase())
-    .join("-");
-  return `${base}-${attrCodes}-${String(index + 1).padStart(2, "0")}`;
-};

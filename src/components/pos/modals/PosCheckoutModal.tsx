@@ -24,8 +24,8 @@ import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/Z
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { SaleDTO } from "@/src/interfaces/SaleDTO";
-import { RentalDTO } from "@/src/interfaces/RentalDTO";
+import { SaleDTO } from "@/src/application/interfaces/SaleDTO";
+import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";

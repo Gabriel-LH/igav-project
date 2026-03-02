@@ -1,10 +1,11 @@
 // components/inventory/SerializedItemForm.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -12,202 +13,707 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/badge";
-import { Barcode, Calendar, MapPin } from "lucide-react";
-import { AttributeField } from "../../catalogs/attributes-type/attribute-field";
-import { Attribute } from "../../catalogs/attributes-type/attribute-field";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Plus,
+  Package,
+  QrCode,
+  Store,
+  Settings,
+  DollarSign,
+  ScanLine,
+  CheckCircle2,
+  AlertCircle,
+  Wrench,
+  Hash,
+  RefreshCw,
+  Calendar,
+  FileWarning,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { BarcodeScanner } from "../barcode/BarcodeScanner";
+import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
+import { ProductVariant } from "@/src/types/product/type.productVariant";
+import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
-interface SerializedItemFormData {
-  serialNumber: string;
-  productId: string;
-  productName: string;
-  warehouseId: string;
-  status: "available" | "sold" | "maintenance" | "damaged";
-  purchaseDate?: string;
-  warrantyExpiry?: string;
-  attributes: Attribute[]; // Atributos específicos del ítem serializado
-}
+const CONDITION_OPTIONS = [
+  { value: "Nuevo", label: "Nuevo", color: "green" },
+  { value: "Usado", label: "Usado", color: "orange" },
+  { value: "Vintage", label: "Vintage", color: "purple" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "disponible", label: "Disponible", color: "green" },
+  { value: "en_mantenimiento", label: "En Mantenimiento", color: "orange" },
+  { value: "retirado", label: "Retirado", color: "red" },
+];
 
 interface SerializedItemFormProps {
-  initialValues?: Partial<SerializedItemFormData>;
   onSubmit: (data: SerializedItemFormData) => void;
-  products?: Array<{ id: string; name: string; sku: string }>;
-  warehouses?: Array<{ id: string; name: string }>;
 }
 
-export function SerializedItemForm({
-  initialValues,
-  onSubmit,
-  products = [],
-  warehouses = [],
-}: SerializedItemFormProps) {
-  const [formData, setFormData] = useState<SerializedItemFormData>({
-    serialNumber: "",
-    productId: "",
-    productName: "",
-    warehouseId: "",
-    status: "available",
-    attributes: [],
-    ...initialValues,
+const hashCode = (value: string): number => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
+};
+
+// Generador de códigos seriales únicos
+function generateSerialCodes(
+  prefix: string,
+  variantCode: string,
+  quantity: number,
+  existingCodes: string[] = [],
+): string[] {
+  const codes: string[] = [];
+  const usedCodes = new Set(existingCodes);
+
+  // Limpiar prefijo
+  const cleanPrefix = prefix.trim().toUpperCase();
+  const cleanVariant = variantCode.replace(/-/g, "").substring(0, 8);
+
+  let attempts = 0;
+  const maxAttempts = quantity * 100; // Prevenir loop infinito
+
+  while (codes.length < quantity && attempts < maxAttempts) {
+    attempts++;
+
+    // Formato: PREFIX-VARIANT-TIMESTAMP-RANDOM
+    const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const sequential = String(codes.length + 1).padStart(3, "0");
+
+    const serialCode = `${cleanPrefix}-${cleanVariant}-${timestamp}${random}-${sequential}`;
+
+    if (!usedCodes.has(serialCode)) {
+      codes.push(serialCode);
+      usedCodes.add(serialCode);
+    }
+  }
+
+  return codes;
+}
+
+// Componente de escaneo
+
+
+export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
+  const products = useInventoryStore((state) => state.products);
+  const productVariants = useInventoryStore((state) => state.productVariants);
+
+  const [formData, setFormData] = useState<Partial<SerializedItemFormData>>({
+    quantity: 1,
+    isForRent: true,
+    isForSale: false,
+    condition: "Nuevo",
+    status: "disponible",
+    autoGenerateSerials: true,
+    prefix: "ITEM",
+    serialCodes: [],
+    damageNotes: "",
   });
+  const [scanMessage, setScanMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
+
+  const availableProducts = useMemo(() => {
+    const createVariantName = (variant: ProductVariant): string => {
+      const values = Object.values(variant.attributes || {});
+      return values.length > 0 ? values.join(" / ") : variant.variantCode;
+    };
+
+    return products
+      .filter((product) => product.is_serial && !product.isDeleted)
+      .map((product) => ({
+      ...product,
+      variants: productVariants.filter(
+        (variant) => variant.productId === product.id && variant.isActive,
+      ).map((variant) => ({
+        id: variant.id,
+        name: createVariantName(variant),
+        variantCode: variant.variantCode,
+        barcode:
+          variant.barcode ??
+          String(Math.abs(hashCode(variant.variantCode))).slice(0, 13).padStart(13, "0"),
+      })),
+    }));
+  }, [productVariants, products]);
+
+  const selectedProduct = availableProducts.find(
+    (p) => p.id === formData.productId,
+  );
+  const selectedVariant = selectedProduct?.variants.find(
+    (v) => v.id === formData.variantId,
+  );
+  const availableBranches = useMemo(
+    () => BRANCH_MOCKS.filter((branch) => branch.status === "active"),
+    [],
+  );
+  const selectedBranch = availableBranches.find((b) => b.id === formData.branchId);
+
+  // Generar códigos cuando cambian las condiciones
+  useEffect(() => {
+    if (
+      formData.autoGenerateSerials &&
+      selectedVariant &&
+      formData.quantity &&
+      formData.prefix
+    ) {
+      const codes = generateSerialCodes(
+        formData.prefix,
+        selectedVariant.variantCode,
+        formData.quantity,
+        generatedCodes,
+      );
+      setGeneratedCodes(codes);
+      setFormData((prev) => ({ ...prev, serialCodes: codes }));
+    }
+  }, [
+    formData.autoGenerateSerials,
+    formData.quantity,
+    formData.prefix,
+    selectedVariant?.variantCode,
+  ]);
+
+  const handleScan = (barcode: string) => {
+    setScanMessage(null);
+
+    for (const product of availableProducts) {
+      const variant = product.variants.find((v) => v.barcode === barcode);
+      if (variant) {
+        setFormData((prev) => ({
+          ...prev,
+          productId: product.id,
+          variantId: variant.id,
+        }));
+        setScanMessage({
+          type: "success",
+          text: `Encontrado: ${product.name} - ${variant.name}`,
+        });
+        return;
+      }
+    }
+
+    setScanMessage({
+      type: "error",
+      text: "Código no encontrado en variantes registradas",
+    });
+  };
+
+  const handleManualSerialChange = (index: number, value: string) => {
+    const newCodes = [...(formData.serialCodes || [])];
+    newCodes[index] = value.toUpperCase();
+    setFormData((prev) => ({ ...prev, serialCodes: newCodes }));
+    setGeneratedCodes(newCodes);
+  };
+
+  const regenerateCodes = () => {
+    if (selectedVariant && formData.quantity && formData.prefix) {
+      const codes = generateSerialCodes(
+        formData.prefix,
+        selectedVariant.variantCode,
+        formData.quantity,
+        [], // Resetear para forzar nuevos códigos
+      );
+      setGeneratedCodes(codes);
+      setFormData((prev) => ({ ...prev, serialCodes: codes }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !selectedProduct ||
+      !selectedVariant ||
+      !formData.branchId ||
+      !formData.serialCodes?.length
+    )
+      return;
+
+    const data: SerializedItemFormData = {
+      productId: selectedProduct.id,
+      productName: selectedProduct.name,
+      variantId: selectedVariant.id,
+      variantName: selectedVariant.name,
+      variantCode: selectedVariant.variantCode,
+      variantBarcode: selectedVariant.barcode,
+      branchId: formData.branchId,
+      branchName: selectedBranch?.name || "",
+      quantity: formData.quantity || 1,
+      serialCodes: formData.serialCodes,
+      isForRent: formData.isForRent ?? true,
+      isForSale: formData.isForSale ?? false,
+      condition: formData.condition || "Nuevo",
+      status: formData.status || "disponible",
+      lastMaintenance: formData.lastMaintenance,
+      damageNotes: formData.damageNotes,
+      autoGenerateSerials: formData.autoGenerateSerials ?? true,
+      prefix: formData.prefix,
+    };
+
+    onSubmit(data);
+
+    // Reset
+    setFormData({
+      quantity: 1,
+      isForRent: true,
+      isForSale: false,
+      condition: "Nuevo",
+      status: "disponible",
+      autoGenerateSerials: true,
+      prefix: "ITEM",
+      serialCodes: [],
+      damageNotes: "",
+      productId: undefined,
+      variantId: undefined,
+    });
+    setGeneratedCodes([]);
+    setScanMessage(null);
+  };
 
   return (
-    <form className="space-y-6">
-      {/* Información del Serial */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Información del Ítem
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <QrCode className="w-5 h-5" />
+            Nuevo Item Serializado
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* PRODUCTO */}
           <div className="space-y-2">
-            <Label htmlFor="serial" className="flex items-center gap-2">
-              <Barcode className="w-4 h-4" />
-              Número de Serie *
-            </Label>
-            <Input
-              id="serial"
-              value={formData.serialNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, serialNumber: e.target.value })
-              }
-              placeholder="SN-123456789"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Estado</Label>
+            <Label>Producto *</Label>
             <Select
-              value={formData.status}
-              onValueChange={(val: SerializedItemFormData["status"]) =>
-                setFormData({ ...formData, status: val })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="available">Disponible</SelectItem>
-                <SelectItem value="sold">Vendido</SelectItem>
-                <SelectItem value="maintenance">En Mantenimiento</SelectItem>
-                <SelectItem value="damaged">Dañado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Producto Asociado *</Label>
-          <Select
-            value={formData.productId}
-            onValueChange={(val) => {
-              const prod = products.find((p) => p.id === val);
-              setFormData({
-                ...formData,
-                productId: val,
-                productName: prod?.name || "",
-              });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar producto..." />
-            </SelectTrigger>
-            <SelectContent>
-              {products.map((prod) => (
-                <SelectItem key={prod.id} value={prod.id}>
-                  <div className="flex flex-col">
-                    <span>{prod.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {prod.sku}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Ubicación (Almacén)
-            </Label>
-            <Select
-              value={formData.warehouseId}
+              value={formData.productId}
               onValueChange={(val) =>
-                setFormData({ ...formData, warehouseId: val })
+                setFormData({
+                  ...formData,
+                  productId: val,
+                  variantId: undefined,
+                  serialCodes: [],
+                })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar..." />
+                <SelectValue placeholder="Seleccionar producto..." />
               </SelectTrigger>
               <SelectContent>
-                {warehouses.map((wh) => (
-                  <SelectItem key={wh.id} value={wh.id}>
-                    {wh.name}
+                {availableProducts.map((product) => (
+                  <SelectItem key={product.id} value={product.id}>
+                    {product.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
+          {/* VARIANTE CON ESCANER */}
+          <div className="space-y-3">
+            <Label className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Variante *
+            </Label>
+
+            <div className="flex gap-3 items-start">
+              <div className="flex-1">
+                <Select
+                  value={formData.variantId}
+                  onValueChange={(val) => {
+                    const variant = selectedProduct?.variants.find(
+                      (v) => v.id === val,
+                    );
+                    if (variant) {
+                      setFormData({
+                        ...formData,
+                        variantId: val,
+                        serialCodes: [],
+                      });
+                      setScanMessage(null);
+                    }
+                  }}
+                  disabled={!selectedProduct}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      selectedVariant && "border-primary bg-primary/5",
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={
+                        selectedProduct
+                          ? "Seleccionar variante..."
+                          : "Primero selecciona un producto"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedProduct ? (
+                      selectedProduct.variants.map((variant) => (
+                        <SelectItem key={variant.id} value={variant.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{variant.name}</span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {variant.variantCode} • Barcode: {variant.barcode}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="disabled" disabled>
+                        Selecciona un producto primero
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-2 shrink-0"
+                  >
+                    <ScanLine className="w-4 h-4" />
+                    Escanear
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80" align="end">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <ScanLine className="w-4 h-4" />
+                      Escanear Variante
+                    </h4>
+                    <BarcodeScanner onScan={handleScan} />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {scanMessage && (
+              <div
+                className={cn(
+                  "flex items-center gap-2 text-sm p-2 rounded-md",
+                  scanMessage.type === "success"
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200",
+                )}
+              >
+                {scanMessage.type === "success" ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                )}
+                {scanMessage.text}
+              </div>
+            )}
+          </div>
+
+          {/* CANTIDAD Y CONFIGURACIÓN DE SERIALES */}
+          {selectedVariant && (
+            <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2">
+                  <Hash className="w-4 h-4" />
+                  Cantidad de Items *
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="autoGenerate"
+                    checked={formData.autoGenerateSerials}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        autoGenerateSerials: checked as boolean,
+                        serialCodes: checked ? generatedCodes : [],
+                      })
+                    }
+                  />
+                  <Label
+                    htmlFor="autoGenerate"
+                    className="text-sm cursor-pointer"
+                  >
+                    Autogenerar códigos QR
+                  </Label>
+                </div>
+              </div>
+
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={formData.quantity}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    quantity: parseInt(e.target.value) || 1,
+                  })
+                }
+              />
+
+              {formData.autoGenerateSerials && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Prefijo del Serial</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={regenerateCodes}
+                      className="h-6 gap-1 text-xs"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Regenerar
+                    </Button>
+                  </div>
+                  <Input
+                    value={formData.prefix}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        prefix: e.target.value.toUpperCase(),
+                      })
+                    }
+                    placeholder="Ej: IPHONE, VESTIDO"
+                    className="font-mono uppercase"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Formatos generados: {formData.prefix}-
+                    {selectedVariant.variantCode.replace(/-/g, "").slice(0, 8)}
+                    -XXXX-XXX
+                  </p>
+                </div>
+              )}
+
+              {/* Preview de códigos generados */}
+              {formData.autoGenerateSerials && generatedCodes.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">
+                    {generatedCodes.length} códigos generados:
+                  </Label>
+                  <div className="max-h-32 overflow-y-auto space-y-1 p-2 bg-background rounded border">
+                    {generatedCodes.map((code, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-2 text-xs font-mono"
+                      >
+                        <span className="text-muted-foreground w-6">
+                          {idx + 1}.
+                        </span>
+                        <span className="truncate">{code}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Input manual de seriales */}
+              {!formData.autoGenerateSerials && formData.quantity && (
+                <div className="space-y-2">
+                  <Label className="text-sm text-amber-600 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Ingresa los códigos manualmente
+                  </Label>
+                  <div className="max-h-48 overflow-y-auto space-y-2">
+                    {Array.from({ length: formData.quantity }).map((_, idx) => (
+                      <Input
+                        key={idx}
+                        placeholder={`Serial #${idx + 1}`}
+                        value={formData.serialCodes?.[idx] || ""}
+                        onChange={(e) =>
+                          handleManualSerialChange(idx, e.target.value)
+                        }
+                        className="font-mono uppercase"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SUCURSAL */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Fecha de Compra
+              <Store className="w-4 h-4" />
+              Sucursal *
             </Label>
-            <Input
-              type="date"
-              value={formData.purchaseDate || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, purchaseDate: e.target.value })
+            <Select
+              value={formData.branchId}
+              onValueChange={(val) =>
+                setFormData({ ...formData, branchId: val })
               }
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Vencimiento de Garantía</Label>
-          <Input
-            type="date"
-            value={formData.warrantyExpiry || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, warrantyExpiry: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      {/* Atributos específicos del ítem */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Especificaciones Técnicas
-            </h3>
-            <Badge variant="secondary">Dinámico</Badge>
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar sucursal..." />
+              </SelectTrigger>
+              <SelectContent>
+                {availableBranches.map((branch) => (
+                  <SelectItem key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <AttributeField
-            attributes={formData.attributes}
-            onChange={(attrs) =>
-              setFormData({ ...formData, attributes: attrs })
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Último Mantenimiento
+              </Label>
+              <Input
+                type="date"
+                value={
+                  formData.lastMaintenance
+                    ? formData.lastMaintenance.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    lastMaintenance: e.target.value
+                      ? new Date(e.target.value)
+                      : undefined,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <FileWarning className="w-4 h-4" />
+                Observaciones de Daño
+              </Label>
+              <Input
+                value={formData.damageNotes || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, damageNotes: e.target.value })
+                }
+                placeholder="Ej: Botón suelto, rayón leve..."
+              />
+            </div>
+          </div>
+
+          {/* CONDICIÓN Y ESTADO */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Condición
+              </Label>
+              <Select
+                value={formData.condition}
+                onValueChange={(val: any) =>
+                  setFormData({ ...formData, condition: val })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CONDITION_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={cn("w-2 h-2 rounded-full", {
+                            "bg-green-500": opt.color === "green",
+                            "bg-orange-500": opt.color === "orange",
+                            "bg-purple-500": opt.color === "purple",
+                          })}
+                        />
+                        {opt.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Wrench className="w-4 h-4" />
+                Estado Inicial
+              </Label>
+              <Select
+                value={formData.status}
+                onValueChange={(val: any) =>
+                  setFormData({ ...formData, status: val })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* USOS */}
+          <div className="space-y-3">
+            <Label className="flex items-center gap-2">
+              <DollarSign className="w-4 h-4" />
+              Disponible para:
+            </Label>
+            <div className="flex gap-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={formData.isForRent}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isForRent: checked })
+                  }
+                />
+                <Label className="cursor-pointer">Renta</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={formData.isForSale}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isForSale: checked })
+                  }
+                />
+                <Label className="cursor-pointer">Venta</Label>
+              </div>
+            </div>
+          </div>
+
+          {/* BOTÓN SUBMIT */}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={
+              !selectedProduct ||
+              !selectedVariant ||
+              !formData.branchId ||
+              !formData.serialCodes?.length ||
+              formData.serialCodes.some((code) => !code.trim())
             }
-            availableTypes={["text", "number", "date", "boolean"]}
-            maxAttributes={20}
-          />
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Crear {formData.quantity} Item{formData.quantity !== 1 ? "s" : ""}{" "}
+            Serializado{formData.quantity !== 1 ? "s" : ""}
+          </Button>
         </CardContent>
       </Card>
-
-      <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline">
-          Cancelar
-        </Button>
-        <Button type="submit">Guardar Ítem Serializado</Button>
-      </div>
     </form>
   );
 }

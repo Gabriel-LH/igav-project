@@ -35,12 +35,10 @@ import {
 import { VariantAttributeSelector } from "./selected-atribute";
 import { VariantsTable } from "./table/variant-table";
 import { useVariantGenerator } from "@/src/utils/variants/useVariantGenarate";
-import { ProductFormData, VariantOverride } from "@/src/interfaces/ProductForm";
-import { ATTRIBUTE_TYPES_MOCK } from "@/src/mocks/mock.attributeType";
-import { ATTRIBUTE_VALUES_MOCK } from "@/src/mocks/mock.attributeValue";
-import { MODELS_MOCK } from "@/src/mocks/mock.models";
-import { BRANDS_MOCK } from "@/src/mocks/mock.brand";
-import { CATEGORIES_MOCK } from "@/src/mocks/mock.categories";
+import {
+  ProductFormData,
+  VariantOverride,
+} from "@/src/application/interfaces/ProductForm";
 import {
   buildCategoryTree,
   flattenCategories,
@@ -59,6 +57,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
+import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
+import { useModelStore } from "@/src/store/useModelStore";
+import { useBrandStore } from "@/src/store/useBrandStore";
+import { useCategoryStore } from "@/src/store/useCategoryStore";
 
 const initialData: ProductFormData = {
   name: "",
@@ -80,6 +83,12 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
+  const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
+  const attributeValues = useAttributeValueStore((state) => state.attributeValues);
+  const models = useModelStore((state) => state.models);
+  const brands = useBrandStore((state) => state.brands);
+  const categories = useCategoryStore((state) => state.categories);
+
   const [formData, setFormData] = useState<ProductFormData>({
     ...initialData,
     ...initialValues,
@@ -92,8 +101,8 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
 
   // Preparar datos para selectores
   const modelOptions = useMemo(() => {
-    return MODELS_MOCK.filter((m) => m.isActive).map((model) => {
-      const brand = BRANDS_MOCK.find((b) => b.id === model.brandId);
+    return models.filter((model) => model.isActive).map((model) => {
+      const brand = brands.find((brandItem) => brandItem.id === model.brandId);
       return {
         id: model.id,
         name: model.name,
@@ -101,19 +110,19 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
         brandId: model.brandId,
       };
     });
-  }, []);
+  }, [brands, models]);
 
   const categoryTree = useMemo(() => {
-    return buildCategoryTree(CATEGORIES_MOCK.filter((c) => c.isActive));
-  }, []);
+    return buildCategoryTree(categories.filter((category) => category.isActive));
+  }, [categories]);
 
   const flatCategories = useMemo(() => {
-    return flattenCategories(CATEGORIES_MOCK.filter((c) => c.isActive));
-  }, []);
+    return flattenCategories(categories.filter((category) => category.isActive));
+  }, [categories]);
 
   // Encontrar seleccionados para mostrar info
   const selectedModel = modelOptions.find((m) => m.id === formData.modelId);
-  const selectedCategory = CATEGORIES_MOCK.find(
+  const selectedCategory = categories.find(
     (c) => c.id === formData.categoryId,
   );
 
@@ -585,8 +594,8 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
         {/* TAB 2: ATRIBUTOS */}
         <TabsContent value="attributes" className="space-y-6 mt-6">
           <VariantAttributeSelector
-            attributeTypes={ATTRIBUTE_TYPES_MOCK}
-            attributeValues={ATTRIBUTE_VALUES_MOCK}
+            attributeTypes={attributeTypes}
+            attributeValues={attributeValues}
             selectedAttributes={formData.selectedAttributes}
             onChange={(attrs) =>
               setFormData({ ...formData, selectedAttributes: attrs })

@@ -1,7 +1,7 @@
 // components/catalogs/brands/BrandForm.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,8 +27,9 @@ const formSchema = z.object({
   slug: z.string().min(1, "Slug requerido"),
   description: z.string().optional(),
   logo: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
+type BrandFormValues = z.infer<typeof formSchema>;
 
 interface BrandFormProps {
   initialData?: Brand;
@@ -50,7 +51,7 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<BrandFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
@@ -63,11 +64,13 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
 
   // Auto-generar slug cuando cambia el nombre (solo si no está editando)
   const watchName = form.watch("name");
-  if (!isEditing && watchName && !form.getValues("slug")) {
-    form.setValue("slug", generateSlug(watchName));
-  }
+  useEffect(() => {
+    if (!isEditing && watchName && !form.getValues("slug")) {
+      form.setValue("slug", generateSlug(watchName));
+    }
+  }, [form, isEditing, watchName]);
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = (values: BrandFormValues) => {
     onSubmit(values);
     form.reset();
     setOpen(false);

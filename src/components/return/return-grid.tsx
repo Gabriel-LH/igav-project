@@ -4,7 +4,7 @@ import { useRentalStore } from "@/src/store/useRentalStore";
 import { ReturnActionCard } from "./return-action-card";
 import { ReturnStats } from "./return-stats";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
-import { RentalDTO } from "@/src/interfaces/RentalDTO";
+import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 

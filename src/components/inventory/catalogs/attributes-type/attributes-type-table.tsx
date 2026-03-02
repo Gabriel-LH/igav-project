@@ -37,11 +37,17 @@ import { AttributeTypeForm } from "./attributes-type-form";
 
 interface AttributeTypesTableProps {
   data: AttributeType[];
+  onCreate: (data: AttributeTypeFormData) => void;
   onUpdate: (id: string, data: AttributeTypeFormData) => void;
   onDelete: (id: string) => void;
 }
 
-export function AttributeTypesTable({ data, onUpdate, onDelete }: AttributeTypesTableProps) {
+export function AttributeTypesTable({
+  data,
+  onCreate,
+  onUpdate,
+  onDelete,
+}: AttributeTypesTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
 
   const columns: ColumnDef<AttributeType>[] = [
@@ -77,15 +83,19 @@ export function AttributeTypesTable({ data, onUpdate, onDelete }: AttributeTypes
           color: "Color",
           date: "Fecha",
         };
-        return <Badge variant="outline">{types[row.getValue("inputType")]}</Badge>;
+        return (
+          <Badge variant="outline">
+            {types[row.getValue("inputType") as string]}
+          </Badge>
+        );
       },
     },
     {
       accessorKey: "isVariant",
       header: "Para Variantes",
       cell: ({ row }) => (
-        <Badge variant={row.getValue("isVariant") ? "default" : "secondary"}>
-          {row.getValue("isVariant") ? "Sí" : "No"}
+        <Badge variant={(row.getValue("isVariant") as boolean) ? "default" : "secondary"}>
+          {(row.getValue("isVariant") as boolean) ? "Sí" : "No"}
         </Badge>
       ),
     },
@@ -93,8 +103,8 @@ export function AttributeTypesTable({ data, onUpdate, onDelete }: AttributeTypes
       accessorKey: "affectsSku",
       header: "Afecta SKU",
       cell: ({ row }) => (
-        <Badge variant={row.getValue("affectsSku") ? "default" : "secondary"}>
-          {row.getValue("affectsSku") ? "Sí" : "No"}
+        <Badge variant={(row.getValue("affectsSku") as boolean) ? "default" : "secondary"}>
+          {(row.getValue("affectsSku") as boolean) ? "Sí" : "No"}
         </Badge>
       ),
     },
@@ -103,9 +113,9 @@ export function AttributeTypesTable({ data, onUpdate, onDelete }: AttributeTypes
       header: "Estado",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Switch checked={row.getValue("isActive")} disabled />
+          <Switch checked={row.getValue("isActive") as boolean} disabled />
           <span className="text-sm text-muted-foreground">
-            {row.getValue("isActive") ? "Activo" : "Inactivo"}
+            {(row.getValue("isActive") as boolean) ? "Activo" : "Inactivo"}
           </span>
         </div>
       ),
@@ -176,10 +186,7 @@ export function AttributeTypesTable({ data, onUpdate, onDelete }: AttributeTypes
           />
         </div>
         <AttributeTypeForm
-          onSubmit={(data) => {
-            console.log("Nuevo tipo:", data);
-            // Aquí llamarías a tu API
-          }}
+          onSubmit={onCreate}
         />
       </div>
 

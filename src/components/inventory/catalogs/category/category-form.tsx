@@ -66,15 +66,16 @@ const formSchema = z.object({
   image: z.string().optional(),
   icon: z.string().optional(),
   color: z.string().optional(),
-  order: z.number().default(0),
-  isActive: z.boolean().default(true),
-  showInPos: z.boolean().default(true),
-  showInEcommerce: z.boolean().default(true),
+  order: z.coerce.number().default(0),
+  isActive: z.boolean(),
+  showInPos: z.boolean(),
+  showInEcommerce: z.boolean(),
 });
 
 interface CategoryFormProps {
   categories: Category[]; // Para selector de padre
   initialData?: Category;
+  defaultParentId?: string;
   onSubmit: (data: CategoryFormData) => void;
   trigger?: React.ReactNode;
 }
@@ -82,6 +83,7 @@ interface CategoryFormProps {
 export function CategoryForm({
   categories,
   initialData,
+  defaultParentId,
   onSubmit,
   trigger,
 }: CategoryFormProps) {
@@ -102,7 +104,12 @@ export function CategoryForm({
   }, [categories, isEditing, initialData]);
 
   const existingSlugs = useMemo(
-    () => categories.map((c) => c.slug).filter((s) => s !== initialData?.slug),
+    () =>
+      categories
+        .map((c) => c.slug)
+        .filter(
+          (s): s is string => Boolean(s) && s !== initialData?.slug,
+        ),
     [categories, initialData],
   );
 
@@ -111,7 +118,7 @@ export function CategoryForm({
     defaultValues: initialData || {
       name: "",
       description: "",
-      parentId: "",
+      parentId: defaultParentId || "",
       image: "",
       icon: "Folder",
       color: "#3b82f6",
@@ -127,15 +134,6 @@ export function CategoryForm({
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const slug = generateSlug(values.name, existingSlugs);
-
-    // Calcular level y path basado en el padre
-    let level = 0;
-    let path = slug;
-
-    if (values.parentId && selectedParent) {
-      level = selectedParent.level! + 1;
-      path = `${selectedParent.path}/${slug}`;
-    }
 
     onSubmit({
       ...values,
@@ -180,7 +178,7 @@ export function CategoryForm({
                 </FormLabel>
                 <Select
                   onValueChange={(val) =>
-                    field.onChange(val === "root" ? null : val)
+                    field.onChange(val === "root" ? undefined : val)
                   }
                   value={field.value || "root"}
                 >
@@ -223,7 +221,7 @@ export function CategoryForm({
                 </Select>
                 <FormDescription>
                   {selectedParent
-                    ? `Será subcategoría de "${selectedParent.name}" (Nivel ${selectedParent.level + 1})`
+                    ? `Será subcategoría de "${selectedParent.name}" (Nivel ${(selectedParent.level ?? 0) + 1})`
                     : "Será una categoría principal de primer nivel"}
                 </FormDescription>
                 <FormMessage />

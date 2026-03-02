@@ -33,7 +33,11 @@ import {
 } from "@/src/types/attributes/type.attribute-value";
 import { AttributeType } from "@/src/types/attributes/type.attribute-type";
 
-const formSchema = attributeValueSchema.omit({ id: true, tenantId: true });
+const formSchema = attributeValueSchema
+  .omit({ id: true, tenantId: true })
+  .extend({
+    hexColor: z.string().optional(),
+  });
 
 interface AttributeValueFormProps {
   initialData?: AttributeValue;
@@ -56,6 +60,7 @@ export function AttributeValueForm({
       code: "",
       value: "",
       attributeTypeId: "",
+      hexColor: "",
       isActive: true,
     },
   });
@@ -64,7 +69,22 @@ export function AttributeValueForm({
   const selectedType = attributeTypes.find((t) => t.id === selectedTypeId);
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
+    const hexColor = values.hexColor?.trim() || undefined;
+    if (
+      selectedType?.inputType === "color" &&
+      hexColor &&
+      !/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexColor)
+    ) {
+      form.setError("hexColor", { message: "Hex inválido" });
+      return;
+    }
+
+    const payload =
+      selectedType?.inputType === "color"
+        ? { ...values, hexColor }
+        : { ...values, hexColor: undefined };
+
+    onSubmit(payload);
     form.reset();
     setOpen(false);
   };
@@ -108,7 +128,7 @@ export function AttributeValueForm({
                 <FormLabel>Tipo de Atributo *</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -214,6 +234,38 @@ export function AttributeValueForm({
               )}
             />
           </div>
+
+          {selectedType?.inputType === "color" && (
+            <FormField
+              control={form.control}
+              name="hexColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color Hexadecimal</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={field.value || "#000000"}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="w-14 p-1"
+                      />
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="#000000"
+                        className="font-mono uppercase"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Se usa para mostrar el color real en tarjetas de producto.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Switch de Activo */}
           <FormField

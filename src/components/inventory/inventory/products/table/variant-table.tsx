@@ -42,7 +42,10 @@ import {
   Check,
   RefreshCw,
 } from "lucide-react";
-import { ComputedVariant, VariantOverride } from "@/src/interfaces/ProductForm";
+import {
+  ComputedVariant,
+  VariantOverride,
+} from "@/src/application/interfaces/ProductForm";
 import { cn } from "@/lib/utils";
 import { generateBarcode } from "@/src/utils/variants/barcode";
 import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
@@ -534,11 +537,18 @@ function VariantRow({
           <Input
             value={localBarcode}
             onChange={(e) => handleBarcodeChange(e.target.value)}
-            className="h-8 font-mono text-xs w-32"
+            className={cn(
+              "h-8 font-mono text-xs w-32",
+              localBarcode.includes("NaN") && "border-red-500 bg-red-50", // Resaltar error
+            )}
             disabled={!variant.isActive}
             placeholder="1234567890123"
             maxLength={13}
           />
+
+          {localBarcode.includes("NaN") && (
+            <span className="text-red-500 text-xs">Inválido</span>
+          )}
 
           <div className="flex gap-1">
             {/* Ver/Imprimir */}
@@ -616,16 +626,17 @@ function VariantRow({
             </Popover>
 
             {/* Autogenerar */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={onGenerateBarcode}
-              disabled={!variant.isActive}
-              title="Generar código automático"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-            </Button>
+            {localBarcode.includes("NaN") && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-red-500"
+                onClick={onGenerateBarcode}
+                title="Regenerar código"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </Button>
+            )}
           </div>
         </div>
       </TableCell>

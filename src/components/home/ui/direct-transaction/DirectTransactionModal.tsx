@@ -20,8 +20,8 @@ import {
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
-import { RentalDTO } from "@/src/interfaces/RentalDTO";
-import { SaleDTO } from "@/src/interfaces/SaleDTO";
+import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
+import { SaleDTO } from "@/src/application/interfaces/SaleDTO";
 
 import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";

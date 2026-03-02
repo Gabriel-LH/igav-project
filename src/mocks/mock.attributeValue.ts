@@ -8,6 +8,7 @@ export const ATTRIBUTE_VALUES_MOCK: AttributeValue[] = [
     code: "NEGRO",
     value: "Negro",
     attributeTypeId: "attr-type-1", // Color
+    hexColor: "#000000",
     isActive: true,
   },
   {
@@ -16,6 +17,7 @@ export const ATTRIBUTE_VALUES_MOCK: AttributeValue[] = [
     code: "AZUL",
     value: "Azul",
     attributeTypeId: "attr-type-1", // Color
+    hexColor: "#2563eb",
     isActive: true,
   },
   {
@@ -24,6 +26,7 @@ export const ATTRIBUTE_VALUES_MOCK: AttributeValue[] = [
     code: "ROJO",
     value: "Rojo",
     attributeTypeId: "attr-type-1", // Color
+    hexColor: "#dc2626",
     isActive: true,
   },
   {

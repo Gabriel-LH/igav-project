@@ -52,6 +52,7 @@ import { ModelForm } from "./model-form";
 interface ModelsTableProps {
   data: Model[];
   brands: Brand[]; // Para mostrar nombres de marca y filtros
+  onCreate: (data: ModelFormData) => void;
   onUpdate: (id: string, data: ModelFormData) => void;
   onDelete: (id: string) => void;
 }
@@ -59,6 +60,7 @@ interface ModelsTableProps {
 export function ModelsTable({
   data,
   brands,
+  onCreate,
   onUpdate,
   onDelete,
 }: ModelsTableProps) {
@@ -112,7 +114,7 @@ export function ModelsTable({
       header: "Marca",
       cell: ({ row }) => (
         <Badge variant="outline" className="font-medium">
-          {getBrandName(row.getValue("brandId"))}
+          {getBrandName(row.getValue("brandId") as string)}
         </Badge>
       ),
     },
@@ -120,7 +122,7 @@ export function ModelsTable({
       accessorKey: "year",
       header: "Año",
       cell: ({ row }) => {
-        const year = row.getValue("year");
+        const year = row.getValue("year") as number | undefined;
         return year ? (
           <span>{year}</span>
         ) : (
@@ -231,10 +233,7 @@ export function ModelsTable({
 
         <ModelForm
           brands={brands}
-          onSubmit={(data) => {
-            console.log("Nuevo modelo:", data);
-            onUpdate("new", data);
-          }}
+          onSubmit={onCreate}
         />
       </div>
 

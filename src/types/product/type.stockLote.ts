@@ -10,6 +10,11 @@ export const stockLotSchema = z.object({
   branchId: z.string(),
 
   quantity: z.number().min(0),
+  barcode: z.string().optional(),
+
+  expirationDate: z.date().optional(),
+
+  lotNumber: z.string().optional(),
 
   isForRent: z.boolean(),
   isForSale: z.boolean(),
@@ -23,3 +28,9 @@ export const stockLotSchema = z.object({
 });
 
 export type StockLot = z.infer<typeof stockLotSchema>;
+
+// Para el formulario (omitimos campos auto-generados)
+export type StockLotFormData = Omit<
+  StockLot,
+  "id" | "tenantId" | "createdAt" | "updatedAt"
+>;

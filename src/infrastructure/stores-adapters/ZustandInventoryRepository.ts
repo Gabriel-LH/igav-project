@@ -1,6 +1,10 @@
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
 import { InventoryItemStatus } from "../../utils/status-type/InventoryItemStatusType";
 import { useInventoryStore } from "../../store/useInventoryStore";
+import { Product } from "../../types/product/type.product";
+import { ProductVariant } from "../../types/product/type.productVariant";
+import { StockLot } from "../../types/product/type.stockLote";
+import { InventoryItem } from "../../types/product/type.inventoryItem";
 
 export class ZustandInventoryRepository implements InventoryRepository {
   updateItemStatus(
@@ -47,6 +51,10 @@ export class ZustandInventoryRepository implements InventoryRepository {
     return useInventoryStore.getState().products;
   }
 
+  getProductVariants(): any[] {
+    return useInventoryStore.getState().productVariants;
+  }
+
   getInventoryItems(): any[] {
     return useInventoryStore.getState().inventoryItems;
   }
@@ -77,5 +85,44 @@ export class ZustandInventoryRepository implements InventoryRepository {
     } else {
       store.decreaseLotQuantity(stockId, -quantity);
     }
+  }
+
+  addProduct(product: Product): void {
+    useInventoryStore.getState().addProduct(product);
+  }
+
+  updateProduct(productId: string, updates: Partial<Product>): void {
+    useInventoryStore.getState().updateProduct(productId, updates);
+  }
+
+  softDeleteProduct(productId: string, deletedBy?: string): void {
+    useInventoryStore.getState().softDeleteProduct(productId, deletedBy);
+  }
+
+  addProductVariants(variants: ProductVariant[]): void {
+    useInventoryStore.getState().addProductVariants(variants);
+  }
+
+  updateProductVariant(
+    variantId: string,
+    updates: Partial<ProductVariant>,
+  ): void {
+    useInventoryStore.getState().updateProductVariant(variantId, updates);
+  }
+
+  addStockLot(stockLot: StockLot): void {
+    useInventoryStore.getState().addStockLot(stockLot);
+  }
+
+  removeStockLot(stockLotId: string): void {
+    useInventoryStore.getState().removeStockLot(stockLotId);
+  }
+
+  addInventoryItems(items: InventoryItem[]): void {
+    useInventoryStore.getState().addInventoryItems(items);
+  }
+
+  removeInventoryItem(itemId: string): void {
+    useInventoryStore.getState().removeInventoryItem(itemId);
   }
 }

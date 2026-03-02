@@ -49,6 +49,7 @@ import { AttributeValueForm } from "./attribute-value-form";
 interface AttributeValuesTableProps {
   data: AttributeValue[];
   attributeTypes: AttributeType[];
+  onCreate: (data: AttributeValueFormData) => void;
   onUpdate: (id: string, data: AttributeValueFormData) => void;
   onDelete: (id: string) => void;
 }
@@ -56,6 +57,7 @@ interface AttributeValuesTableProps {
 export function AttributeValuesTable({
   data,
   attributeTypes,
+  onCreate,
   onUpdate,
   onDelete,
 }: AttributeValuesTableProps) {
@@ -72,14 +74,28 @@ export function AttributeValuesTable({
     {
       accessorKey: "value",
       header: "Valor",
-      cell: ({ row }) => (
-        <div className="font-medium">
-          {row.getValue("value")}
-          <div className="text-xs text-muted-foreground font-mono">
-            {row.original.code}
+      cell: ({ row }) => {
+        const type = attributeTypes.find(
+          (t) => t.id === row.original.attributeTypeId,
+        );
+        const isColor = type?.inputType === "color";
+
+        return (
+          <div className="font-medium flex items-center gap-2">
+            {isColor && row.original.hexColor && (
+              <span
+                className="w-4 h-4 rounded border"
+                style={{ backgroundColor: row.original.hexColor }}
+                title={row.original.hexColor}
+              />
+            )}
+            <span>{row.getValue("value") as string}</span>
+            <div className="text-xs text-muted-foreground font-mono">
+              {row.original.code}
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: "attributeTypeId",
@@ -112,9 +128,9 @@ export function AttributeValuesTable({
       header: "Estado",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Switch checked={row.getValue("isActive")} disabled />
+          <Switch checked={row.getValue("isActive") as boolean} disabled />
           <span className="text-sm text-muted-foreground">
-            {row.getValue("isActive") ? "Activo" : "Inactivo"}
+            {(row.getValue("isActive") as boolean) ? "Activo" : "Inactivo"}
           </span>
         </div>
       ),
@@ -204,10 +220,7 @@ export function AttributeValuesTable({
 
         <AttributeValueForm
           attributeTypes={attributeTypes}
-          onSubmit={(data) => {
-            console.log("Nuevo valor:", data);
-            // Aquí llamarías a tu API
-          }}
+          onSubmit={onCreate}
         />
       </div>
 

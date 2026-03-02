@@ -1,8 +1,8 @@
 import { Reservation } from "../../types/reservation/type.reservation";
 import { ReservationItem } from "../../types/reservation/type.reservationItem";
-import { RentalFromReservationDTO } from "../../interfaces/RentalFromReservationDTO";
-import { SaleFromReservationDTO } from "../../interfaces/SaleFromReservationDTO";
-import { processTransaction } from "../orchestrators/processTransaction.orchestrator"; 
+import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
+import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
+import { processTransaction } from "../orchestrators/processTransaction.orchestrator";
 import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
 import { GuaranteeRepository } from "../../domain/repositories/GuaranteeRepository";

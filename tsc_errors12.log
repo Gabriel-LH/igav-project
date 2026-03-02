@@ -1,2 +1,0 @@
-.next/dev/types/validator.ts(51,39): error TS2306: File 'C:/Users/joelm/Downloads/igav/src/app/(all)/boleta/page.tsx' is not a module.
-prisma.config.ts(4,30): error TS2307: Cannot find module 'prisma/config' or its corresponding type declarations.

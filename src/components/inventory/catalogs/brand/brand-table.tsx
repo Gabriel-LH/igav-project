@@ -43,11 +43,17 @@ import { BrandForm } from "./brand-form";
 
 interface BrandsTableProps {
   data: Brand[];
+  onCreate: (data: BrandFormData) => void;
   onUpdate: (id: string, data: BrandFormData) => void;
   onDelete: (id: string) => void;
 }
 
-export function BrandsTable({ data, onUpdate, onDelete }: BrandsTableProps) {
+export function BrandsTable({
+  data,
+  onCreate,
+  onUpdate,
+  onDelete,
+}: BrandsTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
 
   const columns: ColumnDef<Brand>[] = [
@@ -165,10 +171,7 @@ export function BrandsTable({ data, onUpdate, onDelete }: BrandsTableProps) {
           />
         </div>
         <BrandForm
-          onSubmit={(data) => {
-            console.log("Nueva marca:", data);
-            // onUpdate("new", data);
-          }}
+          onSubmit={onCreate}
         />
       </div>
 

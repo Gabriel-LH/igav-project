@@ -2,7 +2,12 @@ import { create } from "zustand";
 import { PRODUCTS_MOCK } from "../mocks/mocks.product";
 import { INVENTORY_ITEMS_MOCK } from "../mocks/mock.inventoryItem";
 import { STOCK_LOTS_MOCK } from "../mocks/mock.stockLote";
+import { PRODUCT_VARIANTS_MOCK } from "../mocks/mock.productVariant";
 import { InventoryItemStatus } from "../utils/status-type/InventoryItemStatusType";
+import { Product } from "../types/product/type.product";
+import { ProductVariant } from "../types/product/type.productVariant";
+import { StockLot } from "../types/product/type.stockLote";
+import { InventoryItem } from "../types/product/type.inventoryItem";
 
 interface InventoryLog {
   timestamp: Date;
@@ -18,6 +23,7 @@ interface InventoryStore {
   inventoryItems: typeof INVENTORY_ITEMS_MOCK;
   stockLots: typeof STOCK_LOTS_MOCK;
   products: typeof PRODUCTS_MOCK;
+  productVariants: typeof PRODUCT_VARIANTS_MOCK;
   inventoryLogs: InventoryLog[];
 
   // 1. Acciones para SERIALIZADOS (Items únicos)
@@ -42,12 +48,27 @@ interface InventoryStore {
     quantity: number,
     adminId: string,
   ) => void;
+
+  addProduct: (product: Product) => void;
+  updateProduct: (productId: string, updates: Partial<Product>) => void;
+  softDeleteProduct: (productId: string, deletedBy?: string) => void;
+  addProductVariants: (variants: ProductVariant[]) => void;
+  updateProductVariant: (
+    variantId: string,
+    updates: Partial<ProductVariant>,
+  ) => void;
+  removeProductVariant: (variantId: string) => void;
+  addStockLot: (stockLot: StockLot) => void;
+  removeStockLot: (stockLotId: string) => void;
+  addInventoryItems: (items: InventoryItem[]) => void;
+  removeInventoryItem: (itemId: string) => void;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
   inventoryItems: INVENTORY_ITEMS_MOCK,
   stockLots: STOCK_LOTS_MOCK,
   products: PRODUCTS_MOCK,
+  productVariants: PRODUCT_VARIANTS_MOCK,
   inventoryLogs: [],
 
   // Getter unificado para que la UI no se rompa (Simula una lista plana)
@@ -167,4 +188,71 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       return { stockLots: updatedLots, inventoryLogs: newLogs };
     });
   },
+
+  addProduct: (product) =>
+    set((state) => ({
+      products: [...state.products, product],
+    })),
+
+  updateProduct: (productId, updates) =>
+    set((state) => ({
+      products: state.products.map((product) =>
+        product.id === productId ? { ...product, ...updates } : product,
+      ),
+    })),
+
+  softDeleteProduct: (productId, deletedBy) =>
+    set((state) => ({
+      products: state.products.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              isDeleted: true,
+              deletedAt: new Date(),
+              deletedBy: deletedBy ?? "system",
+              deleteReason: "Eliminado desde inventario",
+              updatedAt: new Date(),
+            }
+          : product,
+      ),
+    })),
+
+  addProductVariants: (variants) =>
+    set((state) => ({
+      productVariants: [...state.productVariants, ...variants],
+    })),
+
+  updateProductVariant: (variantId, updates) =>
+    set((state) => ({
+      productVariants: state.productVariants.map((variant) =>
+        variant.id === variantId ? { ...variant, ...updates } : variant,
+      ),
+    })),
+
+  removeProductVariant: (variantId) =>
+    set((state) => ({
+      productVariants: state.productVariants.filter(
+        (variant) => variant.id !== variantId,
+      ),
+    })),
+
+  addStockLot: (stockLot) =>
+    set((state) => ({
+      stockLots: [...state.stockLots, stockLot],
+    })),
+
+  removeStockLot: (stockLotId) =>
+    set((state) => ({
+      stockLots: state.stockLots.filter((stockLot) => stockLot.id !== stockLotId),
+    })),
+
+  addInventoryItems: (items) =>
+    set((state) => ({
+      inventoryItems: [...state.inventoryItems, ...items],
+    })),
+
+  removeInventoryItem: (itemId) =>
+    set((state) => ({
+      inventoryItems: state.inventoryItems.filter((item) => item.id !== itemId),
+    })),
 }));

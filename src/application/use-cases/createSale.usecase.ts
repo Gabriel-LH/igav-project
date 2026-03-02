@@ -1,8 +1,8 @@
 import { SaleRepository } from "../../domain/repositories/SaleRepository";
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
 import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
-import { SaleDTO } from "../../interfaces/SaleDTO";
-import { SaleFromReservationDTO } from "../../interfaces/SaleFromReservationDTO";
+import { SaleDTO } from "../interfaces/SaleDTO";
+import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
 import { saleSchema } from "../../types/sales/type.sale";
 import { InventoryItemStatus } from "../../utils/status-type/InventoryItemStatusType";
 

@@ -44,12 +44,14 @@ import { cn } from "@/lib/utils";
 
 interface CategoriesTableProps {
   data: Category[];
+  onCreate: (data: CategoryFormData) => void;
   onUpdate: (id: string, data: CategoryFormData) => void;
   onDelete: (id: string) => void;
 }
 
 export function CategoriesTable({
   data,
+  onCreate,
   onUpdate,
   onDelete,
 }: CategoriesTableProps) {
@@ -68,7 +70,7 @@ export function CategoriesTable({
         .filter((node) => {
           const matches =
             node.name.toLowerCase().includes(searchTerm) ||
-            node.slug.toLowerCase().includes(searchTerm);
+            (node.slug ?? "").toLowerCase().includes(searchTerm);
           const hasMatchingChildren = filterNodes(node.children).length > 0;
           return matches || hasMatchingChildren;
         })
@@ -151,9 +153,9 @@ export function CategoriesTable({
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {node.slug} • {node.productCount} productos
+                  {node.slug ?? "sin-slug"} • {node.productCount ?? 0} productos
                   {node.totalProductCount !== node.productCount && (
-                    <span> (total: {node.totalProductCount})</span>
+                    <span> (total: {node.totalProductCount ?? 0})</span>
                   )}
                 </div>
               </div>
@@ -205,8 +207,9 @@ export function CategoriesTable({
 
               <CategoryForm
                 categories={data}
+                defaultParentId={node.id}
                 onSubmit={(formData) => {
-                  onUpdate("new", { ...formData, parentId: node.id });
+                  onCreate(formData);
                 }}
                 trigger={
                   <Button
@@ -272,7 +275,7 @@ export function CategoriesTable({
         </div>
         <CategoryForm
           categories={data}
-          onSubmit={(formData) => onUpdate("new", formData)}
+          onSubmit={(formData) => onCreate(formData)}
         />
       </div>
 

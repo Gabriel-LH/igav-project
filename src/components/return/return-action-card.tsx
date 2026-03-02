@@ -12,7 +12,7 @@ import {
 import { formatCurrency } from "@/src/utils/currency-format";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { ReturnInspectionDrawer } from "./return-inspector-action";
-import { RentalDTO } from "@/src/interfaces/RentalDTO";
+import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
 
 interface Props {
   rental: RentalDTO;

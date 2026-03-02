@@ -1,48 +1,91 @@
 "use client";
 
-import { useState } from "react";
-import { CATEGORIES_MOCK } from "@/src/mocks/mock.categories";
+import { useMemo } from "react";
 import { CategoryFormData } from "@/src/types/category/type.category";
 import { CategoriesTable } from "./category-table";
+import { useCategoryStore } from "@/src/store/useCategoryStore";
+import { ZustandCategoryRepository } from "@/src/infrastructure/stores-adapters/ZustandCategoryRepository";
+import {
+  CreateCategoryUseCase,
+  DeleteCategoryUseCase,
+  ListCategoriesUseCase,
+  UpdateCategoryUseCase,
+} from "@/src/application/use-cases/category/crudCategory.usecase";
 
 export function CategoryLayout() {
-  const [data, setData] = useState(CATEGORIES_MOCK);
+  const tenantId = "tenant-a";
+  const categorySnapshot = useCategoryStore((state) => state.categories);
+
+  const categoryRepo = useMemo(() => new ZustandCategoryRepository(), []);
+  const createCategoryUseCase = useMemo(
+    () => new CreateCategoryUseCase(categoryRepo),
+    [categoryRepo],
+  );
+  const updateCategoryUseCase = useMemo(
+    () => new UpdateCategoryUseCase(categoryRepo),
+    [categoryRepo],
+  );
+  const deleteCategoryUseCase = useMemo(
+    () => new DeleteCategoryUseCase(categoryRepo),
+    [categoryRepo],
+  );
+  const listCategoriesUseCase = useMemo(
+    () => new ListCategoriesUseCase(categoryRepo),
+    [categoryRepo],
+  );
+
+  const data = useMemo(
+    () => listCategoriesUseCase.execute(tenantId, { includeInactive: true }),
+    [categorySnapshot, listCategoriesUseCase],
+  );
+
+  const handleCreate = (formData: CategoryFormData) => {
+    createCategoryUseCase.execute({
+      tenantId,
+      name: formData.name,
+      description: formData.description,
+      parentId: formData.parentId,
+      image: formData.image,
+      color: formData.color,
+      icon: formData.icon,
+      slug: formData.slug,
+      order: formData.order,
+      isActive: formData.isActive,
+      showInPos: formData.showInPos,
+      showInEcommerce: formData.showInEcommerce,
+    });
+  };
 
   const handleUpdate = (id: string, formData: CategoryFormData) => {
-    if (id === "new") {
-      // Crear nueva
-      const newCategory = {
-        ...formData,
-        id: `cat-${Date.now()}`,
-        tenantId: "tenant-a",
-        level: 0, // Se calcula en backend basado en parentId
-        path: formData.name.toLowerCase(),
-        productCount: 0,
-        totalProductCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setData((prev) => [...prev, newCategory as any]);
-    } else {
-      // Actualizar
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, ...formData, updatedAt: new Date() }
-            : item,
-        ),
-      );
-    }
+    updateCategoryUseCase.execute({
+      categoryId: id,
+      tenantId,
+      name: formData.name,
+      description: formData.description,
+      parentId: formData.parentId,
+      image: formData.image,
+      color: formData.color,
+      icon: formData.icon,
+      slug: formData.slug,
+      order: formData.order,
+      isActive: formData.isActive,
+      showInPos: formData.showInPos,
+      showInEcommerce: formData.showInEcommerce,
+    });
   };
 
   const handleDelete = (id: string) => {
-    setData((prev) => prev.filter((item) => item.id !== id));
+    deleteCategoryUseCase.execute({
+      categoryId: id,
+      tenantId,
+    });
   };
 
   return (
     <div>
       <CategoriesTable
         data={data}
+        onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
       />

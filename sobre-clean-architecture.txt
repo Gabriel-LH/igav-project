@@ -1,0 +1,306 @@
+1️⃣ ¿Tengo que crear 4 use cases por CRUD?
+
+No es obligatorio crear 4 archivos separados.
+
+Lo obligatorio es:
+
+1 intención de negocio = 1 caso de uso
+
+La organización en archivos es secundaria.
+
+Puedes tener:
+
+/coupon
+   createCoupon.usecase.ts
+   updateCoupon.usecase.ts
+   deactivateCoupon.usecase.ts
+
+O puedes tener:
+
+coupon.usecases.ts
+
+Y dentro:
+
+export class CreateCouponUseCase {}
+export class UpdateCouponUseCase {}
+export class DeactivateCouponUseCase {}
+
+Eso no rompe Clean Architecture.
+
+Lo que sí rompe es esto:
+
+class CouponUseCase {
+  create() {}
+  update() {}
+  delete() {}
+  getAll() {}
+}
+
+Eso se convierte en un service procedural estilo CRUD anémico.
+
+2️⃣ Entonces ¿sí son varios casos de uso?
+
+Sí.
+
+Porque:
+
+Crear cupón
+
+Actualizar cupón
+
+Desactivar cupón
+
+Redimir cupón
+
+Son intenciones distintas.
+
+En sistemas simples puedes agruparlos en un archivo.
+En sistemas grandes se separan por claridad.
+
+Pero conceptualmente siguen siendo casos de uso distintos.
+
+----------------------------------------
+
+3️⃣ El punto crítico: Brand vs Model
+
+Aquí está la decisión importante.
+
+Tú dices:
+
+Model es tabla aparte y necesita CRUD propio.
+
+Correcto. Pero en DDD:
+
+Tabla ≠ Aggregate Root
+
+La pregunta correcta es:
+
+¿Model tiene invariantes propias independientes de Brand?
+
+Ejemplos:
+
+¿Puede existir un Model sin Brand? ❌
+
+¿Se accede a Model fuera del contexto de Brand? ❓
+
+¿Tiene reglas propias complejas? ❓
+
+Escenario A — Model es parte del agregado Brand
+
+Entonces:
+
+Brand es Aggregate Root.
+
+Model es entidad interna.
+
+Repositorio:
+
+interface BrandRepository {
+  getBrandById(id: string): Brand
+  save(brand: Brand): void
+}
+
+Y dentro del aggregate:
+
+brand.addModel()
+brand.updateModel()
+brand.removeModel()
+
+No existe ModelRepository.
+
+Esto es arquitectura pura DDD.
+
+Escenario B — Model tiene vida independiente
+
+Si:
+
+Se lista globalmente
+
+Se filtra sin cargar Brand
+
+Se usa en otros contextos (ej: analytics)
+
+Tiene permisos propios
+
+Tiene reglas propias
+
+Entonces Model es otro Aggregate Root.
+
+Y sí necesitas:
+
+ModelRepository
+4️⃣ En tu caso específico
+
+Viendo tu sistema (alquiler + inventario complejo):
+
+Model probablemente:
+
+Se consulta independiente
+
+Se selecciona en formularios
+
+Se lista por brand
+
+Se mantiene vía panel admin
+
+Eso suena a:
+
+👉 Model como Aggregate Root independiente.
+
+Por lo tanto:
+
+Sí, crea ModelRepository.
+
+5️⃣ ¿Entonces también store separado?
+
+No necesariamente.
+
+Puedes tener:
+
+useCatalogStore
+
+Y dentro:
+
+models: Model[]
+brands: Brand[]
+
+Y luego:
+
+ZustandBrandRepository
+ZustandModelRepository
+
+Ambos usando el mismo store.
+
+Clean Architecture no obliga a 1 repo = 1 store.
+
+6️⃣ La clave que debes interiorizar
+
+Separación por dominio lógico, no por almacenamiento físico.
+
+Repository → contrato del dominio
+
+Store → implementación técnica
+
+Puedes tener:
+
+1 store
+3 repositories
+0 problemas
+
+7️⃣ ¿Cómo decides si crear Repository?
+
+Hazte esta pregunta:
+
+¿Puedo cargar, modificar o eliminar esta entidad sin tocar otra?
+
+Si la respuesta es sí → probablemente es Aggregate Root.
+
+En tu caso:
+
+Model puede crearse directamente sin modificar Brand.
+
+Eso lo convierte en candidato a Aggregate Root.
+
+8️⃣ Respuesta directa a tus preguntas
+¿Puedo tener coupon.usecase.ts con varios casos?
+
+Sí.
+Mientras cada clase represente una intención clara.
+
+¿Tengo que crear más use cases si agrego funciones?
+
+Sí.
+
+Cada nueva intención de negocio es un nuevo caso de uso.
+
+¿Debo crear ModelRepository?
+
+En tu sistema:
+👉 Sí, probablemente.
+
+Porque tiene CRUD independiente y tabla propia.
+
+9️⃣ Error que debes evitar
+
+No conviertas Clean Architecture en:
+
+1 tabla = 1 repository = 1 store = 4 use cases = 10 archivos
+
+Eso es arquitectura mecánica.
+
+La decisión correcta siempre depende de:
+
+Invariantes
+
+Ciclo de vida
+
+Independencia de negocio
+
+-------------------------------------------------------------------
+
+Ejemplo de una estrucutra de carpetas con Clean Architecture con DDD
+
+src/
+├── domain/                <-- Reglas de negocio puras
+│   ├── entities/          <-- Aquí iría el Aggregate Root (Product)
+│   ├── value-objects/     <-- (Opcional) Ej: ProductPrice, SKU
+│   └── repositories/      <-- Interfaces (Solo de Aggregate Roots)
+├── application/           <-- Orquestación
+│   ├── use-cases/         <-- Mover aquí desde domain
+│   ├── dtos/              <-- Mover aquí
+│   └── services/          <-- (Solo si necesitas lógica que cruza use-cases)
+├── infrastructure/        <-- Implementaciones técnicas
+│   ├── persistence/       <-- Repositorios reales, Mappers
+│   └── api/               <-- Controllers, Routes
+
+ o: 
+ --------------------------------------------------
+ src/
+├── Domain/ (Capa de Entidades - Núcleo)
+│   ├── Aggregates/
+│   │   └── OrderAggregate/ (Agregado de Pedido)
+│   │       ├── Order.cs (Aggregate Root: contiene la lógica y reglas)
+│   │       ├── OrderItem.cs (Entidad interna: solo accesible via Order)
+│   │       ├── OrderStatus.cs (Value Object)
+│   │       └── IOrderRepository.cs (Interfaz: define cómo se guarda el agregado)
+│   ├── Events/ (Domain Events: ej. OrderCreated)
+│   └── Exceptions/ (Reglas de negocio rotas)
+│
+├── Application/ (Casos de Uso)
+│   ├── Orders/
+│   │   ├── CreateOrderHandler.cs (Usa el repositorio para guardar el agregado)
+│   │   └── AddItemToOrderHandler.cs (Busca la raíz, opera y guarda)
+│   └── Interfaces/ (DTOs y servicios de aplicación)
+│
+├── Infrastructure/ (Detalles técnicos)
+│   ├── Persistence/
+│   │   ├── OrderRepository.cs (Implementación real con DB/ORM)
+│   │   └── AppDbContext.cs
+│   └── ExternalServices/ (Email, Pasarelas de pago)
+│
+└── WebAPI / Presentation/ (Entrada del sistema)
+    ├── Controllers/
+    │   └── OrderController.cs
+    └── Program.cs (Inyección de dependencias)
+
+-------------------------------------------------------------------
+como se deberia de ver mis carpetas con clean architecture
+
+src/
+├── domain/                <-- EL REY (Puro, sin dependencias)
+│   ├── entities/          <-- Coupon, Promotion, Order (Aggregate Roots)
+│   ├── repositories/      <-- Solo INTERFACES (ICouponRepository)
+│   └── services/          <-- Lógica matemática/reglas (PromotionService)
+│
+├── application/           <-- EL COORDINADOR
+│   ├── use-cases/         
+│   │   ├── create-coupon/ <-- Casos de uso simples
+│   │   └── process-sale/  <-- AQUÍ va tu "Orquestador" (coordinando otros UCs)
+│   └── dtos/              <-- Inputs y Outputs
+│
+├── infrastructure/        <-- LOS DETALLES
+│   ├── persistence/       
+│   │   └── zustand/       <-- Implementación de los Repositories
+│   └── api/               <-- Controllers / React Components
+
+    

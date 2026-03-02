@@ -1,17 +1,7 @@
 import { CouponRepository } from "../../domain/repositories/CouponRepository";
 import { Coupon } from "../../types/coupon/type.coupon";
 import { generateCouponCode } from "../../utils/coupon/generateCouponCode";
-
-export interface CreateCouponInput {
-  tenantId: string;
-  discountType: "percentage" | "fixed_amount";
-  discountValue: number;
-  minPurchaseAmount?: number;
-  assignedToClientId: string;
-  origin: Coupon["origin"];
-  originReferenceId?: string;
-  expiresAt?: Date | null;
-}
+import { CreateCouponInput } from "../interfaces/coupon/CreateCouponInput";
 
 export class CreateCouponUseCase {
   constructor(private couponRepo: CouponRepository) {}

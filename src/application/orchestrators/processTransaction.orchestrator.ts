@@ -1,8 +1,8 @@
-import { RentalDTO } from "../../interfaces/RentalDTO";
-import { ReservationDTO } from "../../interfaces/ReservationDTO";
-import { SaleDTO } from "../../interfaces/SaleDTO";
-import { RentalFromReservationDTO } from "../../interfaces/RentalFromReservationDTO";
-import { SaleFromReservationDTO } from "../../interfaces/SaleFromReservationDTO";
+import { RentalDTO } from "../interfaces/RentalDTO";
+import { ReservationDTO } from "../interfaces/ReservationDTO";
+import { SaleDTO } from "../interfaces/SaleDTO";
+import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
+import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
 
 // Infrastructure Adapters
 import { ZustandOperationRepository } from "../../infrastructure/stores-adapters/ZustandOperationRepository";

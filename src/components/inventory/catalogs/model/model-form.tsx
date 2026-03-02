@@ -1,7 +1,7 @@
 // components/catalogs/models/ModelForm.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,8 +36,9 @@ const formSchema = z.object({
   slug: z.string().min(1, "Slug requerido"),
   description: z.string().optional(),
   year: z.number().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
+type ModelFormValues = z.infer<typeof formSchema>;
 
 interface ModelFormProps {
   brands: Brand[]; // Lista de marcas para el selector
@@ -73,7 +74,7 @@ export function ModelForm({
     [brands],
   );
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ModelFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       brandId: "",
@@ -86,14 +87,16 @@ export function ModelForm({
   });
 
   const watchName = form.watch("name");
-  if (!isEditing && watchName && !form.getValues("slug")) {
-    form.setValue("slug", generateSlug(watchName));
-  }
+  useEffect(() => {
+    if (!isEditing && watchName && !form.getValues("slug")) {
+      form.setValue("slug", generateSlug(watchName));
+    }
+  }, [form, isEditing, watchName]);
 
   const selectedBrandId = form.watch("brandId");
   const selectedBrand = brands.find((b) => b.id === selectedBrandId);
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = (values: ModelFormValues) => {
     onSubmit(values);
     form.reset();
     setOpen(false);
@@ -129,7 +132,7 @@ export function ModelForm({
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
