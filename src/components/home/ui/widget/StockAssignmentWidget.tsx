@@ -23,8 +23,7 @@ import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 
 interface StockAssignmentWidgetProps {
   productId: string;
-  sizeId: string;
-  colorId: string;
+  variantId: string;
   quantity: number;
   operationType: OpType;
   dateRange: { from: Date; to: Date };
@@ -38,8 +37,7 @@ interface StockAssignmentWidgetProps {
 
 export function StockAssignmentWidget({
   productId,
-  sizeId,
-  colorId,
+  variantId,
   quantity,
   operationType,
   dateRange,
@@ -70,8 +68,7 @@ export function StockAssignmentWidget({
       return inventoryItems.filter((i) => {
         const isBaseMatch =
           i.productId === productId &&
-          i.sizeId === sizeId &&
-          i.colorId === colorId &&
+          i.variantId === variantId &&
           i.status !== "retirado" &&
           i.status !== "vendido";
 
@@ -90,8 +87,7 @@ export function StockAssignmentWidget({
       return stockLots.filter((l) => {
         const isBaseMatch =
           l.productId === productId &&
-          l.sizeId === sizeId &&
-          l.colorId === colorId &&
+          l.variantId === variantId &&
           (l.status as any) !== "retirado" &&
           (l.status as any) !== "vendido";
 
@@ -208,7 +204,7 @@ export function StockAssignmentWidget({
                       : ""
                   }
                 >
-                  {l.variantCode} (Disp: {l.quantity}) -{" "}
+                  {l.variantId} (Disp: {l.quantity}) -{" "}
                   {BRANCH_MOCKS.find((b) => b.id === l.branchId)?.name}
                 </SelectItem>
               ))}
@@ -233,7 +229,7 @@ export function StockAssignmentWidget({
           <div className="text-[10px] text-emerald-600 flex items-center gap-1 p-1 rounded px-2">
             <HugeiconsIcon icon={Location01Icon} className="w-3 h-3" />
             Se retirarán {quantity} unidades del lote{" "}
-            <strong>{currentLot.variantCode}</strong>
+            <strong>{currentLot.variantId}</strong>
           </div>
         )}
       </div>

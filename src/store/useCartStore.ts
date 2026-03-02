@@ -4,6 +4,7 @@ import { CartItem, CartOperationType } from "@/src/types/cart/type.cart";
 import { differenceInDays } from "date-fns";
 import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { USER_MOCK } from "@/src/mocks/mock.user";
@@ -30,6 +31,7 @@ const promotionService = new PromotionService(
 const calculateSubtotal = (
   item: {
     product: Product;
+    variantId?: string;
     unitPrice: number;
     quantity: number;
   },
@@ -40,7 +42,8 @@ const calculateSubtotal = (
   if (opType === "venta") return item.unitPrice * item.quantity;
 
   // 2. Si es Alquiler -> Precio final x Cantidad x Días
-  const isEvent = item.product.rent_unit === "evento";
+  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId);
+  const isEvent = variant?.rentUnit === "evento";
 
   const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
 
@@ -49,8 +52,14 @@ const calculateSubtotal = (
   return item.unitPrice * item.quantity * multiplier;
 };
 
-const getProductListPrice = (product: Product, type: CartOperationType) =>
-  type === "venta" ? (product.price_sell ?? 0) : (product.price_rent ?? 0);
+const getProductListPrice = (
+  variantId: string | undefined,
+  type: CartOperationType,
+) => {
+  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
+  if (!variant) return 0;
+  return type === "venta" ? (variant.priceSell ?? 0) : (variant.priceRent ?? 0);
+};
 
 interface CartState {
   items: CartItem[];
@@ -74,7 +83,7 @@ interface CartState {
     type: CartOperationType,
     stockId?: string,
     maxQuantity?: number,
-    variant?: { size?: string; color?: string },
+    variantId?: string,
     customData?: {
       listPrice?: number;
       discountAmount?: number;
@@ -136,7 +145,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     type,
     specificStockId,
     maxQuantity = 9999,
-    variant,
+    variantId,
     customData,
   ) => {
     set((state) => {
@@ -146,7 +155,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       }
 
       const listPrice =
-        customData?.listPrice ?? getProductListPrice(product, type);
+        customData?.listPrice ?? getProductListPrice(variantId, type);
       const isExplicitBundle = Boolean(
         customData?.bundleId && customData?.appliedPromotionId,
       );
@@ -179,8 +188,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const existingIndex = state.items.findIndex((i) => {
         const sameProduct = i.product.id === product.id;
         const sameType = i.operationType === type;
-        const sameSize = i.selectedSizeId === variant?.size;
-        const sameColor = i.selectedColorId === variant?.color;
+        const sameVariant = i.variantId === variantId;
         const sameBundle = (i.bundleId ?? null) === (pricing.bundleId ?? null);
         const samePromotion =
           (i.appliedPromotionId ?? null) === (pricing.promotionId ?? null);
@@ -189,8 +197,7 @@ export const useCartStore = create<CartState>((set, get) => ({
         return (
           sameProduct &&
           sameType &&
-          sameSize &&
-          sameColor &&
+          sameVariant &&
           sameBundle &&
           samePromotion &&
           sameUnitPrice
@@ -226,6 +233,7 @@ export const useCartStore = create<CartState>((set, get) => ({
               product: item.product,
               unitPrice: item.unitPrice,
               quantity: newQuantity,
+              variantId: item.variantId,
             },
             state.globalRentalDates,
             type,
@@ -253,13 +261,13 @@ export const useCartStore = create<CartState>((set, get) => ({
             product,
             unitPrice: finalUnitPrice,
             quantity: 1,
+            variantId: variantId,
           },
           state.globalRentalDates,
           type,
         ),
         selectedCodes: specificStockId ? [specificStockId] : [], // specificStockId should be the UIID (id)
-        selectedSizeId: variant?.size,
-        selectedColorId: variant?.color,
+        variantId: variantId,
       };
 
       return {
@@ -295,8 +303,12 @@ export const useCartStore = create<CartState>((set, get) => ({
       .map((id) => products.find((product) => product.id === id))
       .filter((p): p is Product => Boolean(p && p.tenantId === tenantId));
 
-    const listPrices = requiredProducts.map((product) =>
-      getProductListPrice(product, operationType),
+    const listPrices = requiredProducts.map(
+      (product) =>
+        getProductListPrice(
+          product.is_serial ? undefined : undefined,
+          operationType,
+        ), // We need variantId here, fix below
     );
     const totalList = listPrices.reduce((sum, value) => sum + value, 0);
     if (requiredProducts.length === 0 || totalList <= 0) return;
@@ -349,10 +361,7 @@ export const useCartStore = create<CartState>((set, get) => ({
         operationType,
         product.is_serial ? firstCandidate.id : undefined,
         maxQuantity,
-        {
-          size: firstCandidate.sizeId,
-          color: firstCandidate.colorId,
-        },
+        firstCandidate.variantId,
         {
           listPrice: itemList,
           priceAtMoment: proratedPrice,
@@ -499,6 +508,7 @@ export const useCartStore = create<CartState>((set, get) => ({
               product: item.product,
               unitPrice: item.unitPrice,
               quantity,
+              variantId: item.variantId,
             },
             state.globalRentalDates,
             item.operationType,
@@ -678,6 +688,7 @@ export const useCartStore = create<CartState>((set, get) => ({
           product: item.product,
           unitPrice: item.unitPrice,
           quantity: item.quantity,
+          variantId: item.variantId,
         },
         rentalDates,
         item.operationType,

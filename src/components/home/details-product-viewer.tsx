@@ -34,6 +34,7 @@ import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactio
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 export function DetailsProductViewer({
   item,
@@ -43,8 +44,7 @@ export function DetailsProductViewer({
   const isMobile = useIsMobile();
   const user = USER_MOCK;
   const currentBranchId = user[0].branchId!;
-  const { getSizeById, getColorById, getModelById, getCategoryById } =
-    useAttributeStore();
+  const { getSizeById, getColorById, getCategoryById } = useAttributeStore();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -66,27 +66,38 @@ export function DetailsProductViewer({
   }, [item.id, inventoryItems, stockLots]);
 
   // 2. TALLAS ÚNICAS DISPONIBLES
-  const availableSizes = useMemo(
-    () => Array.from(new Set(allProductStock.map((s) => s.sizeId))),
-    [allProductStock],
-  );
+  const availableSizes = useMemo(() => {
+    const sizes = allProductStock
+      .map((s) => {
+        const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+        return variant?.attributes?.size || null;
+      })
+      .filter((s) => s !== null);
+    return Array.from(new Set(sizes));
+  }, [allProductStock]);
 
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || null);
 
   // 3. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
   const colorsForSelectedSize = useMemo(() => {
-    const stockInSize = allProductStock.filter(
-      (s) => s.sizeId === selectedSize,
-    );
+    const stockInSize = allProductStock.filter((s) => {
+      const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+      return variant?.attributes?.size === selectedSize;
+    });
+
     return Array.from(
       new Map(
         stockInSize.map((s) => {
-          const color = getColorById(s.colorId);
+          const variant = PRODUCT_VARIANTS_MOCK.find(
+            (v) => v.id === s.variantId,
+          );
+          const colorId = variant?.attributes?.color || "";
+          const color = getColorById(colorId);
           return [
-            s.colorId,
+            colorId,
             {
-              id: s.colorId,
-              name: color?.name || "Desconocido",
+              id: colorId,
+              name: color?.name || colorId || "Desconocido",
               hex: color?.hex || "#CCCCCC",
             },
           ];
@@ -111,13 +122,15 @@ export function DetailsProductViewer({
   }, [colorsForSelectedSize, selectedColor]);
 
   // 5. CÁLCULO DE STOCK (Local vs Global)
-  const variantLocations = useMemo(
-    () =>
-      allProductStock.filter(
-        (s) => s.sizeId === selectedSize && s.colorId === selectedColor?.id,
-      ),
-    [allProductStock, selectedSize, selectedColor],
-  );
+  const variantLocations = useMemo(() => {
+    return allProductStock.filter((s) => {
+      const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+      return (
+        variant?.attributes?.size === selectedSize &&
+        variant?.attributes?.color === selectedColor?.id
+      );
+    });
+  }, [allProductStock, selectedSize, selectedColor]);
 
   const localStock = useMemo(
     () =>
@@ -181,6 +194,15 @@ export function DetailsProductViewer({
     [allProductStock],
   );
 
+  const productVariants = useMemo(
+    () => PRODUCT_VARIANTS_MOCK.filter((v) => v.productId === item.id),
+    [item.id],
+  );
+  const defaultVariant = productVariants[0] || ({} as any);
+  const priceRent = defaultVariant.priceRent || 0;
+  const priceSell = defaultVariant.priceSell || 0;
+  const rentUnit = defaultVariant.rentUnit || "unidad";
+
   return (
     <Drawer
       open={drawerOpen}
@@ -208,7 +230,7 @@ export function DetailsProductViewer({
               variant="outline"
               className="font-mono text-blue-600 border-blue-500"
             >
-              SKU: {item.sku}
+              SKU: {item.baseSku}
             </Badge>
             <Badge className="bg-muted text-primary border-gray-500">
               Existencia Total: {totalGlobalStock}
@@ -220,11 +242,6 @@ export function DetailsProductViewer({
           {item.categoryId
             ? getCategoryById(item.categoryId)?.name || "General"
             : "General"}
-          {item.modelId && (
-            <span className="ml-2 text-slate-400 font-bold italic">
-              - {getModelById(item.modelId)?.name || item.modelId}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">
           {/* PASO 1: SELECCIÓN DE TALLA */}
@@ -259,9 +276,15 @@ export function DetailsProductViewer({
               {colorsForSelectedSize.map((color) => {
                 const isSelected = selectedColor?.id === color.id;
                 const totalStockThisColor = allProductStock
-                  .filter(
-                    (s) => s.sizeId === selectedSize && s.colorId === color.id,
-                  )
+                  .filter((s) => {
+                    const variant = PRODUCT_VARIANTS_MOCK.find(
+                      (v) => v.id === s.variantId,
+                    );
+                    return (
+                      variant?.attributes?.size === selectedSize &&
+                      variant?.attributes?.color === color.id
+                    );
+                  })
                   .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0);
 
                 const hasGlobalStock = totalStockThisColor > 0;
@@ -435,18 +458,16 @@ export function DetailsProductViewer({
                 </p>
                 <div className="flex items-center gap-1">
                   <p className="text-lg font-bold">
-                    {formatCurrency(item.price_rent || 0)}
+                    {formatCurrency(priceRent)}
                   </p>
-                  <p className="text-[10px] font-bold">/ {item.rent_unit}</p>
+                  <p className="text-[10px] font-bold">/ {rentUnit}</p>
                 </div>
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase text-muted-foreground">
                   Precio venta
                 </p>
-                <p className="text-lg font-bold">
-                  {formatCurrency(item.price_sell || 0)}
-                </p>
+                <p className="text-lg font-bold">{formatCurrency(priceSell)}</p>
               </div>
             </div>
             <Separator />
@@ -486,8 +507,7 @@ export function DetailsProductViewer({
               <FeatureGuard feature="rentals">
                 <DirectTransactionModal
                   item={item}
-                  sizeId={selectedSize || ""}
-                  colorId={selectedColor?.id || ""}
+                  variantId={variantLocations[0]?.variantId}
                   type="alquiler"
                   currentBranchId={currentBranchId}
                   onSuccess={() => setDrawerOpen(false)}
@@ -508,8 +528,7 @@ export function DetailsProductViewer({
               <FeatureGuard feature="sales">
                 <DirectTransactionModal
                   item={item}
-                  sizeId={selectedSize || ""}
-                  colorId={selectedColor?.id || ""}
+                  variantId={variantLocations[0]?.variantId}
                   type="venta"
                   currentBranchId={currentBranchId}
                   onSuccess={() => setDrawerOpen(false)}
@@ -530,8 +549,7 @@ export function DetailsProductViewer({
               <FeatureGuard feature="reservations">
                 <ReservationModal
                   item={item}
-                  sizeId={selectedSize || ""}
-                  colorId={selectedColor?.id || ""}
+                  variantId={variantLocations[0]?.variantId}
                   currentBranchId={currentBranchId}
                   originBranchId={
                     variantLocations.find((v) => v.branchId !== currentBranchId)

@@ -1,0 +1,2 @@
+src/infrastructure/stores-adapters/ZustandInventoryRepository.ts(65,13): error TS1005: ';' expected.
+src/infrastructure/stores-adapters/ZustandInventoryRepository.ts(66,7): error TS1109: Expression expected.

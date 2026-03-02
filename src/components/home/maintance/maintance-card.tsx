@@ -21,7 +21,7 @@ export function MaintenanceActionCard({ item }: { item: any }) {
   )?.name;
   const sku = products.find(
     (product: Product) => product.id === item.productId,
-  )?.sku;
+  )?.baseSku;
 
   return (
     <Card className="relative flex flex-col items-center p-4 border-l-2 border-l-amber-500 gap-3">

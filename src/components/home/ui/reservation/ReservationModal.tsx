@@ -30,11 +30,11 @@ import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import z from "zod";
 import { productSchema } from "@/src/types/product/type.product";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
-  sizeId: string;
-  colorId: string;
+  variantId: string;
   children: React.ReactNode;
   currentBranchId: string;
   originBranchId: string;
@@ -43,8 +43,7 @@ interface ReservationModalProps {
 
 export function ReservationModal({
   item,
-  sizeId,
-  colorId,
+  variantId,
   children,
   currentBranchId,
   originBranchId,
@@ -73,7 +72,6 @@ export function ReservationModal({
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
 
-
   const [paymentMethod, setPaymentMethod] =
     React.useState<PaymentMethodType>("cash");
 
@@ -97,9 +95,7 @@ export function ReservationModal({
     if (item.is_serial) {
       return inventoryItems.filter((s) => {
         const isBaseMatch =
-          String(s.productId) === productId &&
-          s.sizeId === sizeId &&
-          s.colorId === colorId;
+          String(s.productId) === productId && s.variantId === variantId;
 
         if (!isBaseMatch) return false;
 
@@ -112,9 +108,7 @@ export function ReservationModal({
     } else {
       return stockLots.filter((s) => {
         const isBaseMatch =
-          String(s.productId) === productId &&
-          s.sizeId === sizeId &&
-          s.colorId === colorId;
+          String(s.productId) === productId && s.variantId === variantId;
 
         if (!isBaseMatch) return false;
 
@@ -135,15 +129,14 @@ export function ReservationModal({
     stockLots,
     item.id,
     item.is_serial,
-    sizeId,
-    colorId,
+    variantId,
     operationType,
   ]);
 
   // 2. STOCK FÍSICO TOTAL
   const totalPhysicalStock = useMemo(() => {
-    return getTotalStock(item.id, sizeId, colorId, operationType);
-  }, [item.id, sizeId, colorId, operationType]);
+    return getTotalStock(item.id, variantId, operationType);
+  }, [item.id, variantId, operationType]);
 
   // 2. STOCK DISPONIBLE EN FECHAS
   const availableInDates = useMemo(() => {
@@ -151,15 +144,14 @@ export function ReservationModal({
 
     const check = getAvailabilityByAttributes(
       item.id,
-      sizeId,
-      colorId,
+      variantId,
       dateRange.from,
       dateRange.to,
       operationType,
     );
 
     return check.availableCount;
-  }, [item.id, sizeId, colorId, dateRange, operationType, totalPhysicalStock]);
+  }, [item.id, variantId, dateRange, operationType, totalPhysicalStock]);
 
   const stockCount = useMemo(
     () =>
@@ -176,23 +168,31 @@ export function ReservationModal({
     s.getBalance(selectedCustomer?.id),
   );
 
-  const { days, subtotal, creditApplied, totalOperacion, isVenta, isEvent } =
-    usePriceCalculation({
-      operationType,
-      priceSell: item.price_sell,
-      priceRent: item.price_rent,
-      quantity,
-      startDate: dateRange?.from,
-      endDate: dateRange?.to,
-      rentUnit: item?.rent_unit,
-      receivedAmount: Number(downPayment),
-      availableCredit: balance,
-      useCredit: keepAsCredit,
-    });
+  const selectedVariant = useMemo(
+    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
+    [variantId],
+  );
+  const priceSell = selectedVariant?.priceSell || 0;
+  const priceRent = selectedVariant?.priceRent || 0;
+  const rentUnit =
+    (selectedVariant?.rentUnit as "día" | "evento" | undefined) || "día";
 
-  const unitPrice = isVenta ? item.price_sell || 0 : item.price_rent || 0;
+  const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
+    operationType,
+    priceSell,
+    priceRent,
+    quantity,
+    startDate: dateRange?.from,
+    endDate: dateRange?.to,
+    rentUnit,
+    receivedAmount: Number(downPayment),
+    availableCredit: balance,
+    useCredit: keepAsCredit,
+  });
 
-    console.log("totalOperacion", totalOperacion);
+  const unitPrice = isVenta ? priceSell : priceRent;
+
+  console.log("totalOperacion", totalOperacion);
 
   React.useEffect(() => {
     if (open) {
@@ -240,8 +240,7 @@ export function ReservationModal({
         transactionItems = assignedStockIds.map((code) => ({
           productId: item.id,
           productName: item.name,
-          sizeId,
-          colorId,
+          variantId,
           quantity: 1,
           priceAtMoment: unitPrice,
           stockId: code,
@@ -256,8 +255,7 @@ export function ReservationModal({
           transactionItems.push({
             productId: item.id,
             productName: item.name,
-            sizeId: sizeId,
-            colorId: colorId,
+            variantId,
             quantity: take,
             priceAtMoment: unitPrice,
             stockId: stockItem.variantCode,
@@ -270,8 +268,7 @@ export function ReservationModal({
         transactionItems.push({
           productId: item.id,
           productName: item.name,
-          sizeId: sizeId,
-          colorId: colorId,
+          variantId,
           quantity: 1,
           priceAtMoment: unitPrice,
           stockId: undefined,
@@ -369,8 +366,7 @@ export function ReservationModal({
         >
           <ReservationFormContent
             item={item}
-            sizeId={sizeId}
-            colorId={colorId}
+            variantId={variantId}
             originBranchId={originBranchId}
             currentBranchId={currentBranchId}
             dateRange={dateRange}

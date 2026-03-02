@@ -75,8 +75,7 @@ export class ApplyBundleOrchestrator {
           item.bundleId,
           item.product.id,
           item.operationType,
-          item.selectedSizeId ?? "",
-          item.selectedColorId ?? "",
+          item.variantId,
         ].join("::");
 
         const current = grouped.get(key);
@@ -95,8 +94,7 @@ export class ApplyBundleOrchestrator {
         endDate,
         quantity,
         operationType: item.operationType,
-        sizeId: item.selectedSizeId,
-        colorId: item.selectedColorId,
+        variantId: item.variantId,
       });
     }
   }
@@ -120,8 +118,7 @@ export class ApplyBundleOrchestrator {
           item.tenantId === expectedTenantId &&
           item.branchId === input.branchId &&
           item.status === "disponible" &&
-          (!input.sizeId || item.sizeId === input.sizeId) &&
-          (!input.colorId || item.colorId === input.colorId),
+          (!input.variantId || item.variantId === input.variantId),
       );
 
     for (const serial of serialCandidates) {
@@ -146,8 +143,7 @@ export class ApplyBundleOrchestrator {
           ) &&
           lot.branchId === input.branchId &&
           lot.status === "disponible" &&
-          (!input.sizeId || lot.sizeId === input.sizeId) &&
-          (!input.colorId || lot.colorId === input.colorId),
+          (!input.variantId || lot.variantId === input.variantId),
       )
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 

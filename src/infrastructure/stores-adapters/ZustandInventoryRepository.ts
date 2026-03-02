@@ -63,7 +63,7 @@ export class ZustandInventoryRepository implements InventoryRepository {
     return useInventoryStore
       .getState()
       .stockLots.find(
-        (l) => l.id === idOrVariant || l.variantCode === idOrVariant,
+        (l) => l.id === idOrVariant || l.variantId === idOrVariant,
       );
   }
 

@@ -17,6 +17,7 @@ import {
 import { StockAssignmentWidget } from "../home/ui/widget/StockAssignmentWidget";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { differenceInDays } from "date-fns";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface PosCartItemProps {
   item: CartItem;
@@ -32,10 +33,10 @@ export function PosCartItem({ item }: PosCartItemProps) {
   const isSerial = item.product.is_serial;
 
   // Variantes
-  const variant = {
-    sizeId: item.selectedSizeId || "",
-    colorId: item.selectedColorId || "",
-  };
+  const variantParams = useMemo(
+    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId),
+    [item.variantId],
+  );
 
   const { getSizeById, getColorById, getCategoryById, getModelById } =
     useAttributeStore();
@@ -46,8 +47,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
       return inventoryItems.filter(
         (i) =>
           i.productId === item.product.id &&
-          i.sizeId === variant.sizeId &&
-          i.colorId === variant.colorId &&
+          i.variantId === item.variantId &&
           i.branchId === currentBranchId &&
           i.status === "disponible" &&
           (isRent ? i.isForRent : i.isForSale),
@@ -56,8 +56,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
       const lot = stockLots.find(
         (l) =>
           l.productId === item.product.id &&
-          l.sizeId === variant.sizeId &&
-          l.colorId === variant.colorId &&
+          l.variantId === item.variantId &&
           l.branchId === currentBranchId &&
           l.status === "disponible" &&
           (isRent ? l.isForRent : l.isForSale),
@@ -68,7 +67,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
     inventoryItems,
     stockLots,
     item.product.id,
-    variant,
+    item.variantId,
     isRent,
     currentBranchId,
     isSerial,
@@ -119,22 +118,15 @@ export function PosCartItem({ item }: PosCartItemProps) {
               {item.product.categoryId
                 ? getCategoryById(item.product.categoryId)?.name
                 : "Gen"}
-              {item.product.modelId && (
-                <span className="ml-1 text-slate-400 font-bold italic">
-                  -{" "}
-                  {getModelById(item.product.modelId)?.name ||
-                    item.product.modelId}
-                </span>
-              )}
             </span>
-            {variant.sizeId && (
+            {variantParams?.attributes?.size && (
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
-                Talla: {getSizeById(variant.sizeId)?.name || variant.sizeId}
+                Talla: {variantParams.attributes.size}
               </Badge>
             )}
-            {variant.colorId && (
+            {variantParams?.attributes?.color && (
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
-                Color: {getColorById(variant.colorId)?.name || variant.colorId}
+                Color: {variantParams.attributes.color}
               </Badge>
             )}
           </div>
@@ -200,8 +192,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
               <PopoverContent className="w-80 p-0" side="right">
                 <StockAssignmentWidget
                   productId={item.product.id}
-                  sizeId={variant.sizeId}
-                  colorId={variant.colorId}
+                  variantId={item.variantId || ""}
                   quantity={item.quantity}
                   operationType={item.operationType}
                   dateRange={dateRange}
@@ -249,7 +240,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
         {/* 3. Precios */}
         <div className="text-right">
           <div className="text-[10px] text-muted-foreground font-medium">
-            {isRent && item.product.rent_unit !== "evento" ? (
+            {isRent && variantParams?.rentUnit !== "evento" ? (
               <span className="text-blue-500 font-bold">
                 {item.listPrice && item.listPrice > item.unitPrice && (
                   <span className="line-through opacity-50 mr-1 text-slate-400">

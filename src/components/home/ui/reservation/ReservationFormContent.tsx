@@ -25,11 +25,12 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 
 export function ReservationFormContent({
   item,
-  sizeId,
-  colorId,
+  variantId,
   pickupTime,
   setPickupTime,
   returnTime,
@@ -61,6 +62,15 @@ export function ReservationFormContent({
   balance,
 }: any) {
   const businessRules = BUSINESS_RULES_MOCK;
+  const { getSizeById, getColorById } = useAttributeStore();
+
+  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
+  const sizeName =
+    getSizeById(variant?.attributes?.size || "")?.name ||
+    variant?.attributes?.size;
+  const colorName =
+    getColorById(variant?.attributes?.color || "")?.name ||
+    variant?.attributes?.color;
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -105,12 +115,12 @@ export function ReservationFormContent({
       {/* 1. INFO Y CANTIDAD */}
       <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
         <div className="w-12 h-12 rounded border flex items-center justify-center font-bold text-xs uppercase text-primary">
-          {sizeId || "S/T"}
+          {sizeName || "S/T"}
         </div>
         <div className="flex-1">
           <h4 className="text-sm font-bold uppercase">{item.name}</h4>
           <p className="text-[10px] text-muted-foreground">
-            Color: {colorId} | SKU: {item.sku}
+            Color: {colorName} | SKU: {item.sku}
           </p>
         </div>
         <div className="w-20">
@@ -165,8 +175,7 @@ export function ReservationFormContent({
                 setDateRange={setDateRange}
                 rules={businessRules}
                 productId={item.id}
-                sizeId={sizeId}
-                colorId={colorId}
+                variantId={variantId}
                 quantity={quantity}
                 type={operationType}
               />
@@ -209,8 +218,7 @@ export function ReservationFormContent({
                 setDateRange={setDateRange}
                 rules={businessRules}
                 productId={item.id}
-                sizeId={sizeId}
-                colorId={colorId}
+                variantId={variantId}
                 type={operationType}
               />
               <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
@@ -318,8 +326,7 @@ export function ReservationFormContent({
             isImmediate={true} // Debe estar disponible HOY
             operationType="venta"
             productId={item.id}
-            sizeId={sizeId}
-            colorId={colorId}
+            variantId={variantId}
             quantity={quantity}
             dateRange={dateRange} // Asegúrate de pasar el objeto {from, to}
             currentBranchId={currentBranchId}

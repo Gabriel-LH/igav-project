@@ -7,11 +7,10 @@ export const reservationItemSchema = z.object({
   productId: z.string(), // El ID del vestido/traje
   stockId: z.string().optional(),
   reservationId: z.string(), // Conecta con la Reserva madre
+  variantId: z.string(),
 
   // Aquí movimos lo que tenías en "details"
   quantity: z.number().min(1),
-  sizeId: z.string(),
-  colorId: z.string(),
   priceAtMoment: z.number(),
   listPrice: z.number().optional(),
   discountAmount: z.number().default(0),

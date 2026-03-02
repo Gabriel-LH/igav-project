@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface PosProductCardProps {
   product: Product;
@@ -37,71 +38,41 @@ function VariantSelector({
   const { addItem, items } = useCartStore();
   const currentBranchId = USER_MOCK[0].branchId;
 
-  // 1. Obtener la fuente de stock correcta según si es seriado o no
-  const availableInventory = useMemo(() => {
+  const validVariants = useMemo(() => {
+    return PRODUCT_VARIANTS_MOCK.filter(
+      (v) => v.productId === product.id && v.isActive,
+    );
+  }, [product.id]);
+
+  const handleConfirm = (variantId: string) => {
+    let variantStock;
     if (product.is_serial) {
-      return inventoryItems.filter(
+      variantStock = inventoryItems.filter(
         (i) =>
           i.productId === product.id &&
+          i.variantId === variantId &&
           i.branchId === currentBranchId &&
           i.status === "disponible" &&
           (type === "venta" ? i.isForSale : i.isForRent),
       );
     } else {
-      return stockLots.filter(
+      variantStock = stockLots.filter(
         (l) =>
           l.productId === product.id &&
+          l.variantId === variantId &&
           l.branchId === currentBranchId &&
           l.status === "disponible" &&
           (type === "venta" ? l.isForSale : l.isForRent),
       );
     }
-  }, [
-    product.id,
-    product.is_serial,
-    inventoryItems,
-    stockLots,
-    currentBranchId,
-    type,
-  ]);
 
-  // 2. Extraer tallas únicas de la fuente seleccionada
-  const { getSizeById, getColorById } = useAttributeStore();
-
-  const sizes = useMemo(
-    () => Array.from(new Set(availableInventory.map((item) => item.sizeId))),
-    [availableInventory],
-  );
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-
-  // 3. Extraer colores únicos para la talla seleccionada
-  const colors = useMemo(() => {
-    if (!selectedSize) return [];
-    return Array.from(
-      new Set(
-        availableInventory
-          .filter((item) => item.sizeId === selectedSize)
-          .map((item) => item.colorId),
-      ),
-    );
-  }, [availableInventory, selectedSize]);
-
-  const handleConfirm = (colorId: string) => {
-    const variantStock = availableInventory.filter(
-      (item) => item.sizeId === selectedSize && item.colorId === colorId,
-    );
-
-    // Sumamos la cantidad total física disponible para esta variante
     const totalPhysicalQty = variantStock.reduce(
       (acc, curr) =>
         acc + (product.is_serial ? 1 : (curr as any).quantity || 0),
       0,
     );
 
-    addItem(product, type, undefined, totalPhysicalQty, {
-      size: selectedSize!,
-      color: colorId,
-    });
+    addItem(product, type, undefined, totalPhysicalQty, variantId);
     onClose();
   };
 
@@ -109,76 +80,70 @@ function VariantSelector({
     <div className="space-y-4 py-2">
       <div className="space-y-2">
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          1. Talla
+          Variantes Disponibles
         </span>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((sizeId) => (
-            <Button
-              key={sizeId}
-              variant={selectedSize === sizeId ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedSize(sizeId)}
-              className="w-10 h-10 p-0 rounded-lg shadow-sm hover:scale-105 transition-transform"
-            >
-              {getSizeById(sizeId)?.name || sizeId}
-            </Button>
-          ))}
+        <div className="flex flex-col gap-2">
+          {validVariants.map((v) => {
+            let variantStockItems;
+            if (product.is_serial) {
+              variantStockItems = inventoryItems.filter(
+                (i) =>
+                  i.productId === product.id &&
+                  i.variantId === v.id &&
+                  i.branchId === currentBranchId &&
+                  i.status === "disponible" &&
+                  (type === "venta" ? i.isForSale : i.isForRent),
+              );
+            } else {
+              variantStockItems = stockLots.filter(
+                (l) =>
+                  l.productId === product.id &&
+                  l.variantId === v.id &&
+                  l.branchId === currentBranchId &&
+                  l.status === "disponible" &&
+                  (type === "venta" ? l.isForSale : l.isForRent),
+              );
+            }
+
+            const totalPhysicalQty = variantStockItems.reduce(
+              (acc, curr) =>
+                acc + (product.is_serial ? 1 : (curr as any).quantity || 0),
+              0,
+            );
+
+            const quantityInCart =
+              items.find(
+                (i) =>
+                  i.product.id === product.id &&
+                  i.operationType === type &&
+                  i.variantId === v.id,
+              )?.quantity || 0;
+
+            const remainingQty = Math.max(0, totalPhysicalQty - quantityInCart);
+
+            return (
+              <Button
+                key={v.id}
+                variant="outline"
+                disabled={remainingQty <= 0}
+                onClick={() => handleConfirm(v.id)}
+                className="flex items-center justify-between gap-1 text-xs rounded-lg shadow-sm hover:scale-105 transition-transform"
+              >
+                <span>
+                  Talla: {v.attributes?.size || "Única"} - Color:{" "}
+                  {v.attributes?.color || "Único"}
+                </span>
+                <Badge
+                  variant={remainingQty > 0 ? "secondary" : "destructive"}
+                  className="text-[9px] h-4 px-1"
+                >
+                  {remainingQty} disp.
+                </Badge>
+              </Button>
+            );
+          })}
         </div>
       </div>
-
-      {selectedSize && (
-        <div className="space-y-2 animate-in fade-in">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            2. Color
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {colors.map((colorId) => {
-              const variantStockItems = availableInventory.filter(
-                (item) =>
-                  item.sizeId === selectedSize && item.colorId === colorId,
-              );
-
-              const totalPhysicalQty = variantStockItems.reduce(
-                (acc, curr) =>
-                  acc + (product.is_serial ? 1 : (curr as any).quantity || 0),
-                0,
-              );
-
-              const quantityInCart =
-                items.find(
-                  (i) =>
-                    i.product.id === product.id &&
-                    i.operationType === type &&
-                    i.selectedSizeId === selectedSize &&
-                    i.selectedColorId === colorId,
-                )?.quantity || 0;
-
-              const remainingQty = Math.max(
-                0,
-                totalPhysicalQty - quantityInCart,
-              );
-
-              return (
-                <Button
-                  key={colorId}
-                  variant="outline"
-                  disabled={remainingQty <= 0}
-                  onClick={() => handleConfirm(colorId)}
-                  className="flex items-center gap-1 text-xs rounded-lg shadow-sm hover:scale-105 transition-transform"
-                >
-                  {getColorById(colorId)?.name || colorId}
-                  <Badge
-                    variant={remainingQty > 0 ? "secondary" : "destructive"}
-                    className="text-[9px] h-4 px-1"
-                  >
-                    {remainingQty} disp.
-                  </Badge>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -195,60 +160,70 @@ export function PosProductCard({ product }: PosProductCardProps) {
   );
 
   // Logic to calculate total stock based on new structure
-  const { totalPhysicalStock, stockForSale, stockForRent, hasVariants } =
-    useMemo(() => {
-      let itemsForBranch: any[] = [];
-      if (product.is_serial) {
-        itemsForBranch = inventoryItems.filter(
-          (i) =>
-            i.productId === product.id &&
-            i.branchId === currentBranchId &&
-            i.status === "disponible",
-        );
-      } else {
-        itemsForBranch = stockLots.filter(
-          (l) =>
-            l.productId === product.id &&
-            l.branchId === currentBranchId &&
-            l.status === "disponible",
-        );
-      }
+  const {
+    totalPhysicalStock,
+    stockForSale,
+    stockForRent,
+    hasVariants,
+    productVariants,
+  } = useMemo(() => {
+    let itemsForBranch: any[] = [];
+    if (product.is_serial) {
+      itemsForBranch = inventoryItems.filter(
+        (i) =>
+          i.productId === product.id &&
+          i.branchId === currentBranchId &&
+          i.status === "disponible",
+      );
+    } else {
+      itemsForBranch = stockLots.filter(
+        (l) =>
+          l.productId === product.id &&
+          l.branchId === currentBranchId &&
+          l.status === "disponible",
+      );
+    }
 
-      const total = itemsForBranch.reduce(
+    const total = itemsForBranch.reduce(
+      (acc, curr) => acc + (product.is_serial ? 1 : curr.quantity || 0),
+      0,
+    );
+
+    const forSale = itemsForBranch
+      .filter((i) => i.isForSale)
+      .reduce(
         (acc, curr) => acc + (product.is_serial ? 1 : curr.quantity || 0),
         0,
       );
 
-      const forSale = itemsForBranch
-        .filter((i) => i.isForSale)
-        .reduce(
-          (acc, curr) => acc + (product.is_serial ? 1 : curr.quantity || 0),
-          0,
-        );
+    const forRent = itemsForBranch
+      .filter((i) => i.isForRent)
+      .reduce(
+        (acc, curr) => acc + (product.is_serial ? 1 : curr.quantity || 0),
+        0,
+      );
 
-      const forRent = itemsForBranch
-        .filter((i) => i.isForRent)
-        .reduce(
-          (acc, curr) => acc + (product.is_serial ? 1 : curr.quantity || 0),
-          0,
-        );
+    const variants = itemsForBranch.some((i) => i.variantId);
 
-      const variants = itemsForBranch.some((i) => i.sizeId || i.colorId);
+    const v = PRODUCT_VARIANTS_MOCK.filter(
+      (v) => v.productId === product.id && v.isActive,
+    );
 
-      return {
-        totalPhysicalStock: total,
-        stockForSale: forSale,
-        stockForRent: forRent,
-        hasVariants: variants,
-        itemsForBranch,
-      };
-    }, [
-      product.id,
-      product.is_serial,
-      inventoryItems,
-      stockLots,
-      currentBranchId,
-    ]);
+    return {
+      totalPhysicalStock: total,
+      stockForSale: forSale,
+      stockForRent: forRent,
+      hasVariants: variants,
+      itemsForBranch,
+      productVariants: v,
+    };
+  }, [
+    product.id,
+    product.is_serial,
+    inventoryItems,
+    stockLots,
+    currentBranchId,
+  ]);
 
   const inCartSale = items
     .filter((i) => i.product.id === product.id && i.operationType === "venta")
@@ -297,15 +272,27 @@ export function PosProductCard({ product }: PosProductCardProps) {
           <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
             {product.can_sell && (
               <Badge className="bg-emerald-600/90 text-white text-xs shadow-md backdrop-blur-sm font-bold">
-                {formatCurrency(product.price_sell ?? 0)}
+                {formatCurrency(
+                  productVariants.length > 0
+                    ? Math.min(
+                        ...productVariants.map((v) => v.priceSell || Infinity),
+                      )
+                    : 0,
+                )}
               </Badge>
             )}
 
             {product.can_rent && (
               <Badge className="bg-blue-600/90 text-white text-xs shadow-md backdrop-blur-sm font-bold">
-                {formatCurrency(product.price_rent ?? 0)}
-                {product.rent_unit === "día" && " /día"}
-                {product.rent_unit === "evento" && " /evento"}
+                {formatCurrency(
+                  productVariants.length > 0
+                    ? Math.min(
+                        ...productVariants.map((v) => v.priceRent || Infinity),
+                      )
+                    : 0,
+                )}
+                {productVariants[0]?.rentUnit === "día" && " /día"}
+                {productVariants[0]?.rentUnit === "evento" && " /evento"}
               </Badge>
             )}
           </div>
@@ -352,12 +339,6 @@ export function PosProductCard({ product }: PosProductCardProps) {
                   ? getCategoryById(product.categoryId)?.name
                   : "General"}
               </p>
-              {product.modelId && (
-                <div className="text-[10px] text-slate-500 font-bold italic flex items-center gap-1">
-                  <span className="text-slate-400">Modelo:</span>
-                  {getModelById(product.modelId)?.name || product.modelId}
-                </div>
-              )}
             </div>
           </div>
 

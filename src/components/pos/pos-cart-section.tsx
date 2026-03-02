@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Trash2, ListChecks } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -10,7 +9,7 @@ import { PosCartItem } from "./pos-cart-item";
 import { PosCheckoutModal } from "./modals/PosCheckoutModal";
 import { PosReservationModal } from "./modals/PosReservationModal";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ShoppingCart02Icon, Calendar02Icon } from "@hugeicons/core-free-icons";
+import { ShoppingCart02Icon } from "@hugeicons/core-free-icons";
 import { addDays, differenceInDays } from "date-fns";
 import { DateTimeContainer } from "../home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectTransactionCalendar";
@@ -20,6 +19,7 @@ import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { PosBundlesPanel } from "./ui/PosBundlePanel";
 import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 export function PosCartSection() {
   const {
@@ -255,7 +255,9 @@ export function PosCartSection() {
                         curr.quantity *
                         getMultiplier(
                           curr.operationType,
-                          curr.product.rent_unit,
+                          PRODUCT_VARIANTS_MOCK.find(
+                            (v: any) => v.id === curr.variantId,
+                          )?.rentUnit || (curr.product as any).rent_unit,
                         ),
                     0,
                   ),
@@ -276,7 +278,9 @@ export function PosCartSection() {
                         curr.quantity *
                         getMultiplier(
                           curr.operationType,
-                          curr.product.rent_unit,
+                          PRODUCT_VARIANTS_MOCK.find(
+                            (v: any) => v.id === curr.variantId,
+                          )?.rentUnit || (curr.product as any).rent_unit,
                         ),
                     0,
                   ),
@@ -308,7 +312,7 @@ export function PosCartSection() {
           {hasRentals ? (
             <FeatureGuard feature="rentals">
               <Button
-                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg text-xs bg-blue-600 hover:bg-blue-700"
+                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg bg-blue-600 hover:bg-blue-700"
                 onClick={() => setCheckoutOpen(true)}
                 disabled={items.length === 0 || text.length > 0}
               >

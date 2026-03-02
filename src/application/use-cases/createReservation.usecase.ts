@@ -39,8 +39,7 @@ export class CreateReservationUseCase {
         productId: item.productId,
         stockId: item.stockId,
         quantity: item.quantity ?? 1,
-        sizeId: item.sizeId,
-        colorId: item.colorId,
+        variantId: item.variantId,
         priceAtMoment:
           item.priceAtMoment || (totalUnits > 0 ? totalAmount / totalUnits : 0),
         listPrice: item.listPrice,

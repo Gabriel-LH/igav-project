@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/badge";
 import { useCartStore } from "@/src/store/useCartStore";
+import { formatCurrency } from "@/src/utils/currency-format";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
   BundleDomainService,
@@ -103,7 +103,7 @@ export function PosBundlesPanel() {
                 </>
               ) : (
                 <span className="text-sm font-bold text-emerald-600">
-                  Precio final {bundle.discountValue}
+                  Precio final {formatCurrency(bundle.discountValue)}
                 </span>
               )}
 

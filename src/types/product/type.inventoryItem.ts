@@ -5,11 +5,9 @@ export const inventoryItemSchema = z.object({
   id: z.string(),
   tenantId: z.string(),
   serialCode: z.string(), // Código único físico (para QR)
-  variantCode: z.string(), // Relación a variante de producto
+  variantId: z.string(), // Relación a variante de producto
   productId: z.string(),
   branchId: z.string(),
-  sizeId: z.string(), // <--- CAMBIO: Usar ID de la tabla de tallas
-  colorId: z.string(), // <--- CAMBIO: Usar ID de la tabla de colores
   isForRent: z.boolean(),
   isForSale: z.boolean(),
   usageCount: z.number().min(0),

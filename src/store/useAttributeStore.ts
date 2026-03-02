@@ -1,11 +1,8 @@
 import { create } from "zustand";
 
-import { Model } from "../types/attributes/modelo/type.models";
-import { Color } from "../types/attributes/color/type.color";
-import { COLORS_MOCK } from "../mocks/mock.color";
-import { SIZES_MOCK } from "../mocks/mock.sizes";
-import { MODELS_MOCK } from "../mocks/mock.model";
-import { Size } from "../types/attributes/sizes/type.sizes";
+import { Color, COLORS_MOCK } from "../mocks/mock.color";
+import { Size, SIZES_MOCK } from "../mocks/mock.sizes";
+import { Model, MODELS_MOCK } from "../mocks/mock.model";
 import { Category } from "../types/category/type.category";
 import { CATEGORY_MOCKS } from "../mocks/mock.category";
 

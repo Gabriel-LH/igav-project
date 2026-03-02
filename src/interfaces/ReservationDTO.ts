@@ -10,8 +10,7 @@ export interface ReservationDTO extends BaseOperation {
     productName: string;
     stockId: string;
     quantity: number;
-    sizeId: string;
-    colorId: string;
+    variantId: string;
     priceAtMoment: number;
     listPrice?: number;
     discountAmount?: number;

@@ -7,6 +7,7 @@ import { BusinessRules as BusinessRule } from "../../types/bussines-rules/bussin
 import { Product } from "../../types/product/type.product";
 import { InventoryItem } from "../../types/product/type.inventoryItem";
 import { StockLot } from "../../types/product/type.stockLote";
+import { PRODUCT_VARIANTS_MOCK } from "../../mocks/mock.productVariant";
 
 export interface BundleDefinition {
   id: string;
@@ -52,8 +53,7 @@ export interface AvailabilityInput {
   endDate: Date;
   quantity: number;
   operationType: "alquiler" | "venta";
-  sizeId?: string;
-  colorId?: string;
+  variantId?: string;
 }
 
 export interface AvailabilityResult {
@@ -126,18 +126,17 @@ export class BundleDomainService {
   }
 
   defaultCheckAvailability: CheckAvailabilityFn = (input) => {
-    if (!input.sizeId || !input.colorId) {
+    if (!input.variantId) {
       return {
         available: false,
         availableCount: 0,
-        reason: "Falta talla/color para validar disponibilidad",
+        reason: "Falta variante para validar disponibilidad",
       };
     }
 
     const result = getAvailabilityByAttributes(
       input.productId,
-      input.sizeId,
-      input.colorId,
+      input.variantId,
       input.startDate,
       input.endDate,
       input.operationType,
@@ -159,7 +158,10 @@ export class BundleDomainService {
 
   private rentalMultiplier(item: CartItem, startDate: Date, endDate: Date) {
     if (item.operationType !== "alquiler") return 1;
-    if (item.product.rent_unit === "evento") return 1;
+    const variant = PRODUCT_VARIANTS_MOCK.find(
+      (v: any) => v.id === item.variantId,
+    );
+    if (variant?.rentUnit === "evento") return 1;
     return Math.max(differenceInDays(endDate, startDate), 1);
   }
 
@@ -208,9 +210,7 @@ export class BundleDomainService {
     return item.selectedCodes.every((code) => {
       const serial = inventoryItems.find((i) => i.id === code);
       if (serial) return serial.branchId === branchId;
-      const lot = stockLots.find(
-        (l) => l.id === code || l.variantCode === code,
-      );
+      const lot = stockLots.find((l) => l.id === code || l.variantId === code);
       if (lot) return lot.branchId === branchId;
       return true;
     });
@@ -333,8 +333,7 @@ export class BundleDomainService {
             endDate,
             quantity: line.quantity,
             operationType: "alquiler",
-            sizeId: line.selectedSizeId,
-            colorId: line.selectedColorId,
+            variantId: line.variantId,
           });
           availableForRange += Math.max(0, check.availableCount);
         });

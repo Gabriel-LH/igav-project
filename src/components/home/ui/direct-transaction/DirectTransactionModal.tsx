@@ -46,11 +46,11 @@ import { Coupon } from "@/src/types/coupon/type.coupon";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 export function DirectTransactionModal({
   item,
-  sizeId,
-  colorId,
+  variantId,
   children,
   currentBranchId,
   type,
@@ -139,8 +139,7 @@ export function DirectTransactionModal({
       return inventoryItems.filter(
         (s) =>
           String(s.productId) === productId &&
-          s.sizeId === sizeId &&
-          s.colorId === colorId &&
+          s.variantId === variantId &&
           s.status === "disponible" &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
@@ -148,24 +147,23 @@ export function DirectTransactionModal({
       return stockLots.filter(
         (s) =>
           String(s.productId) === productId &&
-          s.sizeId === sizeId &&
-          s.colorId === colorId &&
+          s.variantId === variantId &&
           s.quantity > 0 &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
     }
-  }, [
-    inventoryItems,
-    stockLots,
-    item.id,
-    item.is_serial,
-    sizeId,
-    colorId,
-    type,
-  ]);
+  }, [inventoryItems, stockLots, item.id, item.is_serial, variantId, type]);
 
-  const colorName = getColorById(colorId)?.name;
-  const sizeName = getSizeById(sizeId)?.name;
+  const variant = useMemo(
+    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
+    [variantId],
+  );
+  const colorName =
+    getColorById(variant?.attributes?.color || "")?.name ||
+    variant?.attributes?.color;
+  const sizeName =
+    getSizeById(variant?.attributes?.size || "")?.name ||
+    variant?.attributes?.size;
 
   // 3. Seleccionamos el mejor candidato
   const selectedStockId = (validStockCandidates[0] as any)?.id;
@@ -204,14 +202,15 @@ export function DirectTransactionModal({
     return calculateBestPromotionForProduct(item, defaultPrice, activePromos);
   }, [activePromos, item, type]);
 
-  const originalPriceSell = item.price_sell || 0;
-  const originalPriceRent = item.price_rent || 0;
+  const originalPriceSell = variant?.priceSell || 0;
+  const originalPriceRent = variant?.priceRent || 0;
   const unitFinalPrice = bestPromo
     ? bestPromo.finalPrice
     : type === "venta"
       ? originalPriceSell
       : originalPriceRent;
   const unitDiscountAmount = bestPromo ? bestPromo.discount : 0;
+  const rentUnit = variant?.rentUnit;
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType: type,
@@ -221,7 +220,7 @@ export function DirectTransactionModal({
     startDate: withTime(dateRange.from, pickupTime),
     endDate:
       type === "alquiler" ? withTime(dateRange.to, returnTime) : undefined,
-    rentUnit: item.rent_unit,
+    rentUnit: rentUnit,
     receivedAmount: Number(receivedAmount),
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
   });
@@ -267,8 +266,7 @@ export function DirectTransactionModal({
   const validateTransaction = () => {
     const check = getAvailabilityByAttributes(
       item.id,
-      sizeId,
-      colorId,
+      variantId,
       dateRange.from,
       dateRange.to || dateRange.from,
       type,
@@ -307,8 +305,7 @@ export function DirectTransactionModal({
           productName: item.name,
           stockId: id,
           quantity: 1,
-          sizeId: sizeId,
-          colorId: colorId,
+          variantId,
           priceAtMoment: unitFinalPrice,
           listPrice: isVenta ? originalPriceSell : originalPriceRent,
           discountAmount: unitDiscountAmount,
@@ -325,8 +322,7 @@ export function DirectTransactionModal({
           productName: item.name,
           stockId: lot.id, // Usamos el ID (UUID)
           quantity: take,
-          sizeId: sizeId,
-          colorId: colorId,
+          variantId,
           priceAtMoment: unitFinalPrice,
           listPrice: isVenta ? originalPriceSell : originalPriceRent,
           discountAmount: unitDiscountAmount,
@@ -357,9 +353,7 @@ export function DirectTransactionModal({
             totalDescuentoExtra +
               unitDiscountAmount *
                 quantity *
-                (type === "alquiler" && item.rent_unit !== "evento"
-                  ? days || 1
-                  : 1),
+                (type === "alquiler" && rentUnit !== "evento" ? days || 1 : 1),
           ),
           taxAmount: 0,
           totalAmount: Number(totalOperacionConDescuento),
@@ -550,13 +544,12 @@ export function DirectTransactionModal({
                 <DirectTransactionCalendar
                   triggerRef={pickupDateRef}
                   selectedDate={dateRange.from}
-                  onSelect={(date) =>
+                  onSelect={(date: any) =>
                     setDateRange({ ...dateRange, from: date })
                   }
                   mode="pickup"
                   productId={item.id}
-                  sizeId={sizeId}
-                  colorId={colorId}
+                  variantId={variantId}
                   quantity={quantity}
                   type={type}
                 />
@@ -584,14 +577,13 @@ export function DirectTransactionModal({
                     triggerRef={returnDateRef}
                     minDate={dateRange.from}
                     selectedDate={dateRange.to}
-                    onSelect={(date) =>
+                    onSelect={(date: any) =>
                       setDateRange({ ...dateRange, to: date })
                     }
                     mode="return"
                     type={type}
                     productId={item.id}
-                    sizeId={sizeId}
-                    colorId={colorId}
+                    variantId={variantId}
                     quantity={quantity}
                   />
                   <TimePicker
@@ -683,9 +675,8 @@ export function DirectTransactionModal({
 
               <StockAssignmentWidget
                 productId={item.id}
-                sizeId={sizeId}
+                variantId={variantId}
                 isImmediate={true}
-                colorId={colorId}
                 quantity={quantity}
                 operationType={type}
                 dateRange={dateRange}

@@ -9,8 +9,7 @@ interface AllocationRequest {
   // Opcionales si ya vienen pre-seleccionados (Serial manual)
   manualStockIds?: string[];
   // Opcionales si es un producto con variantes
-  sizeId?: string;
-  colorId?: string;
+  variantId?: string;
 }
 
 export const useStockAllocation = () => {
@@ -28,8 +27,7 @@ export const useStockAllocation = () => {
           s.status === "disponible";
 
         if (!matchBasic) return false;
-        if (req.sizeId && s.sizeId !== req.sizeId) return false;
-        if (req.colorId && s.colorId !== req.colorId) return false;
+        if (req.variantId && s.variantId !== req.variantId) return false;
         return req.operationType === "venta" ? s.isForSale : s.isForRent;
       });
     } else {
@@ -40,8 +38,7 @@ export const useStockAllocation = () => {
           s.status === "disponible";
 
         if (!matchBasic) return false;
-        if (req.sizeId && s.sizeId !== req.sizeId) return false;
-        if (req.colorId && s.colorId !== req.colorId) return false;
+        if (req.variantId && s.variantId !== req.variantId) return false;
         return req.operationType === "venta" ? s.isForSale : s.isForRent;
       });
     }

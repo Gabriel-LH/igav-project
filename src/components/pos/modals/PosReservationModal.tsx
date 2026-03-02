@@ -40,6 +40,7 @@ import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvaila
 import { ApplyBundleOrchestrator } from "@/src/application/orchestrators/applyBundle.orchestrator";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -106,8 +107,7 @@ export function PosReservationModal({
     alquilerItems.forEach((item) => {
       const check = getAvailabilityByAttributes(
         item.product.id,
-        item.selectedSizeId || "",
-        item.selectedColorId || "",
+        item.variantId || "",
         dateRange.from,
         dateRange.to,
         "alquiler",
@@ -150,7 +150,10 @@ export function PosReservationModal({
           )
         : 1;
     return alquilerItems.reduce((sum, item) => {
-      const isEvent = item.product.rent_unit === "evento";
+      const variant = PRODUCT_VARIANTS_MOCK.find(
+        (v: any) => v.id === item.variantId,
+      );
+      const isEvent = variant?.rentUnit === "evento";
       return sum + item.unitPrice * item.quantity * (isEvent ? 1 : days);
     }, 0);
   }, [alquilerItems, dateRange, hasRentals]);
@@ -167,7 +170,10 @@ export function PosReservationModal({
           )
         : 1;
     return alquilerItems.reduce((sum, item) => {
-      const isEvent = item.product.rent_unit === "evento";
+      const variant = PRODUCT_VARIANTS_MOCK.find(
+        (v: any) => v.id === item.variantId,
+      );
+      const isEvent = variant?.rentUnit === "evento";
       return (
         sum +
         (item.listPrice ?? item.unitPrice) *
@@ -210,8 +216,7 @@ export function PosReservationModal({
               productName: cartItem.product.name,
               stockId: stockFound?.id || id,
               quantity: 1,
-              sizeId: stockFound?.sizeId || cartItem.selectedSizeId || "---",
-              colorId: stockFound?.colorId || cartItem.selectedColorId || "---",
+              variantId: cartItem.variantId ?? "",
               priceAtMoment: cartItem.unitPrice,
               listPrice: cartItem.listPrice ?? cartItem.unitPrice,
               discountAmount: cartItem.discountAmount ?? 0,
@@ -227,10 +232,7 @@ export function PosReservationModal({
               String(s.productId) === String(cartItem.product.id) &&
               s.status === "disponible" &&
               s.isForSale &&
-              (!cartItem.selectedSizeId ||
-                s.sizeId === cartItem.selectedSizeId) &&
-              (!cartItem.selectedColorId ||
-                s.colorId === cartItem.selectedColorId),
+              (!cartItem.variantId || s.variantId === cartItem.variantId),
           );
 
           let remaining = cartItem.quantity;
@@ -242,8 +244,7 @@ export function PosReservationModal({
               productName: cartItem.product.name,
               stockId: lot.id, // Usamos el ID (UUID)
               quantity: take,
-              sizeId: lot.sizeId || cartItem.selectedSizeId || "---",
-              colorId: lot.colorId || cartItem.selectedColorId || "---",
+              variantId: cartItem.variantId ?? "",
               priceAtMoment: cartItem.unitPrice,
               listPrice: cartItem.listPrice ?? cartItem.unitPrice,
               discountAmount: cartItem.discountAmount ?? 0,
@@ -255,7 +256,7 @@ export function PosReservationModal({
           }
           if (remaining > 0) {
             toast.error(
-              `"${cartItem.product.name}": Stock insuficiente (${cartItem.selectedSizeId || ""} ${cartItem.selectedColorId || ""}) para la venta.`,
+              `"${cartItem.product.name}": Stock insuficiente para la venta.`,
             );
             return null;
           }
@@ -268,8 +269,7 @@ export function PosReservationModal({
             productName: cartItem.product.name,
             stockId: undefined, // Virtual
             quantity: 1,
-            sizeId: cartItem.selectedSizeId || "---",
-            colorId: cartItem.selectedColorId || "---",
+            variantId: cartItem.variantId ?? "",
             priceAtMoment: cartItem.unitPrice,
             listPrice: cartItem.listPrice ?? cartItem.unitPrice,
             discountAmount: cartItem.discountAmount ?? 0,

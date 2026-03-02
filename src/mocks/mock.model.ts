@@ -1,4 +1,11 @@
-import { Model } from "../types/attributes/modelo/type.models";
+export interface Model {
+  id: string;
+  name: string;
+  code?: string;
+  categoryId?: string;
+  brandId?: string;
+  isActive?: boolean;
+}
 
 export const MODELS_MOCK: Model[] = [
   {

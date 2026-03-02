@@ -30,16 +30,10 @@ export const getProductsInBranch = (
 export const getVariantGlobalStock = (
   stocks: StockItem[],
   productId: string,
-  sizeId: string,
-  colorId: string,
+  variantId: string,
 ): number => {
   return stocks
-    .filter(
-      (s) =>
-        s.productId === productId &&
-        s.sizeId === sizeId &&
-        s.colorId === colorId,
-    )
+    .filter((s) => s.productId === productId && s.variantId === variantId)
     .reduce((acc, curr) => acc + ("quantity" in curr ? curr.quantity : 1), 0);
 };
 
@@ -50,15 +44,13 @@ export const getVariantBranchStock = (
   stocks: StockItem[],
   productId: string,
   branchId: string,
-  sizeId: string,
-  colorId: string,
+  variantId: string,
 ): number => {
   const stockItems = stocks.filter(
     (s) =>
       s.productId === productId &&
       s.branchId === branchId &&
-      s.sizeId === sizeId &&
-      s.colorId === colorId,
+      s.variantId === variantId,
   );
 
   return stockItems.reduce(

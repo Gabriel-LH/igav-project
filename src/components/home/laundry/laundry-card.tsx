@@ -13,17 +13,17 @@ import { Badge } from "@/components/badge";
 
 export function LaundryActionCard({ item }: { item: any }) {
   const updateStockStatus = useInventoryStore(
-    (state) => state.updateItemStatus
+    (state) => state.updateItemStatus,
   );
 
   const { products } = useInventoryStore();
 
   const productName = products.find(
-    (product: any) => product.id === item.productId
+    (product: any) => product.id === item.productId,
   )?.name;
   const sku = products.find(
-    (product: any) => product.id === item.productId
-  )?.sku;
+    (product: any) => product.id === item.productId,
+  )?.baseSku;
 
   return (
     <Card className="relative flex items-center p-3 w-fit gap-4 border-l-2 border-l-blue-500 shadow-sm hover:shadow-md transition-all">

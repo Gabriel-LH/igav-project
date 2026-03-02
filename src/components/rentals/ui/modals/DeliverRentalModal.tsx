@@ -71,13 +71,12 @@ export const DeliverRentalModal = ({
     (acc, item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) return acc;
-      const key = `${item.productId}-${item.sizeId || "S"}-${item.colorId || "C"}`;
+      const key = `${item.productId}-${item.variantId || "V"}`;
       if (!acc[key]) {
         acc[key] = {
           id: key,
           product,
-          size: item.sizeId,
-          color: item.colorId,
+          variant: item.variantId,
           items: [],
           quantity: 0,
           isSerial: product.is_serial || false,
@@ -92,8 +91,7 @@ export const DeliverRentalModal = ({
       {
         id: string;
         product: any;
-        size?: string;
-        color?: string;
+        variant?: string;
         items: any[];
         quantity: number;
         isSerial: boolean;
@@ -208,11 +206,9 @@ export const DeliverRentalModal = ({
                     <div>
                       <p className="font-bold text-sm">
                         {group.product.name}
-                        {(group.size || group.color) && (
+                        {group.variant && (
                           <span className="ml-2 text-xs font-normal text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
-                            {[group.size, group.color]
-                              .filter(Boolean)
-                              .join(", ")}
+                            {group.variant}
                           </span>
                         )}
                       </p>

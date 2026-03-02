@@ -42,6 +42,7 @@ import {
   UserGroupIcon,
   UserMultiple02Icon,
   Wardrobe01Icon,
+  WarehouseIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { NavOperation } from "../nav-bar/nav-operation";
@@ -88,25 +89,27 @@ const data = {
   ],
   navInventory: [
     {
-      title: "Catálogos",
-      icon: <HugeiconsIcon size={17} icon={CatalogueIcon} strokeWidth={2.2} />,
+      title: "Inventario",
+      icon: <HugeiconsIcon size={17} icon={WarehouseIcon} strokeWidth={2.2} />,
       isActive: true,
-      url: "/catalogo",
+      url: "/inventory",
       items: [
-        { title: "Tallas", url: "/catalogos/tallas" },
-        { title: "Colores", url: "/catalogos/colores" },
-        { title: "Modelos", url: "/catalogos/modelos" },
-        { title: "Categorías", url: "/catalogos/categorias" },
+        { title: "Productos", url: "/inventory/products" },
+        { title: "Stock", url: "/inventory/stock" },
+        { title: "Items Serializados", url: "/inventory/items" },
+        { title: "Transferencias", url: "/inventory/transfers" },
       ],
     },
     {
-      title: "Inventario",
-      icon: <HugeiconsIcon size={17} icon={Wardrobe01Icon} strokeWidth={2.2} />,
-      url: "/inventario",
+      title: "Catálogos",
+      icon: <HugeiconsIcon size={17} icon={CatalogueIcon} strokeWidth={2.2} />,
+      url: "/catalogs",
       items: [
-        { title: "Prendas", url: "/inventario/prendas" },
-        { title: "Agregar prenda", url: "/inventario/nuevo" },
-        { title: "Stock", url: "/inventario/stock" },
+        { title: "Tipos de Atributos", url: "/catalogs/attributes" },
+        { title: "Valores de Atributos", url: "/catalogs/values" },
+        { title: "Categorías", url: "/catalogs/categories" },
+        { title: "Marcas", url: "/catalogs/brands" },
+        { title: "Modelos", url: "/catalogs/models" },
       ],
     },
   ],

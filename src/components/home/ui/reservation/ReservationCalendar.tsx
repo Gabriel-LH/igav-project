@@ -23,25 +23,24 @@ export function ReservationCalendar({
   dateRange,
   setDateRange,
   productId,
-  sizeId,
-  colorId,
+  variantId,
   type,
   quantity,
   quantityDesired,
 }: any) {
-  
   // 1. Obtener datos unificados (Reservas + Alquileres + Lavandería)
   const availabilityData = useMemo(() => {
-    if (!productId || !sizeId || !colorId) {
+    if (!productId || !variantId) {
       return { totalPhysicalStock: 0, activeReservations: [] };
     }
-    return getReservationDataByAttributes(productId, sizeId, colorId, type);
-  }, [productId, sizeId, colorId, type]);
+    return getReservationDataByAttributes(productId, variantId, type);
+  }, [productId, variantId, type]);
 
   // 2. CORRECCIÓN CLAVE:
   // Renombramos 'activeReservations' a 'occupiedIntervals' para que tenga sentido semántico
   // y coincida con tu lógica de abajo.
-  const { totalPhysicalStock, activeReservations: occupiedIntervals } = availabilityData;
+  const { totalPhysicalStock, activeReservations: occupiedIntervals } =
+    availabilityData;
 
   const isDayFull = (date: Date) => {
     // Si no hay stock físico en el mundo, bloqueamos
@@ -50,14 +49,16 @@ export function ReservationCalendar({
     // A. Sumar ocupación existente en esa fecha
     // (occupiedIntervals ya incluye: Reservas Futuras, Alquileres Activos y Lavandería)
     const reservedCount = occupiedIntervals
-      .filter((r: any) => isWithinInterval(date, { start: r.start, end: r.end }))
+      .filter((r: any) =>
+        isWithinInterval(date, { start: r.start, end: r.end }),
+      )
       .reduce((sum: number, r: any) => sum + (r.quantity || 1), 0);
 
     // B. Sumar lo que YO quiero llevarme ahora
-    const currentRequest = quantity ?? quantityDesired ?? 1; 
+    const currentRequest = quantity ?? quantityDesired ?? 1;
 
     // C. Comparar con el total físico
-    return (reservedCount + currentRequest) > totalPhysicalStock;
+    return reservedCount + currentRequest > totalPhysicalStock;
   };
 
   const isLocal = originBranchId === currentBranchId;
@@ -97,7 +98,11 @@ export function ReservationCalendar({
         <Calendar
           mode={mode as any}
           locale={es}
-          defaultMonth={mode === "single" ? dateRange?.from || minAvailableDate : dateRange?.from || minAvailableDate}
+          defaultMonth={
+            mode === "single"
+              ? dateRange?.from || minAvailableDate
+              : dateRange?.from || minAvailableDate
+          }
           selected={mode === "single" ? dateRange?.from : dateRange}
           onSelect={(val: any) => {
             if (mode === "single") {

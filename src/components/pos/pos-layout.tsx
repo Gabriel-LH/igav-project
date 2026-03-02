@@ -60,7 +60,7 @@ export function PosLayout() {
 
       // 1. BUSCAR EN INVENTARIO (Seriales o Lotes)
       const serialItem = inventoryItems.find((i) => i.serialCode === code);
-      const lotItem = stockLots.find((l) => l.variantCode === code);
+      const lotItem = stockLots.find((l) => l.variantId === code); // fallback to variantCode for now if used as SKU
 
       let productToAdd = null;
       let operationMode: "venta" | "alquiler" = preferredMode;
@@ -79,7 +79,7 @@ export function PosLayout() {
 
         productToAdd = products.find((p) => p.id === serialItem.productId);
         specificCode = serialItem.id; // 🔥 Usamos UUID
-        scannedVariant = { size: serialItem.sizeId, color: serialItem.colorId };
+        scannedVariant = { variantId: serialItem.variantId };
 
         if (serialItem.isForSale && !serialItem.isForRent)
           operationMode = "venta";
@@ -90,8 +90,7 @@ export function PosLayout() {
         maxStock = inventoryItems.filter(
           (i) =>
             i.productId === serialItem.productId &&
-            i.sizeId === serialItem.sizeId &&
-            i.colorId === serialItem.colorId &&
+            i.variantId === serialItem.variantId &&
             i.status === "disponible" &&
             (operationMode === "venta" ? i.isForSale : i.isForRent),
         ).length;
@@ -104,7 +103,7 @@ export function PosLayout() {
 
         productToAdd = products.find((p) => p.id === lotItem.productId);
         specificCode = lotItem.id; // 🔥 Usamos UUID
-        scannedVariant = { size: lotItem.sizeId, color: lotItem.colorId };
+        scannedVariant = { variantId: lotItem.variantId };
 
         if (lotItem.isForSale && !lotItem.isForRent) operationMode = "venta";
         else if (!lotItem.isForSale && lotItem.isForRent)
@@ -114,7 +113,7 @@ export function PosLayout() {
         maxStock = lotItem.quantity;
       } else {
         // --- CASO 3: SKU GENÉRICO DE PRODUCTO ---
-        productToAdd = products.find((p) => p.sku === code);
+        productToAdd = products.find((p) => p.baseSku === code);
         if (productToAdd) {
           if (productToAdd.can_sell && !productToAdd.can_rent)
             operationMode = "venta";
@@ -164,9 +163,7 @@ export function PosLayout() {
           (i) =>
             i.product.id === productToAdd!.id &&
             i.operationType === operationMode &&
-            (!scannedVariant ||
-              (i.selectedSizeId === scannedVariant.size &&
-                i.selectedColorId === scannedVariant.color)),
+            (!scannedVariant || i.variantId === scannedVariant.variantId),
         )?.quantity || 0;
 
       if (currentInCart >= maxStock) {
@@ -193,7 +190,7 @@ export function PosLayout() {
         operationMode,
         specificCode,
         maxStock,
-        scannedVariant,
+        scannedVariant?.variantId,
       );
 
       const modeLabel = operationMode === "venta" ? "VENTA" : "ALQUILER";

@@ -9,6 +9,7 @@ import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface Props {
   // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
@@ -67,7 +68,7 @@ export function ReservationProductCard({ reservation }: Props) {
         {Object.values(
           specificItems.reduce(
             (acc, item) => {
-              const key = `${item.productId}-${item.sizeId}-${item.colorId}`;
+              const key = `${item.productId}-${item.variantId}`;
               if (!acc[key]) {
                 acc[key] = { ...item, quantity: 0 };
               }
@@ -77,18 +78,15 @@ export function ReservationProductCard({ reservation }: Props) {
             {} as Record<string, (typeof specificItems)[0]>,
           ),
         ).map((item) => {
-          // Buscamos la info del producto (nombre, imagen) para cada ítem
           const productInfo = PRODUCTS_MOCK.find(
             (p) => p.id.toString() === item.productId,
           );
 
-          const itemColorHex = (
-            [...inventoryItems, ...stockLots] as any[]
-          ).find(
-            (s) =>
-              s.productId.toString() === item.productId.toString() &&
-              s.colorId === item.colorId,
-          )?.colorHex;
+          const variant = PRODUCT_VARIANTS_MOCK.find(
+            (v) => v.id === item.variantId,
+          );
+          const sizeName = variant?.attributes?.size || "Única";
+          const colorName = variant?.attributes?.color || "Único";
 
           return (
             <div
@@ -118,15 +116,11 @@ export function ReservationProductCard({ reservation }: Props) {
                 </div>
                 <div className="flex gap-2 items-center mt-1">
                   <span className="text-[10px] text-muted-foreground uppercase">
-                    Talla {item.sizeId}
+                    Talla {sizeName}
                   </span>
-                  <div
-                    className="h-2.5 w-2.5 rounded-full border border-black/10"
-                    style={{ backgroundColor: itemColorHex }}
-                  />
 
                   <span className="md:text-[10px] text-[8px] text-muted-foreground font-medium uppercase">
-                    {item.colorId}
+                    {colorName}
                   </span>
                 </div>
                 {item.quantity > 1 && (

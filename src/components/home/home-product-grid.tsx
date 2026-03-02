@@ -60,7 +60,7 @@ export function ProductGrid() {
 
       const matchesSearch =
         product.name.toLowerCase().includes(query) ||
-        product.sku.toLowerCase().includes(query);
+        product.baseSku.toLowerCase().includes(query);
 
       const matchesTab =
         activeTab === "todos" ||

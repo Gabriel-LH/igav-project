@@ -154,14 +154,14 @@ export function getPriceVsRotationMetrics(
     if (v.rentals > 0)
       results.push({
         name: v.product.name,
-        price: v.product.price_rent ?? 0,
+        price: v.product.is_serial ? 0 : 0, // Fallback since metrics aren't getting variant pricing yet
         rotation: v.rentals,
         type: "rental",
       });
     if (v.sales > 0 && hasSalesFeature)
       results.push({
         name: v.product.name,
-        price: v.product.price_sell ?? 0,
+        price: v.product.is_serial ? 0 : 0, // Fallback since metrics aren't getting variant pricing yet
         rotation: v.sales,
         type: "sale",
       });
@@ -193,9 +193,7 @@ export function getActivityHeatmapMetrics(
     // Which items belong to this operation?
     const isSale = op.type === "venta";
     const pertinentItems = isSale
-      ? saleItems.filter(
-          (s) => String(s.operationId || s.saleId) === String(op.id),
-        )
+      ? saleItems.filter((s) => String(s.saleId) === String(op.id))
       : rentalItems.filter(
           (r) => String(r.operationId || r.rentalId) === String(op.id),
         );
@@ -249,9 +247,7 @@ export function getGarmentsPerformanceMetrics(
   const ingestPerf = (items: any[], opType: "alquiler" | "venta") => {
     items.forEach((item) => {
       const op = operations.find(
-        (o) =>
-          String(o.id) ===
-          String(item.operationId || item.rentalId || item.saleId),
+        (o) => String(o.id) === String(item.operationId),
       );
       if (!op || op.status === "cancelado") return;
       if (opType === "venta" && !hasSalesFeature) return;
@@ -293,9 +289,7 @@ export function getGarmentsPerformanceMetrics(
       sales: v.sales,
       usageDays: v.rentals * 3, // Mocked 3 days per rental approximation
       revenue: v.revenue,
-      roi: Math.round(
-        (v.revenue / (v.p.price_rent || v.p.price_sell || 1)) * 100,
-      ),
+      roi: Math.round((v.revenue / 1) * 100),
       status: s,
     });
   });

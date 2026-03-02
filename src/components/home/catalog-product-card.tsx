@@ -24,6 +24,7 @@ import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
 import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -58,29 +59,30 @@ export function CatalogProductCard({ product }: Props) {
     });
   }, [promotions, currentBranchId]);
 
+  const productVariants = useMemo(
+    () => PRODUCT_VARIANTS_MOCK.filter((v) => v.productId === product.id),
+    [product.id],
+  );
+  const defaultVariant = productVariants[0] || ({} as any);
+  const priceRent = defaultVariant.priceRent || 0;
+  const priceSell = defaultVariant.priceSell || 0;
+  const rentUnit = defaultVariant.rentUnit || "unidad";
+
   const bestPromoRent = useMemo(() => {
     if (!product.can_rent) return null;
     const applicable = activePromos.filter((p) =>
       p.appliesTo.includes("alquiler"),
     );
-    return calculateBestPromotionForProduct(
-      product,
-      product.price_rent || 0,
-      applicable,
-    );
-  }, [activePromos, product]);
+    return calculateBestPromotionForProduct(product, priceRent, applicable);
+  }, [activePromos, product, priceRent]);
 
   const bestPromoSell = useMemo(() => {
     if (!product.can_sell) return null;
     const applicable = activePromos.filter((p) =>
       p.appliesTo.includes("venta"),
     );
-    return calculateBestPromotionForProduct(
-      product,
-      product.price_sell || 0,
-      applicable,
-    );
-  }, [activePromos, product]);
+    return calculateBestPromotionForProduct(product, priceSell, applicable);
+  }, [activePromos, product, priceSell]);
 
   const bestOverallDiscount = useMemo(() => {
     let best = { discount: 0, finalPrice: 0, isRent: false, reason: "" };
@@ -143,27 +145,32 @@ export function CatalogProductCard({ product }: Props) {
   const activeColors = useMemo(() => {
     const map = new Map();
     displayStock.forEach((s) => {
-      const color = getColorById(s.colorId);
+      const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+      const colorId = variant?.attributes?.color;
+      if (!colorId) return;
+
+      const color = getColorById(colorId);
       if (color) {
-        map.set(s.colorId, { name: color.name, hex: color.hex });
+        map.set(colorId, { name: color.name, hex: color.hex });
       } else {
-        // Fallback or legacy matching
-        map.set(s.colorId || (s as any).color, {
-          name: (s as any).color,
-          hex: (s as any).colorHex,
+        map.set(colorId, {
+          name: colorId,
+          hex: "#CCCCCC",
         });
       }
     });
     return Array.from(map.values());
   }, [displayStock, getColorById]);
 
-  const activeSizes = useMemo(
-    () =>
-      Array.from(new Set(displayStock.map((s) => s.sizeId))).map(
-        (id) => getSizeById(id)?.name || id,
-      ),
-    [displayStock, getSizeById],
-  );
+  const activeSizes = useMemo(() => {
+    const sizes = displayStock
+      .map((s) => {
+        const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+        return variant?.attributes?.size || "";
+      })
+      .filter((val) => val !== "");
+    return Array.from(new Set(sizes)).map((id) => getSizeById(id)?.name || id);
+  }, [displayStock, getSizeById]);
 
   const days = hasRemote
     ? getEstimatedTransferTime(
@@ -192,7 +199,8 @@ export function CatalogProductCard({ product }: Props) {
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
           {bestOverallDiscount && (
             <Badge className="bg-red-500 hover:bg-red-600 text-white border-none text-[10px] uppercase font-black px-2 shadow-sm animate-pulse w-fit  text-center">
-              {bestOverallDiscount.reason || "DESCUENTO APLICADO!"}{" - "}
+              {bestOverallDiscount.reason || "DESCUENTO APLICADO!"}
+              {" - "}
               {bestOverallDiscount.discount}% DSCTO.
             </Badge>
           )}
@@ -232,12 +240,6 @@ export function CatalogProductCard({ product }: Props) {
               ? getCategoryById(product.categoryId)?.name || "General"
               : "General"}
           </p>
-          {product.modelId && (
-            <p className="text-[10px] text-slate-500 font-bold italic flex items-center gap-1">
-              <span className="text-slate-400">Modelo:</span>
-              {getModelById(product.modelId)?.name || product.modelId}
-            </p>
-          )}
         </div>
         <CardTitle className="text-base line-clamp-1 transition-colors group-hover:text-primary">
           {product.name}
@@ -315,16 +317,14 @@ export function CatalogProductCard({ product }: Props) {
               <div className="flex flex-col items-end">
                 {bestPromoRent && bestPromoRent.discount > 0 && (
                   <span className="text-[10px] line-through text-muted-foreground/60">
-                    {formatCurrency(product.price_rent || 0)}
+                    {formatCurrency(priceRent)}
                   </span>
                 )}
                 <span className="font-bold">
                   {formatCurrency(
-                    bestPromoRent
-                      ? bestPromoRent.finalPrice
-                      : product.price_rent || 0,
+                    bestPromoRent ? bestPromoRent.finalPrice : priceRent,
                   )}{" "}
-                  / {product.rent_unit}
+                  / {rentUnit}
                 </span>
               </div>
             </div>
@@ -351,14 +351,12 @@ export function CatalogProductCard({ product }: Props) {
               <div className="flex flex-col items-end">
                 {bestPromoSell && bestPromoSell.discount > 0 && (
                   <span className="text-[10px] line-through text-muted-foreground/60">
-                    {formatCurrency(product.price_sell || 0)}
+                    {formatCurrency(priceSell)}
                   </span>
                 )}
                 <span className="font-bold text-primary">
                   {formatCurrency(
-                    bestPromoSell
-                      ? bestPromoSell.finalPrice
-                      : product.price_sell || 0,
+                    bestPromoSell ? bestPromoSell.finalPrice : priceSell,
                   )}
                 </span>
               </div>

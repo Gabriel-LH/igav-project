@@ -12,8 +12,7 @@ export interface CartItem {
   subtotal: number; // o calcular dinámicamente
   listPrice?: number;
 
-  selectedSizeId?: string;
-  selectedColorId?: string;
+  variantId?: string;
   selectedCodes: string[];
 
   // Promoción y descuentos

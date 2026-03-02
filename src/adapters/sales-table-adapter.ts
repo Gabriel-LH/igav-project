@@ -53,7 +53,7 @@ export const mapSaleToTable = (
         ...item,
         productName: prod?.name || "Desconocido",
         image: prod?.image,
-        sku: prod?.sku,
+        sku: prod?.baseSku,
         // Aseguramos tener el precio unitario visible
         priceAtMoment: item.priceAtMoment,
       };

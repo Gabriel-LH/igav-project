@@ -44,7 +44,6 @@ export const mapRentalToTable = (
   rentalItems: RentalItem[],
   products: Product[],
 ): RentalTableRow[] => {
-  const { colors, sizes } = useAttributeStore.getState();
   const usersById = new Map(USER_MOCK.map((user) => [user.id, user]));
   const sellerIdByOperationId = new Map(
     OPERATIONS_MOCK.map((operation) => [operation.id, operation.sellerId]),
@@ -90,7 +89,7 @@ export const mapRentalToTable = (
         productName: prod?.name || "Desconocido",
         // Agregamos info visual útil para el Drawer
         image: prod?.image,
-        sku: prod?.sku,
+        sku: prod?.baseSku,
       };
     });
 
@@ -107,8 +106,6 @@ export const mapRentalToTable = (
       0,
     );
 
-    const size = sizes.find((s) => s.id === currentItems[0].sizeId);
-    const color = colors.find((c) => c.id === currentItems[0].colorId);
     // CONTENIDO DE BÚSQUEDA
     const searchContent = [
       rental.id,
@@ -116,8 +113,7 @@ export const mapRentalToTable = (
       customer?.lastName,
       customer?.dni,
       ...itemsWithNames.map((i) => i.productName),
-      size?.name,
-      color?.name,
+      ...currentItems.map((i) => i.variantId),
       ...currentItems.map((i) => i.stockId),
     ]
       .filter(Boolean)
@@ -150,21 +146,7 @@ export const mapRentalToTable = (
       // Campos legacy adaptados
       product: cleanSummary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
       count: totalItems, // <--- COMPATIBILIDAD
-      rent_unit: (() => {
-        const units = Array.from(
-          new Set(
-            currentItems
-              .map(
-                (item) =>
-                  products.find((p) => p.id === item.productId)?.rent_unit,
-              )
-              .filter(Boolean),
-          ),
-        );
-        if (units.length > 1) return "Mixto";
-        if (units.length === 1) return units[0] === "día" ? "Días" : "Evento";
-        return "---";
-      })(),
+      rent_unit: "Días",
       income:
         currentItems.reduce(
           (acc, item) => acc + item.priceAtMoment, // Basado en el feedback del usuario de que se multiplicaba de más

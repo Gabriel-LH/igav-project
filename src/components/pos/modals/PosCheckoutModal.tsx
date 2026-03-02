@@ -43,6 +43,7 @@ import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters
 import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
+import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { useCouponStore } from "@/src/store/useCouponStore";
 
 interface PosCheckoutModalProps {
@@ -131,10 +132,12 @@ export function PosCheckoutModal({
 
   const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
-  const getMultiplier = (item: CartItem) =>
-    item.operationType === "alquiler" && item.product.rent_unit !== "evento"
+  const getMultiplier = (item: CartItem) => {
+    const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId);
+    return item.operationType === "alquiler" && variant?.rentUnit !== "evento"
       ? Math.max(differenceInDays(dateRange.to, dateRange.from), 1)
       : 1;
+  };
 
   // ─── CÁLCULOS DE PRECIO ───
   const totalVentas = useMemo(
@@ -217,8 +220,7 @@ export function PosCheckoutModal({
     alquilerItems.forEach((item) => {
       const check = getAvailabilityByAttributes(
         item.product.id,
-        item.selectedSizeId || "",
-        item.selectedColorId || "",
+        item.variantId || "",
         dateRange.from,
         dateRange.to,
         "alquiler",
@@ -296,8 +298,7 @@ export function PosCheckoutModal({
                 productName: cartItem.product.name,
                 stockId: code,
                 quantity: 1,
-                sizeId: cartItem.selectedSizeId ?? "",
-                colorId: cartItem.selectedColorId ?? "",
+                variantId: cartItem.variantId ?? "",
                 priceAtMoment: unitPrice,
                 listPrice,
                 discountAmount,
@@ -315,8 +316,7 @@ export function PosCheckoutModal({
           const candidates = stockLots.filter(
             (l) =>
               l.productId === cartItem.product.id &&
-              l.sizeId === (cartItem.selectedSizeId || "") &&
-              l.colorId === (cartItem.selectedColorId || "") &&
+              l.variantId === (cartItem.variantId || "") &&
               l.branchId === currentBranchId &&
               (opType === "venta" ? l.isForSale : l.isForRent),
           );
@@ -331,8 +331,7 @@ export function PosCheckoutModal({
               productName: cartItem.product.name,
               stockId: lot.id,
               quantity: take,
-              sizeId: cartItem.selectedSizeId ?? "",
-              colorId: cartItem.selectedColorId ?? "",
+              variantId: cartItem.variantId ?? "",
               priceAtMoment: unitPrice,
               listPrice,
               discountAmount,
@@ -377,14 +376,14 @@ export function PosCheckoutModal({
           ? Number(receivedAmount) || 0
           : totalACobrarHoy;
 
-      let saleReceived =
+      const saleReceived =
         paymentMethod === "cash"
           ? Math.min(saleTotalAmount, remainingCash)
           : saleTotalAmount;
       if (paymentMethod === "cash")
         remainingCash = Math.max(0, remainingCash - saleReceived);
 
-      let rentalReceived =
+      const rentalReceived =
         paymentMethod === "cash" ? remainingCash : rentalTotalAmount;
 
       // A. PROCESAR VENTA
@@ -552,7 +551,10 @@ export function PosCheckoutModal({
                     differenceInDays(dateRange.to, dateRange.from),
                     1,
                   );
-                  const isEvent = item.product.rent_unit === "evento";
+                  const variant = PRODUCT_VARIANTS_MOCK.find(
+                    (v) => v.id === item.variantId,
+                  );
+                  const isEvent = variant?.rentUnit === "evento";
 
                   return (
                     <div
@@ -622,8 +624,7 @@ export function PosCheckoutModal({
                       mode="return"
                       type="alquiler"
                       productId=""
-                      sizeId=""
-                      colorId=""
+                      variantId=""
                       cartItems={items}
                       quantity={1}
                       onSelect={(d) => d && handleDateChange({ to: d })}

@@ -1,4 +1,9 @@
-import { Size } from "../types/attributes/sizes/type.sizes";
+export interface Size {
+  id: string;
+  name: string;
+  type?: string;
+  isActive?: boolean;
+}
 
 export const SIZES_MOCK: Size[] = [
   // Tallas Ropa
