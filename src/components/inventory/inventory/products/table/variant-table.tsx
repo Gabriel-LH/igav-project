@@ -14,6 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -41,6 +49,10 @@ import {
   Copy,
   Check,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import {
   ComputedVariant,
@@ -153,6 +165,8 @@ export function VariantsTable({
   const [globalPriceSell, setGlobalPriceSell] = useState("");
   const [globalUnit, setGlobalUnit] = useState("");
   const [copiedBarcode, setCopiedBarcode] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
 
   // Aplicar precio de renta en masa
   const applyGlobalRentPrice = useCallback(() => {
@@ -223,6 +237,15 @@ export function VariantsTable({
       </Card>
     );
   }
+
+  const pageCount = Math.max(1, Math.ceil(variants.length / pageSize));
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
+  const paginatedVariants = variants.slice(
+    safePageIndex * pageSize,
+    safePageIndex * pageSize + pageSize,
+  );
+  const canPreviousPage = safePageIndex > 0;
+  const canNextPage = safePageIndex < pageCount - 1;
 
   return (
     <div className="space-y-6">
@@ -415,22 +438,97 @@ export function VariantsTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {variants.map((variant, index) => (
+                {paginatedVariants.map((variant, index) => {
+                  const globalIndex = safePageIndex * pageSize + index;
+                  return (
                   <VariantRow
                     key={variant.signature}
                     variant={variant}
-                    index={index}
                     onUpdateOverride={onUpdateOverride}
                     onResetOverride={onResetOverride}
                     onGenerateBarcode={() =>
-                      handleGenerateBarcode(variant, index)
+                      handleGenerateBarcode(variant, globalIndex)
                     }
                     onCopyBarcode={copyBarcode}
                     copiedBarcode={copiedBarcode}
                   />
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
+          </div>
+          <div className="flex items-center justify-between px-4 py-4">
+            <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
+              <div className="hidden items-center gap-2 lg:flex">
+                <Label htmlFor="rows-per-page-variant" className="text-sm font-medium">
+                  Filas por pagina
+                </Label>
+                <Select
+                  value={`${pageSize}`}
+                  onValueChange={(value) => {
+                    setPageSize(Number(value));
+                    setPageIndex(0);
+                  }}
+                >
+                  <SelectTrigger size="sm" className="w-20" id="rows-per-page-variant">
+                    <SelectValue placeholder={pageSize} />
+                  </SelectTrigger>
+                  <SelectContent side="top">
+                    {[10, 20, 30, 40, 50].map((size) => (
+                      <SelectItem key={size} value={`${size}`}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex w-fit items-center justify-center text-sm font-medium">
+                Pagina {safePageIndex + 1} de {pageCount}
+              </div>
+              <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                <Button
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => setPageIndex(0)}
+                  disabled={!canPreviousPage}
+                >
+                  <span className="sr-only">Ir a la primera pagina</span>
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
+                  disabled={!canPreviousPage}
+                >
+                  <span className="sr-only">Ir a la pagina anterior</span>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() =>
+                    setPageIndex((prev) => Math.min(prev + 1, pageCount - 1))
+                  }
+                  disabled={!canNextPage}
+                >
+                  <span className="sr-only">Ir a la pagina siguiente</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="hidden size-8 lg:flex"
+                  size="icon"
+                  onClick={() => setPageIndex(pageCount - 1)}
+                  disabled={!canNextPage}
+                >
+                  <span className="sr-only">Ir a la ultima pagina</span>
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -441,7 +539,6 @@ export function VariantsTable({
 // Componente de fila individual - COMPLETAMENTE INDEPENDIENTE
 interface VariantRowProps {
   variant: ComputedVariant;
-  index: number;
   onUpdateOverride: (
     signature: string,
     override: Partial<VariantOverride>,
@@ -454,7 +551,6 @@ interface VariantRowProps {
 
 function VariantRow({
   variant,
-  index,
   onUpdateOverride,
   onResetOverride,
   onGenerateBarcode,

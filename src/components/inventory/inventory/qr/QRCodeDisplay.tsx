@@ -1,9 +1,9 @@
 // components/inventory/QRCodeDisplay.tsx (versión defensiva máxima)
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Printer, ShoppingCart } from "lucide-react";
+import { Printer} from "lucide-react";
 import QRCodeStyling from "qr-code-styling";
 
 interface QRCodeDisplayProps {
@@ -12,7 +12,7 @@ interface QRCodeDisplayProps {
 }
 
 const CART_LOGO = (
-  <svg
+  `<svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
@@ -27,8 +27,10 @@ const CART_LOGO = (
     <circle cx="8" cy="21" r="1" />
     <circle cx="19" cy="21" r="1" />
     <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-  </svg>
+  </svg>`
 );
+
+const cartLogoSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(CART_LOGO)}`;
 
 let globalQrInstance: QRCodeStyling | null = null;
 
@@ -47,6 +49,7 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
             width: 200,
             height: 200,
             data: value,
+            image: cartLogoSvgDataUrl,
             dotsOptions: {
               color: "#000000",
               type: "rounded",
@@ -63,7 +66,7 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
             imageOptions: {
               crossOrigin: "anonymous",
               margin: 4,
-              imageSize: 0.25,
+              imageSize: 0.50,
               hideBackgroundDots: true,
             },
           });

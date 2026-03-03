@@ -31,6 +31,7 @@ import {
   FolderTree,
   Search,
   Hash,
+  RefreshCcwIcon,
 } from "lucide-react";
 import { VariantAttributeSelector } from "./selected-atribute";
 import { VariantsTable } from "./table/variant-table";
@@ -84,7 +85,9 @@ interface ProductFormProps {
 
 export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
   const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
-  const attributeValues = useAttributeValueStore((state) => state.attributeValues);
+  const attributeValues = useAttributeValueStore(
+    (state) => state.attributeValues,
+  );
   const models = useModelStore((state) => state.models);
   const brands = useBrandStore((state) => state.brands);
   const categories = useCategoryStore((state) => state.categories);
@@ -101,30 +104,36 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
 
   // Preparar datos para selectores
   const modelOptions = useMemo(() => {
-    return models.filter((model) => model.isActive).map((model) => {
-      const brand = brands.find((brandItem) => brandItem.id === model.brandId);
-      return {
-        id: model.id,
-        name: model.name,
-        brandName: brand?.name || "Sin marca",
-        brandId: model.brandId,
-      };
-    });
+    return models
+      .filter((model) => model.isActive)
+      .map((model) => {
+        const brand = brands.find(
+          (brandItem) => brandItem.id === model.brandId,
+        );
+        return {
+          id: model.id,
+          name: model.name,
+          brandName: brand?.name || "Sin marca",
+          brandId: model.brandId,
+        };
+      });
   }, [brands, models]);
 
   const categoryTree = useMemo(() => {
-    return buildCategoryTree(categories.filter((category) => category.isActive));
+    return buildCategoryTree(
+      categories.filter((category) => category.isActive),
+    );
   }, [categories]);
 
   const flatCategories = useMemo(() => {
-    return flattenCategories(categories.filter((category) => category.isActive));
+    return flattenCategories(
+      categories.filter((category) => category.isActive),
+    );
   }, [categories]);
 
   // Encontrar seleccionados para mostrar info
   const selectedModel = modelOptions.find((m) => m.id === formData.modelId);
-  const selectedCategory = categories.find(
-    (c) => c.id === formData.categoryId,
-  );
+  const selectedCategory = categories.find((c) => c.id === formData.categoryId);
 
   const { variants, stats } = useVariantGenerator(
     formData.baseSku,
@@ -216,180 +225,175 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
         </TabsList>
 
         {/* TAB 1: GENERAL */}
-        <TabsContent value="general" className="space-y-6 mt-6">
-          <Card>
-            <CardContent className="pt-6 space-y-6">
-              {/* FLAGS PRINCIPALES */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card
-                  className={`border-2 transition-colors ${
-                    formData.can_rent
-                      ? "border-blue-500 bg-blue-50/30"
-                      : "border-muted"
-                  }`}
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label className="text-base font-semibold flex items-center gap-2">
-                          Disponible para Renta
-                          {formData.can_rent && (
-                            <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                          )}
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Los clientes pueden rentar este producto por tiempo
-                        </p>
-                      </div>
-                      <Switch
-                        checked={formData.can_rent}
-                        onCheckedChange={(checked) =>
-                          setFormData({ ...formData, can_rent: checked })
-                        }
-                      />
+        <TabsContent value="general" className="space-y-6 mt-3">
+          <div className="space-y-4">
+            {/* FLAGS PRINCIPALES */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card
+                className={`border transition-colors ${
+                  formData.can_rent
+                    ? "border-blue-500 bg-blue-50/10"
+                    : "border-muted"
+                }`}
+              >
+                <CardContent className="pt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-semibold flex items-center -mt-3">
+                        Disponible para Renta
+                        {formData.can_rent && (
+                          <CheckCircle2 className="w-4 h-4 text-blue-500" />
+                        )}
+                      </Label>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Los clientes pueden rentar este producto por tiempo
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card
-                  className={`border-2 transition-colors ${
-                    formData.can_sell
-                      ? "border-green-500 bg-green-50/30"
-                      : "border-muted"
-                  }`}
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label className="text-base font-semibold flex items-center gap-2">
-                          Disponible para Venta
-                          {formData.can_sell && (
-                            <CheckCircle2 className="w-4 h-4 text-green-500" />
-                          )}
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Los clientes pueden comprar este producto
-                        </p>
-                      </div>
-                      <Switch
-                        checked={formData.can_sell}
-                        onCheckedChange={(checked) =>
-                          setFormData({ ...formData, can_sell: checked })
-                        }
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card
-                  className={`border-2 transition-colors ${
-                    formData.is_serial
-                      ? "border-amber-500 bg-amber-50/30"
-                      : "border-muted"
-                  }`}
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label className="text-base font-semibold flex items-center gap-2">
-                          Ítems Serializados
-                          {formData.is_serial && (
-                            <CheckCircle2 className="w-4 h-4 text-amber-500" />
-                          )}
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Cada unidad tiene número de serie único
-                        </p>
-                      </div>
-                      <Switch
-                        checked={formData.is_serial}
-                        onCheckedChange={(checked) =>
-                          setFormData({ ...formData, is_serial: checked })
-                        }
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Separator />
-
-              {/* INFO BÁSICA */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* NOMBRE PRIMERO */}
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="name">Nombre del Producto *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="iPhone 15 Pro"
-                  />
-                </div>
-
-                {/* SKU BASE CON BOTÓN GENERAR */}
-                <div className="space-y-2">
-                  <Label htmlFor="baseSku">SKU Base *</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="baseSku"
-                      value={formData.baseSku}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          baseSku: e.target.value.toUpperCase(),
-                        })
+                    <Switch
+                      checked={formData.can_rent}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, can_rent: checked })
                       }
-                      placeholder="IPH-15-PRO"
-                      className="font-mono flex-1"
                     />
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        // Generar SKU base: 3 primeras letras del nombre
-                        const nameWords = formData.name.trim().split(/\s+/);
-                        let sku = "";
-
-                        if (nameWords.length === 1) {
-                          // Una palabra: primeras 3 letras
-                          sku = nameWords[0].substring(0, 3).toUpperCase();
-                        } else {
-                          // Múltiples palabras: primera letra de cada una (max 4)
-                          sku = nameWords
-                            .slice(0, 4)
-                            .map((w) => w[0]?.toUpperCase() || "")
-                            .join("");
-                        }
-
-                        // Agregar timestamp corto para unicidad si está vacío
-                        if (!sku) sku = "PROD";
-
-                        setFormData({ ...formData, baseSku: sku });
-                      }}
-                      disabled={!formData.name}
-                      className="gap-2 whitespace-nowrap"
-                    >
-                      <Hash className="w-4 h-4" />
-                      Generar
-                    </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Prefijo para SKUs de variantes. Ej:{" "}
-                    {formData.baseSku || "XXX"}-NEG-M-01
-                  </p>
-                </div>
+                </CardContent>
+              </Card>
 
-                {/* ESPACIO VACÍO o otro campo */}
-                <div className="space-y-2">
-                  {/* Puedes poner otro campo aquí, o dejar vacío para balance */}
-                </div>
+              <Card
+                className={`border transition-colors ${
+                  formData.can_sell
+                    ? "border-green-500 bg-green-50/10"
+                    : "border-muted"
+                }`}
+              >
+                <CardContent className="pt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-semibold flex items-center -mt-3">
+                        Disponible para Venta
+                        {formData.can_sell && (
+                          <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        )}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Los clientes pueden comprar este producto
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.can_sell}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, can_sell: checked })
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`border transition-colors ${
+                  formData.is_serial
+                    ? "border-amber-500 bg-amber-50/10"
+                    : "border-muted"
+                }`}
+              >
+                <CardContent className="pt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-semibold flex items-center -mt-3">
+                        Ítems Serializados
+                        {formData.is_serial && (
+                          <CheckCircle2 className="w-4 h-4 text-amber-500" />
+                        )}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Cada unidad tiene número de serie único
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.is_serial}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, is_serial: checked })
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator />
+
+            {/* INFO BÁSICA */}
+            <div className="flex  w-full md:flex-row flex-col gap-4">
+              {/* NOMBRE PRIMERO */}
+              <div className="space-y-2 w-full md:col-span-2">
+                <Label htmlFor="name">Nombre del Producto *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="iPhone 15 Pro"
+                />
               </div>
 
+              {/* SKU BASE CON BOTÓN GENERAR */}
+              <div className="space-y-2 w-full">
+                <Label htmlFor="baseSku">SKU Base *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="baseSku"
+                    value={formData.baseSku}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        baseSku: e.target.value.toUpperCase(),
+                      })
+                    }
+                    placeholder="IPH-15-PRO"
+                    className="font-mono flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      // Generar SKU base: 3 primeras letras del nombre
+                      const nameWords = formData.name.trim().split(/\s+/);
+                      let sku = "";
+
+                      if (nameWords.length === 1) {
+                        // Una palabra: primeras 3 letras
+                        sku = nameWords[0].substring(0, 3).toUpperCase();
+                      } else {
+                        // Múltiples palabras: primera letra de cada una (max 4)
+                        sku = nameWords
+                          .slice(0, 4)
+                          .map((w) => w[0]?.toUpperCase() || "")
+                          .join("");
+                      }
+
+                      // Agregar timestamp corto para unicidad si está vacío
+                      if (!sku) sku = "PROD";
+
+                      setFormData({ ...formData, baseSku: sku });
+                    }}
+                    disabled={!formData.name}
+                    className="gap-2 whitespace-nowrap"
+                  >
+                    <RefreshCcwIcon className="w-4 h-4" />
+                    Generar
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Prefijo para SKUs de variantes. Ej:{" "}
+                  {formData.baseSku || "XXX"}-NEG-M-01
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-full gap-4 md:flex-row flex-col">
               {/* SELECTOR DE MODELO (con Brand implícito) */}
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label className="flex items-center gap-2">
                   <Building2 className="w-4 h-4" />
                   Modelo *
@@ -431,7 +435,10 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
                             <CommandItem
                               key={model.id}
                               onSelect={() => {
-                                setFormData({ ...formData, modelId: model.id });
+                                setFormData({
+                                  ...formData,
+                                  modelId: model.id,
+                                });
                                 setOpenModelPopover(false);
                               }}
                               className="flex items-center justify-between"
@@ -464,23 +471,8 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
                 </p>
               </div>
 
-              {/* INFO DE MARCA (solo lectura) */}
-              {selectedModel && (
-                <div className="p-3 bg-muted rounded-lg flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {selectedModel.brandName[0]}
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Marca</div>
-                    <div className="font-semibold">
-                      {selectedModel.brandName}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* SELECTOR DE CATEGORÍA JERÁRQUICO */}
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label className="flex items-center gap-2">
                   <FolderTree className="w-4 h-4" />
                   Categoría *
@@ -491,7 +483,7 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
                     setFormData({ ...formData, categoryId: val })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccionar categoría..." />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
@@ -524,61 +516,74 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
                   Selecciona la categoría más específica (último nivel)
                 </p>
               </div>
+            </div>
 
-              {/* INFO DE CATEGORÍA (breadcrumb) */}
-              {selectedCategory && (
-                <div className="p-3 bg-muted rounded-lg">
-                  <div className="text-sm text-muted-foreground mb-1">
-                    Ruta de categoría
-                  </div>
-                  <div className="flex items-center gap-2 text-sm flex-wrap">
-                    {selectedCategory.path?.split("/").map((part, idx, arr) => (
-                      <span key={idx} className="flex items-center">
-                        <span className="capitalize">{part}</span>
-                        {idx < arr.length - 1 && (
-                          <span className="mx-2 text-muted-foreground">/</span>
-                        )}
-                      </span>
-                    ))}
-                  </div>
+            {/* INFO DE MARCA (solo lectura) */}
+            {selectedModel && (
+              <div className="p-3 bg-muted rounded-lg flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                  {selectedModel.brandName[0]}
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Descripción</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Descripción detallada del producto..."
-                  rows={3}
-                />
+                <div>
+                  <div className="text-sm text-muted-foreground">Marca</div>
+                  <div className="font-semibold">{selectedModel.brandName}</div>
+                </div>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="image">URL de Imagen</Label>
-                <Input
-                  id="image"
-                  value={formData.image}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.value })
-                  }
-                  placeholder="https://..."
-                />
+            {/* INFO DE CATEGORÍA (breadcrumb) */}
+            {selectedCategory && (
+              <div className="p-3 bg-muted rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">
+                  Ruta de categoría
+                </div>
+                <div className="flex items-center gap-2 text-sm flex-wrap">
+                  {selectedCategory.path?.split("/").map((part, idx, arr) => (
+                    <span key={idx} className="flex items-center">
+                      <span className="capitalize">{part}</span>
+                      {idx < arr.length - 1 && (
+                        <span className="mx-2 text-muted-foreground">/</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {!canGoToAttributes && (
-                <Alert variant="default" className="bg-muted/50">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Completa SKU, Nombre, Modelo y Categoría para continuar.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
+            <div className="space-y-2">
+              <Label htmlFor="description">Descripción</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Descripción detallada del producto..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image">URL de Imagen</Label>
+              <Input
+                id="image"
+                value={formData.image}
+                onChange={(e) =>
+                  setFormData({ ...formData, image: e.target.value })
+                }
+                placeholder="https://..."
+              />
+            </div>
+
+            {!canGoToAttributes && (
+              <Alert variant="default" className="bg-muted/50 mb-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Completa SKU, Nombre, Modelo y Categoría para continuar.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
 
           <div className="flex justify-end">
             <Button
