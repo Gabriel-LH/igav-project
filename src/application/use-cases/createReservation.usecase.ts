@@ -1,6 +1,6 @@
 import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
-import { ReservationDTO } from "../interfaces/ReservationDTO";
+import { ReservationDTO } from "../dtos/ReservationDTO";
 import { reservationSchema } from "../../types/reservation/type.reservation";
 import { reservationItemSchema } from "../../types/reservation/type.reservationItem";
 

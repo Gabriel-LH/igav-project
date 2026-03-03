@@ -39,6 +39,7 @@ import {
   Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BarcodeScanner } from "../barcode/BarcodeScanner";
 
 // Tipos
 export interface TransferItem {
@@ -178,32 +179,15 @@ function StockScanner({
   onScan: (stock: any) => void;
   availableStock: any[];
 }) {
-  const [scanning, setScanning] = useState(false);
-  const [manualCode, setManualCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const simulateScan = () => {
-    setScanning(true);
-    setError(null);
-    setTimeout(() => {
-      // Simular escaneo exitoso con item aleatorio
-      const randomItem =
-        availableStock[Math.floor(Math.random() * availableStock.length)];
-      if (randomItem) {
-        onScan(randomItem);
-      }
-      setScanning(false);
-    }, 1500);
-  };
-
-  const handleManualSearch = () => {
+  const handleScannedCode = (code: string) => {
     setError(null);
     const found = availableStock.find(
-      (s) => s.barcode === manualCode || s.serialCode === manualCode,
+      (s) => s.barcode === code || s.serialCode === code,
     );
     if (found) {
       onScan(found);
-      setManualCode("");
     } else {
       setError("Código no encontrado en stock disponible");
     }
@@ -211,51 +195,13 @@ function StockScanner({
 
   return (
     <div className="space-y-4">
-      <div
-        className={cn(
-          "w-full h-40 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer transition-colors",
-          scanning
-            ? "border-green-500 bg-green-50 animate-pulse"
-            : "border-muted hover:border-primary",
-        )}
-        onClick={!scanning ? simulateScan : undefined}
-      >
-        {scanning ? (
-          <div className="text-center">
-            <ScanLine className="w-10 h-10 text-green-500 mx-auto mb-2 animate-bounce" />
-            <p className="text-sm text-green-600 font-medium">Escaneando...</p>
-          </div>
-        ) : (
-          <div className="text-center text-muted-foreground">
-            <ScanLine className="w-10 h-10 mx-auto mb-2" />
-            <p className="text-sm">Haz clic para simular escaneo</p>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <p className="text-xs text-muted-foreground">
-          O ingresa código manual:
+      <BarcodeScanner onScan={handleScannedCode} />
+      {error && (
+        <p className="text-xs text-red-500 flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" />
+          {error}
         </p>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Barcode o Serial..."
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
-            className="font-mono text-sm"
-            onKeyDown={(e) => e.key === "Enter" && handleManualSearch()}
-          />
-          <Button size="sm" onClick={handleManualSearch} disabled={!manualCode}>
-            Buscar
-          </Button>
-        </div>
-        {error && (
-          <p className="text-xs text-red-500 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {error}
-          </p>
-        )}
-      </div>
+      )}
     </div>
   );
 }

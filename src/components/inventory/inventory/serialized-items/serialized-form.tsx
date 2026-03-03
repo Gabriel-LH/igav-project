@@ -1,11 +1,10 @@
 // components/inventory/SerializedItemForm.tsx
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -39,9 +38,9 @@ import {
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
-import { ProductVariant } from "@/src/types/product/type.productVariant";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
+import { Badge } from "@/components/badge";
 
 const CONDITION_OPTIONS = [
   { value: "Nuevo", label: "Nuevo", color: "green" },
@@ -58,15 +57,6 @@ const STATUS_OPTIONS = [
 interface SerializedItemFormProps {
   onSubmit: (data: SerializedItemFormData) => void;
 }
-
-const hashCode = (value: string): number => {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash << 5) - hash + value.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-};
 
 // Generador de códigos seriales únicos
 function generateSerialCodes(
@@ -108,13 +98,10 @@ function generateSerialCodes(
 
 
 export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
-  const products = useInventoryStore((state) => state.products);
-  const productVariants = useInventoryStore((state) => state.productVariants);
+  const availableProducts = useInventoryProductOptions(true);
 
   const [formData, setFormData] = useState<Partial<SerializedItemFormData>>({
     quantity: 1,
-    isForRent: true,
-    isForSale: false,
     condition: "Nuevo",
     status: "disponible",
     autoGenerateSerials: true,
@@ -128,29 +115,6 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
   } | null>(null);
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
 
-  const availableProducts = useMemo(() => {
-    const createVariantName = (variant: ProductVariant): string => {
-      const values = Object.values(variant.attributes || {});
-      return values.length > 0 ? values.join(" / ") : variant.variantCode;
-    };
-
-    return products
-      .filter((product) => product.is_serial && !product.isDeleted)
-      .map((product) => ({
-      ...product,
-      variants: productVariants.filter(
-        (variant) => variant.productId === product.id && variant.isActive,
-      ).map((variant) => ({
-        id: variant.id,
-        name: createVariantName(variant),
-        variantCode: variant.variantCode,
-        barcode:
-          variant.barcode ??
-          String(Math.abs(hashCode(variant.variantCode))).slice(0, 13).padStart(13, "0"),
-      })),
-    }));
-  }, [productVariants, products]);
-
   const selectedProduct = availableProducts.find(
     (p) => p.id === formData.productId,
   );
@@ -163,29 +127,24 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
   );
   const selectedBranch = availableBranches.find((b) => b.id === formData.branchId);
 
-  // Generar códigos cuando cambian las condiciones
-  useEffect(() => {
-    if (
-      formData.autoGenerateSerials &&
-      selectedVariant &&
-      formData.quantity &&
-      formData.prefix
-    ) {
-      const codes = generateSerialCodes(
-        formData.prefix,
-        selectedVariant.variantCode,
-        formData.quantity,
-        generatedCodes,
-      );
-      setGeneratedCodes(codes);
-      setFormData((prev) => ({ ...prev, serialCodes: codes }));
+  const selectedSerialCodes = formData.autoGenerateSerials
+    ? generatedCodes
+    : formData.serialCodes || [];
+
+  const refreshGeneratedCodes = (
+    quantity = formData.quantity,
+    prefix = formData.prefix,
+    variantCode = selectedVariant?.variantCode,
+    autoGenerate = formData.autoGenerateSerials,
+  ) => {
+    if (!autoGenerate || !quantity || !prefix || !variantCode) {
+      setGeneratedCodes([]);
+      return;
     }
-  }, [
-    formData.autoGenerateSerials,
-    formData.quantity,
-    formData.prefix,
-    selectedVariant?.variantCode,
-  ]);
+
+    const codes = generateSerialCodes(prefix, variantCode, quantity, []);
+    setGeneratedCodes(codes);
+  };
 
   const handleScan = (barcode: string) => {
     setScanMessage(null);
@@ -216,20 +175,11 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
     const newCodes = [...(formData.serialCodes || [])];
     newCodes[index] = value.toUpperCase();
     setFormData((prev) => ({ ...prev, serialCodes: newCodes }));
-    setGeneratedCodes(newCodes);
   };
 
   const regenerateCodes = () => {
-    if (selectedVariant && formData.quantity && formData.prefix) {
-      const codes = generateSerialCodes(
-        formData.prefix,
-        selectedVariant.variantCode,
-        formData.quantity,
-        [], // Resetear para forzar nuevos códigos
-      );
-      setGeneratedCodes(codes);
-      setFormData((prev) => ({ ...prev, serialCodes: codes }));
-    }
+    if (!formData.autoGenerateSerials) return;
+    refreshGeneratedCodes();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -238,7 +188,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
       !selectedProduct ||
       !selectedVariant ||
       !formData.branchId ||
-      !formData.serialCodes?.length
+      !selectedSerialCodes.length
     )
       return;
 
@@ -252,9 +202,9 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
       branchId: formData.branchId,
       branchName: selectedBranch?.name || "",
       quantity: formData.quantity || 1,
-      serialCodes: formData.serialCodes,
-      isForRent: formData.isForRent ?? true,
-      isForSale: formData.isForSale ?? false,
+      serialCodes: selectedSerialCodes,
+      isForRent: selectedProduct.can_rent,
+      isForSale: selectedProduct.can_sell,
       condition: formData.condition || "Nuevo",
       status: formData.status || "disponible",
       lastMaintenance: formData.lastMaintenance,
@@ -268,8 +218,6 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
     // Reset
     setFormData({
       quantity: 1,
-      isForRent: true,
-      isForSale: false,
       condition: "Nuevo",
       status: "disponible",
       autoGenerateSerials: true,
@@ -298,14 +246,15 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
             <Label>Producto *</Label>
             <Select
               value={formData.productId}
-              onValueChange={(val) =>
+              onValueChange={(val) => {
                 setFormData({
                   ...formData,
                   productId: val,
                   variantId: undefined,
                   serialCodes: [],
-                })
-              }
+                });
+                setGeneratedCodes([]);
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar producto..." />
@@ -341,6 +290,13 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                         variantId: val,
                         serialCodes: [],
                       });
+                      if (formData.autoGenerateSerials) {
+                        refreshGeneratedCodes(
+                          formData.quantity,
+                          formData.prefix,
+                          variant.variantCode,
+                        );
+                      }
                       setScanMessage(null);
                     }
                   }}
@@ -435,11 +391,24 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                     id="autoGenerate"
                     checked={formData.autoGenerateSerials}
                     onCheckedChange={(checked) =>
-                      setFormData({
-                        ...formData,
-                        autoGenerateSerials: checked as boolean,
-                        serialCodes: checked ? generatedCodes : [],
-                      })
+                      {
+                        const auto = checked as boolean;
+                        setFormData({
+                          ...formData,
+                          autoGenerateSerials: auto,
+                          serialCodes: [],
+                        });
+                        if (auto) {
+                          refreshGeneratedCodes(
+                            formData.quantity,
+                            formData.prefix,
+                            selectedVariant?.variantCode,
+                            auto,
+                          );
+                        } else {
+                          setGeneratedCodes([]);
+                        }
+                      }
                     }
                   />
                   <Label
@@ -457,10 +426,16 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                 max={100}
                 value={formData.quantity}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    quantity: parseInt(e.target.value) || 1,
-                  })
+                  {
+                    const quantity = parseInt(e.target.value) || 1;
+                    setFormData({
+                      ...formData,
+                      quantity,
+                    });
+                    if (formData.autoGenerateSerials) {
+                      refreshGeneratedCodes(quantity);
+                    }
+                  }
                 }
               />
 
@@ -482,10 +457,16 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                   <Input
                     value={formData.prefix}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        prefix: e.target.value.toUpperCase(),
-                      })
+                      {
+                        const prefix = e.target.value.toUpperCase();
+                        setFormData({
+                          ...formData,
+                          prefix,
+                        });
+                        if (formData.autoGenerateSerials) {
+                          refreshGeneratedCodes(formData.quantity, prefix);
+                        }
+                      }
                     }
                     placeholder="Ej: IPHONE, VESTIDO"
                     className="font-mono uppercase"
@@ -617,8 +598,11 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
               </Label>
               <Select
                 value={formData.condition}
-                onValueChange={(val: any) =>
-                  setFormData({ ...formData, condition: val })
+              onValueChange={(val) =>
+                  setFormData({
+                    ...formData,
+                    condition: val as SerializedItemFormData["condition"],
+                  })
                 }
               >
                 <SelectTrigger>
@@ -650,8 +634,11 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
               </Label>
               <Select
                 value={formData.status}
-                onValueChange={(val: any) =>
-                  setFormData({ ...formData, status: val })
+              onValueChange={(val) =>
+                  setFormData({
+                    ...formData,
+                    status: val as SerializedItemFormData["status"],
+                  })
                 }
               >
                 <SelectTrigger>
@@ -668,31 +655,26 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
             </div>
           </div>
 
-          {/* USOS */}
-          <div className="space-y-3">
+          {/* USOS DEL PRODUCTO PADRE */}
+          <div className="space-y-3 rounded-md border p-3 bg-muted/30">
             <Label className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
-              Disponible para:
+              Política comercial del producto
             </Label>
-            <div className="flex gap-6">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.isForRent}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isForRent: checked })
-                  }
-                />
-                <Label className="cursor-pointer">Renta</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.isForSale}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isForSale: checked })
-                  }
-                />
-                <Label className="cursor-pointer">Venta</Label>
-              </div>
+            <div className="flex gap-2 flex-wrap">
+              {selectedProduct ? (
+                <>
+                  {selectedProduct.can_rent && <Badge variant="secondary">Renta</Badge>}
+                  {selectedProduct.can_sell && <Badge variant="secondary">Venta</Badge>}
+                  {!selectedProduct.can_rent && !selectedProduct.can_sell && (
+                    <Badge variant="destructive">Sin uso comercial</Badge>
+                  )}
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  Selecciona un producto para ver su política de uso.
+                </span>
+              )}
             </div>
           </div>
 
@@ -704,8 +686,8 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
               !selectedProduct ||
               !selectedVariant ||
               !formData.branchId ||
-              !formData.serialCodes?.length ||
-              formData.serialCodes.some((code) => !code.trim())
+              !selectedSerialCodes.length ||
+              selectedSerialCodes.some((code) => !code.trim())
             }
           >
             <Plus className="w-4 h-4 mr-2" />

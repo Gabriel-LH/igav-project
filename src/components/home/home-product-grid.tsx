@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ProductFilters } from "./home-product-filter";
 import { CatalogProductCard } from "./catalog-product-card";
 import { ReservationProductCard } from "./reservation-product-card";
@@ -22,9 +23,13 @@ import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
+import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
+import { toast } from "sonner";
 
 export function ProductGrid() {
-  const { products, inventoryItems, stockLots } = useInventoryStore();
+  const { products, productVariants, inventoryItems, stockLots } = useInventoryStore();
+  const router = useRouter();
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +38,31 @@ export function ProductGrid() {
   const showReserved = viewMode === "reserved";
   const currentUser = USER_MOCK[0];
   const query = searchQuery.toLowerCase();
+
+  useBarcodeScanner({
+    onScan: (code) => {
+      const resolution = resolveProductLookup({
+        products,
+        productVariants,
+        inventoryItems,
+        stockLots,
+        lookup: code,
+      });
+
+      if (!resolution) {
+        toast.error(`Código no encontrado: ${code}`);
+        return;
+      }
+
+      const variantQuery = resolution.variantId
+        ? `?variantId=${encodeURIComponent(resolution.variantId)}`
+        : "";
+
+      router.push(
+        `/product-details/${encodeURIComponent(code)}${variantQuery}`,
+      );
+    },
+  });
 
   // --- 1. LÓGICA DE CATÁLOGO (PRODUCTOS DISPONIBLES) ---
   const filteredCatalog = useMemo(() => {

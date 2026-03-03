@@ -27,6 +27,7 @@ export const PermissionSchema = z.object({
   module: ModuleEnum,
   description: z.string().optional(),
   createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type Permission = z.infer<typeof PermissionSchema>;

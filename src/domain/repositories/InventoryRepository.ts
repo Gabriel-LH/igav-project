@@ -16,12 +16,12 @@ export interface InventoryRepository {
   isSerial(stockId: string): boolean;
   getTenantIdByProductId(productId: string): string | null;
   getTenantIdByStockId(stockId: string): string | null;
-  getProducts(): any[];
-  getProductVariants(): any[];
-  getInventoryItems(): any[];
-  getStockLots(): any[];
-  getInventoryItemById(id: string): any;
-  getStockLotByIdOrVariant(idOrVariant: string): any;
+  getProducts(): Product[];
+  getProductVariants(): ProductVariant[];
+  getInventoryItems(): InventoryItem[];
+  getStockLots(): StockLot[];
+  getInventoryItemById(id: string): InventoryItem | undefined;
+  getStockLotByIdOrVariant(idOrVariant: string): StockLot | undefined;
   addProduct(product: Product): void;
   updateProduct(productId: string, updates: Partial<Product>): void;
   softDeleteProduct(productId: string, deletedBy?: string): void;

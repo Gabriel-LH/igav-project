@@ -11,44 +11,40 @@ import { SerializedItemFormData } from "@/src/application/interfaces/inventory/S
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { CreateSerializedItemsUseCase } from "@/src/application/use-cases/inventory/createSerializedItems.usecase";
+import { DeleteSerializedItemUseCase } from "@/src/application/use-cases/inventory/deleteSerializedItem.usecase";
+import { ListSerializedItemsUseCase } from "@/src/application/use-cases/inventory/listSerializedItems.usecase";
 
 export function SerializedLayout() {
   const tenantId = "tenant-a";
-  const inventoryItems = useInventoryStore((state) => state.inventoryItems);
-  const products = useInventoryStore((state) => state.products);
-  const productVariants = useInventoryStore((state) => state.productVariants);
+  const inventoryItemsState = useInventoryStore((state) => state.inventoryItems);
+  const productsState = useInventoryStore((state) => state.products);
+  const productVariantsState = useInventoryStore((state) => state.productVariants);
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
   const createSerializedItemsUseCase = useMemo(
     () => new CreateSerializedItemsUseCase(inventoryRepo),
     [inventoryRepo],
   );
+  const deleteSerializedItemUseCase = useMemo(
+    () => new DeleteSerializedItemUseCase(inventoryRepo),
+    [inventoryRepo],
+  );
+  const listSerializedItemsUseCase = useMemo(
+    () => new ListSerializedItemsUseCase(inventoryRepo),
+    [inventoryRepo],
+  );
 
-  const items = useMemo(() => {
-    return inventoryItems.map((item) => {
-      const product = products.find((productItem) => productItem.id === item.productId);
-      const variant = productVariants.find(
-        (variantItem) => variantItem.id === item.variantId,
-      );
-      const branch = BRANCH_MOCKS.find((branchMock) => branchMock.id === item.branchId);
-
-      return {
-        id: item.id,
-        serialCode: item.serialCode,
-        productName: product?.name || "Producto",
-        variantName:
-          variant && Object.values(variant.attributes).length > 0
-            ? Object.values(variant.attributes).join(" / ")
-            : variant?.variantCode || "Variante",
-        variantCode: variant?.variantCode || "",
-        branchName: branch?.name || item.branchId,
-        condition: item.condition,
-        status: item.status,
-        isForRent: item.isForRent,
-        isForSale: item.isForSale,
-        createdAt: item.createdAt,
-      };
-    });
-  }, [inventoryItems, productVariants, products]);
+  const items = useMemo(
+    () =>
+      listSerializedItemsUseCase.execute({
+        branches: BRANCH_MOCKS,
+      }),
+    [
+      listSerializedItemsUseCase,
+      inventoryItemsState,
+      productsState,
+      productVariantsState,
+    ],
+  );
 
   const handleSubmit = (formData: SerializedItemFormData) => {
     createSerializedItemsUseCase.execute({
@@ -58,7 +54,7 @@ export function SerializedLayout() {
   };
 
   const handleDelete = (id: string) => {
-    inventoryRepo.removeInventoryItem(id);
+    deleteSerializedItemUseCase.execute({ itemId: id });
   };
 
   return (

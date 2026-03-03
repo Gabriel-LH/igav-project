@@ -47,27 +47,27 @@ export class ZustandInventoryRepository implements InventoryRepository {
     return null;
   }
 
-  getProducts(): any[] {
+  getProducts(): Product[] {
     return useInventoryStore.getState().products;
   }
 
-  getProductVariants(): any[] {
+  getProductVariants(): ProductVariant[] {
     return useInventoryStore.getState().productVariants;
   }
 
-  getInventoryItems(): any[] {
+  getInventoryItems(): InventoryItem[] {
     return useInventoryStore.getState().inventoryItems;
   }
 
-  getStockLots(): any[] {
+  getStockLots(): StockLot[] {
     return useInventoryStore.getState().stockLots;
   }
 
-  getInventoryItemById(id: string): any {
+  getInventoryItemById(id: string): InventoryItem | undefined {
     return useInventoryStore.getState().inventoryItems.find((i) => i.id === id);
   }
 
-  getStockLotByIdOrVariant(idOrVariant: string): any {
+  getStockLotByIdOrVariant(idOrVariant: string): StockLot | undefined {
     return useInventoryStore
       .getState()
       .stockLots.find(

@@ -22,9 +22,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { X, Layers, AlertCircle, Check, ChevronsUpDown } from "lucide-react";
-import { AttributeType } from "@/src/types/attributes/type.attribute-type"; 
+import { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/separator";
 
 export interface SelectedAttributeConfig {
   attributeId: string;
@@ -58,41 +59,29 @@ export function VariantAttributeSelector({
 
   // Memoizar tipos de variante para evitar recálculos
   const variantTypes = useMemo(() => {
-    return attributeTypes.filter((t) => t.isVariant && t.affectsSku && t.isActive);
+    return attributeTypes.filter(
+      (t) => t.isVariant && t.affectsSku && t.isActive,
+    );
   }, [attributeTypes]);
 
   // Memoizar función de búsqueda de valores
-  const getValuesForType = useCallback((typeId: string): AttributeValue[] => {
-    return attributeValues.filter(
-      (v) => v.attributeTypeId === typeId && v.isActive
-    );
-  }, [attributeValues]);
+  const getValuesForType = useCallback(
+    (typeId: string): AttributeValue[] => {
+      return attributeValues.filter(
+        (v) => v.attributeTypeId === typeId && v.isActive,
+      );
+    },
+    [attributeValues],
+  );
 
   // FIX: Usar useCallback para evitar recreación de funciones
-  const toggleAttributeType = useCallback((type: AttributeType) => {
-    const exists = selectedAttributes.find((a) => a.attributeId === type.id);
-
-    if (exists) {
-      onChange(selectedAttributes.filter((a) => a.attributeId !== type.id));
-    } else {
-      onChange([
-        ...selectedAttributes,
-        {
-          attributeId: type.id,
-          attributeName: type.name,
-          attributeCode: type.code,
-          values: [],
-        },
-      ]);
-    }
-  }, [selectedAttributes, onChange]);
-
-  // FIX: Manejar cambio de checkbox de forma estable
-  const handleCheckboxChange = useCallback((checked: boolean, type: AttributeType) => {
-    if (checked) {
-      // Solo agregar si no existe
+  const toggleAttributeType = useCallback(
+    (type: AttributeType) => {
       const exists = selectedAttributes.find((a) => a.attributeId === type.id);
-      if (!exists) {
+
+      if (exists) {
+        onChange(selectedAttributes.filter((a) => a.attributeId !== type.id));
+      } else {
         onChange([
           ...selectedAttributes,
           {
@@ -103,60 +92,97 @@ export function VariantAttributeSelector({
           },
         ]);
       }
-    } else {
-      // Remover
-      onChange(selectedAttributes.filter((a) => a.attributeId !== type.id));
-    }
-  }, [selectedAttributes, onChange]);
+    },
+    [selectedAttributes, onChange],
+  );
 
-  const toggleValue = useCallback((attrId: string, value: AttributeValue) => {
-    onChange(
-      selectedAttributes.map((attr) => {
-        if (attr.attributeId !== attrId) return attr;
-
-        const valueExists = attr.values.find((v) => v.valueId === value.id);
-        
-        if (valueExists) {
-          return {
-            ...attr,
-            values: attr.values.filter((v) => v.valueId !== value.id),
-          };
-        } else {
-          return {
-            ...attr,
-            values: [
-              ...attr.values,
-              {
-                valueId: value.id,
-                code: value.code,
-                value: value.value,
-              },
-            ],
-          };
+  // FIX: Manejar cambio de checkbox de forma estable
+  const handleCheckboxChange = useCallback(
+    (checked: boolean, type: AttributeType) => {
+      if (checked) {
+        // Solo agregar si no existe
+        const exists = selectedAttributes.find(
+          (a) => a.attributeId === type.id,
+        );
+        if (!exists) {
+          onChange([
+            ...selectedAttributes,
+            {
+              attributeId: type.id,
+              attributeName: type.name,
+              attributeCode: type.code,
+              values: [],
+            },
+          ]);
         }
-      })
-    );
-  }, [selectedAttributes, onChange]);
+      } else {
+        // Remover
+        onChange(selectedAttributes.filter((a) => a.attributeId !== type.id));
+      }
+    },
+    [selectedAttributes, onChange],
+  );
 
-  const removeAttribute = useCallback((attrId: string) => {
-    onChange(selectedAttributes.filter((a) => a.attributeId !== attrId));
-  }, [selectedAttributes, onChange]);
+  const toggleValue = useCallback(
+    (attrId: string, value: AttributeValue) => {
+      onChange(
+        selectedAttributes.map((attr) => {
+          if (attr.attributeId !== attrId) return attr;
 
-  const removeValue = useCallback((attrId: string, valueId: string) => {
-    onChange(
-      selectedAttributes.map((attr) =>
-        attr.attributeId === attrId
-          ? { ...attr, values: attr.values.filter((v) => v.valueId !== valueId) }
-          : attr
-      )
-    );
-  }, [selectedAttributes, onChange]);
+          const valueExists = attr.values.find((v) => v.valueId === value.id);
+
+          if (valueExists) {
+            return {
+              ...attr,
+              values: attr.values.filter((v) => v.valueId !== value.id),
+            };
+          } else {
+            return {
+              ...attr,
+              values: [
+                ...attr.values,
+                {
+                  valueId: value.id,
+                  code: value.code,
+                  value: value.value,
+                },
+              ],
+            };
+          }
+        }),
+      );
+    },
+    [selectedAttributes, onChange],
+  );
+
+  const removeAttribute = useCallback(
+    (attrId: string) => {
+      onChange(selectedAttributes.filter((a) => a.attributeId !== attrId));
+    },
+    [selectedAttributes, onChange],
+  );
+
+  const removeValue = useCallback(
+    (attrId: string, valueId: string) => {
+      onChange(
+        selectedAttributes.map((attr) =>
+          attr.attributeId === attrId
+            ? {
+                ...attr,
+                values: attr.values.filter((v) => v.valueId !== valueId),
+              }
+            : attr,
+        ),
+      );
+    },
+    [selectedAttributes, onChange],
+  );
 
   // Memoizar cálculos
   const totalCombinations = useMemo(() => {
     return selectedAttributes.reduce(
       (acc, attr) => acc * Math.max(attr.values.length, 1),
-      1
+      1,
     );
   }, [selectedAttributes]);
 
@@ -169,29 +195,32 @@ export function VariantAttributeSelector({
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          No hay tipos de atributo configurados para generar variantes.
-          Ve a <strong>Catálogos &gt; Tipos de Atributos</strong> y marca algunos como 
-          &quot;Usar para Variantes&quot; y &quot;Afecta SKU&quot;.
+          No hay tipos de atributo configurados para generar variantes. Ve a{" "}
+          <strong>Catálogos &gt; Tipos de Atributos</strong> y marca algunos
+          como &quot;Usar para Variantes&quot; y &quot;Afecta SKU&quot;.
         </AlertDescription>
       </Alert>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* PASO 1: Seleccionar Tipos */}
-      <Card className={disabled ? "opacity-60 pointer-events-none" : ""}>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Layers className="w-4 h-4" />
-            1. Selecciona atributos que generarán variantes
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div
+        className={
+          disabled ? "opacity-60 pointer-events-none w-full" : "w-full"
+        }
+      >
+        <div className="text-sm font-medium flex items-center mb-2 gap-2">
+          <Layers className="w-4 h-4" />
+          1. Selecciona atributos que generarán variantes
+        </div>
+
+        <div className="space-y-4">
           <div className="flex flex-wrap gap-3">
             {variantTypes.map((type) => {
               const isSelected = selectedAttributes.some(
-                (a) => a.attributeId === type.id
+                (a) => a.attributeId === type.id,
               );
               const availableValues = getValuesForType(type.id).length;
 
@@ -199,17 +228,19 @@ export function VariantAttributeSelector({
                 <div
                   key={type.id}
                   className={cn(
-                    "flex items-center space-x-3 border-2 rounded-lg px-4 py-3 transition-all",
-                    isSelected 
-                      ? "border-primary bg-primary/5" 
-                      : "border-muted hover:border-muted-foreground/50"
+                    "flex items-center space-x-3 bg-primary/3 rounded-lg px-4 py-3 transition-all",
+                    isSelected
+                      ? "border bg-primary/5"
+                      : "border-muted hover:border-muted-foreground/50",
                   )}
                 >
                   {/* FIX: Checkbox con onCheckedChange estable */}
                   <Checkbox
                     id={`attr-${type.id}`}
                     checked={isSelected}
-                    onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, type)}
+                    onCheckedChange={(checked) =>
+                      handleCheckboxChange(checked as boolean, type)
+                    }
                   />
                   <div className="space-y-0.5">
                     <Label
@@ -235,18 +266,19 @@ export function VariantAttributeSelector({
               </AlertDescription>
             </Alert>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <Separator className="my-4" />
 
       {/* PASO 2: Seleccionar Valores */}
       {selectedAttributes.length > 0 && (
-        <Card className={disabled ? "opacity-60 pointer-events-none" : ""}>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              2. Selecciona valores del catálogo
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <div className={disabled ? "opacity-60 pointer-events-none" : ""}>
+          <div className="text-sm font-medium mb-2">
+            2. Selecciona valores del catálogo
+          </div>
+
+          <div className="space-y-6">
             {selectedAttributes.map((attr) => {
               const availableValues = getValuesForType(attr.attributeId);
               const isOpen = openPopover === attr.attributeId;
@@ -279,18 +311,26 @@ export function VariantAttributeSelector({
                     </Button>
                   </div>
 
-                  <Popover 
-                    open={isOpen} 
-                    onOpenChange={(open) => setOpenPopover(open ? attr.attributeId : null)}
+                  <Popover
+                    open={isOpen}
+                    onOpenChange={(open) =>
+                      setOpenPopover(open ? attr.attributeId : null)
+                    }
                   >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className="w-full justify-between"
                       >
-                        <span className={attr.values.length > 0 ? "text-foreground" : "text-muted-foreground"}>
-                          {attr.values.length > 0 
-                            ? `${attr.values.length} valores seleccionados` 
+                        <span
+                          className={
+                            attr.values.length > 0
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {attr.values.length > 0
+                            ? `${attr.values.length} valores seleccionados`
                             : `Seleccionar valores de ${attr.attributeName.toLowerCase()}...`}
                         </span>
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -298,7 +338,9 @@ export function VariantAttributeSelector({
                     </PopoverTrigger>
                     <PopoverContent className="w-[400px] p-0" align="start">
                       <Command>
-                        <CommandInput placeholder={`Buscar ${attr.attributeName.toLowerCase()}...`} />
+                        <CommandInput
+                          placeholder={`Buscar ${attr.attributeName.toLowerCase()}...`}
+                        />
                         <CommandList>
                           <CommandEmpty>
                             No hay valores. Agrega en Catálogos &gt; Valores.
@@ -306,7 +348,7 @@ export function VariantAttributeSelector({
                           <CommandGroup>
                             {availableValues.map((value) => {
                               const isSelected = attr.values.some(
-                                (v) => v.valueId === value.id
+                                (v) => v.valueId === value.id,
                               );
                               return (
                                 <CommandItem
@@ -317,14 +359,25 @@ export function VariantAttributeSelector({
                                   }}
                                   className="flex items-center gap-2 cursor-pointer"
                                 >
-                                  <div className={cn(
-                                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                    isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
-                                  )}>
-                                    <Check className={cn("h-3 w-3", isSelected ? "visible" : "")} />
+                                  <div
+                                    className={cn(
+                                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                      isSelected
+                                        ? "bg-primary text-primary-foreground"
+                                        : "opacity-50 [&_svg]:invisible",
+                                    )}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "h-3 w-3",
+                                        isSelected ? "visible" : "",
+                                      )}
+                                    />
                                   </div>
                                   <div className="flex-1">
-                                    <div className="font-medium">{value.value}</div>
+                                    <div className="font-medium">
+                                      {value.value}
+                                    </div>
                                     <div className="text-xs text-muted-foreground font-mono">
                                       {value.code}
                                     </div>
@@ -346,10 +399,14 @@ export function VariantAttributeSelector({
                           key={val.valueId}
                           variant="secondary"
                           className="px-3 py-1.5 text-sm gap-2 cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
-                          onClick={() => removeValue(attr.attributeId, val.valueId)}
+                          onClick={() =>
+                            removeValue(attr.attributeId, val.valueId)
+                          }
                         >
                           <span className="font-medium">{val.value}</span>
-                          <span className="text-xs opacity-70 font-mono">({val.code})</span>
+                          <span className="text-xs opacity-70 font-mono">
+                            ({val.code})
+                          </span>
                           <X className="w-3 h-3" />
                         </Badge>
                       ))
@@ -367,7 +424,8 @@ export function VariantAttributeSelector({
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Todos los atributos deben tener al menos un valor seleccionado.
+                  Todos los atributos deben tener al menos un valor
+                  seleccionado.
                 </AlertDescription>
               </Alert>
             )}
@@ -388,8 +446,8 @@ export function VariantAttributeSelector({
                 {totalCombinations}
               </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

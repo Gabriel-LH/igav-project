@@ -27,7 +27,7 @@ import { Badge } from "@/components/badge";
 import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
 import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
-import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
+import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { ProcessReturnUseCase } from "@/src/application/use-cases/processReturn.usecase";
 import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";

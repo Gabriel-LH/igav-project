@@ -1,13 +1,13 @@
 import {
   BundleDomainService,
   BundleDefinition,
+  AvailabilityInput,
 } from "../../domain/services/bundle.service";
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
 import { PromotionRepository } from "../../domain/repositories/PromotionRepository";
 import { CartItem } from "../../types/cart/type.cart";
-import { AvailabilityInput } from "../../domain/services/bundle.service";
 
-export class ApplyBundleOrchestrator {
+export class ApplyBundleUseCase {
   private bundleDomainService: BundleDomainService;
 
   constructor(

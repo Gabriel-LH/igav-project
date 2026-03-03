@@ -1,5 +1,5 @@
 // utils/ticket/build-return-ticket.ts
-import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
+import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { formatCurrency } from "@/src/utils/currency-format";
 

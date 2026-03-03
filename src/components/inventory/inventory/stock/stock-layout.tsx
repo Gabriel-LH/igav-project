@@ -5,59 +5,50 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
 import { StockForm } from "./stock-form";
-import { StockTable } from "./stock-table";
-import { StockListItem } from "@/src/application/interfaces/stock/StockListItem";
+import { StockTable } from "./table/stock-table";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { CreateStockLotUseCase } from "@/src/application/use-cases/inventory/createStockLot.usecase";
+import { DeleteStockLotUseCase } from "@/src/application/use-cases/inventory/deleteStockLot.usecase";
+import { ListStockLotsUseCase } from "@/src/application/use-cases/inventory/listStockLots.usecase";
 
 export function StockLayout() {
   const tenantId = "tenant-a";
-  const stockLots = useInventoryStore((state) => state.stockLots);
-  const products = useInventoryStore((state) => state.products);
-  const productVariants = useInventoryStore((state) => state.productVariants);
+  const stockLotsState = useInventoryStore((state) => state.stockLots);
+  const productsState = useInventoryStore((state) => state.products);
+  const productVariantsState = useInventoryStore(
+    (state) => state.productVariants,
+  );
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
   const createStockLotUseCase = useMemo(
     () => new CreateStockLotUseCase(inventoryRepo),
     [inventoryRepo],
   );
+  const deleteStockLotUseCase = useMemo(
+    () => new DeleteStockLotUseCase(inventoryRepo),
+    [inventoryRepo],
+  );
+  const listStockLotsUseCase = useMemo(
+    () => new ListStockLotsUseCase(inventoryRepo),
+    [inventoryRepo],
+  );
 
-  const stockList = useMemo<StockListItem[]>(() => {
-    return stockLots.map((stockLot) => {
-      const product = products.find((productItem) => productItem.id === stockLot.productId);
-      const variant = productVariants.find(
-        (variantItem) => variantItem.id === stockLot.variantId,
-      );
-      const branch = BRANCH_MOCKS.find((branchItem) => branchItem.id === stockLot.branchId);
-
-      return {
-        id: stockLot.id,
-        productName: product?.name || stockLot.productId,
-        variantName:
-          variant && Object.values(variant.attributes).length > 0
-            ? Object.values(variant.attributes).join(" / ")
-            : variant?.variantCode || stockLot.variantId,
-        variantCode: variant?.variantCode || stockLot.variantId,
-        barcode: stockLot.barcode || variant?.barcode || "",
-        branchName: branch?.name || stockLot.branchId,
-        quantity: stockLot.quantity,
-        status: stockLot.status,
-        isForRent: stockLot.isForRent,
-        isForSale: stockLot.isForSale,
-        expirationDate: stockLot.expirationDate,
-        lotNumber: stockLot.lotNumber,
-      };
-    });
-  }, [products, productVariants, stockLots]);
+  const stockList = useMemo(
+    () =>
+      listStockLotsUseCase.execute({
+        branches: BRANCH_MOCKS,
+      }),
+    [listStockLotsUseCase, stockLotsState, productsState, productVariantsState],
+  );
 
   const handleSubmit = (formData: StockFormData) => {
     createStockLotUseCase.execute({ tenantId, formData });
   };
 
   const handleDelete = (id: string) => {
-    inventoryRepo.removeStockLot(id);
+    deleteStockLotUseCase.execute({ stockLotId: id });
   };
 
   return (
@@ -67,17 +58,15 @@ export function StockLayout() {
 
       {/* Tabla de Stock Existente */}
       {stockList.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Stock Registrado ({stockList.length} lotes)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div>
+          <div className="text-lg flex items-center gap-2 mb-2">
+            <Package className="w-5 h-5" />
+            Stock Registrado ({stockList.length} lotes)
+          </div>
+          <div>
             <StockTable stockList={stockList} onDelete={handleDelete} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

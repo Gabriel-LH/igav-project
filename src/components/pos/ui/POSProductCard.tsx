@@ -6,7 +6,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ShoppingBag } from "lucide-react";
+import { Eye, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
@@ -20,6 +20,7 @@ import {
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/guards/FeatureGuard";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useRouter } from "next/navigation";
 
 interface PosProductCardProps {
   product: Product;
@@ -149,6 +150,7 @@ function VariantSelector({
 }
 
 export function PosProductCard({ product }: PosProductCardProps) {
+  const router = useRouter();
   const { addItem, items } = useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
   const { getModelById, getCategoryById } = useAttributeStore();
@@ -341,6 +343,18 @@ export function PosProductCard({ product }: PosProductCardProps) {
               </p>
             </div>
           </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="justify-start px-0 h-6 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() =>
+              router.push(`/product-details/${encodeURIComponent(product.id)}`)
+            }
+          >
+            <Eye className="w-3.5 h-3.5 mr-1" />
+            Ver detalles
+          </Button>
 
           <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FeatureGuard feature="sales">

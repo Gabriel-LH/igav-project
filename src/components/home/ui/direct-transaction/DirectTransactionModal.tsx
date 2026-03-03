@@ -20,13 +20,13 @@ import {
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
-import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
-import { SaleDTO } from "@/src/application/interfaces/SaleDTO";
+import { RentalDTO } from "@/src/application/dtos/RentalDTO";
+import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 
 import { PriceBreakdownBase } from "@/src/components/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "../direct-transaction/CashPaymentSummary";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
-import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
@@ -372,7 +372,7 @@ export function DirectTransactionModal({
         updatedAt: new Date(),
       };
 
-      processTransaction(rentalData);
+      makeProcessTransaction().execute(rentalData);
       if (rentalData.status === "alquilado") {
         toast.success("Alquiler realizado correctamente");
       } else {
@@ -414,7 +414,7 @@ export function DirectTransactionModal({
         updatedAt: new Date(),
       };
 
-      processTransaction(saleData);
+      makeProcessTransaction().execute(saleData);
       if (!checklist.deliverAfter) {
         toast.success("Venta realizada correctamente");
       } else {

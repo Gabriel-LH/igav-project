@@ -10,7 +10,7 @@ import { Badge } from "@/components/badge";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, SaleTag02Icon } from "@hugeicons/core-free-icons";
-import { DetailsProductViewer } from "./details-product-viewer";
+import Link from "next/link";
 import { productSchema } from "../../types/product/type.product";
 import { z } from "zod";
 import { USER_MOCK } from "@/src/mocks/mock.user";
@@ -366,7 +366,11 @@ export function CatalogProductCard({ product }: Props) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <DetailsProductViewer item={product} />
+        <Link href={`/product-details/${encodeURIComponent(product.id)}`} className="w-full">
+          <Badge className="w-full justify-center py-2 cursor-pointer hover:opacity-90">
+            Ver detalles
+          </Badge>
+        </Link>
       </CardFooter>
     </Card>
   );

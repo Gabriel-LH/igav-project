@@ -115,7 +115,7 @@ export function StockTable({ stockList, onDelete }: StockTableProps) {
               <TableHead>
                 <div className="flex items-center gap-1">
                   <Barcode className="w-3 h-3" />
-                  CÃ³digo de Barras
+                  Código de Barras
                 </div>
               </TableHead>
               <TableHead className="w-16">Acciones</TableHead>

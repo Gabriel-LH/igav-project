@@ -19,13 +19,13 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/home/ui/direct-transaction/CashPaymentSummary";
-import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { SaleDTO } from "@/src/application/interfaces/SaleDTO";
-import { RentalDTO } from "@/src/application/interfaces/RentalDTO";
+import { SaleDTO } from "@/src/application/dtos/SaleDTO";
+import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";
@@ -38,7 +38,7 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
-import { ApplyBundleOrchestrator } from "@/src/application/orchestrators/applyBundle.orchestrator";
+import { ApplyBundleUseCase } from "@/src/application/use-cases/applyBundle.usecase";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
@@ -262,7 +262,7 @@ export function PosCheckoutModal({
       if (items.some((item) => item.bundleId)) {
         const tenantId = activeTenantId ?? items[0]?.product.tenantId;
         if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-        const bundleOrchestrator = new ApplyBundleOrchestrator(
+        const bundleOrchestrator = new ApplyBundleUseCase(
           new ZustandInventoryRepository(),
           new ZustandPromotionRepository(),
         );
@@ -408,7 +408,7 @@ export function PosCheckoutModal({
           },
         };
 
-        await processTransaction(saleDTO);
+        await makeProcessTransaction().execute(saleDTO);
       }
 
       if (alquilerItems.length > 0) {
@@ -442,7 +442,7 @@ export function PosCheckoutModal({
           },
         };
 
-        await processTransaction(rentalDTO);
+        await makeProcessTransaction().execute(rentalDTO);
       }
 
       if (usePoints && pointsConsumed > 0) {

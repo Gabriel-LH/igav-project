@@ -1,7 +1,7 @@
 // components/inventory/VariantsTable.tsx
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -61,68 +61,7 @@ import {
 import { cn } from "@/lib/utils";
 import { generateBarcode } from "@/src/utils/variants/barcode";
 import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
-
-// Componente de escaneo
-function BarcodeScanner({ onScan }: { onScan: (code: string) => void }) {
-  const [scanning, setScanning] = useState(false);
-  const [manualCode, setManualCode] = useState("");
-
-  const simulateScan = () => {
-    setScanning(true);
-    setTimeout(() => {
-      const randomCode = Math.floor(Math.random() * 1000000000000)
-        .toString()
-        .padStart(13, "0");
-      onScan(randomCode);
-      setScanning(false);
-    }, 1500);
-  };
-
-  return (
-    <div className="space-y-4">
-      <div
-        className={cn(
-          "w-64 h-48 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer transition-colors",
-          scanning
-            ? "border-green-500 bg-green-50 animate-pulse"
-            : "border-muted hover:border-primary",
-        )}
-        onClick={!scanning ? simulateScan : undefined}
-      >
-        {scanning ? (
-          <div className="text-center">
-            <ScanLine className="w-12 h-12 text-green-500 mx-auto mb-2 animate-bounce" />
-            <p className="text-sm text-green-600 font-medium">Escaneando...</p>
-          </div>
-        ) : (
-          <div className="text-center text-muted-foreground">
-            <ScanLine className="w-12 h-12 mx-auto mb-2" />
-            <p className="text-sm">Haz clic para simular escaneo</p>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">O ingresa manualmente:</p>
-        <div className="flex gap-2">
-          <Input
-            placeholder="1234567890123"
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
-            maxLength={13}
-            className="font-mono"
-          />
-          <Button
-            onClick={() => manualCode && onScan(manualCode)}
-            disabled={manualCode.length < 8}
-          >
-            Usar
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { BarcodeScanner } from "../../barcode/BarcodeScanner";
 
 interface VariantsTableProps {
   baseSku: string;
@@ -135,6 +74,8 @@ interface VariantsTableProps {
     combinationFormula: string;
   };
   isSerial: boolean;
+  canRent: boolean;
+  canSell: boolean;
   onUpdateOverride: (
     signature: string,
     override: Partial<VariantOverride>,
@@ -145,17 +86,21 @@ interface VariantsTableProps {
 
 const RENT_UNITS = [
   { value: "hora", label: "Hora" },
-  { value: "día", label: "Día" },
+  { value: "dia", label: "Día" },
   { value: "semana", label: "Semana" },
   { value: "mes", label: "Mes" },
   { value: "evento", label: "Evento" },
 ];
+
+const unidadesRenta = RENT_UNITS;
 
 export function VariantsTable({
   baseSku,
   variants,
   stats,
   isSerial,
+  canRent,
+  canSell,
   onUpdateOverride,
   onResetOverride,
   onResetAll,
@@ -170,6 +115,7 @@ export function VariantsTable({
 
   // Aplicar precio de renta en masa
   const applyGlobalRentPrice = useCallback(() => {
+    if (!canRent) return;
     const numValue = parseFloat(globalPriceRent);
     if (isNaN(numValue)) return;
 
@@ -178,10 +124,11 @@ export function VariantsTable({
         onUpdateOverride(variant.signature, { priceRent: numValue });
       }
     });
-  }, [globalPriceRent, variants, onUpdateOverride]);
+  }, [canRent, globalPriceRent, variants, onUpdateOverride]);
 
   // Aplicar precio de venta en masa
   const applyGlobalSellPrice = useCallback(() => {
+    if (!canSell) return;
     const numValue = parseFloat(globalPriceSell);
     if (isNaN(numValue)) return;
 
@@ -190,10 +137,11 @@ export function VariantsTable({
         onUpdateOverride(variant.signature, { priceSell: numValue });
       }
     });
-  }, [globalPriceSell, variants, onUpdateOverride]);
+  }, [canSell, globalPriceSell, variants, onUpdateOverride]);
 
   // Aplicar unidad en masa
   const applyGlobalUnit = useCallback(() => {
+    if (!canRent) return;
     if (!globalUnit) return;
 
     variants.forEach((variant) => {
@@ -201,7 +149,7 @@ export function VariantsTable({
         onUpdateOverride(variant.signature, { rentUnit: globalUnit });
       }
     });
-  }, [globalUnit, variants, onUpdateOverride]);
+  }, [canRent, globalUnit, variants, onUpdateOverride]);
 
   const copyBarcode = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
@@ -250,139 +198,142 @@ export function VariantsTable({
   return (
     <div className="space-y-6">
       {/* Resumen superior */}
-      <Card className="bg-linear-to-r from-primary/5 to-secondary/5 border-primary/20">
-        <CardContent className="pt-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <Package className="w-5 h-5 text-primary" />
-                {stats.total} variantes generadas
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Basado en:{" "}
-                <span className="font-medium text-foreground">
-                  {stats.combinationFormula}
-                </span>
-              </p>
-            </div>
 
-            <div className="flex gap-6 text-sm">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {stats.active}
-                </div>
-                <div className="text-muted-foreground">Activas</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">
-                  {stats.inactive}
-                </div>
-                <div className="text-muted-foreground">Inactivas</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {stats.withOverrides}
-                </div>
-                <div className="text-muted-foreground">Editadas</div>
-              </div>
-            </div>
+      <div className="pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <Package className="w-5 h-5 text-primary" />
+              {stats.total} variantes generadas
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Basado en:{" "}
+              <span className="font-medium text-foreground">
+                {stats.combinationFormula}
+              </span>
+            </p>
           </div>
 
-          {isSerial && (
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2 text-amber-800 text-sm">
-              <AlertTriangle className="w-4 h-4" />
-              <span>
-                <strong>Modo Serializado:</strong> Cada variante representa un
-                ítem único. El stock se gestionará por números de serie
-                individuales.
-              </span>
+          <div className="flex gap-6 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {stats.active}
+              </div>
+              <div className="text-muted-foreground">Activas</div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {stats.inactive}
+              </div>
+              <div className="text-muted-foreground">Inactivas</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.withOverrides}
+              </div>
+              <div className="text-muted-foreground">Editadas</div>
+            </div>
+          </div>
+        </div>
+
+        {isSerial && (
+          <div className="mt-4 p-3 border bg-primary/5 rounded-lg flex items-center gap-2 text-amber-600 text-sm">
+            <AlertTriangle className="w-4 h-4" />
+            <span>
+              <strong>Modo Serializado:</strong> Cada variante representa un
+              ítem único. El stock se gestionará por números de serie
+              individuales.
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Aplicar valores en masa - CADA UNO INDEPENDIENTE */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Calculator className="w-4 h-4" />
-            Aplicar valores masivamente (opcional)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div>
+        <h3 className="text-sm font-medium flex mb-3 items-center gap-2">
+          <Calculator className="w-4 h-4" />
+          Aplicar valores masivamente (opcional)
+        </h3>
+        <div>
           <div className="flex gap-4 items-end flex-wrap">
-            {/* Precio Renta - INDEPENDIENTE */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Precio Renta</label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="w-32 h-8"
-                  value={globalPriceRent}
-                  onChange={(e) => setGlobalPriceRent(e.target.value)}
-                />
-                <Button
-                  size="sm"
-                  onClick={applyGlobalRentPrice}
-                  disabled={!globalPriceRent || globalPriceRent === "0"}
-                  type="button"
-                >
-                  Aplicar
-                </Button>
+            {canRent && (
+              <div className="space-y-2">
+                <label className="text-xs font-medium">Precio Renta</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-32 h-8"
+                    value={globalPriceRent}
+                    onChange={(e) => setGlobalPriceRent(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    onClick={applyGlobalRentPrice}
+                    disabled={!globalPriceRent || globalPriceRent === "0"}
+                    type="button"
+                  >
+                    Aplicar
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Unidad - INDEPENDIENTE */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Unidad Renta</label>
-              <div className="flex gap-2">
-                <select
-                  className="h-8 text-sm border rounded px-2 bg-background w-32"
-                  value={globalUnit}
-                  onChange={(e) => setGlobalUnit(e.target.value)}
-                >
-                  <option value="">Seleccionar...</option>
-                  {RENT_UNITS.map((u) => (
-                    <option key={u.value} value={u.value}>
-                      {u.label}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  size="sm"
-                  onClick={applyGlobalUnit}
-                  disabled={!globalUnit}
-                  type="button"
-                >
-                  Aplicar
-                </Button>
+            {canRent && (
+              <div className="space-y-2">
+                <label className="text-xs font-medium">Unidad Renta</label>
+                <div className="flex gap-2">
+                  <Select
+                    value={globalUnit}
+                    onValueChange={(e) => setGlobalUnit(e)}
+                  >
+                    <SelectTrigger className="w-full max-w-48">
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unidadesRenta.map((u) => (
+                        <SelectItem key={u.value} value={u.value}>
+                          {u.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="sm"
+                    onClick={applyGlobalUnit}
+                    disabled={!globalUnit}
+                    type="button"
+                  >
+                    Aplicar
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Precio Venta - INDEPENDIENTE */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Precio Venta</label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="w-32 h-8"
-                  value={globalPriceSell}
-                  onChange={(e) => setGlobalPriceSell(e.target.value)}
-                />
-                <Button
-                  size="sm"
-                  onClick={applyGlobalSellPrice}
-                  disabled={!globalPriceSell || globalPriceSell === "0"}
-                  type="button"
-                >
-                  Aplicar
-                </Button>
+            {canSell && (
+              <div className="space-y-2">
+                <label className="text-xs font-medium">Precio Venta</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-32 h-8"
+                    value={globalPriceSell}
+                    onChange={(e) => setGlobalPriceSell(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    onClick={applyGlobalSellPrice}
+                    disabled={!globalPriceSell || globalPriceSell === "0"}
+                    type="button"
+                  >
+                    Aplicar
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
 
             <Button
               variant="outline"
@@ -395,143 +346,153 @@ export function VariantsTable({
               Resetear todo
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Tabla de variantes */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="w-12 text-center">Activo</TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <Hash className="w-3 h-3" />
-                      SKU
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <Barcode className="w-3 h-3" />
-                      Código de Barras
-                    </div>
-                  </TableHead>
-                  {getAttributeKeys().map((key) => (
-                    <TableHead key={key}>{key}</TableHead>
-                  ))}
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" />
-                      Precio Renta
-                    </div>
-                  </TableHead>
-                  <TableHead>Unidad</TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" />
-                      Precio Venta
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-16"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedVariants.map((variant, index) => {
-                  const globalIndex = safePageIndex * pageSize + index;
-                  return (
-                  <VariantRow
-                    key={variant.signature}
-                    variant={variant}
-                    onUpdateOverride={onUpdateOverride}
-                    onResetOverride={onResetOverride}
-                    onGenerateBarcode={() =>
-                      handleGenerateBarcode(variant, globalIndex)
-                    }
-                    onCopyBarcode={copyBarcode}
-                    copiedBarcode={copiedBarcode}
-                  />
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex items-center justify-between px-4 py-4">
-            <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
-              <div className="hidden items-center gap-2 lg:flex">
-                <Label htmlFor="rows-per-page-variant" className="text-sm font-medium">
-                  Filas por pagina
-                </Label>
-                <Select
-                  value={`${pageSize}`}
-                  onValueChange={(value) => {
-                    setPageSize(Number(value));
-                    setPageIndex(0);
-                  }}
-                >
-                  <SelectTrigger size="sm" className="w-20" id="rows-per-page-variant">
-                    <SelectValue placeholder={pageSize} />
-                  </SelectTrigger>
-                  <SelectContent side="top">
-                    {[10, 20, 30, 40, 50].map((size) => (
-                      <SelectItem key={size} value={`${size}`}>
-                        {size}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex w-fit items-center justify-center text-sm font-medium">
-                Pagina {safePageIndex + 1} de {pageCount}
-              </div>
-              <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                <Button
-                  variant="outline"
-                  className="hidden h-8 w-8 p-0 lg:flex"
-                  onClick={() => setPageIndex(0)}
-                  disabled={!canPreviousPage}
-                >
-                  <span className="sr-only">Ir a la primera pagina</span>
-                  <ChevronsLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
-                  disabled={!canPreviousPage}
-                >
-                  <span className="sr-only">Ir a la pagina anterior</span>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() =>
-                    setPageIndex((prev) => Math.min(prev + 1, pageCount - 1))
+
+      <div className="overflow-x-auto rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-12 text-center">Activo</TableHead>
+              <TableHead>
+                <div className="flex items-center gap-1">
+                  <Hash className="w-3 h-3" />
+                  SKU
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-1">
+                  <Barcode className="w-3 h-3" />
+                  Código de Barras
+                </div>
+              </TableHead>
+              {getAttributeKeys().map((key) => (
+                <TableHead key={key}>{key}</TableHead>
+              ))}
+              {canRent && (
+                <TableHead>
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="w-3 h-3" />
+                    Precio Renta
+                  </div>
+                </TableHead>
+              )}
+              {canRent && <TableHead>Unidad</TableHead>}
+              {canSell && (
+                <TableHead>
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="w-3 h-3" />
+                    Precio Venta
+                  </div>
+                </TableHead>
+              )}
+              <TableHead className="w-16"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedVariants.map((variant, index) => {
+              const globalIndex = safePageIndex * pageSize + index;
+              return (
+                <VariantRow
+                  key={variant.signature}
+                  variant={variant}
+                  onUpdateOverride={onUpdateOverride}
+                  onResetOverride={onResetOverride}
+                  onGenerateBarcode={() =>
+                    handleGenerateBarcode(variant, globalIndex)
                   }
-                  disabled={!canNextPage}
-                >
-                  <span className="sr-only">Ir a la pagina siguiente</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="hidden size-8 lg:flex"
-                  size="icon"
-                  onClick={() => setPageIndex(pageCount - 1)}
-                  disabled={!canNextPage}
-                >
-                  <span className="sr-only">Ir a la ultima pagina</span>
-                  <ChevronsRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+                  onCopyBarcode={copyBarcode}
+                  copiedBarcode={copiedBarcode}
+                  canRent={canRent}
+                  canSell={canSell}
+                />
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-between px-4">
+        <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
+          <div className="hidden items-center gap-2 lg:flex">
+            <Label
+              htmlFor="rows-per-page-variant"
+              className="text-sm font-medium"
+            >
+              Filas por pagina
+            </Label>
+            <Select
+              value={`${pageSize}`}
+              onValueChange={(value) => {
+                setPageSize(Number(value));
+                setPageIndex(0);
+              }}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-20"
+                id="rows-per-page-variant"
+              >
+                <SelectValue placeholder={pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={`${size}`}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex w-fit items-center justify-center text-sm font-medium">
+            Pagina {safePageIndex + 1} de {pageCount}
+          </div>
+          <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => setPageIndex(0)}
+              disabled={!canPreviousPage}
+            >
+              <span className="sr-only">Ir a la primera pagina</span>
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="size-8"
+              size="icon"
+              onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
+              disabled={!canPreviousPage}
+            >
+              <span className="sr-only">Ir a la pagina anterior</span>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="size-8"
+              size="icon"
+              onClick={() =>
+                setPageIndex((prev) => Math.min(prev + 1, pageCount - 1))
+              }
+              disabled={!canNextPage}
+            >
+              <span className="sr-only">Ir a la pagina siguiente</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden size-8 lg:flex"
+              size="icon"
+              onClick={() => setPageIndex(pageCount - 1)}
+              disabled={!canNextPage}
+            >
+              <span className="sr-only">Ir a la ultima pagina</span>
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -547,6 +508,8 @@ interface VariantRowProps {
   onGenerateBarcode: () => void;
   onCopyBarcode: (code: string) => void;
   copiedBarcode: string | null;
+  canRent: boolean;
+  canSell: boolean;
 }
 
 function VariantRow({
@@ -556,25 +519,18 @@ function VariantRow({
   onGenerateBarcode,
   onCopyBarcode,
   copiedBarcode,
+  canRent,
+  canSell,
 }: VariantRowProps) {
-  // Estado local SOLO para este input específico
-  const [localRentPrice, setLocalRentPrice] = useState(
-    variant.priceRent ? String(variant.priceRent) : "",
-  );
-  const [localSellPrice, setLocalSellPrice] = useState(
-    variant.priceSell ? String(variant.priceSell) : "",
-  );
-  const [localBarcode, setLocalBarcode] = useState(variant.barcode || "");
-
-  // Actualizar estado local cuando cambia la variante externamente
-  useEffect(() => {
-    setLocalRentPrice(variant.priceRent ? String(variant.priceRent) : "");
-    setLocalSellPrice(variant.priceSell ? String(variant.priceSell) : "");
-    setLocalBarcode(variant.barcode || "");
-  }, [variant.priceRent, variant.priceSell, variant.barcode]);
+  const localRentPrice = variant.priceRent ? String(variant.priceRent) : "";
+  const localSellPrice = variant.priceSell ? String(variant.priceSell) : "";
+  const localBarcode = variant.barcode || "";
 
   const handleRentPriceChange = (value: string) => {
-    setLocalRentPrice(value);
+    if (value === "") {
+      onUpdateOverride(variant.signature, { priceRent: 0 });
+      return;
+    }
     const num = parseFloat(value);
     if (!isNaN(num)) {
       onUpdateOverride(variant.signature, { priceRent: num });
@@ -582,7 +538,10 @@ function VariantRow({
   };
 
   const handleSellPriceChange = (value: string) => {
-    setLocalSellPrice(value);
+    if (value === "") {
+      onUpdateOverride(variant.signature, { priceSell: 0 });
+      return;
+    }
     const num = parseFloat(value);
     if (!isNaN(num)) {
       onUpdateOverride(variant.signature, { priceSell: num });
@@ -590,7 +549,6 @@ function VariantRow({
   };
 
   const handleBarcodeChange = (value: string) => {
-    setLocalBarcode(value);
     onUpdateOverride(variant.signature, { barcode: value });
   };
 
@@ -746,47 +704,54 @@ function VariantRow({
         </TableCell>
       ))}
 
-      {/* Precio Renta - INPUT INDEPENDIENTE */}
-      <TableCell>
-        <Input
-          type="number"
-          step="0.01"
-          value={localRentPrice}
-          onChange={(e) => handleRentPriceChange(e.target.value)}
-          className="h-8 w-24"
-          disabled={!variant.isActive}
-          placeholder="0.00"
-        />
-      </TableCell>
+      {canRent && (
+        <TableCell>
+          <Input
+            type="number"
+            step="0.01"
+            value={localRentPrice}
+            onChange={(e) => handleRentPriceChange(e.target.value)}
+            className="h-8 w-24"
+            disabled={!variant.isActive}
+            placeholder="0.00"
+          />
+        </TableCell>
+      )}
 
-      {/* Unidad - SELECT INDEPENDIENTE */}
-      <TableCell>
-        <select
-          value={variant.rentUnit}
-          onChange={(e) => handleUnitChange(e.target.value)}
-          className="h-8 text-sm border rounded px-2 bg-background w-24"
-          disabled={!variant.isActive}
-        >
-          {RENT_UNITS.map((unit) => (
-            <option key={unit.value} value={unit.value}>
-              {unit.label}
-            </option>
-          ))}
-        </select>
-      </TableCell>
+      {canRent && (
+        <TableCell>
+          <Select
+            value={variant.rentUnit}
+            onValueChange={(e) => handleUnitChange(e)}
+            disabled={!variant.isActive}
+          >
+            <SelectTrigger className="h-8 w-24">
+              <SelectValue placeholder="Seleccionar..." />
+            </SelectTrigger>
+            <SelectContent>
+              {unidadesRenta.map((unit) => (
+                <SelectItem key={unit.value} value={unit.value}>
+                  {unit.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </TableCell>
+      )}
 
-      {/* Precio Venta - INPUT INDEPENDIENTE */}
-      <TableCell>
-        <Input
-          type="number"
-          step="0.01"
-          value={localSellPrice}
-          onChange={(e) => handleSellPriceChange(e.target.value)}
-          className="h-8 w-24"
-          disabled={!variant.isActive}
-          placeholder="0.00"
-        />
-      </TableCell>
+      {canSell && (
+        <TableCell>
+          <Input
+            type="number"
+            step="0.01"
+            value={localSellPrice}
+            onChange={(e) => handleSellPriceChange(e.target.value)}
+            className="h-8 w-24"
+            disabled={!variant.isActive}
+            placeholder="0.00"
+          />
+        </TableCell>
+      )}
 
       {/* Reset */}
       <TableCell>

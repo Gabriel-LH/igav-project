@@ -12,8 +12,8 @@ import { toast } from "sonner";
 import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
-import { ReservationDTO } from "@/src/application/interfaces/ReservationDTO";
-import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
+import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
@@ -38,7 +38,7 @@ interface ReservationModalProps {
   children: React.ReactNode;
   currentBranchId: string;
   originBranchId: string;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export function ReservationModal({
@@ -307,7 +307,7 @@ export function ReservationModal({
     console.log("newReservation", newReservation);
 
     try {
-      processTransaction(newReservation);
+      makeProcessTransaction().execute(newReservation);
 
       if (overpayment > 0 && !keepAsCredit) {
         toast.info(
@@ -329,7 +329,7 @@ export function ReservationModal({
       toast.error("Error al crear la operación");
     }
     setOpen(false);
-    onSuccess();
+    onSuccess?.();
   };
 
   return (

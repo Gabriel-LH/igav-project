@@ -1,8 +1,8 @@
 import { Reservation } from "../../types/reservation/type.reservation";
 import { ReservationItem } from "../../types/reservation/type.reservationItem";
-import { RentalFromReservationDTO } from "../interfaces/RentalFromReservationDTO";
-import { SaleFromReservationDTO } from "../interfaces/SaleFromReservationDTO";
-import { processTransaction } from "../orchestrators/processTransaction.orchestrator";
+import { RentalFromReservationDTO } from "../dtos/RentalFromReservationDTO";
+import { SaleFromReservationDTO } from "../dtos/SaleFromReservationDTO";
+import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
 import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
 import { GuaranteeRepository } from "../../domain/repositories/GuaranteeRepository";
@@ -116,7 +116,7 @@ export class ConvertReservationUseCase {
       }
 
       // Transacción
-      const result = processTransaction(rentalDTO);
+      const result = await makeProcessTransaction().execute(rentalDTO);
 
       // Movimiento físico
       input.reservationItems.forEach((item) => {
@@ -167,7 +167,7 @@ export class ConvertReservationUseCase {
         notes: input.notes,
       };
 
-      const result = processTransaction(saleDTO);
+      const result = await makeProcessTransaction().execute(saleDTO);
 
       this.reservationRepo.updateStatus(reservation.id, "venta", "convertida");
 

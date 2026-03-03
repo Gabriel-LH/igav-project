@@ -80,10 +80,20 @@ const initialData: ProductFormData = {
 
 interface ProductFormProps {
   initialValues?: Partial<ProductFormData>;
-  onSubmit: (data: ProductFormData) => void;
+  onSubmit: (data: ProductFormData) => boolean | void;
+  onCreated?: () => void;
 }
 
-export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
+const getInitialFormData = (
+  initialValues?: Partial<ProductFormData>,
+): ProductFormData => ({
+  ...initialData,
+  ...initialValues,
+  selectedAttributes: initialValues?.selectedAttributes || [],
+  variantOverrides: initialValues?.variantOverrides || {},
+});
+
+export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormProps) {
   const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
   const attributeValues = useAttributeValueStore(
     (state) => state.attributeValues,
@@ -92,12 +102,9 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
   const brands = useBrandStore((state) => state.brands);
   const categories = useCategoryStore((state) => state.categories);
 
-  const [formData, setFormData] = useState<ProductFormData>({
-    ...initialData,
-    ...initialValues,
-    selectedAttributes: initialValues?.selectedAttributes || [],
-    variantOverrides: initialValues?.variantOverrides || {},
-  });
+  const [formData, setFormData] = useState<ProductFormData>(
+    getInitialFormData(initialValues),
+  );
 
   const [activeTab, setActiveTab] = useState("general");
   const [openModelPopover, setOpenModelPopover] = useState(false);
@@ -185,7 +192,12 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const wasSuccessful = onSubmit(formData);
+    if (!initialValues && wasSuccessful !== false) {
+      setFormData(getInitialFormData(undefined));
+      setActiveTab("general");
+      onCreated?.();
+    }
   };
 
   return (
@@ -228,7 +240,7 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
         <TabsContent value="general" className="space-y-6 mt-3">
           <div className="space-y-4">
             {/* FLAGS PRINCIPALES */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid border-t pt-3 grid-cols-1 md:grid-cols-3 gap-4">
               <Card
                 className={`border transition-colors ${
                   formData.can_rent
@@ -518,38 +530,41 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
               </div>
             </div>
 
-            {/* INFO DE MARCA (solo lectura) */}
-            {selectedModel && (
-              <div className="p-3 bg-muted rounded-lg flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  {selectedModel.brandName[0]}
+            <div className="flex gap-4 w-full">
+              {/* INFO DE MARCA (solo lectura) */}
+              {selectedModel && (
+                <div className="p-3 bg-muted rounded-lg flex items-center gap-3 w-full">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    {selectedModel.brandName[0]}
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Marca</div>
+                    <div className="font-semibold">
+                      {selectedModel.brandName}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Marca</div>
-                  <div className="font-semibold">{selectedModel.brandName}</div>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* INFO DE CATEGORÍA (breadcrumb) */}
-            {selectedCategory && (
-              <div className="p-3 bg-muted rounded-lg">
-                <div className="text-sm text-muted-foreground mb-1">
-                  Ruta de categoría
+              {/* INFO DE CATEGORÍA (breadcrumb) */}
+              {selectedCategory && (
+                <div className="p-3 bg-muted rounded-lg w-full">
+                  <div className="text-sm text-muted-foreground mb-1">
+                    Ruta de categoría
+                  </div>
+                  <div className="flex items-center gap-2 text-sm flex-wrap">
+                    {selectedCategory.path?.split("/").map((part, idx, arr) => (
+                      <span key={idx} className="flex items-center">
+                        <span className="capitalize">{part}</span>
+                        {idx < arr.length - 1 && (
+                          <span className="mx-2 text-muted-foreground">/</span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm flex-wrap">
-                  {selectedCategory.path?.split("/").map((part, idx, arr) => (
-                    <span key={idx} className="flex items-center">
-                      <span className="capitalize">{part}</span>
-                      {idx < arr.length - 1 && (
-                        <span className="mx-2 text-muted-foreground">/</span>
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
+              )}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="description">Descripción</Label>
               <Textarea
@@ -631,6 +646,8 @@ export function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
             variants={variants}
             stats={stats}
             isSerial={formData.is_serial}
+            canRent={formData.can_rent}
+            canSell={formData.can_sell}
             onUpdateOverride={updateOverride}
             onResetOverride={resetOverride}
             onResetAll={resetAllOverrides}

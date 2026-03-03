@@ -56,27 +56,14 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface SerializedItem {
-  id: string;
-  serialCode: string;
-  productName: string;
-  variantName: string;
-  variantCode: string;
-  branchName: string;
-  condition: string;
-  status: string;
-  isForRent: boolean;
-  isForSale: boolean;
-  createdAt: Date;
-}
+import { SerializedListItem } from "@/src/application/interfaces/inventory/SerializedListItem";
 
 interface SerializedItemsTableProps {
-  items: SerializedItem[];
+  items: SerializedListItem[];
   onDelete: (id: string) => void;
 }
 
-type SerializedItemRow = SerializedItem & {
+type SerializedItemRow = SerializedListItem & {
   rowType: "item";
 };
 

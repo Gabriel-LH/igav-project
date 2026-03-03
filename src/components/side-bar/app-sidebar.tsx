@@ -137,6 +137,11 @@ const data = {
   ],
   navRRHH: [
     {
+      title: "Equipo",
+      url: "/team",
+      icon: <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2.2} />,
+    },
+    {
       title: "Asistencia",
       url: "/attendance",
       icon: <HugeiconsIcon icon={CalendarUserIcon} strokeWidth={2.2} />,
@@ -148,7 +153,7 @@ const data = {
     },
     {
       title: "Roles / Permisos",
-      url: "/permissions",
+      url: "/roles",
       icon: <HugeiconsIcon icon={ShieldUserIcon} strokeWidth={2.2} />,
     },
     {
@@ -156,16 +161,11 @@ const data = {
       url: "/branches",
       icon: <HugeiconsIcon icon={StoreLocation01Icon} strokeWidth={2.2} />,
     },
-    {
-      title: "Usuarios",
-      url: "/users",
-      icon: <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2.2} />,
-    }, // lo que antes llamaste "Equipo"
   ],
   navAdmin: [
     {
       title: "Configuración",
-      url: "/config",
+      url: "/settings",
       icon: <HugeiconsIcon icon={Settings01Icon} strokeWidth={2.2} />,
     },
     {
@@ -182,7 +182,7 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/config",
+      url: "/setting",
       icon: IconSettings,
     },
     {

@@ -18,11 +18,11 @@ import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/home/ui/reservation/CustomerSelector";
-import { processTransaction } from "@/src/application/orchestrators/processTransaction.orchestrator";
+import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ReservationDTO } from "@/src/application/interfaces/ReservationDTO";
+import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
 import { DateTimeContainer } from "@/src/components/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "@/src/components/home/ui/direct-transaction/TimePicker";
@@ -37,7 +37,7 @@ import {
 import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
-import { ApplyBundleOrchestrator } from "@/src/application/orchestrators/applyBundle.orchestrator";
+import { ApplyBundleUseCase } from "@/src/application/use-cases/applyBundle.usecase";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
@@ -300,7 +300,7 @@ export function PosReservationModal({
     if (items.some((item) => item.bundleId)) {
       const tenantId = activeTenantId ?? items[0]?.product.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-      const bundleOrchestrator = new ApplyBundleOrchestrator(
+      const bundleOrchestrator = new ApplyBundleUseCase(
         new ZustandInventoryRepository(),
         new ZustandPromotionRepository(),
       );
@@ -385,8 +385,8 @@ export function PosReservationModal({
       };
 
       try {
-        processTransaction(saleDTO);
-        processTransaction(rentalDTO);
+        makeProcessTransaction().execute(saleDTO);
+        makeProcessTransaction().execute(rentalDTO);
         toast.success(`Dos reservas creadas (Venta + Alquiler)`);
       } catch (err) {
         console.error(err);
@@ -429,7 +429,7 @@ export function PosReservationModal({
       };
 
       try {
-        processTransaction(newReservation);
+        makeProcessTransaction().execute(newReservation);
         toast.success(
           `Reserva de ${operationType} creada. Adelanto: ${formatCurrency(totalDP)}`,
         );
