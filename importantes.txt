@@ -283,3 +283,18 @@ export const saleItemSchema = z.object({
 
   // ...
 });
+
+Dominio recomendado:
+
+Access Control
+   ├── Tenant
+   ├── Membership
+   ├── Roles / Permisos
+   └── BranchAccess
+
+RRHH
+   ├── Shift
+   ├── ShiftAssignment
+   ├── Attendance
+   ├── PayrollConfig
+   └── Payroll
