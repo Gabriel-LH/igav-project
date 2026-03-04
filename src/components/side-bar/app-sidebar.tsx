@@ -33,6 +33,7 @@ import {
   DashboardSquare02Icon,
   File02Icon,
   Home12Icon,
+  Payment01Icon,
   Repeat,
   SaleTag02Icon,
   Settings01Icon,
@@ -152,6 +153,11 @@ const data = {
       icon: <HugeiconsIcon icon={Clock01Icon} strokeWidth={2.2} />,
     },
     {
+      title: "Nómina",
+      url: "/payroll",
+      icon: <HugeiconsIcon icon={Payment01Icon} strokeWidth={2.2} />,
+    },
+    {
       title: "Roles / Permisos",
       url: "/roles",
       icon: <HugeiconsIcon icon={ShieldUserIcon} strokeWidth={2.2} />,
@@ -175,7 +181,7 @@ const data = {
     },
     {
       title: "Políticas",
-      url: "/politicas",
+      url: "/policies",
       icon: <HugeiconsIcon icon={File02Icon} strokeWidth={2.2} />,
     },
   ],

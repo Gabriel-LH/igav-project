@@ -24,7 +24,7 @@ import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
-import { BRANCH_MOCKS } from "@/src/mocks/mock.branch";
+import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { Payment } from "@/src/types/payments/type.payments";
@@ -294,7 +294,7 @@ export function DetailsReservedViewer({
   };
 
   const sedeName =
-    BRANCH_MOCKS.find((b) => b.id === activeRes?.branchId)?.name ||
+    MOCK_BRANCHES.find((b) => b.id === activeRes?.branchId)?.name ||
     "Sede central";
 
   const cliente = customers.find((c) => c.id === activeRes?.customerId);

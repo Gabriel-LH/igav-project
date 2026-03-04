@@ -11,7 +11,7 @@ export const paymentSchema = z.object({
   // Movimiento financiero
   amount: z.number().positive(),
   direction: z.enum(["in", "out"]), // Registro de entrada o salida
-  method: z.enum(["cash", "card", "transfer", "yape", "plin"]),
+  paymentMethodId: z.string(),
 
   // Estado contable
   status: z.enum(["pending", "posted"]).default("pending"),

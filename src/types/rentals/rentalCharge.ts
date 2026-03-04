@@ -36,3 +36,5 @@ export const rentalChargeSchema = z.object({
   createdAt: z.date(),
   createdBy: z.string().optional(),
 });
+
+export type RentalCharge = z.infer<typeof rentalChargeSchema>;

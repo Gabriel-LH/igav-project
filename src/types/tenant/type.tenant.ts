@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { businessRulesSchema } from "../bussines-rules/bussines-rules";
+import { tenantConfigSchema } from "./type.tenantConfig";
 
 export const TenantSchema = z.object({
   id: z.string(),
@@ -7,7 +7,7 @@ export const TenantSchema = z.object({
   slug: z.string(),
   ownerId: z.string(),
   status: z.enum(["active", "suspended"]),
-  bussinesRuls: businessRulesSchema,
+  tenantConfig: tenantConfigSchema,
   currentSubscriptionId: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
