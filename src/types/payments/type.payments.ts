@@ -12,6 +12,11 @@ export const paymentSchema = z.object({
   amount: z.number().positive(),
   direction: z.enum(["in", "out"]), // Registro de entrada o salida
   paymentMethodId: z.string(),
+  cashSessionId: z.string().optional(),
+
+  createdAt: z.date(), //timestamp real del sistema cajero registra 00:02
+
+  currency: z.string().default("PEN"),
 
   // Estado contable
   status: z.enum(["pending", "posted"]).default("pending"),
@@ -27,7 +32,7 @@ export const paymentSchema = z.object({
 
   // Metadatos
   reference: z.string().optional(),
-  date: z.date(),
+  date: z.date(), //fecha del movimiento cliente paga 23:59
   notes: z.string().optional(),
 });
 

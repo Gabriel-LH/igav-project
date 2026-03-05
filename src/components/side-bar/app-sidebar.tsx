@@ -25,6 +25,7 @@ import {
 
 import {
   CalendarUserIcon,
+  Cashier02Icon,
   CatalogueIcon,
   Chart02Icon,
   Clock01Icon,
@@ -131,9 +132,9 @@ const data = {
       icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
     }, // cambia icono si quieres
     {
-      title: "Pagos",
-      url: "/payments",
-      icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2.2} />,
+      title: "Caja",
+      url: "/cash",
+      icon: <HugeiconsIcon icon={Cashier02Icon} strokeWidth={2.2} />,
     },
   ],
   navRRHH: [

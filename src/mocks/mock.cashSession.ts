@@ -1,0 +1,43 @@
+import { CashSession } from "../types/cash/type.cash";
+
+export const MOCK_SESSIONS: CashSession[] = [
+  {
+    id: "s1",
+    branchId: "1",
+    openedById: "user1",
+    closedById: "user1",
+    openedAt: new Date(2024, 2, 4, 9, 0),
+    closedAt: new Date(2024, 2, 4, 18, 0),
+    sessionNumber: "SES-001",
+    status: "closed",
+    openingAmount: 500,
+    closingExpectedAmount: 1250.50,
+    closingCountedAmount: 1250,
+    closingDifference: -0.50,
+    notes: "Cierre normal",
+  },
+  {
+    id: "s2",
+    branchId: "1",
+    openedById: "user2",
+    openedAt: new Date(2024, 2, 5, 8, 30),
+    sessionNumber: "SES-002",
+    status: "open",
+    openingAmount: 500,
+    notes: "Sesión abierta",
+  },
+  {
+    id: "s3",
+    branchId: "2",
+    openedById: "user1",
+    closedById: "user1",
+    openedAt: new Date(2024, 2, 3, 10, 0),
+    closedAt: new Date(2024, 2, 3, 19, 30),
+    sessionNumber: "SES-003",
+    status: "closed",
+    openingAmount: 300,
+    closingExpectedAmount: 890.75,
+    closingCountedAmount: 890,
+    closingDifference: -0.75,
+  },
+];

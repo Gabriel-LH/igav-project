@@ -1,7 +1,6 @@
-import { BRANCH_MOCKS } from "../mocks/mock.branch";
+import { MOCK_BRANCHES } from "../mocks/mock.branch";
 import { OPERATIONS_MOCK } from "../mocks/mock.operation";
 import { USER_MOCK } from "../mocks/mock.user";
-import { useAttributeStore } from "../store/useAttributeStore";
 import { Client } from "../types/clients/type.client";
 import { Guarantee } from "../types/guarantee/type.guarantee";
 import { Product } from "../types/product/type.product";
@@ -50,7 +49,7 @@ export const mapRentalToTable = (
   );
 
   return rentals.map((rental) => {
-    const branch = BRANCH_MOCKS.find((b) => b.id === rental.branchId);
+    const branch = MOCK_BRANCHES.find((b) => b.id === rental.branchId);
     const customer = customers.find((c) => c.id === rental.customerId);
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);
     const sellerId =

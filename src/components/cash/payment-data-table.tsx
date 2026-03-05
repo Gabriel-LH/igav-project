@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { PaymentDatePreset } from "./payment-layout";
+import type { PaymentDatePreset } from "@/src/utils/cash/cashPayment";
 import { columnsPaymentsUnified } from "./tables/columns";
 import { PaymentTable } from "./tables/payment-table";
 import { paymentTableSchema } from "./type/type.payments";
@@ -46,9 +46,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { addDays, format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 type PaymentRow = z.infer<typeof paymentTableSchema>;
 

@@ -64,7 +64,9 @@ export function PaymentCellViewer({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <span className="text-muted-foreground">Fecha</span>
-            <span className="font-medium">{item.date.toLocaleDateString()}</span>
+            <span className="font-medium">
+              {item.date.toLocaleDateString()}
+            </span>
           </div>
           {item.reference ? (
             <div className="grid grid-cols-2 gap-2">

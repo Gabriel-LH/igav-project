@@ -6,17 +6,14 @@ import { DragHandle } from "@/src/components/dashboard/data-table/ui/DragHandle"
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   BankIcon,
-  Calendar03Icon,
   CreditCardIcon,
-  Repeat,
-  SaleTag01Icon,
   SmartPhone02Icon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { z } from "zod";
 import { paymentTableSchema } from "../type/type.payments";
-import { PaymentCellViewer } from "./payment-cell-viewer";
+import { PaymentCellViewer } from "./payment-cell-viewer"; 
 
 export type PaymentRow = z.infer<typeof paymentTableSchema>;
 
@@ -101,9 +98,7 @@ export const operationColumn = (
   cell: ({ getValue }) => {
     const operationType = getValue() as string;
     return (
-      <div className={`w-32 ${extraClassName ?? ""}`}>
-        {operationType}
-      </div>
+      <div className={`w-32 ${extraClassName ?? ""}`}>{operationType}</div>
     );
   },
 });
