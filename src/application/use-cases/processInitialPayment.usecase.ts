@@ -21,7 +21,7 @@ export class ProcessInitialPaymentUseCase {
       receivedById: params.sellerId,
       amount: params.downPayment,
       direction: "in",
-      method: params.paymentMethod,
+      paymentMethodId: params.paymentMethod,
       status: "posted",
       category: "payment",
       date: now,

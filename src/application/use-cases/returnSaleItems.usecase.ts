@@ -99,13 +99,13 @@ export class ReturnSaleItemsUseCase {
       const payments = this.paymentRepo.getPaymentsByOperationId(
         sale.operationId,
       );
-      const firstPaymentMethod = payments[0]?.method || "cash";
+      const firstPaymentMethod = payments[0]?.paymentMethodId || "cash";
 
       this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
         operationId: sale.operationId,
         amount: totalRefunded,
-        method: firstPaymentMethod,
+        paymentMethodId: firstPaymentMethod,
         direction: "out",
         status: "posted",
         category: "refund",

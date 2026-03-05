@@ -88,7 +88,7 @@ export class ProcessTransactionUseCase {
           financials.downPayment > 0
             ? {
                 amount: financials.downPayment,
-                method: financials.paymentMethod,
+                paymentMethodId: financials.paymentMethod,
               }
             : null,
         details,

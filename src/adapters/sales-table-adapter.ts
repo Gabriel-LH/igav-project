@@ -1,4 +1,4 @@
-import { BRANCH_MOCKS } from "../mocks/mock.branch";
+import { MOCK_BRANCHES } from "../mocks/mock.branch";
 import { USER_MOCK } from "../mocks/mock.user";
 import { Client } from "../types/clients/type.client";
 import { Product } from "../types/product/type.product";
@@ -38,7 +38,7 @@ export const mapSaleToTable = (
   products: Product[],
 ): SaleTableRow[] => {
   return sales.map((sale) => {
-    const branch = BRANCH_MOCKS.find((b) => b.id === sale.branchId);
+    const branch = MOCK_BRANCHES.find((b) => b.id === sale.branchId);
     const customer = customers.find((c) => c.id === sale.customerId);
     const seller = USER_MOCK[0];
 

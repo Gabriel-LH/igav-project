@@ -57,7 +57,7 @@ export const mapPaymentsToTable = (
         category: payment.category,
         status: payment.status,
         date: payment.date,
-        method: payment.method,
+        method: payment.paymentMethodId as MethodPaymentType,
         reference: operation.type,
         notes: payment.notes,
       } satisfies PaymentTableRow;

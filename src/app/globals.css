@@ -160,8 +160,6 @@
   opacity: 1;
 }
 
-
-
 /* Soporte para WebKit (Chrome, Safari, Edge) */
 @supports (selector(::-webkit-scrollbar)) {
   /* Scrollbar global */
@@ -206,14 +204,14 @@
   }
 }
 
-
 @media print {
   body * {
     visibility: hidden; /* Oculta todo */
     display: flex;
     justify-content: center;
   }
-  .printable, .printable * {
+  .printable,
+  .printable * {
     visibility: visible; /* Solo lo marcado como printable se ve */
   }
   .printable {
@@ -235,4 +233,11 @@
   outline: 1px solid red !important;
 } */
 
-
+/* 
+  BUG FIX: React 19 + Radix UI (shadcn) 
+  Radix sets `pointer-events: none` on the body when opening modals/selects/dropdowns, 
+  but fails to clean it up in some cases with React 19, locking the UI permanently. 
+*/
+body[style] {
+  pointer-events: auto !important;
+}

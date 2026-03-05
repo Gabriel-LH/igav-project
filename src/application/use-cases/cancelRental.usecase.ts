@@ -38,13 +38,13 @@ export class CancelRentalUseCase {
 
     if (totalRefund > 0) {
       const firstPaymentMethod =
-        payments.find((p) => p.direction === "in")?.method || "cash";
+        payments.find((p) => p.direction === "in")?.paymentMethodId || "cash";
 
       this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
         operationId: rental.operationId,
         amount: totalRefund,
-        method: firstPaymentMethod,
+        paymentMethodId: firstPaymentMethod,
         direction: "out",
         status: "posted",
         category: "refund",

@@ -49,7 +49,7 @@ export class RegisterPaymentUseCase {
       receivedById: userId,
       amount,
       direction: "in",
-      method,
+      paymentMethodId: method,
       status: "posted",
       category: "payment",
       date: now,

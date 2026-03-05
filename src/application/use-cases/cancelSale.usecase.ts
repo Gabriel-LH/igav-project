@@ -80,7 +80,7 @@ export class CancelSaleUseCase {
         id: `PAY-${crypto.randomUUID()}`,
         operationId: sale.operationId,
         amount: payment.amount,
-        method: payment.method,
+        paymentMethodId: payment.paymentMethodId,
         direction: "out",
         status: "posted",
         category: "correction",
