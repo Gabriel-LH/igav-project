@@ -62,13 +62,13 @@ const data = {
       items: [
         {
           title: "Planes",
-          url: "/billing/plans",
+          url: "/superadmin/billing/plans",
           icon: <HugeiconsIcon icon={Crown02Icon} strokeWidth={2.2} />,
         },
 
         {
           title: "Features",
-          url: "/billing/features",
+          url: "/superadmin/billing/features",
           icon: <HugeiconsIcon icon={Diamond02Icon} strokeWidth={2.2} />,
         },
       ],
