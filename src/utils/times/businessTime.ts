@@ -1,6 +1,6 @@
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 
-const businessRules = BUSINESS_RULES_MOCK;
+const businessRules = MOCK_TENANT_CONFIG;
 
 export type Period = "AM" | "PM";
 
@@ -9,7 +9,7 @@ const parseTime = (timeStr: string) => {
   return { hour: h, minute: m };
 };
 
-const openTime = parseTime(businessRules.openHours.open);  // { hour: 8, minute: 30 }
+const openTime = parseTime(businessRules.openHours.open); // { hour: 8, minute: 30 }
 const closeTime = parseTime(businessRules.openHours.close);
 
 export const STORE_HOURS = {
@@ -46,24 +46,25 @@ export const getAllowedHours = (period: Period) =>
     isHourAllowed(to24Hour(h12, period)),
   );
 
-  
-
 // Minutos permitidos según step
 export const getAllowedMinutes = (selectedHour24: number) => {
-  const allMinutes = Array.from({ length: 60 / STORE_HOURS.stepMinutes }, (_, i) => 
-    i * STORE_HOURS.stepMinutes
+  const allMinutes = Array.from(
+    { length: 60 / STORE_HOURS.stepMinutes },
+    (_, i) => i * STORE_HOURS.stepMinutes,
   );
 
-  return allMinutes.filter(minute => {
-    // Si es la hora de apertura, solo minutos >= a la apertura
-    if (selectedHour24 === STORE_HOURS.openHour) {
-      return minute >= STORE_HOURS.openMinute;
-    }
-    // Si es la hora de cierre, solo minutos < al cierre
-    if (selectedHour24 === STORE_HOURS.closeHour) {
-      return minute < STORE_HOURS.closeMinute;
-    }
-    // Para cualquier otra hora intermedia, todos los minutos valen
-    return true;
-  }).map(m => m.toString().padStart(2, "0"));
+  return allMinutes
+    .filter((minute) => {
+      // Si es la hora de apertura, solo minutos >= a la apertura
+      if (selectedHour24 === STORE_HOURS.openHour) {
+        return minute >= STORE_HOURS.openMinute;
+      }
+      // Si es la hora de cierre, solo minutos < al cierre
+      if (selectedHour24 === STORE_HOURS.closeHour) {
+        return minute < STORE_HOURS.closeMinute;
+      }
+      // Para cualquier otra hora intermedia, todos los minutos valen
+      return true;
+    })
+    .map((m) => m.toString().padStart(2, "0"));
 };

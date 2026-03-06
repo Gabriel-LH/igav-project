@@ -21,12 +21,18 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/separator';
-import type { Employee, PayrollConfig, Payroll } from '@/src/application/interfaces/payroll/payroll';
+import type {
+  PayrollEmployee,
+  PayrollConfigView,
+  PayrollView,
+} from "@/src/types/payroll/type.payrollView";
+import { PayrollPolicy } from "@/src/types/payroll/type.payrollPolicies";
 
 interface PayrollGenerationViewProps {
-  employees: Employee[];
-  configs: PayrollConfig[];
-  onPayrollGenerated: (payrolls: Payroll[]) => void;
+  employees: PayrollEmployee[];
+  configs: PayrollConfigView[];
+  policy: PayrollPolicy;
+  onPayrollGenerated: (payrolls: PayrollView[]) => void;
 }
 
 // Mock de asistencias para el ejemplo
@@ -40,6 +46,7 @@ const MOCK_ATTENDANCE = {
 export function PayrollGenerationView({ 
   employees, 
   configs, 
+  policy,
   onPayrollGenerated 
 }: PayrollGenerationViewProps) {
   const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString());
@@ -69,7 +76,7 @@ export function PayrollGenerationView({
 
   const years = ['2023', '2024', '2025'];
 
-  const calculatePayroll = (employee: Employee, config: PayrollConfig) => {
+  const calculatePayroll = (employee: PayrollEmployee, config: PayrollConfigView) => {
     const attendance = MOCK_ATTENDANCE[employee.id as keyof typeof MOCK_ATTENDANCE] || {
       daysWorked: 0,
       regularHours: 0,
@@ -86,17 +93,31 @@ export function PayrollGenerationView({
       const lateDeduction = (attendance.lateMinutes / 60) * (config.baseSalary / 160); // 160 horas mensuales aprox
       baseAmount -= lateDeduction;
       
-      overtimeAmount = attendance.overtimeHours * (config.baseSalary / 160) * config.overtimeRate;
+      overtimeAmount = config.applyOvertime
+        ? attendance.overtimeHours *
+          (config.baseSalary / 160) *
+          policy.overtimeMultiplier
+        : 0;
     } else {
       baseAmount = attendance.regularHours * (config.hourlyRate || 0);
-      overtimeAmount = attendance.overtimeHours * (config.hourlyRate || 0) * config.overtimeRate;
+      overtimeAmount = config.applyOvertime
+        ? attendance.overtimeHours *
+          (config.hourlyRate || 0) *
+          policy.overtimeMultiplier
+        : 0;
     }
 
     // Calcular descuentos
     const deductions = {
-      healthInsurance: config.automaticDeductions.healthInsurance ? baseAmount * 0.05 : 0,
-      pension: config.automaticDeductions.pension ? baseAmount * 0.10 : 0,
-      taxes: config.automaticDeductions.taxes ? baseAmount * 0.075 : 0,
+      healthInsurance: config.automaticDeductions.healthInsurance
+        ? baseAmount * (policy.deductions.healthInsurancePercent / 100)
+        : 0,
+      pension: config.automaticDeductions.pension
+        ? baseAmount * (policy.deductions.pensionPercent / 100)
+        : 0,
+      taxes: config.automaticDeductions.taxes
+        ? baseAmount * (policy.deductions.taxPercent / 100)
+        : 0,
       others: config.automaticDeductions.otherDeductions || 0,
       total: 0,
     };
@@ -121,7 +142,7 @@ export function PayrollGenerationView({
     // Simular proceso de generación
     const activeConfigs = configs.filter(c => c.status === 'active');
     const errors: string[] = [];
-    const newPayrolls: Payroll[] = [];
+    const newPayrolls: PayrollView[] = [];
 
     for (let i = 0; i < activeConfigs.length; i++) {
       const config = activeConfigs[i];
@@ -135,7 +156,7 @@ export function PayrollGenerationView({
       try {
         const calculations = calculatePayroll(employee, config);
 
-        const payroll: Payroll = {
+        const payroll: PayrollView = {
           id: crypto.randomUUID(),
           employeeId: employee.id,
           employeeName: employee.name,
@@ -151,7 +172,7 @@ export function PayrollGenerationView({
         };
 
         newPayrolls.push(payroll);
-      } catch (error) {
+      } catch {
         errors.push(`Error calculando nómina para ${employee.name}`);
       }
 

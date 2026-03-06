@@ -8,7 +8,7 @@ import {
   areIntervalsOverlapping,
   addDays,
 } from "date-fns";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 
 // Tipo de operación para TypeScript
 export type OpType = "venta" | "alquiler";

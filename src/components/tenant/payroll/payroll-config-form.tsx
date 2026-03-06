@@ -33,9 +33,9 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import type {
-  PayrollConfig,
-  Employee,
-} from "@/src/application/interfaces/payroll/payroll";
+  PayrollConfigView,
+  PayrollEmployee,
+} from "@/src/types/payroll/type.payrollView";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarIcon, ClockIcon } from "@hugeicons/core-free-icons";
 
@@ -45,7 +45,7 @@ const configSchema = z
     type: z.enum(["mensual", "por_hora"]),
     baseSalary: z.number().min(0, "El salario no puede ser negativo"),
     hourlyRate: z.number().min(0).optional(),
-    overtimeRate: z.number().min(1, "El multiplicador debe ser al menos 1"),
+    applyOvertime: z.boolean(),
     healthInsurance: z.boolean(),
     pension: z.boolean(),
     taxes: z.boolean(),
@@ -65,10 +65,10 @@ const configSchema = z
   );
 
 interface PayrollConfigFormProps {
-  config?: PayrollConfig | null;
-  employees: Employee[];
+  config?: PayrollConfigView | null;
+  employees: PayrollEmployee[];
   onClose: () => void;
-  onSubmit: (config: PayrollConfig) => void;
+  onSubmit: (config: PayrollConfigView) => void;
 }
 
 export function PayrollConfigForm({
@@ -88,7 +88,7 @@ export function PayrollConfigForm({
       type: "mensual",
       baseSalary: 0,
       hourlyRate: 0,
-      overtimeRate: 1.5,
+      applyOvertime: true,
       healthInsurance: true,
       pension: true,
       taxes: true,
@@ -103,7 +103,7 @@ export function PayrollConfigForm({
         type: config.type,
         baseSalary: config.baseSalary,
         hourlyRate: config.hourlyRate || 0,
-        overtimeRate: config.overtimeRate,
+        applyOvertime: config.applyOvertime,
         healthInsurance: config.automaticDeductions.healthInsurance,
         pension: config.automaticDeductions.pension,
         taxes: config.automaticDeductions.taxes,
@@ -122,14 +122,14 @@ export function PayrollConfigForm({
   const handleSubmit = (values: z.infer<typeof configSchema>) => {
     const employee = employees.find((e) => e.id === values.employeeId);
 
-    const newConfig: PayrollConfig = {
+    const newConfig: PayrollConfigView = {
       id: config?.id || crypto.randomUUID(),
       employeeId: values.employeeId,
       employeeName: employee?.name || "",
       type: values.type,
       baseSalary: values.baseSalary,
       hourlyRate: values.hourlyRate,
-      overtimeRate: values.overtimeRate,
+      applyOvertime: values.applyOvertime,
       automaticDeductions: {
         healthInsurance: values.healthInsurance,
         pension: values.pension,
@@ -236,10 +236,10 @@ export function PayrollConfigForm({
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-2.5">$</span>
+                        <span className="absolute text-sm left-3 top-2">S/.</span>
                         <Input
                           type="number"
-                          className="pl-7"
+                          className="pl-8"
                           {...field}
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value))
@@ -261,11 +261,11 @@ export function PayrollConfigForm({
                       <FormLabel>Tarifa por hora</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <span className="absolute left-3 top-2.5">$</span>
+                          <span className="absolute text-sm left-3 top-2">S/.</span>
                           <Input
                             type="number"
                             step="0.5"
-                            className="pl-7"
+                            className="pl-8"
                             {...field}
                             onChange={(e) =>
                               field.onChange(parseFloat(e.target.value))
@@ -282,29 +282,21 @@ export function PayrollConfigForm({
 
             <FormField
               control={form.control}
-              name="overtimeRate"
+              name="applyOvertime"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pago por hora extra (multiplicador)</FormLabel>
+                <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <FormLabel className="text-base">Aplicar horas extra</FormLabel>
+                    <FormDescription>
+                      Usa el multiplicador definido en Política de Nómina
+                    </FormDescription>
+                  </div>
                   <FormControl>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2.5">×</span>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min="1"
-                        className="pl-7"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </div>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    Ej: 1.5 = 50% extra, 2.0 = 100% extra
-                  </FormDescription>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -387,10 +379,10 @@ export function PayrollConfigForm({
                     <FormLabel>Otros descuentos</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-2.5">$</span>
+                        <span className="absolute text-sm left-3 top-2">S/.</span>
                         <Input
                           type="number"
-                          className="pl-7"
+                          className="pl-8"
                           {...field}
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value))

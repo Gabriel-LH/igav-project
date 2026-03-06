@@ -19,6 +19,7 @@ import {
   MoreHorizontal,
   Filter,
   Calendar,
+  HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,13 +47,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PayrollDetailModal } from "./ui/modal/PayrollDetailModal";
-import type { Payroll } from "@/src/application/interfaces/payroll/payroll";
+import type { PayrollView } from "@/src/types/payroll/type.payrollView";
 
 interface PayrollListViewProps {
-  payrolls: Payroll[];
-  onPayrollsChange: (payrolls: Payroll[]) => void;
+  payrolls: PayrollView[];
+  onPayrollsChange: (payrolls: PayrollView[]) => void;
 }
 
 export function PayrollListView({
@@ -61,7 +61,7 @@ export function PayrollListView({
 }: PayrollListViewProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedPayroll, setSelectedPayroll] = useState<Payroll | null>(null);
+  const [selectedPayroll, setSelectedPayroll] = useState<PayrollView | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
   const filteredData = useMemo(() => {
@@ -71,9 +71,9 @@ export function PayrollListView({
     });
   }, [payrolls, statusFilter]);
 
-  const handleRecalculate = (payroll: Payroll) => {
+  const handleRecalculate = (payroll: PayrollView) => {
     // Simular recálculo
-    const updatedPayroll: Payroll = {
+    const updatedPayroll: PayrollView = {
       ...payroll,
       status: "calculated",
       generatedAt: new Date(),
@@ -83,8 +83,8 @@ export function PayrollListView({
     );
   };
 
-  const handleMarkAsPaid = (payroll: Payroll) => {
-    const updatedPayroll: Payroll = {
+  const handleMarkAsPaid = (payroll: PayrollView) => {
+    const updatedPayroll: PayrollView = {
       ...payroll,
       status: "paid",
       paidAt: new Date(),
@@ -94,7 +94,7 @@ export function PayrollListView({
     );
   };
 
-  const handleExport = (payroll: Payroll, format: "pdf" | "excel") => {
+  const handleExport = (payroll: PayrollView, format: "pdf" | "excel") => {
     console.log(`Exportando ${payroll.employeeName} a ${format}`);
     // Aquí iría la lógica de exportación
   };
@@ -104,19 +104,19 @@ export function PayrollListView({
       draft: {
         variant: "secondary" as const,
         label: "Borrador",
-        icon: "📝",
+        icon: <FileText className="mr-2 h-3 w-3" />,
         colorClass: "",
       },
       calculated: {
         variant: "default" as const,
         label: "Calculado",
-        icon: "✅",
+        icon: <CheckCircle className="mr-2 h-3 w-3" />,
         colorClass: "",
       },
       paid: {
         variant: "default" as const,
         label: "Pagado",
-        icon: "💰",
+        icon: <HandCoins className="mr-2 h-3 w-3" />,
         colorClass: "bg-green-600 hover:bg-green-700",
       },
     };
@@ -142,7 +142,7 @@ export function PayrollListView({
     }).format(amount);
   };
 
-  const columns: ColumnDef<Payroll>[] = [
+  const columns: ColumnDef<PayrollView>[] = [
     {
       accessorKey: "employeeName",
       header: "Empleado",
@@ -273,98 +273,95 @@ export function PayrollListView({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Planillas Generadas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="relative flex-1">
-              <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar empleado..."
-                value={globalFilter ?? ""}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="pl-8 max-w-sm"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrar por estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="draft">Borrador</SelectItem>
-                <SelectItem value="calculated">Calculado</SelectItem>
-                <SelectItem value="paid">Pagado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="flex items-center gap-2">
+        <FileText className="h-5 w-5" />
+        Planillas Generadas
+      </div>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
+      <div>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="relative flex-1">
+            <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar empleado..."
+              value={globalFilter ?? ""}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="pl-8 max-w-sm"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filtrar por estado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="draft">Borrador</SelectItem>
+              <SelectItem value="calculated">Calculado</SelectItem>
+              <SelectItem value="paid">Pagado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
                         )}
-                      </TableHead>
+                      </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      No hay planillas generadas
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    No hay planillas generadas
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Anterior
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Siguiente
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Siguiente
+          </Button>
+        </div>
+      </div>
 
       {showDetailModal && selectedPayroll && (
         <PayrollDetailModal

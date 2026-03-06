@@ -20,12 +20,12 @@ import {
   FileText,
   CheckCircle,
 } from "lucide-react";
-import type { Payroll } from "@/src/application/interfaces/payroll/payroll";
+import type { PayrollView } from "@/src/types/payroll/type.payrollView";
 
 interface PayrollDetailModalProps {
-  payroll: Payroll;
+  payroll: PayrollView;
   onClose: () => void;
-  onUpdate: (payroll: Payroll) => void;
+  onUpdate: (payroll: PayrollView) => void;
 }
 
 export function PayrollDetailModal({

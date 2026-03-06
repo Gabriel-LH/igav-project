@@ -5,3 +5,5 @@ export const CreateRoleSchema = z.object({
   description: z.string().optional(),
   permissionIds: z.array(z.string().uuid()),
 });
+
+

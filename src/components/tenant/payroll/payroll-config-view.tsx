@@ -10,7 +10,7 @@ import {
   ColumnDef,
   flexRender,
 } from '@tanstack/react-table';
-import { Edit, Plus, Power, MoreHorizontal, DollarSign, Clock } from 'lucide-react';
+import { Edit, Plus, Power, MoreHorizontal, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -39,19 +39,22 @@ import {
 import { Badge } from '@/components/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PayrollConfigForm } from './payroll-config-form';
-import type { PayrollConfig, Employee } from '@/src/application/interfaces/payroll/payroll';
+import type {
+  PayrollConfigView,
+  PayrollEmployee,
+} from "@/src/types/payroll/type.payrollView";
 import { CalendarIcon, ClockIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 
 interface PayrollConfigViewProps {
-  configs: PayrollConfig[];
-  employees: Employee[];
-  onConfigsChange: (configs: PayrollConfig[]) => void;
+  configs: PayrollConfigView[];
+  employees: PayrollEmployee[];
+  onConfigsChange: (configs: PayrollConfigView[]) => void;
 }
 
 export function PayrollConfigView({ configs, employees, onConfigsChange }: PayrollConfigViewProps) {
   const [showForm, setShowForm] = useState(false);
-  const [editingConfig, setEditingConfig] = useState<PayrollConfig | null>(null);
+  const [editingConfig, setEditingConfig] = useState<PayrollConfigView | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
@@ -62,8 +65,8 @@ export function PayrollConfigView({ configs, employees, onConfigsChange }: Payro
     });
   }, [configs, typeFilter]);
 
-  const handleToggleStatus = (config: PayrollConfig) => {
-    const updatedConfig: PayrollConfig = {
+  const handleToggleStatus = (config: PayrollConfigView) => {
+    const updatedConfig: PayrollConfigView = {
       ...config,
       status: config.status === 'active' ? 'inactive' : 'active',
       updatedAt: new Date(),
@@ -71,7 +74,7 @@ export function PayrollConfigView({ configs, employees, onConfigsChange }: Payro
     onConfigsChange(configs.map(c => c.id === config.id ? updatedConfig : c));
   };
 
-  const formatSalary = (config: PayrollConfig) => {
+  const formatSalary = (config: PayrollConfigView) => {
     if (config.type === 'mensual') {
       return `$${config.baseSalary.toLocaleString()}/mes`;
     } else {
@@ -79,7 +82,7 @@ export function PayrollConfigView({ configs, employees, onConfigsChange }: Payro
     }
   };
 
-  const columns: ColumnDef<PayrollConfig>[] = [
+  const columns: ColumnDef<PayrollConfigView>[] = [
     {
       accessorKey: 'employeeName',
       header: 'Empleado',

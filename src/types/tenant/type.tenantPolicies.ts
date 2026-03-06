@@ -1,7 +1,13 @@
 import { z } from "zod";
 
 export const tenantPoliciesSchema = z.object({
+  id: z.string(),
+
   tenantId: z.string(),
+
+  version: z.number(),
+
+  isActive: z.boolean().default(true),
 
   sales: z.object({
     allowReturns: z.boolean(),
@@ -13,7 +19,7 @@ export const tenantPoliciesSchema = z.object({
 
   rentals: z.object({
     allowLateReturn: z.boolean(),
-    lateToleranceHours: z.number(), // horas de gracia
+    lateToleranceHours: z.number(),
     autoMarkAsLate: z.boolean(),
     requireGuarantee: z.boolean(),
     allowRentalWithoutStockAssigned: z.boolean(),
@@ -46,7 +52,9 @@ export const tenantPoliciesSchema = z.object({
     requirePinForManualPriceEdit: z.boolean(),
   }),
 
-  updatedAt: z.date(),
+  createdAt: z.date(),
+  updatedBy: z.string(),
+  changeReason: z.string().optional(),
 });
 
 export type TenantPolicies = z.infer<typeof tenantPoliciesSchema>;

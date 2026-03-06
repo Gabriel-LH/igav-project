@@ -142,7 +142,7 @@ export const mapRentalToTable = (
       totalItems,
       itemsDetail: itemsWithNames,
 
-      // Campos legacy adaptados
+      // Campos de compatibilidad adaptados
       product: cleanSummary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
       count: totalItems, // <--- COMPATIBILIDAD
       rent_unit: "Días",

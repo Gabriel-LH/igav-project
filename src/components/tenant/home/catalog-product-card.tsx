@@ -15,7 +15,7 @@ import { productSchema } from "../../../types/product/type.product";
 import { z } from "zod";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig"; 
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
@@ -176,9 +176,9 @@ export function CatalogProductCard({ product }: Props) {
     ? getEstimatedTransferTime(
         currentBranchId,
         remoteStock[0].branchId,
-        BUSINESS_RULES_MOCK,
+        MOCK_TENANT_CONFIG,
       )
-    : BUSINESS_RULES_MOCK.defaultTransferTime;
+    : MOCK_TENANT_CONFIG.defaultTransferTime;
 
   return (
     <Card className="group pt-0 pb-1 overflow-hidden transition-all shadow-xl">

@@ -17,6 +17,15 @@ import {
   mapPlansWithFeatures,
   getCurrentUsage,
 } from "@/src/adapters/subscription-adapter";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  DashboardSpeed02Icon,
+  Diamond02Icon,
+  More01Icon,
+} from "@hugeicons/core-free-icons";
+import { useIsMobile } from "@/src/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { useScrollableTabs } from "@/src/utils/scroll/handleTabChange";
 
 export function SubscriptionLayout() {
   const [activeTab, setActiveTab] = useState("current");
@@ -24,6 +33,8 @@ export function SubscriptionLayout() {
   const [showChangePlan, setShowChangePlan] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+
+  const isMobile = useIsMobile();
 
   // Obtener el plan actual
   const currentPlan = useMemo(
@@ -43,11 +54,25 @@ export function SubscriptionLayout() {
     [],
   );
 
+  const { tabRefs, scrollToTab } = useScrollableTabs();
+
+  const handleTabChange = (value: string) => {
+    if (isMobile) {
+      scrollToTab(value as keyof typeof tabRefs);
+      setActiveTab(value);
+    } else {
+      setActiveTab(value);
+    }
+  };
+
   // Uso actual del tenant
   const currentUsage = useMemo(() => getCurrentUsage(), []);
   const currentPlanWithFeatures = useMemo(() => {
     if (!currentPlan) return plansWithFeatures[0];
-    return plansWithFeatures.find((p) => p.id === currentPlan.id) ?? plansWithFeatures[0];
+    return (
+      plansWithFeatures.find((p) => p.id === currentPlan.id) ??
+      plansWithFeatures[0]
+    );
   }, [currentPlan, plansWithFeatures]);
 
   const handleChangePlan = (planId: string) => {
@@ -73,27 +98,60 @@ export function SubscriptionLayout() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-
       {/* Tabs principales */}
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
         className="space-y-6"
       >
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
-          <TabsTrigger value="current" className="flex items-center gap-2">
-            <span>📋</span>
-            Plan actual
-          </TabsTrigger>
-          <TabsTrigger value="plans" className="flex items-center gap-2">
-            <span>🔄</span>
-            Planes disponibles
-          </TabsTrigger>
-          <TabsTrigger value="usage" className="flex items-center gap-2">
-            <span>📊</span>
-            Uso y límites
-          </TabsTrigger>
-        </TabsList>
+        <div className={cn("w-full", isMobile && "overflow-x-auto")}>
+          <TabsList
+            className={cn(
+              isMobile
+                ? "w-max min-w-full gap-2 sm:grid sm:w-full sm:grid-cols-3 bg-transparent"
+                : "flex",
+            )}
+          >
+            <TabsTrigger
+              ref={tabRefs.current}
+              value="current"
+              className={cn(
+                isMobile
+                  ? "flex items-center gap-2 bg-card whitespace-nowrap border-2 rounded-2xl"
+                  : "flex items-center gap-2",
+              )}
+            >
+              <HugeiconsIcon icon={Diamond02Icon} strokeWidth={2.2} />
+              Plan actual
+            </TabsTrigger>
+
+            <TabsTrigger
+              ref={tabRefs.plans}
+              value="plans"
+              className={cn(
+                isMobile
+                  ? "flex items-center bg-card gap-2 whitespace-nowrap border-2 rounded-2xl"
+                  : "flex items-center gap-2 whitespace-nowrap",
+              )}
+            >
+              <HugeiconsIcon icon={More01Icon} strokeWidth={2.2} />
+              Planes disponibles
+            </TabsTrigger>
+
+            <TabsTrigger
+              ref={tabRefs.usage}
+              value="usage"
+              className={cn(
+                isMobile
+                  ? "flex items-center bg-card gap-2 whitespace-nowrap border-2 rounded-2xl"
+                  : "flex items-center gap-2 whitespace-nowrap",
+              )}
+            >
+              <HugeiconsIcon icon={DashboardSpeed02Icon} strokeWidth={2.2} />
+              Uso y límites
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="current" className="space-y-4">
           <CurrentPlanTab

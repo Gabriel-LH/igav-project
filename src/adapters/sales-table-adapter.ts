@@ -22,7 +22,7 @@ export interface SaleTableRow {
   totalItems: number; // Cantidad total de unidades
   itemsDetail: any[]; // Array enriquecido con nombres/fotos para el Drawer
 
-  // Campos legacy (Mantenidos para que no rompa tu <DataTable /> actual)
+  // Campos de compatibilidad (mantenidos para no romper <DataTable /> actual)
   product: string;
   count: number;
   income: number;
@@ -118,7 +118,7 @@ export const mapSaleToTable = (
       totalItems: totalItems,
       itemsDetail: itemsWithNames, // Esto alimenta tu Drawer de tarjetas
 
-      // --- CAMPOS LEGACY ---
+      // --- CAMPOS DE COMPATIBILIDAD ---
       // Mapeamos 'product' al resumen limpio para que la tabla se vea bien de inmediato
       product: cleanSummary,
       count: totalItems,

@@ -1,5 +1,4 @@
-// types/payroll.types.ts
-export interface Employee {
+export interface PayrollEmployee {
   id: string;
   name: string;
   email: string;
@@ -8,14 +7,14 @@ export interface Employee {
   hireDate: Date;
 }
 
-export interface PayrollConfig {
+export interface PayrollConfigView {
   id: string;
   employeeId: string;
   employeeName: string;
   type: "mensual" | "por_hora";
   baseSalary: number;
   hourlyRate?: number;
-  overtimeRate: number; // Multiplicador (ej: 1.5 para 50% extra)
+  applyOvertime: boolean;
   automaticDeductions: {
     healthInsurance: boolean;
     pension: boolean;
@@ -27,18 +26,7 @@ export interface PayrollConfig {
   updatedAt: Date;
 }
 
-export interface Attendance {
-  id: string;
-  employeeId: string;
-  date: Date;
-  checkIn: Date;
-  checkOut: Date;
-  regularHours: number;
-  overtimeHours: number;
-  lateMinutes: number;
-}
-
-export interface Payroll {
+export interface PayrollView {
   id: string;
   employeeId: string;
   employeeName: string;
@@ -46,7 +34,7 @@ export interface Payroll {
     month: number;
     year: number;
   };
-  config: PayrollConfig;
+  config: PayrollConfigView;
   calculations: {
     baseAmount: number;
     overtimeAmount: number;
