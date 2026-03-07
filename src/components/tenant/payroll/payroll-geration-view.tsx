@@ -1,212 +1,258 @@
-// components/payroll/PayrollGenerationView.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { CalendarIcon, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import {
+  CalendarIcon,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/separator';
-import type {
-  PayrollEmployee,
-  PayrollConfigView,
-  PayrollView,
-} from "@/src/types/payroll/type.payrollView";
-import { PayrollPolicy } from "@/src/types/payroll/type.payrollPolicies";
+} from "@/components/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/separator";
+
+import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
+import type { PayrollPolicy } from "@/src/types/payroll/type.payrollPolicies";
+import type { PayrollItem } from "@/src/types/payroll/type.payrollItem";
+import type { PayrollLineItem } from "@/src/types/payroll/type.payrollLineItem";
+import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
+import type { GeneratedPayrollBatchDTO } from "@/src/application/interfaces/payroll/PayrollPresentation";
 
 interface PayrollGenerationViewProps {
-  employees: PayrollEmployee[];
-  configs: PayrollConfigView[];
+  configs: PayrollConfig[];
   policy: PayrollPolicy;
-  onPayrollGenerated: (payrolls: PayrollView[]) => void;
+  onPayrollGenerated: (payload: GeneratedPayrollBatchDTO) => void;
 }
 
-// Mock de asistencias para el ejemplo
-const MOCK_ATTENDANCE = {
-  '1': { daysWorked: 22, regularHours: 176, overtimeHours: 5, lateMinutes: 45 },
-  '2': { daysWorked: 22, regularHours: 176, overtimeHours: 0, lateMinutes: 0 },
-  '3': { daysWorked: 21, regularHours: 168, overtimeHours: 6, lateMinutes: 15 },
-  '4': { daysWorked: 22, regularHours: 176, overtimeHours: 2, lateMinutes: 30 },
-};
+function getMonthRange(month: number, year: number) {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0);
+  return { start, end };
+}
 
-export function PayrollGenerationView({ 
-  employees, 
-  configs, 
+function numberFromMembership(membershipId: string): number {
+  const digits = membershipId.replace(/\D/g, "");
+  return Number(digits || "1");
+}
+
+export function PayrollGenerationView({
+  configs,
   policy,
-  onPayrollGenerated 
+  onPayrollGenerated,
 }: PayrollGenerationViewProps) {
-  const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString());
-  const [year, setYear] = useState<string>(new Date().getFullYear().toString());
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const [month, setMonth] = useState<string>(String(currentMonth));
+  const [year, setYear] = useState<string>(String(currentYear));
+  const [branchId, setBranchId] = useState<string>("branch-main");
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [generationResult, setGenerationResult] = useState<{
+  const [result, setResult] = useState<{
     success: boolean;
-    count: number;
+    generatedItems: number;
     errors: string[];
   } | null>(null);
 
   const months = [
-    { value: '1', label: 'Enero' },
-    { value: '2', label: 'Febrero' },
-    { value: '3', label: 'Marzo' },
-    { value: '4', label: 'Abril' },
-    { value: '5', label: 'Mayo' },
-    { value: '6', label: 'Junio' },
-    { value: '7', label: 'Julio' },
-    { value: '8', label: 'Agosto' },
-    { value: '9', label: 'Septiembre' },
-    { value: '10', label: 'Octubre' },
-    { value: '11', label: 'Noviembre' },
-    { value: '12', label: 'Diciembre' },
+    { value: "1", label: "Enero" },
+    { value: "2", label: "Febrero" },
+    { value: "3", label: "Marzo" },
+    { value: "4", label: "Abril" },
+    { value: "5", label: "Mayo" },
+    { value: "6", label: "Junio" },
+    { value: "7", label: "Julio" },
+    { value: "8", label: "Agosto" },
+    { value: "9", label: "Septiembre" },
+    { value: "10", label: "Octubre" },
+    { value: "11", label: "Noviembre" },
+    { value: "12", label: "Diciembre" },
   ];
 
-  const years = ['2023', '2024', '2025'];
+  const years = [
+    String(currentYear - 1),
+    String(currentYear),
+    String(currentYear + 1),
+  ];
 
-  const calculatePayroll = (employee: PayrollEmployee, config: PayrollConfigView) => {
-    const attendance = MOCK_ATTENDANCE[employee.id as keyof typeof MOCK_ATTENDANCE] || {
-      daysWorked: 0,
-      regularHours: 0,
-      overtimeHours: 0,
-      lateMinutes: 0,
-    };
-
-    let baseAmount = 0;
-    let overtimeAmount = 0;
-
-    if (config.type === 'mensual') {
-      baseAmount = config.baseSalary;
-      // Descuento por minutos de tardanza (ejemplo simplificado)
-      const lateDeduction = (attendance.lateMinutes / 60) * (config.baseSalary / 160); // 160 horas mensuales aprox
-      baseAmount -= lateDeduction;
-      
-      overtimeAmount = config.applyOvertime
-        ? attendance.overtimeHours *
-          (config.baseSalary / 160) *
-          policy.overtimeMultiplier
-        : 0;
-    } else {
-      baseAmount = attendance.regularHours * (config.hourlyRate || 0);
-      overtimeAmount = config.applyOvertime
-        ? attendance.overtimeHours *
-          (config.hourlyRate || 0) *
-          policy.overtimeMultiplier
-        : 0;
-    }
-
-    // Calcular descuentos
-    const deductions = {
-      healthInsurance: config.automaticDeductions.healthInsurance
-        ? baseAmount * (policy.deductions.healthInsurancePercent / 100)
-        : 0,
-      pension: config.automaticDeductions.pension
-        ? baseAmount * (policy.deductions.pensionPercent / 100)
-        : 0,
-      taxes: config.automaticDeductions.taxes
-        ? baseAmount * (policy.deductions.taxPercent / 100)
-        : 0,
-      others: config.automaticDeductions.otherDeductions || 0,
-      total: 0,
-    };
-    deductions.total = Object.values(deductions).reduce((a, b) => a + b, 0);
-
-    const total = baseAmount + overtimeAmount - deductions.total;
-
-    return {
-      baseAmount,
-      overtimeAmount,
-      deductions,
-      total,
-      summary: attendance,
-    };
-  };
+  const branches = [
+    { value: "branch-main", label: "Sucursal Principal" },
+    { value: "branch-north", label: "Sucursal Norte" },
+    { value: "branch-south", label: "Sucursal Sur" },
+  ];
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     setProgress(0);
-    setGenerationResult(null);
+    setResult(null);
 
-    // Simular proceso de generación
-    const activeConfigs = configs.filter(c => c.status === 'active');
+    const selectedMonth = Number(month);
+    const selectedYear = Number(year);
+    const { start, end } = getMonthRange(selectedMonth, selectedYear);
+
+    const run: PayrollRun = {
+      id: `pr-${selectedYear}-${String(selectedMonth).padStart(2, "0")}-${branchId}-${crypto.randomUUID().slice(0, 8)}`,
+      branchId,
+      periodStart: start,
+      periodEnd: end,
+      payDate: end,
+      status: "finalized",
+      createdAt: new Date(),
+    };
+
+    const generatedItems: PayrollItem[] = [];
+    const generatedLineItems: PayrollLineItem[] = [];
     const errors: string[] = [];
-    const newPayrolls: PayrollView[] = [];
 
-    for (let i = 0; i < activeConfigs.length; i++) {
-      const config = activeConfigs[i];
-      const employee = employees.find(e => e.id === config.employeeId);
-
-      if (!employee) {
-        errors.push(`Empleado no encontrado para configuración ${config.id}`);
-        continue;
-      }
-
+    for (let i = 0; i < configs.length; i += 1) {
+      const config = configs[i];
       try {
-        const calculations = calculatePayroll(employee, config);
+        const membershipSeed = numberFromMembership(config.membershipId);
+        const overtimeHours = config.applyOvertime ? membershipSeed % 8 : 0;
+        const regularHours = 160 + (membershipSeed % 17);
 
-        const payroll: PayrollView = {
+        const baseAmount =
+          config.salaryType === "monthly"
+            ? Number(config.baseSalary ?? 0)
+            : regularHours * Number(config.hourlyRate ?? 0);
+
+        const overtimeRate =
+          config.salaryType === "monthly"
+            ? (Number(config.baseSalary ?? 0) / 160) * policy.overtimeMultiplier
+            : Number(config.hourlyRate ?? 0) * policy.overtimeMultiplier;
+        const overtimeAmount = overtimeHours * overtimeRate;
+        const grossTotal = baseAmount + overtimeAmount;
+
+        const health =
+          grossTotal * (policy.deductions.healthInsurancePercent / 100);
+        const pension = grossTotal * (policy.deductions.pensionPercent / 100);
+        const tax = grossTotal * (policy.deductions.taxPercent / 100);
+        const deductionTotal = health + pension + tax;
+        const netTotal = grossTotal - deductionTotal;
+
+        const itemId = crypto.randomUUID();
+        generatedItems.push({
+          id: itemId,
+          payrollRunId: run.id,
+          membershipId: config.membershipId,
+          grossTotal,
+          deductionTotal,
+          netTotal,
+          status: "calculated",
+        });
+
+        generatedLineItems.push({
           id: crypto.randomUUID(),
-          employeeId: employee.id,
-          employeeName: employee.name,
-          period: {
-            month: parseInt(month),
-            year: parseInt(year),
-          },
-          config,
-          calculations,
-          summary: calculations.summary,
-          status: 'draft',
-          generatedAt: new Date(),
-        };
+          payrollItemId: itemId,
+          type: "earning",
+          category: config.salaryType === "monthly" ? "salary" : "hourly",
+          name:
+            config.salaryType === "monthly" ? "Sueldo base" : "Horas regulares",
+          amount: baseAmount,
+          quantity: config.salaryType === "hourly" ? regularHours : undefined,
+          rate:
+            config.salaryType === "hourly"
+              ? Number(config.hourlyRate ?? 0)
+              : undefined,
+          createdAt: new Date(),
+        });
 
-        newPayrolls.push(payroll);
+        if (overtimeAmount > 0) {
+          generatedLineItems.push({
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "earning",
+            category: "overtime",
+            name: "Horas extra",
+            amount: overtimeAmount,
+            quantity: overtimeHours,
+            rate: overtimeRate,
+            createdAt: new Date(),
+          });
+        }
+
+        generatedLineItems.push(
+          {
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "deduction",
+            category: "health_insurance",
+            name: "Seguro de salud",
+            amount: health,
+            createdAt: new Date(),
+          },
+          {
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "deduction",
+            category: "pension",
+            name: "Pension",
+            amount: pension,
+            createdAt: new Date(),
+          },
+          {
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "deduction",
+            category: "tax",
+            name: "Impuesto",
+            amount: tax,
+            createdAt: new Date(),
+          },
+        );
       } catch {
-        errors.push(`Error calculando nómina para ${employee.name}`);
+        errors.push(`No se pudo generar item para ${config.membershipId}`);
       }
 
-      setProgress(((i + 1) / activeConfigs.length) * 100);
-      // Pequeño delay para ver el progreso
-      await new Promise(resolve => setTimeout(resolve, 100));
+      setProgress(((i + 1) / Math.max(configs.length, 1)) * 100);
+      await new Promise((resolve) => setTimeout(resolve, 80));
     }
 
-    setGenerationResult({
+    if (generatedItems.length > 0) {
+      onPayrollGenerated({
+        run,
+        items: generatedItems,
+        lineItems: generatedLineItems,
+      });
+    }
+
+    setResult({
       success: errors.length === 0,
-      count: newPayrolls.length,
+      generatedItems: generatedItems.length,
       errors,
     });
-
-    if (newPayrolls.length > 0) {
-      onPayrollGenerated(newPayrolls);
-    }
-
     setIsGenerating(false);
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div>
+      <div className="mb-4">
+        <span className="flex text-2xl items-center gap-2">
           <CalendarIcon className="h-5 w-5" />
-          Generar Planilla Mensual
-        </CardTitle>
-        <CardDescription>
-          Selecciona el período y genera las planillas basadas en asistencias
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex gap-4 items-end">
+          Generar planilla
+        </span>
+        <span className="text-xs text-slate-400">
+          Crea un payroll run y sus items segun configuracion salarial y
+          politica.
+        </span>
+      </div>
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-end gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Mes</label>
             <Select value={month} onValueChange={setMonth}>
@@ -214,7 +260,7 @@ export function PayrollGenerationView({
                 <SelectValue placeholder="Seleccionar mes" />
               </SelectTrigger>
               <SelectContent>
-                {months.map(m => (
+                {months.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
                     {m.label}
                   </SelectItem>
@@ -224,13 +270,13 @@ export function PayrollGenerationView({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Año</label>
+            <label className="text-sm font-medium">Anio</label>
             <Select value={year} onValueChange={setYear}>
               <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Año" />
+                <SelectValue placeholder="Anio" />
               </SelectTrigger>
               <SelectContent>
-                {years.map(y => (
+                {years.map((y) => (
                   <SelectItem key={y} value={y}>
                     {y}
                   </SelectItem>
@@ -239,48 +285,64 @@ export function PayrollGenerationView({
             </Select>
           </div>
 
-          <Button 
-            onClick={handleGenerate} 
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Sucursal</label>
+            <Select value={branchId} onValueChange={setBranchId}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Sucursal" />
+              </SelectTrigger>
+              <SelectContent>
+                {branches.map((b) => (
+                  <SelectItem key={b.value} value={b.value}>
+                    {b.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button
+            onClick={handleGenerate}
             disabled={isGenerating}
             className="ml-auto"
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
-            {isGenerating ? 'Generando...' : 'Generar planilla'}
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isGenerating ? "animate-spin" : ""}`}
+            />
+            {isGenerating ? "Generando..." : "Generar planilla"}
           </Button>
         </div>
 
         {isGenerating && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Generando planillas...</span>
+              <span>Generando...</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="w-full" />
           </div>
         )}
 
-        {generationResult && (
-          <Alert variant={generationResult.success ? 'default' : 'destructive'}>
-            {generationResult.success ? (
+        {result && (
+          <Alert variant={result.success ? "default" : "destructive"}>
+            {result.success ? (
               <CheckCircle2 className="h-4 w-4" />
             ) : (
               <AlertCircle className="h-4 w-4" />
             )}
             <AlertTitle>
-              {generationResult.success ? 'Generación completada' : 'Errores en la generación'}
+              {result.success
+                ? "Generacion completada"
+                : "Generacion con errores"}
             </AlertTitle>
             <AlertDescription>
-              {generationResult.success ? (
-                <p>Se generaron {generationResult.count} planillas correctamente.</p>
-              ) : (
-                <div className="space-y-2">
-                  <p>Se generaron {generationResult.count} planillas con {generationResult.errors.length} errores:</p>
-                  <ul className="list-disc pl-4">
-                    {generationResult.errors.map((error, i) => (
-                      <li key={i} className="text-sm">{error}</li>
-                    ))}
-                  </ul>
-                </div>
+              <p>Items generados: {result.generatedItems}</p>
+              {result.errors.length > 0 && (
+                <ul className="list-disc pl-4">
+                  {result.errors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
               )}
             </AlertDescription>
           </Alert>
@@ -288,23 +350,14 @@ export function PayrollGenerationView({
 
         <Separator />
 
-        <div className="bg-muted/50 rounded-lg p-4">
-          <h4 className="font-medium mb-2">Resumen del proceso</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Empleados activos</p>
-              <p className="text-2xl font-bold">{configs.filter(c => c.status === 'active').length}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Configuraciones</p>
-              <p className="text-2xl font-bold">{configs.length}</p>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            El sistema calculará automáticamente horas trabajadas, horas extra y descuentos basados en las asistencias del período.
+        <div className="rounded-lg bg-muted/50 p-4 text-sm">
+          <p className="font-medium">Resumen</p>
+          <p className="text-muted-foreground">
+            Configuraciones disponibles: {configs.length}. La generacion calcula
+            ingreso base, horas extra, descuentos y neto por item.
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

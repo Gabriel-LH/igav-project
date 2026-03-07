@@ -1,26 +1,25 @@
-// components/payroll/PayrollListView.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  ColumnDef,
+  type ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
 import {
   Eye,
-  RefreshCw,
   CheckCircle,
-  FileText,
   Download,
   MoreHorizontal,
   Filter,
   Calendar,
   HandCoins,
+  FileText,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,246 +46,245 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/badge";
+
 import { PayrollDetailModal } from "./ui/modal/PayrollDetailModal";
-import type { PayrollView } from "@/src/types/payroll/type.payrollView";
+import type { PayrollItem } from "@/src/types/payroll/type.payrollItem";
+import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
+import type { PayrollLineItem } from "@/src/types/payroll/type.payrollLineItem";
+import {
+  getPayrollMemberName,
+  type PayrollItemDetailDTO,
+  type PayrollItemListItemDTO,
+} from "@/src/application/interfaces/payroll/PayrollPresentation";
 
 interface PayrollListViewProps {
-  payrolls: PayrollView[];
-  onPayrollsChange: (payrolls: PayrollView[]) => void;
+  payrolls: PayrollItem[];
+  runs: PayrollRun[];
+  lineItems: PayrollLineItem[];
+  onPayrollsChange: (payrolls: PayrollItem[]) => void;
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "PEN",
+    minimumFractionDigits: 2,
+  }).format(amount);
+}
+
+function getStatusBadge(status: PayrollItem["status"]) {
+  if (status === "paid") {
+    return (
+      <Badge className="gap-1 bg-green-600 hover:bg-green-700">
+        <HandCoins className="h-3 w-3" />
+        Pagado
+      </Badge>
+    );
+  }
+  if (status === "calculated") {
+    return (
+      <Badge variant="default" className="gap-1">
+        <CheckCircle className="h-3 w-3" />
+        Calculado
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="secondary" className="gap-1">
+      <FileText className="h-3 w-3" />
+      Borrador
+    </Badge>
+  );
 }
 
 export function PayrollListView({
   payrolls,
+  runs,
+  lineItems,
   onPayrollsChange,
 }: PayrollListViewProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedPayroll, setSelectedPayroll] = useState<PayrollView | null>(null);
+  const [selectedPayroll, setSelectedPayroll] = useState<PayrollItemDetailDTO | null>(
+    null,
+  );
   const [showDetailModal, setShowDetailModal] = useState(false);
 
-  const filteredData = useMemo(() => {
-    return payrolls.filter((payroll) => {
-      if (statusFilter === "all") return true;
-      return payroll.status === statusFilter;
+  const runById = useMemo(() => {
+    const map = new Map<string, PayrollRun>();
+    runs.forEach((run) => map.set(run.id, run));
+    return map;
+  }, [runs]);
+
+  const detailRows = useMemo<PayrollItemDetailDTO[]>(
+    () =>
+      payrolls
+        .map((item) => {
+          const run = runById.get(item.payrollRunId);
+          if (!run) return null;
+
+          const monthLabel = run.periodStart.toLocaleString("es-PE", { month: "short" });
+          const periodLabel = `${monthLabel} ${run.periodStart.getFullYear()}`;
+
+          return {
+            id: item.id,
+            payrollRunId: item.payrollRunId,
+            membershipId: item.membershipId,
+            employeeName: getPayrollMemberName(item.membershipId),
+            periodLabel,
+            payDate: run.payDate,
+            status: item.status,
+            grossTotal: item.grossTotal,
+            deductionTotal: item.deductionTotal,
+            netTotal: item.netTotal,
+            periodStart: run.periodStart,
+            periodEnd: run.periodEnd,
+            lineItems: lineItems.filter((line) => line.payrollItemId === item.id),
+          };
+        })
+        .filter((value): value is PayrollItemDetailDTO => value !== null),
+    [lineItems, payrolls, runById],
+  );
+
+  const filteredData = useMemo<PayrollItemListItemDTO[]>(() => {
+    const query = globalFilter.toLowerCase().trim();
+
+    return detailRows.filter((row) => {
+      const matchesStatus = statusFilter === "all" || row.status === statusFilter;
+      if (!matchesStatus) return false;
+      if (!query) return true;
+      return (
+        row.employeeName.toLowerCase().includes(query) ||
+        row.membershipId.toLowerCase().includes(query)
+      );
     });
-  }, [payrolls, statusFilter]);
+  }, [detailRows, globalFilter, statusFilter]);
 
-  const handleRecalculate = (payroll: PayrollView) => {
-    // Simular recálculo
-    const updatedPayroll: PayrollView = {
-      ...payroll,
-      status: "calculated",
-      generatedAt: new Date(),
-    };
+  const markAsPaid = useCallback((itemId: string) => {
     onPayrollsChange(
-      payrolls.map((p) => (p.id === payroll.id ? updatedPayroll : p)),
-    );
-  };
-
-  const handleMarkAsPaid = (payroll: PayrollView) => {
-    const updatedPayroll: PayrollView = {
-      ...payroll,
-      status: "paid",
-      paidAt: new Date(),
-    };
-    onPayrollsChange(
-      payrolls.map((p) => (p.id === payroll.id ? updatedPayroll : p)),
-    );
-  };
-
-  const handleExport = (payroll: PayrollView, format: "pdf" | "excel") => {
-    console.log(`Exportando ${payroll.employeeName} a ${format}`);
-    // Aquí iría la lógica de exportación
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      draft: {
-        variant: "secondary" as const,
-        label: "Borrador",
-        icon: <FileText className="mr-2 h-3 w-3" />,
-        colorClass: "",
-      },
-      calculated: {
-        variant: "default" as const,
-        label: "Calculado",
-        icon: <CheckCircle className="mr-2 h-3 w-3" />,
-        colorClass: "",
-      },
-      paid: {
-        variant: "default" as const,
-        label: "Pagado",
-        icon: <HandCoins className="mr-2 h-3 w-3" />,
-        colorClass: "bg-green-600 hover:bg-green-700",
-      },
-    };
-    const statusInfo =
-      variants[status as keyof typeof variants] || variants.draft;
-
-    return (
-      <Badge
-        variant={statusInfo.variant}
-        className={`gap-1 ${statusInfo.colorClass}`}
-      >
-        <span>{statusInfo.icon}</span>
-        {statusInfo.label}
-      </Badge>
-    );
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  const columns: ColumnDef<PayrollView>[] = [
-    {
-      accessorKey: "employeeName",
-      header: "Empleado",
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("employeeName")}</div>
+      payrolls.map((payroll) =>
+        payroll.id === itemId ? { ...payroll, status: "paid" } : payroll,
       ),
-    },
-    {
-      id: "period",
-      header: "Período",
-      cell: ({ row }) => {
-        const { month, year } = row.original.period;
-        const monthNames = [
-          "Ene",
-          "Feb",
-          "Mar",
-          "Abr",
-          "May",
-          "Jun",
-          "Jul",
-          "Ago",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dic",
-        ];
-        return (
+    );
+  }, [onPayrollsChange, payrolls]);
+
+  const columns = useMemo<ColumnDef<PayrollItemListItemDTO>[]>(
+    () => [
+      {
+        accessorKey: "employeeName",
+        header: "Empleado",
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium">{row.original.employeeName}</p>
+            <p className="text-xs text-muted-foreground">{row.original.membershipId}</p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "periodLabel",
+        header: "Periodo",
+        cell: ({ row }) => (
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {monthNames[month - 1]} {year}
+            {row.original.periodLabel}
           </div>
-        );
+        ),
       },
-    },
-    {
-      accessorKey: "calculations.baseAmount",
-      header: "Base",
-      cell: ({ row }) => formatCurrency(row.original.calculations.baseAmount),
-    },
-    {
-      accessorKey: "calculations.overtimeAmount",
-      header: "Extras",
-      cell: ({ row }) =>
-        formatCurrency(row.original.calculations.overtimeAmount),
-    },
-    {
-      accessorKey: "calculations.deductions.total",
-      header: "Descuentos",
-      cell: ({ row }) =>
-        formatCurrency(row.original.calculations.deductions.total),
-    },
-    {
-      accessorKey: "calculations.total",
-      header: "Total",
-      cell: ({ row }) => (
-        <span className="font-semibold text-primary">
-          {formatCurrency(row.original.calculations.total)}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => getStatusBadge(row.getValue("status")),
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const payroll = row.original;
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedPayroll(payroll);
-                  setShowDetailModal(true);
-                }}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                Ver detalle
-              </DropdownMenuItem>
+      {
+        accessorKey: "grossTotal",
+        header: "Bruto",
+        cell: ({ row }) => formatCurrency(row.original.grossTotal),
+      },
+      {
+        accessorKey: "deductionTotal",
+        header: "Descuentos",
+        cell: ({ row }) => formatCurrency(row.original.deductionTotal),
+      },
+      {
+        accessorKey: "netTotal",
+        header: "Neto",
+        cell: ({ row }) => (
+          <span className="font-semibold text-primary">
+            {formatCurrency(row.original.netTotal)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Estado",
+        cell: ({ row }) => getStatusBadge(row.original.status),
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          const payroll = row.original;
+          const detail = detailRows.find((item) => item.id === payroll.id);
 
-              {payroll.status !== "paid" && (
-                <>
-                  <DropdownMenuItem onClick={() => handleRecalculate(payroll)}>
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Recalcular
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleMarkAsPaid(payroll)}>
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (!detail) return;
+                    setSelectedPayroll(detail);
+                    setShowDetailModal(true);
+                  }}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  Ver detalle
+                </DropdownMenuItem>
+
+                {payroll.status !== "paid" && (
+                  <DropdownMenuItem onClick={() => markAsPaid(payroll.id)}>
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Marcar como pagado
                   </DropdownMenuItem>
-                </>
-              )}
+                )}
 
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>Exportar</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleExport(payroll, "pdf")}>
-                <FileText className="mr-2 h-4 w-4" />
-                PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport(payroll, "excel")}>
-                <Download className="mr-2 h-4 w-4" />
-                Excel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => console.log("Exportar PDF", payroll.id)}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Exportar PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log("Exportar Excel", payroll.id)}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Exportar Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
-    },
-  ];
+    ],
+    [detailRows, markAsPaid],
+  );
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
-    onGlobalFilterChange: setGlobalFilter,
   });
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <FileText className="h-5 w-5" />
-        Planillas Generadas
-      </div>
-
       <div>
-        <div className="flex items-center gap-4 mb-4">
+        <div className="mb-4 flex items-center gap-4">
           <div className="relative flex-1">
             <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar empleado..."
-              value={globalFilter ?? ""}
+              placeholder="Buscar por empleado o membership..."
+              value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-8 max-w-sm"
+              className="max-w-sm pl-8"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -309,10 +307,7 @@ export function PayrollListView({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id}>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -324,18 +319,15 @@ export function PayrollListView({
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    No hay planillas generadas
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No hay planillas registradas
                   </TableCell>
                 </TableRow>
               )}
@@ -370,13 +362,7 @@ export function PayrollListView({
             setShowDetailModal(false);
             setSelectedPayroll(null);
           }}
-          onUpdate={(updatedPayroll) => {
-            onPayrollsChange(
-              payrolls.map((p) =>
-                p.id === updatedPayroll.id ? updatedPayroll : p,
-              ),
-            );
-          }}
+          onMarkPaid={() => markAsPaid(selectedPayroll.id)}
         />
       )}
     </>

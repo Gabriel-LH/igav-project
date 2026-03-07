@@ -10,6 +10,10 @@ import {
   DollarSign,
   Wallet,
   ArrowUpDown,
+  Banknote,
+  Smartphone,
+  Landmark,
+  CreditCard
 } from "lucide-react";
 
 const sumAmounts = (
@@ -83,9 +87,9 @@ export function PaymentHeader({
           <CardContent>
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-emerald-500" />
-              <p className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 Ingresos {periodLabel}
-              </p>
+              </span>
             </div>
             <p className="text-xl font-semibold text-emerald-600">
               {formatCurrency(ingresos)}
@@ -182,17 +186,34 @@ export function PaymentHeader({
         {methodStats.map((item) => (
           <Card key={item.method} className="py-4">
             <CardContent className="space-y-2">
-              <p className="text-xs uppercase font-medium text-muted-foreground">
-                {item.method === "cash"
-                  ? "💰 Efectivo"
-                  : item.method === "yape"
-                    ? "📱 Yape"
-                    : item.method === "plin"
-                      ? "📱 Plin"
-                      : item.method === "transfer"
-                        ? "🏦 Transferencia"
-                        : "💳 Tarjeta"}
-              </p>
+              <div className="text-xs uppercase font-medium text-muted-foreground">
+                {item.method === "cash" ? (
+                  <span className="flex gap-2">
+                    <Banknote />
+                    Efectivo
+                  </span>
+                ) : item.method === "yape" ? (
+                  <span className="flex gap-2">
+                    <Smartphone />
+                    Yape
+                  </span>
+                ) : item.method === "plin" ? (
+                  <span className="flex gap-2">
+                    <Smartphone />
+                    Plin
+                  </span>
+                ) : item.method === "transfer" ? (
+                  <span className="flex gap-2">
+                    <Landmark />
+                    Transferencia
+                  </span>
+                ) : (
+                  <span className="flex gap-2">
+                    <CreditCard/>
+                    Tarjeta
+                  </span>
+                )}
+              </div>
 
               <div className="space-y-1">
                 {item.ingresos > 0 && (

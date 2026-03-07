@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -31,7 +30,10 @@ interface PayrollPolicyViewProps {
   onPolicyChange: (nextPolicy: PayrollPolicy) => void;
 }
 
-export function PayrollPolicyView({ policy, onPolicyChange }: PayrollPolicyViewProps) {
+export function PayrollPolicyView({
+  policy,
+  onPolicyChange,
+}: PayrollPolicyViewProps) {
   const defaultValues = useMemo(
     () => ({
       healthInsurancePercent: policy.deductions.healthInsurancePercent,
@@ -61,11 +63,11 @@ export function PayrollPolicyView({ policy, onPolicyChange }: PayrollPolicyViewP
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Política de Nómina</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div>
+      <div className="mb-4">
+        <span className="text-2xl">Política de Nómina</span>
+      </div>
+      <div>
         <Form {...form}>
           <form
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -152,7 +154,7 @@ export function PayrollPolicyView({ policy, onPolicyChange }: PayrollPolicyViewP
             </div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

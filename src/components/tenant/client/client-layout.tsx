@@ -6,6 +6,7 @@ import { mapClientToTable } from "@/src/adapters/client-adapters";
 
 export function ClientLayout() {
   const { customers } = useCustomerStore();
+  
   const dataClientActive = mapClientToTable(
     customers.filter((c) => c.status === "active"),
   );

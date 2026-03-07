@@ -176,7 +176,7 @@ export function CurrentPlanTab({
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex gap-3 border-t pb-2">
+          <CardFooter className="grid  grid-cols-1 gap-8 border-t pb-2">
             <Button onClick={onOpenChangePlan} className="-mt-4">
               Cambiar plan
               <ArrowRight className="ml-2 h-4 w-4" />

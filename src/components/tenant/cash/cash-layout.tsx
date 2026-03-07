@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Plus, History, CreditCard } from "lucide-react";
-import { SessionsTable } from "./tables/session-table";
+import { SessionDataTable } from "./session-data-table";
 import { PaymentDataTable } from "./payment-data-table";
 import { PaymentHeader } from "./cash-stats";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
@@ -143,7 +143,7 @@ export function CashLayout() {
         {/* Tab de Sesiones */}
         <TabsContent value="sessions" className="space-y-4">
           {activeTab === "sessions" && (
-            <SessionsTable
+            <SessionDataTable
               data={sessionsData}
               onViewSession={handleViewSession}
               onCloseSession={handleCloseSession}

@@ -20,6 +20,10 @@ export const payrollConfigSchema = z.object({
   ]),
 
   applyOvertime: z.boolean().default(true),
+  applyhealthInsurancePercent: z.boolean(),
+  applypensionPercent: z.boolean(),
+  applytaxPercent: z.boolean(),
+  otherDeductions: z.number(),
 
   createdAt: z.date(),
   updatedAt: z.date(),

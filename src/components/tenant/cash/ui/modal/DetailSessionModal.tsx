@@ -1,7 +1,7 @@
 // components/cash/ui/modal/SessionDetailModal.tsx
 "use client";
 
-import { useMemo } from "react";
+
 import {
   CustomModal,
   CustomModalHeader,
@@ -47,12 +47,9 @@ export function SessionDetailModal({
 }: SessionDetailModalProps) {
   if (!session) return null;
 
-  // Filtrar pagos de esta sesión
-  const sessionPayments = useMemo(() => {
-    // Aquí deberías filtrar por sessionId si tu modelo de Payment tiene ese campo
-    // Por ahora, simulamos algunos pagos
-    return payments.slice(0, 5);
-  }, [payments]);
+
+    const sessionPayments =  payments.slice(0, 5);
+ 
 
   const ingresos = sessionPayments
     .filter((p) => p.direction === "in")

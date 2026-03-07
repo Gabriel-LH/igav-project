@@ -1,7 +1,7 @@
 // components/cash/ui/modal/CloseSessionModal.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import {
   CustomModal,
   CustomModalHeader,
@@ -33,13 +33,6 @@ export function CloseSessionModal({
   const [countedAmount, setCountedAmount] = useState<number>(0);
   const [error, setError] = useState<string>("");
 
-  // Reset cuando se abre el modal
-  useEffect(() => {
-    if (open && session) {
-      setCountedAmount(session.expectedAmount || 0);
-      setError("");
-    }
-  }, [open, session]);
 
   if (!session) return null;
 
