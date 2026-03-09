@@ -8,6 +8,7 @@ export const userSchema = z.object({
   email: z.string(),
   phone: z.string().optional(),
   status: z.enum(["active", "inactive", "suspended", "blocked"]),
+  image: z.string().optional(),
   createdAt: z.date(),
   createdBy: z.string().optional(),
   updatedAt: z.date(), // Cuándo fue la última vez que se editó (opcional pero recomendado)

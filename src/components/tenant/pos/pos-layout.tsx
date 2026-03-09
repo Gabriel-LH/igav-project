@@ -10,8 +10,8 @@ import { PosCartSection } from "./pos-cart-section";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
-import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
+import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 

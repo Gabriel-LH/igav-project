@@ -1,7 +1,7 @@
 // components/team/TeamLayout.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   Card,
   CardContent,
@@ -9,84 +9,106 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Users, Shield, Building2, UserCheck, Mail } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { TeamTable, TeamMember } from "./table/team-table";
 import { InviteMemberModal } from "./ui/InviteMemberModal";
 import { StatsTeams } from "./ui/StatsTeams";
+import { revokeInvitationAction } from "@/src/app/(tenant)/tenant/actions/invitation.actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-// Mocks
-const BRANCHES_MOCK = [
-  { id: "branch-1", name: "Sucursal Central" },
-  { id: "branch-2", name: "Sucursal Norte" },
-  { id: "branch-3", name: "Sucursal Sur" },
-];
+// Types matching what Prisma returns from getTenantMembersAction
+type DBMember = {
+  id: string;
+  userId: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    status: string;
+  };
+  role: { id: string; name: string };
+  branch: { id: string; name: string };
+};
 
-const TEAM_MEMBERS_MOCK: TeamMember[] = [
-  {
-    id: "user-1",
-    email: "admin@empresa.com",
-    name: "Carlos Rodríguez",
-    role: "admin",
-    branchId: "branch-1",
-    branchName: "Sucursal Central",
-    status: "active",
-    phone: "+51 999 888 777",
-    joinedAt: new Date("2023-01-15"),
-    lastActive: new Date(),
-    permissions: ["all"],
-  },
-  {
-    id: "user-2",
-    email: "gerente.norte@empresa.com",
-    name: "Ana Martínez",
-    role: "manager",
-    branchId: "branch-2",
-    branchName: "Sucursal Norte",
-    status: "active",
-    phone: "+51 999 777 666",
-    joinedAt: new Date("2023-03-20"),
-    lastActive: new Date("2024-12-18"),
-    permissions: ["approve_transfers", "view_reports"],
-  },
-  {
-    id: "user-3",
-    email: "vendedor1@empresa.com",
-    name: "Luis García",
-    role: "seller",
-    branchId: "branch-1",
-    branchName: "Sucursal Central",
+type DBInvitation = {
+  id: string;
+  email: string;
+  status: string;
+  createdAt: Date;
+  expiresAt: Date;
+  role: { id: string; name: string };
+  branch: { id: string; name: string };
+  invitedBy: { id: string; name: string; email: string };
+};
+
+interface TeamLayoutProps {
+  initialMembers: DBMember[];
+  initialInvitations: DBInvitation[];
+  branches: Array<{ id: string; name: string }>;
+  roles: Array<{ id: string; name: string; description: string | null }>;
+}
+
+function mapMemberToTableRow(m: DBMember): TeamMember {
+  const roleNameLower = m.role.name.toLowerCase() as TeamMember["role"];
+  const validRoles: TeamMember["role"][] = [
+    "admin",
+    "manager",
+    "seller",
+    "inventory",
+    "viewer",
+  ];
+  const role = validRoles.includes(roleNameLower) ? roleNameLower : "viewer";
+
+  return {
+    id: m.id,
+    email: m.user.email,
+    name: m.user.name,
+    avatar: m.user.image ?? undefined,
+    role,
+    branchId: m.branch.id,
+    branchName: m.branch.name,
+    status: (m.status as TeamMember["status"]) ?? "active",
+    joinedAt: new Date(m.createdAt),
+    permissions: [],
+  };
+}
+
+function mapInvitationToTableRow(inv: DBInvitation): TeamMember {
+  return {
+    id: `inv-${inv.id}`,
+    email: inv.email,
+    name: inv.email.split("@")[0],
+    role: "viewer",
+    branchId: inv.branch.id,
+    branchName: inv.branch.name,
     status: "invited",
-    joinedAt: new Date("2024-12-19"),
+    joinedAt: new Date(inv.createdAt),
     permissions: [],
-  },
-  {
-    id: "user-4",
-    email: "inventario@empresa.com",
-    name: "María López",
-    role: "inventory",
-    branchId: "branch-3",
-    branchName: "Sucursal Sur",
-    status: "suspended",
-    phone: "+51 999 666 555",
-    joinedAt: new Date("2023-06-10"),
-    permissions: ["bulk_operations"],
-  },
-  {
-    id: "user-5",
-    email: "vendedor2@empresa.com",
-    name: "Pedro Sánchez",
-    role: "seller",
-    branchId: "branch-2",
-    branchName: "Sucursal Norte",
-    status: "active",
-    joinedAt: new Date("2024-01-15"),
-    lastActive: new Date("2024-12-17"),
-    permissions: [],
-  },
-];
+    _invitationId: inv.id,
+  } as TeamMember & { _invitationId: string };
+}
 
-export function TeamLayout() {
-  const [members, setMembers] = useState<TeamMember[]>(TEAM_MEMBERS_MOCK);
+export function TeamLayout({
+  initialMembers,
+  initialInvitations,
+  branches,
+  roles,
+}: TeamLayoutProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  // Merge members + pending invitations into a single list
+  const members: TeamMember[] = [
+    ...initialMembers.map(mapMemberToTableRow),
+    ...initialInvitations
+      .filter((inv) => inv.status === "pending")
+      .map(mapInvitationToTableRow),
+  ];
 
   const stats = {
     total: members.length,
@@ -95,63 +117,46 @@ export function TeamLayout() {
     suspended: members.filter((m) => m.status === "suspended").length,
   };
 
-  const handleInvite = async (data: {
-    email: string;
-    name: string;
-    role: string;
-    branchId: string;
-    permissions: string[];
-    message?: string;
-  }) => {
-    // Simular API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const newMember: TeamMember = {
-      id: `user-${Date.now()}`,
-      email: data.email,
-      name: data.name || data.email.split("@")[0],
-      role: data.role as TeamMember["role"],
-      branchId: data.branchId,
-      branchName:
-        BRANCHES_MOCK.find((b) => b.id === data.branchId)?.name ||
-        data.branchId,
-      status: "invited",
-      joinedAt: new Date(),
-      permissions: data.permissions,
-    };
-
-    setMembers((prev) => [...prev, newMember]);
-    console.log("Invitación enviada:", data);
-  };
-
   const handleEdit = (member: TeamMember) => {
     console.log("Editar:", member);
   };
 
   const handleSuspend = (id: string) => {
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, status: "suspended" as const } : m,
-      ),
-    );
+    // TODO: wire to a suspendMemberAction
+    toast.info("Función de suspender en desarrollo");
   };
 
   const handleActivate = (id: string) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, status: "active" as const } : m)),
-    );
+    // TODO: wire to an activateMemberAction
+    toast.info("Función de activar en desarrollo");
   };
 
   const handleDelete = (id: string) => {
-    setMembers((prev) => prev.filter((m) => m.id !== id));
+    // TODO: wire to a removeMemberAction
+    toast.info("Función de eliminar en desarrollo");
   };
 
   const handleChangeRole = (id: string, role: TeamMember["role"]) => {
-    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, role } : m)));
+    // TODO: wire to a changeRoleAction
+    toast.info("Función de cambio de rol en desarrollo");
   };
 
   const handleResendInvite = (id: string) => {
-    console.log("Reenviar invitación:", id);
+    // The id here is `inv-{invitationId}`, so extract real invitationId
+    const realId = id.replace("inv-", "");
+    toast.info("Por ahora re-genera una nueva invitación desde el modal.");
+  };
+
+  const handleRevokeInvite = (invitationId: string) => {
+    startTransition(async () => {
+      try {
+        await revokeInvitationAction(invitationId);
+        toast.success("Invitación revocada.");
+        router.refresh();
+      } catch {
+        toast.error("No se pudo revocar la invitación.");
+      }
+    });
   };
 
   return (
@@ -160,7 +165,7 @@ export function TeamLayout() {
       <StatsTeams stats={stats} />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
-        <InviteMemberModal branches={BRANCHES_MOCK} onInvite={handleInvite} />
+        <InviteMemberModal branches={branches} roles={roles} />
       </div>
 
       {/* Tabla */}
@@ -177,7 +182,7 @@ export function TeamLayout() {
         <CardContent>
           <TeamTable
             data={members}
-            branches={BRANCHES_MOCK}
+            branches={branches}
             onEdit={handleEdit}
             onSuspend={handleSuspend}
             onActivate={handleActivate}

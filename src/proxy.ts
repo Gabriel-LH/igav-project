@@ -9,12 +9,27 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/superadmin")) {
-    // permitir entrar al login del superadmin
-    if (pathname.startsWith("/superadmin/auth/login")) {
-      return NextResponse.next();
+  if (pathname.startsWith("/superadmin/auth/login")) {
+    if (session?.user.globalRole === "SUPER_ADMIN") {
+      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
     }
+    if (session) {
+      return NextResponse.redirect(new URL("/tenant/home", request.url));
+    }
+    return NextResponse.next();
+  }
 
+  if (pathname.startsWith("/auth/login")) {
+    if (session?.user.globalRole === "SUPER_ADMIN") {
+      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
+    }
+    if (session) {
+      return NextResponse.redirect(new URL("/tenant/home", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/superadmin")) {
     if (!session) {
       return NextResponse.redirect(
         new URL("/superadmin/auth/login", request.url),
@@ -22,7 +37,16 @@ export async function proxy(request: NextRequest) {
     }
 
     if (session.user.globalRole !== "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/tenant/home", request.url));
+    }
+  }
+
+  if (pathname.startsWith("/tenant")) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+    if (session.user.globalRole === "SUPER_ADMIN") {
+      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
     }
   }
 
@@ -30,5 +54,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/superadmin/:path*"],
+  matcher: ["/superadmin/:path*", "/tenant/:path*", "/auth/:path*"],
 };

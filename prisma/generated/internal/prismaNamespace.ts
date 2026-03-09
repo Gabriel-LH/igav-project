@@ -457,6 +457,7 @@ export const ModelName = {
   TenantModule: 'TenantModule',
   TenantPolicy: 'TenantPolicy',
   TenantPolicyHistory: 'TenantPolicyHistory',
+  Invitation: 'Invitation',
   UserTenantMembership: 'UserTenantMembership',
   Transfer: 'Transfer',
   TransferItem: 'TransferItem',
@@ -477,7 +478,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "jwks" | "userBranchAccess" | "userAttendance" | "userRoleBranchHistory" | "userShiftAssignment" | "attributeType" | "attributeValue" | "branch" | "branchConfig" | "brand" | "cashSession" | "category" | "client" | "clientCreditLedger" | "clientLoyaltyLedger" | "coupon" | "guarantee" | "guaranteeStatusHistory" | "model" | "module" | "moduleFeature" | "operation" | "paymentMethod" | "payment" | "payrollRun" | "payrollItem" | "payrollLineItem" | "payrollPolicy" | "payrollConfig" | "permission" | "role" | "rolePermission" | "plan" | "planFeature" | "planLimit" | "planModule" | "product" | "productVariant" | "inventoryItem" | "inventoryItemStatusHistory" | "stockLot" | "stockMovement" | "promotion" | "promotionBranch" | "promotionUsage" | "referral" | "referralProgram" | "referralReward" | "rental" | "rentalItem" | "rentalCharge" | "rentalStatusHistory" | "rentalItemStatusHistory" | "reservation" | "reservationItem" | "reservationItemStatusHistory" | "sale" | "saleItem" | "saleCharge" | "saleReversal" | "reversalItem" | "saleItemStatusHistory" | "shift" | "tenant" | "tenantConfig" | "tenantSubscription" | "tenantModule" | "tenantPolicy" | "tenantPolicyHistory" | "userTenantMembership" | "transfer" | "transferItem" | "transferRoute" | "inventoryMovement"
+    modelProps: "user" | "session" | "account" | "verification" | "jwks" | "userBranchAccess" | "userAttendance" | "userRoleBranchHistory" | "userShiftAssignment" | "attributeType" | "attributeValue" | "branch" | "branchConfig" | "brand" | "cashSession" | "category" | "client" | "clientCreditLedger" | "clientLoyaltyLedger" | "coupon" | "guarantee" | "guaranteeStatusHistory" | "model" | "module" | "moduleFeature" | "operation" | "paymentMethod" | "payment" | "payrollRun" | "payrollItem" | "payrollLineItem" | "payrollPolicy" | "payrollConfig" | "permission" | "role" | "rolePermission" | "plan" | "planFeature" | "planLimit" | "planModule" | "product" | "productVariant" | "inventoryItem" | "inventoryItemStatusHistory" | "stockLot" | "stockMovement" | "promotion" | "promotionBranch" | "promotionUsage" | "referral" | "referralProgram" | "referralReward" | "rental" | "rentalItem" | "rentalCharge" | "rentalStatusHistory" | "rentalItemStatusHistory" | "reservation" | "reservationItem" | "reservationItemStatusHistory" | "sale" | "saleItem" | "saleCharge" | "saleReversal" | "reversalItem" | "saleItemStatusHistory" | "shift" | "tenant" | "tenantConfig" | "tenantSubscription" | "tenantModule" | "tenantPolicy" | "tenantPolicyHistory" | "invitation" | "userTenantMembership" | "transfer" | "transferItem" | "transferRoute" | "inventoryMovement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5883,6 +5884,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Invitation: {
+      payload: Prisma.$InvitationPayload<ExtArgs>
+      fields: Prisma.InvitationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvitationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvitationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        findFirst: {
+          args: Prisma.InvitationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvitationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        findMany: {
+          args: Prisma.InvitationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[]
+        }
+        create: {
+          args: Prisma.InvitationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        createMany: {
+          args: Prisma.InvitationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvitationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[]
+        }
+        delete: {
+          args: Prisma.InvitationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        update: {
+          args: Prisma.InvitationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvitationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvitationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvitationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvitationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>
+        }
+        aggregate: {
+          args: Prisma.InvitationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvitation>
+        }
+        groupBy: {
+          args: Prisma.InvitationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvitationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvitationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvitationCountAggregateOutputType> | number
+        }
+      }
+    }
     UserTenantMembership: {
       payload: Prisma.$UserTenantMembershipPayload<ExtArgs>
       fields: Prisma.UserTenantMembershipFieldRefs
@@ -7541,6 +7616,25 @@ export const TenantPolicyHistoryScalarFieldEnum = {
 export type TenantPolicyHistoryScalarFieldEnum = (typeof TenantPolicyHistoryScalarFieldEnum)[keyof typeof TenantPolicyHistoryScalarFieldEnum]
 
 
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  roleId: 'roleId',
+  email: 'email',
+  token: 'token',
+  status: 'status',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  acceptedByUserId: 'acceptedByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
 export const UserTenantMembershipScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -8658,6 +8752,20 @@ export type ListEnumTenantModuleStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'InvitationStatus'
+ */
+export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'InvitationStatus[]'
+ */
+export type ListEnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'TenantMemberShipStatus'
  */
 export type EnumTenantMemberShipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TenantMemberShipStatus'>
@@ -8894,6 +9002,7 @@ export type GlobalOmitConfig = {
   tenantModule?: Prisma.TenantModuleOmit
   tenantPolicy?: Prisma.TenantPolicyOmit
   tenantPolicyHistory?: Prisma.TenantPolicyHistoryOmit
+  invitation?: Prisma.InvitationOmit
   userTenantMembership?: Prisma.UserTenantMembershipOmit
   transfer?: Prisma.TransferOmit
   transferItem?: Prisma.TransferItemOmit

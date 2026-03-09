@@ -6,54 +6,65 @@ import { Charts } from "./charts";
 import { RecentActivityTable } from "./recent-activity-table";
 import { PlansDistribution } from "./plans-distribution";
 
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { MOCK_TENANT } from "@/src/mocks/mock.tenant";
+import { Plan } from "@/src/types/plan/planSchema";
 
-export function DashboardLayout() {
+interface DashboardLayoutProps {
+  initialPlans: Plan[];
+  initialSubscriptions: any[];
+  initialTenants: any[];
+}
+
+export function DashboardLayout({
+  initialPlans,
+  initialSubscriptions,
+  initialTenants,
+}: DashboardLayoutProps) {
   // Calcular métricas principales
-  const activeSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
+  const activeSubscriptions = initialSubscriptions.filter(
     (s) => s.status === "active",
   ).length;
-  const activeTenants = MOCK_TENANT.filter((t) => t.status === "active").length;
+  const activeTenants = initialTenants.filter(
+    (t) => t.status === "active",
+  ).length;
 
   // Calcular MRR
-  const mrr = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "active",
-  ).reduce((total, sub) => {
-    const plan = PLANS_MOCK.find((p) => p.id === sub.planId);
-    if (!plan) return total;
+  const mrr = initialSubscriptions
+    .filter((s) => s.status === "active")
+    .reduce((total, sub) => {
+      const plan = initialPlans.find((p) => p.id === sub.planId);
+      if (!plan) return total;
 
-    if (sub.billingCycle === "yearly" && plan.priceYearly) {
-      return total + plan.priceYearly / 12;
-    }
-    return total + plan.priceMonthly;
-  }, 0);
+      if (sub.billingCycle === "yearly" && plan.priceYearly) {
+        return total + plan.priceYearly / 12;
+      }
+      return total + plan.priceMonthly;
+    }, 0);
 
   // Calcular churn rate
-  const canceledLastMonth = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) =>
+  const canceledLastMonth = initialSubscriptions.filter(
+    (s: any) =>
       s.status === "canceled" &&
       s.canceledAt &&
-      s.canceledAt > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      new Date(s.canceledAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
   ).length;
 
-  const totalSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.length;
+  const totalSubscriptions = initialSubscriptions.length;
   const churnRate =
     totalSubscriptions > 0
       ? Number(((canceledLastMonth / totalSubscriptions) * 100).toFixed(1))
       : 0;
 
   // Métricas secundarias
-  const newTenants = MOCK_TENANT.filter(
-    (t) => t.createdAt > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+  const newTenants = initialTenants.filter(
+    (t: any) =>
+      new Date(t.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
   ).length;
 
-  const trialUsers = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "trial",
+  const trialUsers = initialSubscriptions.filter(
+    (s: any) => s.status === "trial",
   ).length;
-  const pastDueSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "past_due",
+  const pastDueSubscriptions = initialSubscriptions.filter(
+    (s: any) => s.status === "past_due",
   ).length;
 
   // Datos para gráficas
@@ -147,8 +158,8 @@ export function DashboardLayout() {
           </div>
           <div className="md:col-span-3">
             <PlansDistribution
-              plans={PLANS_MOCK}
-              subscriptions={TENTANT_SUBSCRIPTIONS_MOCK}
+              plans={initialPlans}
+              subscriptions={initialSubscriptions}
               activeSubscriptions={activeSubscriptions}
             />
           </div>

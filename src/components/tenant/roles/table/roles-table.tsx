@@ -61,7 +61,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 export interface Role {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   isSystem: boolean;
   isActive: boolean;
   userCount: number;
@@ -99,20 +99,27 @@ export function RolesTable({
         const role = row.original;
         return (
           <div className="flex items-center gap-2">
-            <div className={cn(
-              "p-2 rounded-lg",
-              role.isSystem ? "bg-purple-100" : "bg-blue-100"
-            )}>
-              <Shield className={cn(
-                "w-4 h-4",
-                role.isSystem ? "text-purple-600" : "text-blue-600"
-              )} />
+            <div
+              className={cn(
+                "p-2 rounded-lg",
+                role.isSystem ? "bg-purple-100" : "bg-blue-100",
+              )}
+            >
+              <Shield
+                className={cn(
+                  "w-4 h-4",
+                  role.isSystem ? "text-purple-600" : "text-blue-600",
+                )}
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-medium">{role.name}</span>
                 {role.isSystem && (
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-purple-50 text-purple-700 border-purple-200"
+                  >
                     <Lock className="w-3 h-3 mr-1" />
                     Sistema
                   </Badge>
@@ -155,10 +162,12 @@ export function RolesTable({
         return (
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4 text-muted-foreground" />
-            <span className={cn(
-              "font-medium",
-              count > 0 ? "text-foreground" : "text-muted-foreground"
-            )}>
+            <span
+              className={cn(
+                "font-medium",
+                count > 0 ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
               {count}
             </span>
           </div>
@@ -171,18 +180,18 @@ export function RolesTable({
       cell: ({ row }) => {
         const active = row.getValue("isActive") as boolean;
         const role = row.original;
-        
+
         return (
           <button
             onClick={() => !role.isSystem && onToggleActive(role.id, !active)}
             disabled={role.isSystem}
             className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors",
-              active 
-                ? "bg-green-100 text-green-700" 
+              active
+                ? "bg-green-100 text-green-700"
                 : "bg-gray-100 text-gray-700",
               !role.isSystem && "cursor-pointer hover:opacity-80",
-              role.isSystem && "cursor-not-allowed opacity-60"
+              role.isSystem && "cursor-not-allowed opacity-60",
             )}
           >
             {active ? (
@@ -217,7 +226,7 @@ export function RolesTable({
       header: "Acciones",
       cell: ({ row }) => {
         const role = row.original;
-        
+
         return (
           <div className="flex items-center gap-1">
             <Button
@@ -228,7 +237,7 @@ export function RolesTable({
             >
               <Eye className="w-4 h-4" />
             </Button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -238,19 +247,19 @@ export function RolesTable({
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                
+
                 <DropdownMenuItem onClick={() => onEdit(role)}>
                   <Edit3 className="w-4 h-4 mr-2" />
                   Editar
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem onClick={() => onClone(role)}>
                   <Copy className="w-4 h-4 mr-2" />
                   Duplicar rol
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuSeparator />
-                
+
                 {!role.isSystem && (
                   <DropdownMenuItem
                     onClick={() => onDelete(role.id)}
@@ -314,7 +323,7 @@ export function RolesTable({
                     <TableHead key={header.id} className="font-semibold">
                       {flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                     </TableHead>
                   ))}
@@ -333,7 +342,7 @@ export function RolesTable({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -358,11 +367,17 @@ export function RolesTable({
       {/* Paginación */}
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-muted-foreground">
-          Mostrando {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} a{" "}
+          Mostrando{" "}
+          {table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+            1}{" "}
+          a{" "}
           {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-            data.length
-          )} de {data.length} roles
+            (table.getState().pagination.pageIndex + 1) *
+              table.getState().pagination.pageSize,
+            data.length,
+          )}{" "}
+          de {data.length} roles
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -382,7 +397,8 @@ export function RolesTable({
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm text-muted-foreground">
-            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+            Página {table.getState().pagination.pageIndex + 1} de{" "}
+            {table.getPageCount()}
           </span>
           <Button
             variant="outline"

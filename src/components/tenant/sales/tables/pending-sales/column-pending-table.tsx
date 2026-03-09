@@ -21,16 +21,16 @@ import { TableCellViewerPending } from "./pending-table-cell-viewer";
 import { useState } from "react";
 import { CancelSaleModal } from "../../ui/modals/CancelSaleModal";
 import { useSaleStore } from "@/src/store/useSaleStore";
-import { CancelSaleUseCase } from "@/src/application/use-cases/sale/cancelSale.usecase";
+import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { DeliverSaleUseCase } from "@/src/application/use-cases/sale/deliverSale.usecase";
-import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
-import { ZustandSaleReversalRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleReversalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
-import { ZustandReservationRepository } from "@/src/infrastructure/stores-adapters/ZustandReservationRepository";
+import { DeliverSaleUseCase } from "@/src/application/tenant/use-cases/sale/deliverSale.usecase";
+import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
+import { ZustandSaleReversalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleReversalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
+import { ZustandReservationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReservationRepository";
 import { DeliverSaleModal } from "../../ui/modals/DeliverSaleModal";
 
 export const columnsSalesPending: ColumnDef<

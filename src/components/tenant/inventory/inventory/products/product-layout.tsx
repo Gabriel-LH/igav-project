@@ -3,15 +3,15 @@
 import { useMemo, useState } from "react";
 import { ProductForm } from "./product-form";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
-import { CreateProductWithVariantsUseCase } from "@/src/application/use-cases/inventory/createProductWithVariants.usecase";
+import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
+import { CreateProductWithVariantsUseCase } from "@/src/application/tenant/use-cases/inventory/createProductWithVariants.usecase";
 import {
   SoftDeleteProductUseCase,
   ToggleProductVariantUseCase,
-} from "@/src/application/use-cases/inventory/manageProductVariants.usecase";
+} from "@/src/application/tenant/use-cases/inventory/manageProductVariants.usecase";
 import { ProductTable } from "./product-table";
 import { ProductFormData } from "@/src/application/interfaces/ProductForm";
-import { ListProductsWithVariantsUseCase } from "@/src/application/use-cases/inventory/listProductsWithVariants.usecase";
+import { ListProductsWithVariantsUseCase } from "@/src/application/tenant/use-cases/inventory/listProductsWithVariants.usecase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Table2 } from "lucide-react";
 import { toast } from "sonner";
@@ -81,7 +81,7 @@ export function ProductsLayout() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="create" className="gap-2">
-             <HugeiconsIcon icon={AddToListIcon} />
+            <HugeiconsIcon icon={AddToListIcon} />
             Crear Producto
           </TabsTrigger>
           <TabsTrigger value="table" className="gap-2">

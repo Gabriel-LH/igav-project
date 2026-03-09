@@ -8,7 +8,7 @@ import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
   BundleDomainService,
   BundleDefinition,
-} from "@/src/domain/services/bundle.service";
+} from "@/src/domain/tenant/services/bundle.service";
 import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
 import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { useInventoryStore } from "@/src/store/useInventoryStore";

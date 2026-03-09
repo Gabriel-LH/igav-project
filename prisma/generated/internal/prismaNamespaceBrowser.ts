@@ -124,6 +124,7 @@ export const ModelName = {
   TenantModule: 'TenantModule',
   TenantPolicy: 'TenantPolicy',
   TenantPolicyHistory: 'TenantPolicyHistory',
+  Invitation: 'Invitation',
   UserTenantMembership: 'UserTenantMembership',
   Transfer: 'Transfer',
   TransferItem: 'TransferItem',
@@ -1394,6 +1395,25 @@ export const TenantPolicyHistoryScalarFieldEnum = {
 } as const
 
 export type TenantPolicyHistoryScalarFieldEnum = (typeof TenantPolicyHistoryScalarFieldEnum)[keyof typeof TenantPolicyHistoryScalarFieldEnum]
+
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  roleId: 'roleId',
+  email: 'email',
+  token: 'token',
+  status: 'status',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  acceptedByUserId: 'acceptedByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
 
 
 export const UserTenantMembershipScalarFieldEnum = {

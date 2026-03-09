@@ -29,14 +29,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavBilling } from "../nav-bar/ui/superadmin-nav-billing";
 import { SuperAdminNavUser } from "../nav-bar/ui/Superadmin-nav-user";
+import { User } from "@/src/types/user/type.user";
 
 const data = {
-  user: {
-    name: "Juan",
-    email: "[EMAIL_ADDRESS]",
-    avatar: "/avatars/shadcn.jpg",
-  },
-
   navMain: [
     {
       title: "Dashboard",
@@ -77,9 +72,14 @@ const data = {
   ],
 };
 
+interface SuperAdminAppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user: User;
+}
+
 export function SuperAdminAppSidebar({
+  user,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: SuperAdminAppSidebarProps) {
   const pathname = usePathname();
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -109,7 +109,7 @@ export function SuperAdminAppSidebar({
         <NavBilling items={data.navBilling} pathname={pathname} />
       </SidebarContent>
       <SidebarFooter>
-        <SuperAdminNavUser user={data.user} />
+        <SuperAdminNavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

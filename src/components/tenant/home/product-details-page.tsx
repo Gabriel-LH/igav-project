@@ -35,8 +35,8 @@ import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { cn } from "@/lib/utils";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
-import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
+import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 
 interface ProductDetailsPageProps {
   lookup: string;

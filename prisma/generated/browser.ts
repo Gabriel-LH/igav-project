@@ -383,6 +383,11 @@ export type TenantPolicy = Prisma.TenantPolicyModel
  */
 export type TenantPolicyHistory = Prisma.TenantPolicyHistoryModel
 /**
+ * Model Invitation
+ * 
+ */
+export type Invitation = Prisma.InvitationModel
+/**
  * Model UserTenantMembership
  * 
  */

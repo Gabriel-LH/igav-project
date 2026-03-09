@@ -17,9 +17,9 @@ import { Label } from "@/components/label";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Client } from "@/src/types/clients/type.client";
-import { CreateClientUseCase } from "@/src/application/use-cases/client/createClient.usecase";
-import { ZustandClientRepository } from "@/src/infrastructure/stores-adapters/ZustandClientRepository";
-import { ZustandReferralRepository } from "@/src/infrastructure/stores-adapters/ZustandReferralRepository";
+import { CreateClientUseCase } from "@/src/application/tenant/use-cases/client/createClient.usecase";
+import { ZustandClientRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandClientRepository";
+import { ZustandReferralRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReferralRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 
 // 1️⃣ Schema de validación Zod

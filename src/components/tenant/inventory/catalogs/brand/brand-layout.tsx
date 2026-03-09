@@ -4,14 +4,14 @@ import { BrandsTable } from "./brand-table";
 import { useMemo } from "react";
 import { BrandFormData } from "@/src/types/brand/type.brand";
 import { useBrandStore } from "@/src/store/useBrandStore";
-import { ZustandBrandRepository } from "@/src/infrastructure/stores-adapters/ZustandBrandRepository";
-import { ZustandModelRepository } from "@/src/infrastructure/stores-adapters/ZustandModelRepository";
+import { ZustandBrandRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandBrandRepository";
+import { ZustandModelRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandModelRepository";
 import {
   CreateBrandUseCase,
   DeleteBrandUseCase,
   ListBrandsUseCase,
   UpdateBrandUseCase,
-} from "@/src/application/use-cases/crudBrand.usecase";
+} from "@/src/application/tenant/use-cases/crudBrand.usecase";
 import { toast } from "sonner";
 
 export function BrandLayout() {
@@ -73,7 +73,11 @@ export function BrandLayout() {
         brandId: id,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo eliminar la marca.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar la marca.",
+      );
     }
   };
 

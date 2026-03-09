@@ -4,21 +4,29 @@ import { useMemo } from "react";
 import { AttributeTypeFormData } from "@/src/types/attributes/type.attribute-type";
 import { AttributeTypesTable } from "./attributes-type-table";
 import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
-import { ZustandAttributeTypeRepository } from "@/src/infrastructure/stores-adapters/ZustandAttributeTypeRepository";
-import { ZustandAttributeValueRepository } from "@/src/infrastructure/stores-adapters/ZustandAttributeValueRepository";
+import { ZustandAttributeTypeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeTypeRepository";
+import { ZustandAttributeValueRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeValueRepository";
 import {
   CreateAttributeTypeUseCase,
   DeleteAttributeTypeUseCase,
   ListAttributeTypesUseCase,
   UpdateAttributeTypeUseCase,
-} from "@/src/application/use-cases/crudAttributeType.usecase";
+} from "@/src/application/tenant/use-cases/crudAttributeType.usecase";
 import { toast } from "sonner";
 
 export function AttributesLayout() {
   const tenantId = "tenant-a";
-  const attributeTypeSnapshot = useAttributeTypeStore((state) => state.attributeTypes);
-  const attributeTypeRepo = useMemo(() => new ZustandAttributeTypeRepository(), []);
-  const attributeValueRepo = useMemo(() => new ZustandAttributeValueRepository(), []);
+  const attributeTypeSnapshot = useAttributeTypeStore(
+    (state) => state.attributeTypes,
+  );
+  const attributeTypeRepo = useMemo(
+    () => new ZustandAttributeTypeRepository(),
+    [],
+  );
+  const attributeValueRepo = useMemo(
+    () => new ZustandAttributeValueRepository(),
+    [],
+  );
   const createAttributeTypeUseCase = useMemo(
     () => new CreateAttributeTypeUseCase(attributeTypeRepo),
     [attributeTypeRepo],
@@ -37,7 +45,8 @@ export function AttributesLayout() {
   );
 
   const data = useMemo(
-    () => listAttributeTypesUseCase.execute(tenantId, { includeInactive: true }),
+    () =>
+      listAttributeTypesUseCase.execute(tenantId, { includeInactive: true }),
     [attributeTypeSnapshot, listAttributeTypesUseCase],
   );
 
@@ -48,7 +57,11 @@ export function AttributesLayout() {
         ...formData,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo crear el tipo de atributo.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el tipo de atributo.",
+      );
     }
   };
 
@@ -61,7 +74,9 @@ export function AttributesLayout() {
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "No se pudo actualizar el tipo de atributo.",
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el tipo de atributo.",
       );
     }
   };
@@ -74,7 +89,9 @@ export function AttributesLayout() {
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "No se pudo eliminar el tipo de atributo.",
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el tipo de atributo.",
       );
     }
   };

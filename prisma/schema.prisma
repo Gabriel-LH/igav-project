@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-   output   = "./generated"
+  output   = "./generated"
 }
 
 datasource db {
@@ -145,6 +145,8 @@ model User {
   tenantPolicies        TenantPolicy[]
   tenantPolicyHistories TenantPolicyHistory[]
   userTenantMemberships UserTenantMembership[]
+  invitationsSent       Invitation[]           @relation("InvitationsSent")
+  invitationsAccepted   Invitation[]           @relation("InvitationsAccepted")
 
   @@map("user")
 }
@@ -395,6 +397,7 @@ model Branch {
   reservations            Reservation[]
   userTenantMemberships   UserTenantMembership[]
   inventoryMovements      InventoryMovement[]
+  invitations             Invitation[]
 
   @@map("branch")
 }
@@ -1076,6 +1079,7 @@ model Role {
   userBranchAccesses      UserBranchAccess[]
   userRoleBranchHistories UserRoleBranchHistory[]
   userTenantMemberships   UserTenantMembership[]
+  invitations             Invitation[]
 
   @@unique([tenantId, name]) // Un nombre de rol único por tenant
   @@map("roles")
@@ -1106,20 +1110,22 @@ enum PlanFeatureKey {
   rentals
   inventory
   products
+  inventoryItems
+  clients
   payments
-  userAttendance
   users
   branches
+  userAttendance
+  shifts
+  payroll
   permissions
-  tenants
   analytics
+  reports
   promotions
   referrals
-  reservations
   referralRewards
   loyalty
-  clients
-  inventoryItems
+  tenants
   subscriptions
 }
 
@@ -2105,6 +2111,7 @@ model Tenant {
   tenantModules                  TenantModule[]
   tenantPolicies                 TenantPolicy[]
   userTenantMemberships          UserTenantMembership[]
+  invitations                    Invitation[]
   transfers                      Transfer[]
   transferRoutes                 TransferRoute[]
   inventoryMovements             InventoryMovement[]
@@ -2240,6 +2247,44 @@ enum TenantMemberShipStatus {
   active
   invited
   suspended
+}
+
+// ---------------------------------------------------------------
+// Invitation (tenant worker invitation via link token)
+// ---------------------------------------------------------------
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  revoked
+}
+
+model Invitation {
+  id               String           @id @default(uuid())
+  tenantId         String
+  branchId         String
+  roleId           String
+  email            String
+  token            String           @unique @default(uuid())
+  status           InvitationStatus @default(pending)
+  invitedById      String
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  tenant     Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branch     Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  role       Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  invitedBy  User   @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Restrict)
+  acceptedBy User?  @relation("InvitationsAccepted", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([token])
+  @@index([email])
+  @@map("invitation")
 }
 
 model UserTenantMembership {

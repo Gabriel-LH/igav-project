@@ -24,7 +24,6 @@ import {
   PLAN_LIMIT_KEYS,
   PlanLimitKey,
 } from "@/src/types/plan/type.planLimitKey";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
 
 const createLimitSchema = z.object({
   limitKey: z.string().min(1, "El límite es requerido"),
@@ -34,17 +33,21 @@ const createLimitSchema = z.object({
 
 type CreateLimitForm = z.infer<typeof createLimitSchema>;
 
+import { Plan } from "@/src/types/plan/planSchema";
+
 interface CreateLimitModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  plans?: Plan[];
 }
 
-export const CreateLimitModal: React.FC<CreateLimitModalProps> = ({
+export function CreateLimitModal({
   open,
   onOpenChange,
   onSuccess,
-}) => {
+  plans,
+}: CreateLimitModalProps) {
   const {
     register,
     handleSubmit,
@@ -110,7 +113,7 @@ export const CreateLimitModal: React.FC<CreateLimitModalProps> = ({
                 <SelectValue placeholder="Selecciona un plan" />
               </SelectTrigger>
               <SelectContent>
-                {PLANS_MOCK.map((plan) => (
+                {(plans || []).map((plan) => (
                   <SelectItem key={plan.id} value={plan.id}>
                     {plan.name}
                   </SelectItem>
@@ -152,4 +155,4 @@ export const CreateLimitModal: React.FC<CreateLimitModalProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

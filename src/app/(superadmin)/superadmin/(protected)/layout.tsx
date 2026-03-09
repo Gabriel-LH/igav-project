@@ -27,7 +27,7 @@ export default async function SuperAdminLayout({
         } as React.CSSProperties
       }
     >
-      <SuperAdminAppSidebar variant="inset" />
+      <SuperAdminAppSidebar user={session.user} variant="inset" />
 
       <SidebarInset>
         <header className="sticky top-0 z-10 w-full border-b rounded-t-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">

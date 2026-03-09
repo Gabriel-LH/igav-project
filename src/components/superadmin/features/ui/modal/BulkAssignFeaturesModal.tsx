@@ -17,22 +17,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PLAN_FEATURE_KEYS, PlanFeatureKey } from "@/src/types/plan/planFeature";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans"; 
+import {
+  PLAN_FEATURE_KEYS,
+  PlanFeatureKey,
+} from "@/src/types/plan/planFeature";
+
+import { Plan } from "@/src/types/plan/planSchema";
 
 interface BulkAssignFeaturesModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  plans: Plan[];
 }
 
-export const BulkAssignFeaturesModal: React.FC<BulkAssignFeaturesModalProps> = ({
+export function BulkAssignFeaturesModal({
   open,
   onOpenChange,
   onSuccess,
-}) => {
+  plans,
+}: BulkAssignFeaturesModalProps) {
   const [selectedPlan, setSelectedPlan] = useState<string>("");
-  const [selectedFeatures, setSelectedFeatures] = useState<Set<PlanFeatureKey>>(new Set());
+  const [selectedFeatures, setSelectedFeatures] = useState<Set<PlanFeatureKey>>(
+    new Set(),
+  );
 
   const handleSubmit = () => {
     console.log("Asignar features en bulk:", {
@@ -71,7 +79,7 @@ export const BulkAssignFeaturesModal: React.FC<BulkAssignFeaturesModalProps> = (
                 <SelectValue placeholder="Selecciona un plan" />
               </SelectTrigger>
               <SelectContent>
-                {PLANS_MOCK.map((plan) => (
+                {plans.map((plan) => (
                   <SelectItem key={plan.id} value={plan.id}>
                     {plan.name}
                   </SelectItem>
@@ -92,7 +100,10 @@ export const BulkAssignFeaturesModal: React.FC<BulkAssignFeaturesModalProps> = (
                         checked={selectedFeatures.has(feature)}
                         onCheckedChange={() => toggleFeature(feature)}
                       />
-                      <Label htmlFor={`feature-${feature}`} className="capitalize">
+                      <Label
+                        htmlFor={`feature-${feature}`}
+                        className="capitalize"
+                      >
                         {feature.replace(/([A-Z])/g, " $1").trim()}
                       </Label>
                     </div>
@@ -137,4 +148,4 @@ export const BulkAssignFeaturesModal: React.FC<BulkAssignFeaturesModalProps> = (
       </DialogContent>
     </Dialog>
   );
-};
+}

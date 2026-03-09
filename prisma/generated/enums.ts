@@ -371,20 +371,22 @@ export const PlanFeatureKey = {
   rentals: 'rentals',
   inventory: 'inventory',
   products: 'products',
+  inventoryItems: 'inventoryItems',
+  clients: 'clients',
   payments: 'payments',
-  userAttendance: 'userAttendance',
   users: 'users',
   branches: 'branches',
+  userAttendance: 'userAttendance',
+  shifts: 'shifts',
+  payroll: 'payroll',
   permissions: 'permissions',
-  tenants: 'tenants',
   analytics: 'analytics',
+  reports: 'reports',
   promotions: 'promotions',
   referrals: 'referrals',
-  reservations: 'reservations',
   referralRewards: 'referralRewards',
   loyalty: 'loyalty',
-  clients: 'clients',
-  inventoryItems: 'inventoryItems',
+  tenants: 'tenants',
   subscriptions: 'subscriptions'
 } as const
 
@@ -679,6 +681,16 @@ export const TenantMemberShipStatus = {
 } as const
 
 export type TenantMemberShipStatus = (typeof TenantMemberShipStatus)[keyof typeof TenantMemberShipStatus]
+
+
+export const InvitationStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  expired: 'expired',
+  revoked: 'revoked'
+} as const
+
+export type InvitationStatus = (typeof InvitationStatus)[keyof typeof InvitationStatus]
 
 
 export const TransferStatus = {

@@ -23,16 +23,16 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useState } from "react";
 import { ReturnProductModal } from "../../ui/modals/ReturProductModal";
 import { SaleWithItems } from "@/src/types/sales/type.sale";
-import { CancelSaleUseCase } from "@/src/application/use-cases/sale/cancelSale.usecase";
-import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
-import { ZustandSaleReversalRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleReversalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
+import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
+import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
+import { ZustandSaleReversalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleReversalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
-import { ReturnSaleItemsUseCase } from "@/src/application/use-cases/returnSaleItems.usecase";
+import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/returnSaleItems.usecase";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>

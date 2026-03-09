@@ -25,6 +25,7 @@ import { LoaderIcon } from "lucide-react";
 // import { useVerifyStore } from "@/src/store/verify-email/verify-store";
 import { useSearchParams } from "next/navigation";
 import { ForgotPasswordModal } from "../ui/modal/ForgotPasswordModal";
+import { validateLoginRouteRoleAction } from "@/src/app/actions/auth-route-guard.action";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,14 +62,25 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     if (isLoading) return;
+    setIsLoading(true);
 
     try {
-      const { data, error } = await signInEmail({
+      const roleCheck = await validateLoginRouteRoleAction(email, "superadmin");
+      if (!roleCheck.allowed) {
+        toast.error(roleCheck.message ?? "No autorizado para esta ruta", {
+          style: {
+            backgroundColor: "rgba(255, 0, 0, 0.2)",
+          },
+        });
+        return;
+      }
+
+      const { error } = await signInEmail({
         email,
         password,
         rememberMe,
+        callbackURL: "/superadmin/dashboard",
       });
       if (error) {
         if (error.status === 403) {
@@ -79,7 +91,6 @@ export function LoginForm() {
           });
           // registerStore.setEmailVerify(email);
           router.push(`/auth/verify-email`);
-          setIsLoading(false);
           return;
         }
 
@@ -88,11 +99,18 @@ export function LoginForm() {
             backgroundColor: "rgba(255, 0, 0, 0.2)",
           },
         });
-        setIsLoading(false);
         return;
       }
+
+      router.replace("/superadmin/dashboard");
       router.refresh();
-    } catch (err: any) {
+    } catch {
+      toast.error("No se pudo iniciar sesión", {
+        style: {
+          backgroundColor: "rgba(255, 0, 0, 0.2)",
+        },
+      });
+    } finally {
       setIsLoading(false);
     }
   };

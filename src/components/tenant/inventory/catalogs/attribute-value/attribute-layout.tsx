@@ -5,34 +5,46 @@ import { useMemo } from "react";
 import { AttributeValueFormData } from "@/src/types/attributes/type.attribute-value";
 import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
 import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
-import { ZustandAttributeTypeRepository } from "@/src/infrastructure/stores-adapters/ZustandAttributeTypeRepository";
-import { ZustandAttributeValueRepository } from "@/src/infrastructure/stores-adapters/ZustandAttributeValueRepository";
-import { ListAttributeTypesUseCase } from "@/src/application/use-cases/crudAttributeType.usecase";
+import { ZustandAttributeTypeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeTypeRepository";
+import { ZustandAttributeValueRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeValueRepository";
+import { ListAttributeTypesUseCase } from "@/src/application/tenant/use-cases/crudAttributeType.usecase";
 import {
   CreateAttributeValueUseCase,
   DeleteAttributeValueUseCase,
   ListAttributeValuesUseCase,
   UpdateAttributeValueUseCase,
-} from "@/src/application/use-cases/crudAttributeValue.usecase";
+} from "@/src/application/tenant/use-cases/crudAttributeValue.usecase";
 import { toast } from "sonner";
 
 export function AttributeValueLayout() {
   const tenantId = "tenant-a";
-  const attributeTypeSnapshot = useAttributeTypeStore((state) => state.attributeTypes);
-  const attributeValueSnapshot = useAttributeValueStore((state) => state.attributeValues);
-  const attributeTypeRepo = useMemo(() => new ZustandAttributeTypeRepository(), []);
-  const attributeValueRepo = useMemo(() => new ZustandAttributeValueRepository(), []);
+  const attributeTypeSnapshot = useAttributeTypeStore(
+    (state) => state.attributeTypes,
+  );
+  const attributeValueSnapshot = useAttributeValueStore(
+    (state) => state.attributeValues,
+  );
+  const attributeTypeRepo = useMemo(
+    () => new ZustandAttributeTypeRepository(),
+    [],
+  );
+  const attributeValueRepo = useMemo(
+    () => new ZustandAttributeValueRepository(),
+    [],
+  );
 
   const listAttributeTypesUseCase = useMemo(
     () => new ListAttributeTypesUseCase(attributeTypeRepo),
     [attributeTypeRepo],
   );
   const createAttributeValueUseCase = useMemo(
-    () => new CreateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
+    () =>
+      new CreateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
     [attributeTypeRepo, attributeValueRepo],
   );
   const updateAttributeValueUseCase = useMemo(
-    () => new UpdateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
+    () =>
+      new UpdateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
     [attributeTypeRepo, attributeValueRepo],
   );
   const deleteAttributeValueUseCase = useMemo(
@@ -45,11 +57,13 @@ export function AttributeValueLayout() {
   );
 
   const data = useMemo(
-    () => listAttributeValuesUseCase.execute(tenantId, { includeInactive: true }),
+    () =>
+      listAttributeValuesUseCase.execute(tenantId, { includeInactive: true }),
     [attributeValueSnapshot, listAttributeValuesUseCase],
   );
   const types = useMemo(
-    () => listAttributeTypesUseCase.execute(tenantId, { includeInactive: true }),
+    () =>
+      listAttributeTypesUseCase.execute(tenantId, { includeInactive: true }),
     [attributeTypeSnapshot, listAttributeTypesUseCase],
   );
 
@@ -60,7 +74,11 @@ export function AttributeValueLayout() {
         ...formData,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo crear el valor de atributo.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el valor de atributo.",
+      );
     }
   };
 
@@ -73,7 +91,9 @@ export function AttributeValueLayout() {
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "No se pudo actualizar el valor de atributo.",
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el valor de atributo.",
       );
     }
   };
@@ -86,7 +106,9 @@ export function AttributeValueLayout() {
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "No se pudo eliminar el valor de atributo.",
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el valor de atributo.",
       );
     }
   };

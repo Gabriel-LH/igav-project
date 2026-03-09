@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -32,21 +31,23 @@ import { LoaderIcon } from "lucide-react";
 // import { useVerifyStore } from "@/src/store/verify-email/verify-store";
 import { useSearchParams } from "next/navigation";
 import { ForgotPasswordModal } from "../ui/modal/ForgotPasswordModal";
+import { signInEmail } from "@/src/lib/auth-client";
+import { useVerifyStore } from "@/src/store/tenant/verify-email/verify-store";
+import { validateLoginRouteRoleAction } from "@/src/app/actions/auth-route-guard.action";
 
-export function LoginForm({
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ ...props }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // 🔑 NUEVO ESTADO PARA EL CHECKBOX
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
-  //   const registerStore = useVerifyStore();
+  const registerStore = useVerifyStore();
 
   useEffect(() => {
     if (error === "expired") {
@@ -69,13 +70,58 @@ export function LoginForm({
   }, [error]); // Dependencia en el parámetro 'error'
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
 
-    // Simulate authentication process
-    setTimeout(() => {
+    try {
+      const roleCheck = await validateLoginRouteRoleAction(email, "tenant");
+      console.log("Role check", roleCheck);
+      if (!roleCheck.allowed) {
+        toast.error(roleCheck.message ?? "No autorizado para esta ruta", {
+          style: {
+            backgroundColor: "rgba(255, 0, 0, 0.2)",
+          },
+        });
+        return;
+      }
+
+      const { error } = await signInEmail({
+        email,
+        password,
+        rememberMe,
+        callbackURL: "/tenant/home",
+      });
+      if (error) {
+        if (error.status === 403) {
+          toast.error("Correo no verificado", {
+            style: {
+              backgroundColor: "rgba(255, 0, 0, 0.2)",
+            },
+          });
+          registerStore.setEmailVerify(email);
+          router.push(`/auth/verify-email`);
+          return;
+        }
+
+        toast.error("Correo o contraseña incorrectos", {
+          style: {
+            backgroundColor: "rgba(255, 0, 0, 0.2)",
+          },
+        });
+        return;
+      }
+
+      router.replace("/tenant/home");
+      router.refresh();
+    } catch {
+      toast.error("No se pudo iniciar sesión", {
+        style: {
+          backgroundColor: "rgba(255, 0, 0, 0.2)",
+        },
+      });
+    } finally {
       setIsLoading(false);
-      router.push("/tenant/dashboard");
-    }, 1000);
+    }
   };
 
   return (

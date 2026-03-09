@@ -8,23 +8,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building2, CreditCard, Package, TrendingUp } from "lucide-react";
 
-// Mocks
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-
 import { Plan } from "@/src/types/plan/planSchema";
 
-export function PlansModule() {
+interface PlansModuleProps {
+  initialPlans: Plan[];
+  initialSubscriptions: any[];
+  initialTenants: any[];
+}
+
+export function PlansModule({
+  initialPlans,
+  initialSubscriptions,
+  initialTenants,
+}: PlansModuleProps) {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [activeTab, setActiveTab] = useState("list");
 
   // Estadísticas de planes
-  const totalPlans = PLANS_MOCK.length;
-  const activePlans = PLANS_MOCK.filter((p) => p.isActive).length;
-  const totalSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.length;
-  const plansWithTenants = new Set(
-    TENTANT_SUBSCRIPTIONS_MOCK.map((s) => s.planId),
-  ).size;
+  const totalPlans = initialPlans.length;
+  const activePlans = initialPlans.filter((p) => p.isActive).length;
+  const totalSubscriptions = initialSubscriptions.length;
+  const plansWithTenants = new Set(initialSubscriptions.map((s) => s.planId))
+    .size;
 
   return (
     <>
@@ -90,10 +95,14 @@ export function PlansModule() {
             <CardContent>
               <div className="text-2xl font-bold">
                 S/{" "}
-                {(
-                  PLANS_MOCK.reduce((acc, p) => acc + p.priceMonthly, 0) /
-                  totalPlans
-                ).toFixed(0)}
+                {totalPlans > 0
+                  ? (
+                      initialPlans.reduce(
+                        (acc, p) => acc + (p.priceMonthly || 0),
+                        0,
+                      ) / totalPlans
+                    ).toFixed(0)
+                  : 0}
               </div>
               <p className="text-xs text-muted-foreground">mensual por plan</p>
             </CardContent>
@@ -122,7 +131,7 @@ export function PlansModule() {
               </CardHeader>
               <CardContent>
                 <PlansTable
-                  plans={PLANS_MOCK}
+                  plans={initialPlans}
                   onSelectPlan={(plan) => {
                     setSelectedPlan(plan);
                     setActiveTab("details");
@@ -136,6 +145,8 @@ export function PlansModule() {
             {selectedPlan && (
               <PlanDetailsTabs
                 plan={selectedPlan}
+                tenants={initialTenants}
+                subscriptions={initialSubscriptions}
                 onBack={() => {
                   setSelectedPlan(null);
                   setActiveTab("list");

@@ -1,6 +1,6 @@
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
-const businessRules = MOCK_TENANT_CONFIG;
+const businessRules = MOCK_BRANCH_CONFIG;
 
 export type Period = "AM" | "PM";
 

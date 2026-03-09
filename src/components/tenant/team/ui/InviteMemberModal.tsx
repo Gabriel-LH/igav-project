@@ -20,286 +20,217 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/badge";
-import { Plus, Mail, Building2, Shield, Send, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const ROLES = [
-  { value: "admin", label: "Administrador", description: "Acceso total al sistema" },
-  { value: "manager", label: "Gerente", description: "Gestión de sucursal y equipo" },
-  { value: "seller", label: "Vendedor", description: "Ventas y atención al cliente" },
-  { value: "inventory", label: "Inventario", description: "Gestión de stock y productos" },
-  { value: "viewer", label: "Visualizador", description: "Solo lectura de reportes" },
-];
-
-const EXTRA_PERMISSIONS = [
-  { id: "approve_transfers", label: "Aprobar transferencias", description: "Puede autorizar traslados entre sucursales" },
-  { id: "manage_prices", label: "Gestionar precios", description: "Modificar precios de renta y venta" },
-  { id: "view_reports", label: "Ver reportes financieros", description: "Acceso a estadísticas y métricas" },
-  { id: "export_data", label: "Exportar datos", description: "Descargar reportes en Excel/CSV" },
-  { id: "bulk_operations", label: "Operaciones masivas", description: "Importar/actualizar productos en bulk" },
-];
+import {
+  Plus,
+  Mail,
+  Building2,
+  Shield,
+  Send,
+  Copy,
+  CheckCheck,
+} from "lucide-react";
+import { toast } from "sonner";
+import { createInvitationAction } from "@/src/app/(tenant)/tenant/actions/invitation.actions";
+import { useRouter } from "next/navigation";
 
 interface InviteMemberModalProps {
   branches: Array<{ id: string; name: string }>;
-  onInvite: (data: {
-    email: string;
-    name: string;
-    role: string;
-    branchId: string;
-    permissions: string[];
-    message?: string;
-  }) => void;
+  roles: Array<{ id: string; name: string; description: string | null }>;
 }
 
-export function InviteMemberModal({ branches, onInvite }: InviteMemberModalProps) {
+export function InviteMemberModal({ branches, roles }: InviteMemberModalProps) {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    name: "",
-    role: "",
-    branchId: "",
-    permissions: [] as string[],
-    message: "",
-  });
+  const [email, setEmail] = useState("");
+  const [roleId, setRoleId] = useState("");
+  const [branchId, setBranchId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    await onInvite(formData);
-    
-    setIsLoading(false);
-    setOpen(false);
-    setFormData({
-      email: "",
-      name: "",
-      role: "",
-      branchId: "",
-      permissions: [],
-      message: "",
-    });
+
+    try {
+      const result = await createInvitationAction({ email, roleId, branchId });
+      setInviteLink(result.inviteLink);
+      toast.success("¡Invitación creada!");
+      router.refresh();
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Error al crear la invitación";
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const togglePermission = (permissionId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permissionId)
-        ? prev.permissions.filter((p) => p !== permissionId)
-        : [...prev.permissions, permissionId],
-    }));
+  const handleCopy = async () => {
+    if (!inviteLink) return;
+    await navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const selectedRole = ROLES.find((r) => r.value === formData.role);
+  const handleClose = (val: boolean) => {
+    if (!val) {
+      // reset on close
+      setEmail("");
+      setRoleId("");
+      setBranchId("");
+      setInviteLink(null);
+      setCopied(false);
+    }
+    setOpen(val);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="w-4 h-4" />
           Invitar trabajador
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5" />
             Invitar nuevo miembro
           </DialogTitle>
           <DialogDescription>
-            Envía una invitación por email para unirse a tu equipo.
+            Genera un enlace de invitación para que un trabajador se una a tu
+            equipo.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5 pt-4">
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-1">
-              Correo electrónico
-              <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="trabajador@empresa.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
-          </div>
-
-          {/* Nombre */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Nombre completo</Label>
-            <Input
-              id="name"
-              placeholder="Juan Pérez"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-
-          {/* Rol */}
-          <div className="space-y-2">
-            <Label htmlFor="role" className="flex items-center gap-1">
-              Rol
-              <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.role}
-              onValueChange={(val) => setFormData({ ...formData, role: val })}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar rol..." />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLES.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{role.label}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {role.description}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {selectedRole && (
-              <p className="text-xs text-muted-foreground">
-                {selectedRole.description}
-              </p>
-            )}
-          </div>
-
-          {/* Sucursal */}
-          <div className="space-y-2">
-            <Label htmlFor="branch" className="flex items-center gap-1">
-              <Building2 className="w-4 h-4" />
-              Sucursal por defecto
-              <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.branchId}
-              onValueChange={(val) => setFormData({ ...formData, branchId: val })}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar sucursal..." />
-              </SelectTrigger>
-              <SelectContent>
-                {branches.map((branch) => (
-                  <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Permisos extra */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Permisos adicionales (opcional)
-            </Label>
-            <div className="space-y-2">
-              {EXTRA_PERMISSIONS.map((permission) => (
-                <div
-                  key={permission.id}
-                  className={cn(
-                    "flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer",
-                    formData.permissions.includes(permission.id)
-                      ? "border-primary bg-primary/5"
-                      : "hover:bg-muted/50"
-                  )}
-                  onClick={() => togglePermission(permission.id)}
-                >
-                  <Checkbox
-                    checked={formData.permissions.includes(permission.id)}
-                    onCheckedChange={() => togglePermission(permission.id)}
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{permission.label}</span>
-                      {formData.permissions.includes(permission.id) && (
-                        <Badge variant="secondary" className="text-xs">Activo</Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {permission.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+        {inviteLink ? (
+          /* ── Estado: invitación creada → mostrar el link ── */
+          <div className="space-y-4 pt-2">
+            <div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-800 dark:text-green-300">
+              Invitación creada para <strong>{email}</strong>. Comparte este
+              enlace con el trabajador:
             </div>
-          </div>
-
-          {/* Mensaje personalizado */}
-          <div className="space-y-2">
-            <Label htmlFor="message">Mensaje personalizado (opcional)</Label>
-            <Textarea
-              id="message"
-              placeholder="Hola, te invitamos a unirte a nuestro equipo en [Nombre de la Empresa]..."
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              rows={3}
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                readOnly
+                value={inviteLink}
+                className="font-mono text-xs"
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={handleCopy}
+                className="shrink-0"
+              >
+                {copied ? (
+                  <CheckCheck className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
             <p className="text-xs text-muted-foreground">
-              Este mensaje se incluirá en el email de invitación.
+              El enlace expira en 7 días. El trabajador deberá iniciar sesión o
+              registrarse para aceptar la invitación.
             </p>
-          </div>
-
-          {/* Resumen */}
-          <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-            <p className="text-sm font-medium">Resumen de invitación:</p>
-            <div className="text-sm space-y-1">
-              <p>
-                <span className="text-muted-foreground">Para:</span>{" "}
-                {formData.email || "—"}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Rol:</span>{" "}
-                {selectedRole?.label || "—"}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Permisos extra:</span>{" "}
-                {formData.permissions.length > 0
-                  ? `${formData.permissions.length} seleccionados`
-                  : "Ninguno"}
-              </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setInviteLink(null)}>
+                Invitar otro
+              </Button>
+              <Button onClick={() => handleClose(false)}>Cerrar</Button>
             </div>
           </div>
+        ) : (
+          /* ── Estado normal: formulario de invitación ── */
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="inv-email" className="flex items-center gap-1">
+                Correo electrónico <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="inv-email"
+                type="email"
+                placeholder="trabajador@empresa.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-          {/* Botones */}
-          <div className="flex justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="gap-2"
-              disabled={
-                !formData.email ||
-                !formData.role ||
-                !formData.branchId ||
-                isLoading
-              }
-            >
-              <Send className="w-4 h-4" />
-              {isLoading ? "Enviando..." : "Enviar invitación"}
-            </Button>
-          </div>
-        </form>
+            {/* Rol */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                <Shield className="w-4 h-4" />
+                Rol <span className="text-red-500">*</span>
+              </Label>
+              <Select value={roleId} onValueChange={setRoleId} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar rol..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium capitalize">
+                          {role.name}
+                        </span>
+                        {role.description && (
+                          <span className="text-xs text-muted-foreground">
+                            {role.description}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sucursal */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                <Building2 className="w-4 h-4" />
+                Sucursal por defecto <span className="text-red-500">*</span>
+              </Label>
+              <Select value={branchId} onValueChange={setBranchId} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar sucursal..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {branches.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Botones */}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleClose(false)}
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="gap-2"
+                disabled={!email || !roleId || !branchId || isLoading}
+              >
+                <Send className="w-4 h-4" />
+                {isLoading ? "Creando..." : "Generar enlace"}
+              </Button>
+            </div>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

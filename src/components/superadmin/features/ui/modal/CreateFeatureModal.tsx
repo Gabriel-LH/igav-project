@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PLAN_FEATURE_KEYS } from "@/src/types/plan/planFeature";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
+import { Plan } from "@/src/types/plan/planSchema";
 
 const createFeatureSchema = z.object({
   featureKey: z.string().min(1, "La feature es requerida"),
@@ -35,13 +35,15 @@ interface CreateFeatureModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  plans?: Plan[];
 }
 
-export const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({
+export function CreateFeatureModal({
   open,
   onOpenChange,
   onSuccess,
-}) => {
+  plans,
+}: CreateFeatureModalProps) {
   const {
     register,
     handleSubmit,
@@ -49,7 +51,7 @@ export const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({
     reset,
     setValue,
   } = useForm<CreateFeatureForm>({
-    resolver: zodResolver(createFeatureSchema),
+    resolver: zodResolver(createFeatureSchema) as any,
     defaultValues: {
       isActive: true,
     },
@@ -105,7 +107,7 @@ export const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({
                 <SelectValue placeholder="Selecciona un plan" />
               </SelectTrigger>
               <SelectContent>
-                {PLANS_MOCK.map((plan) => (
+                {(plans || []).map((plan) => (
                   <SelectItem key={plan.id} value={plan.id}>
                     {plan.name}
                   </SelectItem>
@@ -136,4 +138,4 @@ export const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

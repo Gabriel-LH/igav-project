@@ -53,14 +53,9 @@ import { usePathname } from "next/navigation";
 import { usePlanFeatures } from "@/src/hooks/usePlanFeatures";
 import { NavCRM } from "../nav-bar/nav-crm";
 import { NavAnalytic } from "../nav-bar/nav-analityc";
+import { User } from "@/src/types/user/type.user";
 
 const data = {
-  user: {
-    name: "Juan",
-    email: "[EMAIL_ADDRESS]",
-    avatar: "/avatars/shadcn.jpg",
-  },
-
   navMain: [
     {
       title: "Principal",
@@ -209,7 +204,14 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps {
+  user: User;
+}
+
+export function AppSidebar({
+  user,
+  ...props
+}: AppSidebarProps & React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { hasFeature, hasModule } = usePlanFeatures();
 
@@ -256,8 +258,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const filteredNavRRHH = React.useMemo(
     () =>
       data.navRRHH.filter((item) => {
-        if (item.url === "/tenant/attendance" || item.url === "/tenant/shifts")
+        if (item.url === "/tenant/attendance")
           return hasFeature("userAttendance");
+        if (item.url === "/tenant/shifts") return hasFeature("shifts");
+        if (item.url === "/tenant/payroll") return hasFeature("payroll");
         if (item.url === "/tenant/roles") return hasFeature("permissions");
         if (item.url === "/tenant/branches") return hasFeature("branches");
         if (item.url === "/tenant/team") return hasFeature("users");
@@ -282,22 +286,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           item.url === "/tenant/dashboard" ||
           item.url === "/tenant/analytics"
         )
-          return (
-            hasModule("sales") ||
-            hasModule("rentals") ||
-            hasFeature("inventory")
-          );
+          return hasFeature("analytics");
         return true;
       }),
-    [hasFeature, hasModule],
+    [hasFeature],
   );
 
   const filteredNavAdmin = React.useMemo(
     () =>
       data.navAdmin.filter(() => {
-        return hasFeature("tenants") || hasFeature("permissions");
+        return true;
       }),
-    [hasFeature],
+    [],
   );
 
   return (
@@ -343,7 +343,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

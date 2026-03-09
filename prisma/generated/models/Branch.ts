@@ -288,6 +288,7 @@ export type BranchWhereInput = {
   reservations?: Prisma.ReservationListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }
 
 export type BranchOrderByWithRelationInput = {
@@ -329,6 +330,7 @@ export type BranchOrderByWithRelationInput = {
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
   userTenantMemberships?: Prisma.UserTenantMembershipOrderByRelationAggregateInput
   inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
+  invitations?: Prisma.InvitationOrderByRelationAggregateInput
 }
 
 export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -373,6 +375,7 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   reservations?: Prisma.ReservationListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }, "id">
 
 export type BranchOrderByWithAggregationInput = {
@@ -457,6 +460,7 @@ export type BranchCreateInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateInput = {
@@ -497,6 +501,7 @@ export type BranchUncheckedCreateInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUpdateInput = {
@@ -537,6 +542,7 @@ export type BranchUpdateInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateInput = {
@@ -577,6 +583,7 @@ export type BranchUncheckedUpdateInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyInput = {
@@ -957,6 +964,20 @@ export type BranchUncheckedUpdateManyWithoutTenantNestedInput = {
   deleteMany?: Prisma.BranchScalarWhereInput | Prisma.BranchScalarWhereInput[]
 }
 
+export type BranchCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutInvitationsInput, Prisma.BranchUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutInvitationsInput, Prisma.BranchUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.BranchUpsertWithoutInvitationsInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutInvitationsInput, Prisma.BranchUpdateWithoutInvitationsInput>, Prisma.BranchUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type BranchCreateNestedOneWithoutUserTenantMembershipsInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutUserTenantMembershipsInput, Prisma.BranchUncheckedCreateWithoutUserTenantMembershipsInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutUserTenantMembershipsInput
@@ -1078,6 +1099,7 @@ export type BranchCreateWithoutUserBranchAccessesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserBranchAccessesInput = {
@@ -1117,6 +1139,7 @@ export type BranchUncheckedCreateWithoutUserBranchAccessesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserBranchAccessesInput = {
@@ -1172,6 +1195,7 @@ export type BranchUpdateWithoutUserBranchAccessesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserBranchAccessesInput = {
@@ -1211,6 +1235,7 @@ export type BranchUncheckedUpdateWithoutUserBranchAccessesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutUserAttendancesInput = {
@@ -1250,6 +1275,7 @@ export type BranchCreateWithoutUserAttendancesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserAttendancesInput = {
@@ -1289,6 +1315,7 @@ export type BranchUncheckedCreateWithoutUserAttendancesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserAttendancesInput = {
@@ -1344,6 +1371,7 @@ export type BranchUpdateWithoutUserAttendancesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserAttendancesInput = {
@@ -1383,6 +1411,7 @@ export type BranchUncheckedUpdateWithoutUserAttendancesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutUserRoleBranchHistoriesInput = {
@@ -1422,6 +1451,7 @@ export type BranchCreateWithoutUserRoleBranchHistoriesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
@@ -1461,6 +1491,7 @@ export type BranchUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserRoleBranchHistoriesInput = {
@@ -1516,6 +1547,7 @@ export type BranchUpdateWithoutUserRoleBranchHistoriesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
@@ -1555,6 +1587,7 @@ export type BranchUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutBranchConfigsInput = {
@@ -1594,6 +1627,7 @@ export type BranchCreateWithoutBranchConfigsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutBranchConfigsInput = {
@@ -1633,6 +1667,7 @@ export type BranchUncheckedCreateWithoutBranchConfigsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutBranchConfigsInput = {
@@ -1688,6 +1723,7 @@ export type BranchUpdateWithoutBranchConfigsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutBranchConfigsInput = {
@@ -1727,6 +1763,7 @@ export type BranchUncheckedUpdateWithoutBranchConfigsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCashSessionsInput = {
@@ -1766,6 +1803,7 @@ export type BranchCreateWithoutCashSessionsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCashSessionsInput = {
@@ -1805,6 +1843,7 @@ export type BranchUncheckedCreateWithoutCashSessionsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCashSessionsInput = {
@@ -1860,6 +1899,7 @@ export type BranchUpdateWithoutCashSessionsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCashSessionsInput = {
@@ -1899,6 +1939,7 @@ export type BranchUncheckedUpdateWithoutCashSessionsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutGuaranteesInput = {
@@ -1938,6 +1979,7 @@ export type BranchCreateWithoutGuaranteesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutGuaranteesInput = {
@@ -1977,6 +2019,7 @@ export type BranchUncheckedCreateWithoutGuaranteesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutGuaranteesInput = {
@@ -2032,6 +2075,7 @@ export type BranchUpdateWithoutGuaranteesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutGuaranteesInput = {
@@ -2071,6 +2115,7 @@ export type BranchUncheckedUpdateWithoutGuaranteesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutOperationsInput = {
@@ -2110,6 +2155,7 @@ export type BranchCreateWithoutOperationsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutOperationsInput = {
@@ -2149,6 +2195,7 @@ export type BranchUncheckedCreateWithoutOperationsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutOperationsInput = {
@@ -2204,6 +2251,7 @@ export type BranchUpdateWithoutOperationsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutOperationsInput = {
@@ -2243,6 +2291,7 @@ export type BranchUncheckedUpdateWithoutOperationsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPaymentsInput = {
@@ -2282,6 +2331,7 @@ export type BranchCreateWithoutPaymentsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPaymentsInput = {
@@ -2321,6 +2371,7 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPaymentsInput = {
@@ -2376,6 +2427,7 @@ export type BranchUpdateWithoutPaymentsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPaymentsInput = {
@@ -2415,6 +2467,7 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPayrollRunsInput = {
@@ -2454,6 +2507,7 @@ export type BranchCreateWithoutPayrollRunsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPayrollRunsInput = {
@@ -2493,6 +2547,7 @@ export type BranchUncheckedCreateWithoutPayrollRunsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPayrollRunsInput = {
@@ -2548,6 +2603,7 @@ export type BranchUpdateWithoutPayrollRunsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPayrollRunsInput = {
@@ -2587,6 +2643,7 @@ export type BranchUncheckedUpdateWithoutPayrollRunsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInventoryItemsInput = {
@@ -2626,6 +2683,7 @@ export type BranchCreateWithoutInventoryItemsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInventoryItemsInput = {
@@ -2665,6 +2723,7 @@ export type BranchUncheckedCreateWithoutInventoryItemsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInventoryItemsInput = {
@@ -2720,6 +2779,7 @@ export type BranchUpdateWithoutInventoryItemsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInventoryItemsInput = {
@@ -2759,6 +2819,7 @@ export type BranchUncheckedUpdateWithoutInventoryItemsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStockLotsInput = {
@@ -2798,6 +2859,7 @@ export type BranchCreateWithoutStockLotsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStockLotsInput = {
@@ -2837,6 +2899,7 @@ export type BranchUncheckedCreateWithoutStockLotsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStockLotsInput = {
@@ -2892,6 +2955,7 @@ export type BranchUpdateWithoutStockLotsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStockLotsInput = {
@@ -2931,6 +2995,7 @@ export type BranchUncheckedUpdateWithoutStockLotsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPromotionBranchesInput = {
@@ -2970,6 +3035,7 @@ export type BranchCreateWithoutPromotionBranchesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPromotionBranchesInput = {
@@ -3009,6 +3075,7 @@ export type BranchUncheckedCreateWithoutPromotionBranchesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPromotionBranchesInput = {
@@ -3064,6 +3131,7 @@ export type BranchUpdateWithoutPromotionBranchesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPromotionBranchesInput = {
@@ -3103,6 +3171,7 @@ export type BranchUncheckedUpdateWithoutPromotionBranchesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutRentalsInput = {
@@ -3142,6 +3211,7 @@ export type BranchCreateWithoutRentalsInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutRentalsInput = {
@@ -3181,6 +3251,7 @@ export type BranchUncheckedCreateWithoutRentalsInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutRentalsInput = {
@@ -3236,6 +3307,7 @@ export type BranchUpdateWithoutRentalsInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutRentalsInput = {
@@ -3275,6 +3347,7 @@ export type BranchUncheckedUpdateWithoutRentalsInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutReservationsInput = {
@@ -3314,6 +3387,7 @@ export type BranchCreateWithoutReservationsInput = {
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutReservationsInput = {
@@ -3353,6 +3427,7 @@ export type BranchUncheckedCreateWithoutReservationsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutReservationsInput = {
@@ -3408,6 +3483,7 @@ export type BranchUpdateWithoutReservationsInput = {
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutReservationsInput = {
@@ -3447,6 +3523,7 @@ export type BranchUncheckedUpdateWithoutReservationsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSalesInput = {
@@ -3486,6 +3563,7 @@ export type BranchCreateWithoutSalesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSalesInput = {
@@ -3525,6 +3603,7 @@ export type BranchUncheckedCreateWithoutSalesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSalesInput = {
@@ -3580,6 +3659,7 @@ export type BranchUpdateWithoutSalesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSalesInput = {
@@ -3619,6 +3699,7 @@ export type BranchUncheckedUpdateWithoutSalesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutTenantInput = {
@@ -3658,6 +3739,7 @@ export type BranchCreateWithoutTenantInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutTenantInput = {
@@ -3697,6 +3779,7 @@ export type BranchUncheckedCreateWithoutTenantInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutTenantInput = {
@@ -3747,6 +3830,182 @@ export type BranchScalarWhereInput = {
   updatedBy?: Prisma.StringNullableFilter<"Branch"> | string | null
 }
 
+export type BranchCreateWithoutInvitationsInput = {
+  id?: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  tenantId: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutInvitationsInput, Prisma.BranchUncheckedCreateWithoutInvitationsInput>
+}
+
+export type BranchUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutInvitationsInput, Prisma.BranchUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutInvitationsInput, Prisma.BranchUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutInvitationsInput, Prisma.BranchUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type BranchUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+}
+
 export type BranchCreateWithoutUserTenantMembershipsInput = {
   id?: string
   code: string
@@ -3784,6 +4043,7 @@ export type BranchCreateWithoutUserTenantMembershipsInput = {
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserTenantMembershipsInput = {
@@ -3823,6 +4083,7 @@ export type BranchUncheckedCreateWithoutUserTenantMembershipsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserTenantMembershipsInput = {
@@ -3878,6 +4139,7 @@ export type BranchUpdateWithoutUserTenantMembershipsInput = {
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserTenantMembershipsInput = {
@@ -3917,6 +4179,7 @@ export type BranchUncheckedUpdateWithoutUserTenantMembershipsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutOriginTransfersInput = {
@@ -3956,6 +4219,7 @@ export type BranchCreateWithoutOriginTransfersInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutOriginTransfersInput = {
@@ -3995,6 +4259,7 @@ export type BranchUncheckedCreateWithoutOriginTransfersInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutOriginTransfersInput = {
@@ -4039,6 +4304,7 @@ export type BranchCreateWithoutDestinationTransfersInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutDestinationTransfersInput = {
@@ -4078,6 +4344,7 @@ export type BranchUncheckedCreateWithoutDestinationTransfersInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutDestinationTransfersInput = {
@@ -4133,6 +4400,7 @@ export type BranchUpdateWithoutOriginTransfersInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutOriginTransfersInput = {
@@ -4172,6 +4440,7 @@ export type BranchUncheckedUpdateWithoutOriginTransfersInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUpsertWithoutDestinationTransfersInput = {
@@ -4222,6 +4491,7 @@ export type BranchUpdateWithoutDestinationTransfersInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutDestinationTransfersInput = {
@@ -4261,6 +4531,7 @@ export type BranchUncheckedUpdateWithoutDestinationTransfersInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutOriginRoutesInput = {
@@ -4300,6 +4571,7 @@ export type BranchCreateWithoutOriginRoutesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutOriginRoutesInput = {
@@ -4339,6 +4611,7 @@ export type BranchUncheckedCreateWithoutOriginRoutesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutOriginRoutesInput = {
@@ -4383,6 +4656,7 @@ export type BranchCreateWithoutDestinationRoutesInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutDestinationRoutesInput = {
@@ -4422,6 +4696,7 @@ export type BranchUncheckedCreateWithoutDestinationRoutesInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutDestinationRoutesInput = {
@@ -4477,6 +4752,7 @@ export type BranchUpdateWithoutOriginRoutesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutOriginRoutesInput = {
@@ -4516,6 +4792,7 @@ export type BranchUncheckedUpdateWithoutOriginRoutesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUpsertWithoutDestinationRoutesInput = {
@@ -4566,6 +4843,7 @@ export type BranchUpdateWithoutDestinationRoutesInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutDestinationRoutesInput = {
@@ -4605,6 +4883,7 @@ export type BranchUncheckedUpdateWithoutDestinationRoutesInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInventoryMovementsInput = {
@@ -4644,6 +4923,7 @@ export type BranchCreateWithoutInventoryMovementsInput = {
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInventoryMovementsInput = {
@@ -4683,6 +4963,7 @@ export type BranchUncheckedCreateWithoutInventoryMovementsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInventoryMovementsInput = {
@@ -4738,6 +5019,7 @@ export type BranchUpdateWithoutInventoryMovementsInput = {
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -4777,6 +5059,7 @@ export type BranchUncheckedUpdateWithoutInventoryMovementsInput = {
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyTenantInput = {
@@ -4834,6 +5117,7 @@ export type BranchUpdateWithoutTenantInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutTenantInput = {
@@ -4873,6 +5157,7 @@ export type BranchUncheckedUpdateWithoutTenantInput = {
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateManyWithoutTenantInput = {
@@ -4920,6 +5205,7 @@ export type BranchCountOutputType = {
   reservations: number
   userTenantMemberships: number
   inventoryMovements: number
+  invitations: number
 }
 
 export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4944,6 +5230,7 @@ export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   reservations?: boolean | BranchCountOutputTypeCountReservationsArgs
   userTenantMemberships?: boolean | BranchCountOutputTypeCountUserTenantMembershipsArgs
   inventoryMovements?: boolean | BranchCountOutputTypeCountInventoryMovementsArgs
+  invitations?: boolean | BranchCountOutputTypeCountInvitationsArgs
 }
 
 /**
@@ -5103,6 +5390,13 @@ export type BranchCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends run
   where?: Prisma.InventoryMovementWhereInput
 }
 
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
 
 export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -5143,6 +5437,7 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   reservations?: boolean | Prisma.Branch$reservationsArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Branch$userTenantMembershipsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["branch"]>
 
@@ -5229,6 +5524,7 @@ export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   reservations?: boolean | Prisma.Branch$reservationsArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Branch$userTenantMembershipsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BranchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5263,6 +5559,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
     userTenantMemberships: Prisma.$UserTenantMembershipPayload<ExtArgs>[]
     inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
+    invitations: Prisma.$InvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5697,6 +5994,7 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
   reservations<T extends Prisma.Branch$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userTenantMemberships<T extends Prisma.Branch$userTenantMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userTenantMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryMovements<T extends Prisma.Branch$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.Branch$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6639,6 +6937,30 @@ export type Branch$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+}
+
+/**
+ * Branch.invitations
+ */
+export type Branch$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
 }
 
 /**

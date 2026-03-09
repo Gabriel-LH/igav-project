@@ -1,7 +1,7 @@
 // components/roles/RolesLayout.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,126 +27,51 @@ import {
 import { RolesTable, Role } from "./table/roles-table";
 import { RoleForm } from "./role-form";
 import { RoleDetail } from "./role-details";
+import {
+  createRoleAction,
+  updateRolePermissionsAction,
+  deleteRoleAction,
+} from "@/src/app/(tenant)/tenant/actions/role.actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import type { RoleDTO } from "@/src/domain/tenant/repositories/RoleRepository";
 
-// Roles pre-creados para nuevo tenant (mejor práctica)
-const DEFAULT_ROLES: Role[] = [
-  {
-    id: "role-owner",
-    name: "Owner",
-    description:
-      "Acceso total al sistema. Puede gestionar roles, facturación y configuración avanzada.",
-    isSystem: true,
-    isActive: true,
-    userCount: 1,
-    permissionIds: ["*"], // Todos los permisos
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date(),
-  },
-  {
-    id: "role-admin",
-    name: "Administrador",
-    description: "Gestión completa excepto facturación y roles de sistema.",
-    isSystem: true,
-    isActive: true,
-    userCount: 2,
-    permissionIds: [
-      "sales_view",
-      "sales_create",
-      "sales_edit",
-      "sales_delete",
-      "sales_approve",
-      "rent_view",
-      "rent_create",
-      "rent_edit",
-      "rent_cancel",
-      "rent_extend",
-      "inventory_view",
-      "inventory_create",
-      "inventory_edit",
-      "inventory_transfer",
-      "cash_view",
-      "cash_open",
-      "cash_close",
-      "cash_movement",
-      "customers_view",
-      "customers_create",
-      "customers_edit",
-      "reports_view",
-      "reports_export",
-      "reports_finance",
-      "settings_general",
-      "settings_team",
-    ],
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date(),
-  },
-  {
-    id: "role-employee",
-    name: "Empleado",
-    description:
-      "Operaciones diarias: ventas, alquileres y atención al cliente.",
-    isSystem: true,
-    isActive: true,
-    userCount: 5,
-    permissionIds: [
-      "sales_view",
-      "sales_create",
-      "rent_view",
-      "rent_create",
-      "inventory_view",
-      "cash_view",
-      "customers_view",
-      "customers_create",
-    ],
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date(),
-  },
-  {
-    id: "role-cashier",
-    name: "Cajero",
-    description: "Enfocado en operaciones de caja y cobros.",
-    isSystem: true,
-    isActive: true,
-    userCount: 3,
-    permissionIds: [
-      "sales_view",
-      "sales_create",
-      "rent_view",
-      "rent_create",
-      "cash_view",
-      "cash_open",
-      "cash_close",
-      "cash_movement",
-      "customers_view",
-    ],
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date(),
-  },
-  {
-    id: "role-custom",
-    name: "Supervisor de Ventas",
-    description: "Rol personalizado para supervisores con permisos extendidos.",
-    isSystem: false,
-    isActive: true,
-    userCount: 0,
-    permissionIds: [
-      "sales_view",
-      "sales_create",
-      "sales_edit",
-      "sales_approve",
-      "rent_view",
-      "rent_create",
-      "rent_edit",
-      "reports_view",
-    ],
-    createdAt: new Date("2024-06-15"),
-    updatedAt: new Date("2024-06-15"),
-  },
-];
+type SystemPermission = {
+  id: string;
+  key: string;
+  module: string;
+  description: string | null;
+};
 
-export function RolesLayout() {
-  const [roles, setRoles] = useState<Role[]>(DEFAULT_ROLES);
-  const [isOwner] = useState(true); // Esto vendría del contexto de auth
+interface RolesLayoutProps {
+  initialRoles: RoleDTO[];
+  systemPermissions: SystemPermission[];
+}
+
+function mapToTableRole(dto: RoleDTO): Role {
+  return {
+    id: dto.id,
+    name: dto.name,
+    description: dto.description ?? undefined,
+    isSystem: dto.isSystem,
+    isActive: true, // all roles from DB are active
+    userCount: dto._count?.userTenantMemberships ?? 0,
+    permissionIds: dto.permissions.map((p) => p.key),
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+  };
+}
+
+export function RolesLayout({
+  initialRoles,
+  systemPermissions,
+}: RolesLayoutProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [roles, setRoles] = useState<Role[]>(initialRoles.map(mapToTableRole));
+
+  // isOwner would come from session, for now assume true (layout-level protection should handle it)
+  const isOwner = true;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
@@ -157,36 +82,47 @@ export function RolesLayout() {
     total: roles.length,
     system: roles.filter((r) => r.isSystem).length,
     custom: roles.filter((r) => !r.isSystem).length,
-    active: roles.filter((r) => r.isActive).length,
+    active: roles.length, // all stored roles are active
   };
 
-  const handleCreate = (data: {
+  const handleCreate = async (data: {
     name: string;
     description: string;
     isSystem: boolean;
     permissionIds: string[];
     isActive: boolean;
   }) => {
-    const newRole: Role = {
-      id: `role-${Date.now()}`,
-      ...data,
-      userCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
     if (editingRole) {
-      setRoles((prev) =>
-        prev.map((r) =>
-          r.id === editingRole.id
-            ? { ...newRole, id: r.id, userCount: r.userCount }
-            : r,
-        ),
-      );
+      // Update permissions
+      startTransition(async () => {
+        try {
+          await updateRolePermissionsAction(editingRole.id, data.permissionIds);
+          toast.success("Rol actualizado");
+          router.refresh();
+        } catch (err) {
+          toast.error(
+            err instanceof Error ? err.message : "Error al actualizar el rol",
+          );
+        }
+      });
     } else {
-      setRoles((prev) => [...prev, newRole]);
+      // Create new custom role
+      startTransition(async () => {
+        try {
+          await createRoleAction({
+            name: data.name,
+            description: data.description,
+            permissionKeys: data.permissionIds,
+          });
+          toast.success("Rol creado");
+          router.refresh();
+        } catch (err) {
+          toast.error(
+            err instanceof Error ? err.message : "Error al crear el rol",
+          );
+        }
+      });
     }
-
     setIsFormOpen(false);
     setEditingRole(null);
   };
@@ -198,30 +134,36 @@ export function RolesLayout() {
   };
 
   const handleClone = (role: Role) => {
-    const cloned: Role = {
+    setEditingRole({
       ...role,
-      id: `role-${Date.now()}`,
+      id: "",
       name: `${role.name} (Copia)`,
       isSystem: false,
-      userCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setRoles((prev) => [...prev, cloned]);
+    });
+    setIsFormOpen(true);
     setIsDetailOpen(false);
   };
 
   const handleDelete = (id: string) => {
-    setRoles((prev) => prev.filter((r) => r.id !== id));
+    const role = roles.find((r) => r.id === id);
+    if (!role) return;
+    startTransition(async () => {
+      try {
+        await deleteRoleAction(id);
+        toast.success("Rol eliminado");
+        router.refresh();
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Error al eliminar el rol",
+        );
+      }
+    });
     setIsDetailOpen(false);
   };
 
   const handleToggleActive = (id: string, active: boolean) => {
-    setRoles((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, isActive: active, updatedAt: new Date() } : r,
-      ),
-    );
+    // TODO: wire to a toggleRoleActive action
+    toast.info("Función de activar/desactivar rol en desarrollo");
   };
 
   const handleViewDetail = (role: Role) => {
@@ -288,21 +230,23 @@ export function RolesLayout() {
             setIsFormOpen(true);
           }}
           className="gap-2"
+          disabled={isPending}
         >
           <Plus className="w-4 h-4" />
           Crear Rol
         </Button>
       </div>
 
-      {/* Info de sistema */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+      {/* Info banner */}
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3 dark:bg-blue-950/30 dark:border-blue-800">
         <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-        <div className="text-sm text-blue-800">
-          <p className="font-medium mb-1">Roles pre-configurados</p>
+        <div className="text-sm text-blue-800 dark:text-blue-300">
+          <p className="font-medium mb-1">Roles pre-configurados del sistema</p>
           <p>
-            Tu tenant incluye roles del sistema listos para usar: Owner,
-            Administrador, Empleado y Cajero. Puedes crear roles personalizados
-            adicionales según tus necesidades.
+            Tu tenant incluye: <strong>owner</strong>, <strong>admin</strong>,{" "}
+            <strong>vendedor</strong> y <strong>cajero</strong>. Los roles del
+            sistema no se pueden eliminar. Puedes crear roles personalizados
+            adicionales.
           </p>
         </div>
       </div>
@@ -315,8 +259,7 @@ export function RolesLayout() {
             Roles configurados
           </CardTitle>
           <CardDescription>
-            Haz clic en cualquier rol para ver detalles, o usa el menú de
-            acciones
+            Haz clic en cualquier rol para ver detalles y editar permisos
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -337,13 +280,24 @@ export function RolesLayout() {
         <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingRole ? "Editar Rol" : "Crear Nuevo Rol"}
+              {editingRole ? "Editar permisos del Rol" : "Crear Nuevo Rol"}
             </DialogTitle>
           </DialogHeader>
           <RoleForm
-            initialData={editingRole || undefined}
+            initialData={
+              editingRole
+                ? {
+                    name: editingRole.name,
+                    description: editingRole.description ?? "",
+                    isSystem: editingRole.isSystem,
+                    permissionIds: editingRole.permissionIds,
+                    isActive: editingRole.isActive,
+                  }
+                : undefined
+            }
             isEditing={!!editingRole}
             isOwner={isOwner}
+            systemPermissions={systemPermissions}
             onSubmit={handleCreate}
             onCancel={() => {
               setIsFormOpen(false);

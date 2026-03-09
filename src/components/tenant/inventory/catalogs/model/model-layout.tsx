@@ -5,15 +5,15 @@ import { ModelFormData } from "@/src/types/model/type.model";
 import { ModelsTable } from "./model-table";
 import { useBrandStore } from "@/src/store/useBrandStore";
 import { useModelStore } from "@/src/store/useModelStore";
-import { ZustandBrandRepository } from "@/src/infrastructure/stores-adapters/ZustandBrandRepository";
-import { ZustandModelRepository } from "@/src/infrastructure/stores-adapters/ZustandModelRepository";
+import { ZustandBrandRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandBrandRepository";
+import { ZustandModelRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandModelRepository";
 import {
   CreateModelUseCase,
   DeleteModelUseCase,
   ListModelsUseCase,
   UpdateModelUseCase,
-} from "@/src/application/use-cases/crudModel.usecase";
-import { ListBrandsUseCase } from "@/src/application/use-cases/crudBrand.usecase";
+} from "@/src/application/tenant/use-cases/crudModel.usecase";
+import { ListBrandsUseCase } from "@/src/application/tenant/use-cases/crudBrand.usecase";
 import { toast } from "sonner";
 
 export function ModelLayout() {
@@ -65,7 +65,9 @@ export function ModelLayout() {
         isActive: formData.isActive,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo crear el modelo.");
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo crear el modelo.",
+      );
     }
   };
 
@@ -82,7 +84,11 @@ export function ModelLayout() {
         isActive: formData.isActive,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo actualizar el modelo.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el modelo.",
+      );
     }
   };
 
@@ -93,7 +99,11 @@ export function ModelLayout() {
         modelId: id,
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se pudo eliminar el modelo.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el modelo.",
+      );
     }
   };
   return (

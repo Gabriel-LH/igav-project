@@ -279,6 +279,7 @@ export type TenantWhereInput = {
   tenantModules?: Prisma.TenantModuleListRelationFilter
   tenantPolicies?: Prisma.TenantPolicyListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
   transfers?: Prisma.TransferListRelationFilter
   transferRoutes?: Prisma.TransferRouteListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
@@ -360,6 +361,7 @@ export type TenantOrderByWithRelationInput = {
   tenantModules?: Prisma.TenantModuleOrderByRelationAggregateInput
   tenantPolicies?: Prisma.TenantPolicyOrderByRelationAggregateInput
   userTenantMemberships?: Prisma.UserTenantMembershipOrderByRelationAggregateInput
+  invitations?: Prisma.InvitationOrderByRelationAggregateInput
   transfers?: Prisma.TransferOrderByRelationAggregateInput
   transferRoutes?: Prisma.TransferRouteOrderByRelationAggregateInput
   inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
@@ -444,6 +446,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   tenantModules?: Prisma.TenantModuleListRelationFilter
   tenantPolicies?: Prisma.TenantPolicyListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
   transfers?: Prisma.TransferListRelationFilter
   transferRoutes?: Prisma.TransferRouteListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
@@ -556,6 +559,7 @@ export type TenantCreateInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -636,6 +640,7 @@ export type TenantUncheckedCreateInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -716,6 +721,7 @@ export type TenantUpdateInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -796,6 +802,7 @@ export type TenantUncheckedUpdateInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -1826,6 +1833,20 @@ export type TenantUpdateOneRequiredWithoutTenantPoliciesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutTenantPoliciesInput, Prisma.TenantUpdateWithoutTenantPoliciesInput>, Prisma.TenantUncheckedUpdateWithoutTenantPoliciesInput>
 }
 
+export type TenantCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutInvitationsInput, Prisma.TenantUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutInvitationsInput, Prisma.TenantUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.TenantUpsertWithoutInvitationsInput
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutInvitationsInput, Prisma.TenantUpdateWithoutInvitationsInput>, Prisma.TenantUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type TenantCreateNestedOneWithoutUserTenantMembershipsInput = {
   create?: Prisma.XOR<Prisma.TenantCreateWithoutUserTenantMembershipsInput, Prisma.TenantUncheckedCreateWithoutUserTenantMembershipsInput>
   connectOrCreate?: Prisma.TenantCreateOrConnectWithoutUserTenantMembershipsInput
@@ -1956,6 +1977,7 @@ export type TenantCreateWithoutOwnerInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -2035,6 +2057,7 @@ export type TenantUncheckedCreateWithoutOwnerInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -2156,6 +2179,7 @@ export type TenantCreateWithoutUserBranchAccessesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -2235,6 +2259,7 @@ export type TenantUncheckedCreateWithoutUserBranchAccessesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -2330,6 +2355,7 @@ export type TenantUpdateWithoutUserBranchAccessesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -2409,6 +2435,7 @@ export type TenantUncheckedUpdateWithoutUserBranchAccessesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -2488,6 +2515,7 @@ export type TenantCreateWithoutUserAttendancesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -2567,6 +2595,7 @@ export type TenantUncheckedCreateWithoutUserAttendancesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -2662,6 +2691,7 @@ export type TenantUpdateWithoutUserAttendancesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -2741,6 +2771,7 @@ export type TenantUncheckedUpdateWithoutUserAttendancesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -2820,6 +2851,7 @@ export type TenantCreateWithoutUserRoleBranchHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -2899,6 +2931,7 @@ export type TenantUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -2994,6 +3027,7 @@ export type TenantUpdateWithoutUserRoleBranchHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -3073,6 +3107,7 @@ export type TenantUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -3152,6 +3187,7 @@ export type TenantCreateWithoutUserShiftAssignmentsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -3231,6 +3267,7 @@ export type TenantUncheckedCreateWithoutUserShiftAssignmentsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -3326,6 +3363,7 @@ export type TenantUpdateWithoutUserShiftAssignmentsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -3405,6 +3443,7 @@ export type TenantUncheckedUpdateWithoutUserShiftAssignmentsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -3484,6 +3523,7 @@ export type TenantCreateWithoutAttributeTypesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -3563,6 +3603,7 @@ export type TenantUncheckedCreateWithoutAttributeTypesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -3658,6 +3699,7 @@ export type TenantUpdateWithoutAttributeTypesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -3737,6 +3779,7 @@ export type TenantUncheckedUpdateWithoutAttributeTypesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -3816,6 +3859,7 @@ export type TenantCreateWithoutAttributeValuesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -3895,6 +3939,7 @@ export type TenantUncheckedCreateWithoutAttributeValuesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -3990,6 +4035,7 @@ export type TenantUpdateWithoutAttributeValuesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -4069,6 +4115,7 @@ export type TenantUncheckedUpdateWithoutAttributeValuesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -4148,6 +4195,7 @@ export type TenantCreateWithoutBranchesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -4227,6 +4275,7 @@ export type TenantUncheckedCreateWithoutBranchesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -4322,6 +4371,7 @@ export type TenantUpdateWithoutBranchesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -4401,6 +4451,7 @@ export type TenantUncheckedUpdateWithoutBranchesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -4480,6 +4531,7 @@ export type TenantCreateWithoutBrandsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -4559,6 +4611,7 @@ export type TenantUncheckedCreateWithoutBrandsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -4654,6 +4707,7 @@ export type TenantUpdateWithoutBrandsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -4733,6 +4787,7 @@ export type TenantUncheckedUpdateWithoutBrandsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -4812,6 +4867,7 @@ export type TenantCreateWithoutCashSessionsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -4891,6 +4947,7 @@ export type TenantUncheckedCreateWithoutCashSessionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -4986,6 +5043,7 @@ export type TenantUpdateWithoutCashSessionsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -5065,6 +5123,7 @@ export type TenantUncheckedUpdateWithoutCashSessionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -5144,6 +5203,7 @@ export type TenantCreateWithoutCategoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -5223,6 +5283,7 @@ export type TenantUncheckedCreateWithoutCategoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -5318,6 +5379,7 @@ export type TenantUpdateWithoutCategoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -5397,6 +5459,7 @@ export type TenantUncheckedUpdateWithoutCategoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -5476,6 +5539,7 @@ export type TenantCreateWithoutClientsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -5555,6 +5619,7 @@ export type TenantUncheckedCreateWithoutClientsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -5650,6 +5715,7 @@ export type TenantUpdateWithoutClientsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -5729,6 +5795,7 @@ export type TenantUncheckedUpdateWithoutClientsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -5808,6 +5875,7 @@ export type TenantCreateWithoutClientCreditLedgersInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -5887,6 +5955,7 @@ export type TenantUncheckedCreateWithoutClientCreditLedgersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -5982,6 +6051,7 @@ export type TenantUpdateWithoutClientCreditLedgersInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -6061,6 +6131,7 @@ export type TenantUncheckedUpdateWithoutClientCreditLedgersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -6140,6 +6211,7 @@ export type TenantCreateWithoutClientLoyaltyLedgersInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -6219,6 +6291,7 @@ export type TenantUncheckedCreateWithoutClientLoyaltyLedgersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -6314,6 +6387,7 @@ export type TenantUpdateWithoutClientLoyaltyLedgersInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -6393,6 +6467,7 @@ export type TenantUncheckedUpdateWithoutClientLoyaltyLedgersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -6472,6 +6547,7 @@ export type TenantCreateWithoutCouponsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -6551,6 +6627,7 @@ export type TenantUncheckedCreateWithoutCouponsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -6646,6 +6723,7 @@ export type TenantUpdateWithoutCouponsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -6725,6 +6803,7 @@ export type TenantUncheckedUpdateWithoutCouponsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -6804,6 +6883,7 @@ export type TenantCreateWithoutGuaranteesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -6883,6 +6963,7 @@ export type TenantUncheckedCreateWithoutGuaranteesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -6978,6 +7059,7 @@ export type TenantUpdateWithoutGuaranteesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -7057,6 +7139,7 @@ export type TenantUncheckedUpdateWithoutGuaranteesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -7136,6 +7219,7 @@ export type TenantCreateWithoutGuaranteeStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -7215,6 +7299,7 @@ export type TenantUncheckedCreateWithoutGuaranteeStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -7310,6 +7395,7 @@ export type TenantUpdateWithoutGuaranteeStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -7389,6 +7475,7 @@ export type TenantUncheckedUpdateWithoutGuaranteeStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -7468,6 +7555,7 @@ export type TenantCreateWithoutModelsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -7547,6 +7635,7 @@ export type TenantUncheckedCreateWithoutModelsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -7642,6 +7731,7 @@ export type TenantUpdateWithoutModelsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -7721,6 +7811,7 @@ export type TenantUncheckedUpdateWithoutModelsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -7800,6 +7891,7 @@ export type TenantCreateWithoutModulesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -7879,6 +7971,7 @@ export type TenantUncheckedCreateWithoutModulesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -7974,6 +8067,7 @@ export type TenantUpdateWithoutModulesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -8053,6 +8147,7 @@ export type TenantUncheckedUpdateWithoutModulesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -8132,6 +8227,7 @@ export type TenantCreateWithoutModuleFeaturesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -8211,6 +8307,7 @@ export type TenantUncheckedCreateWithoutModuleFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -8306,6 +8403,7 @@ export type TenantUpdateWithoutModuleFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -8385,6 +8483,7 @@ export type TenantUncheckedUpdateWithoutModuleFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -8464,6 +8563,7 @@ export type TenantCreateWithoutOperationsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -8543,6 +8643,7 @@ export type TenantUncheckedCreateWithoutOperationsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -8638,6 +8739,7 @@ export type TenantUpdateWithoutOperationsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -8717,6 +8819,7 @@ export type TenantUncheckedUpdateWithoutOperationsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -8796,6 +8899,7 @@ export type TenantCreateWithoutPaymentsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -8875,6 +8979,7 @@ export type TenantUncheckedCreateWithoutPaymentsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -8970,6 +9075,7 @@ export type TenantUpdateWithoutPaymentsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -9049,6 +9155,7 @@ export type TenantUncheckedUpdateWithoutPaymentsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -9128,6 +9235,7 @@ export type TenantCreateWithoutPayrollRunsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -9207,6 +9315,7 @@ export type TenantUncheckedCreateWithoutPayrollRunsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -9302,6 +9411,7 @@ export type TenantUpdateWithoutPayrollRunsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -9381,6 +9491,7 @@ export type TenantUncheckedUpdateWithoutPayrollRunsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -9460,6 +9571,7 @@ export type TenantCreateWithoutPayrollItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -9539,6 +9651,7 @@ export type TenantUncheckedCreateWithoutPayrollItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -9634,6 +9747,7 @@ export type TenantUpdateWithoutPayrollItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -9713,6 +9827,7 @@ export type TenantUncheckedUpdateWithoutPayrollItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -9792,6 +9907,7 @@ export type TenantCreateWithoutPayrollLineItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -9871,6 +9987,7 @@ export type TenantUncheckedCreateWithoutPayrollLineItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -9966,6 +10083,7 @@ export type TenantUpdateWithoutPayrollLineItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -10045,6 +10163,7 @@ export type TenantUncheckedUpdateWithoutPayrollLineItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -10124,6 +10243,7 @@ export type TenantCreateWithoutPayrollPoliciesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -10203,6 +10323,7 @@ export type TenantUncheckedCreateWithoutPayrollPoliciesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -10298,6 +10419,7 @@ export type TenantUpdateWithoutPayrollPoliciesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -10377,6 +10499,7 @@ export type TenantUncheckedUpdateWithoutPayrollPoliciesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -10456,6 +10579,7 @@ export type TenantCreateWithoutPayrollConfigsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -10535,6 +10659,7 @@ export type TenantUncheckedCreateWithoutPayrollConfigsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -10630,6 +10755,7 @@ export type TenantUpdateWithoutPayrollConfigsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -10709,6 +10835,7 @@ export type TenantUncheckedUpdateWithoutPayrollConfigsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -10788,6 +10915,7 @@ export type TenantCreateWithoutPermissionsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -10867,6 +10995,7 @@ export type TenantUncheckedCreateWithoutPermissionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -10962,6 +11091,7 @@ export type TenantUpdateWithoutPermissionsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -11041,6 +11171,7 @@ export type TenantUncheckedUpdateWithoutPermissionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -11120,6 +11251,7 @@ export type TenantCreateWithoutRolesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -11199,6 +11331,7 @@ export type TenantUncheckedCreateWithoutRolesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -11294,6 +11427,7 @@ export type TenantUpdateWithoutRolesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -11373,6 +11507,7 @@ export type TenantUncheckedUpdateWithoutRolesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -11452,6 +11587,7 @@ export type TenantCreateWithoutRolePermissionsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -11531,6 +11667,7 @@ export type TenantUncheckedCreateWithoutRolePermissionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -11626,6 +11763,7 @@ export type TenantUpdateWithoutRolePermissionsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -11705,6 +11843,7 @@ export type TenantUncheckedUpdateWithoutRolePermissionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -11784,6 +11923,7 @@ export type TenantCreateWithoutPlansInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -11863,6 +12003,7 @@ export type TenantUncheckedCreateWithoutPlansInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -11958,6 +12099,7 @@ export type TenantUpdateWithoutPlansInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -12037,6 +12179,7 @@ export type TenantUncheckedUpdateWithoutPlansInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -12116,6 +12259,7 @@ export type TenantCreateWithoutPlanFeaturesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -12195,6 +12339,7 @@ export type TenantUncheckedCreateWithoutPlanFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -12290,6 +12435,7 @@ export type TenantUpdateWithoutPlanFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -12369,6 +12515,7 @@ export type TenantUncheckedUpdateWithoutPlanFeaturesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -12448,6 +12595,7 @@ export type TenantCreateWithoutPlanLimitsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -12527,6 +12675,7 @@ export type TenantUncheckedCreateWithoutPlanLimitsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -12622,6 +12771,7 @@ export type TenantUpdateWithoutPlanLimitsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -12701,6 +12851,7 @@ export type TenantUncheckedUpdateWithoutPlanLimitsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -12780,6 +12931,7 @@ export type TenantCreateWithoutPlanModulesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -12859,6 +13011,7 @@ export type TenantUncheckedCreateWithoutPlanModulesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -12954,6 +13107,7 @@ export type TenantUpdateWithoutPlanModulesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -13033,6 +13187,7 @@ export type TenantUncheckedUpdateWithoutPlanModulesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -13112,6 +13267,7 @@ export type TenantCreateWithoutProductsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -13191,6 +13347,7 @@ export type TenantUncheckedCreateWithoutProductsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -13286,6 +13443,7 @@ export type TenantUpdateWithoutProductsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -13365,6 +13523,7 @@ export type TenantUncheckedUpdateWithoutProductsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -13444,6 +13603,7 @@ export type TenantCreateWithoutProductVariantsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -13523,6 +13683,7 @@ export type TenantUncheckedCreateWithoutProductVariantsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -13618,6 +13779,7 @@ export type TenantUpdateWithoutProductVariantsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -13697,6 +13859,7 @@ export type TenantUncheckedUpdateWithoutProductVariantsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -13776,6 +13939,7 @@ export type TenantCreateWithoutInventoryItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -13855,6 +14019,7 @@ export type TenantUncheckedCreateWithoutInventoryItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -13950,6 +14115,7 @@ export type TenantUpdateWithoutInventoryItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -14029,6 +14195,7 @@ export type TenantUncheckedUpdateWithoutInventoryItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -14108,6 +14275,7 @@ export type TenantCreateWithoutInventoryItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -14187,6 +14355,7 @@ export type TenantUncheckedCreateWithoutInventoryItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -14282,6 +14451,7 @@ export type TenantUpdateWithoutInventoryItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -14361,6 +14531,7 @@ export type TenantUncheckedUpdateWithoutInventoryItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -14440,6 +14611,7 @@ export type TenantCreateWithoutStockLotsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -14519,6 +14691,7 @@ export type TenantUncheckedCreateWithoutStockLotsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -14614,6 +14787,7 @@ export type TenantUpdateWithoutStockLotsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -14693,6 +14867,7 @@ export type TenantUncheckedUpdateWithoutStockLotsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -14772,6 +14947,7 @@ export type TenantCreateWithoutStockMovementsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -14851,6 +15027,7 @@ export type TenantUncheckedCreateWithoutStockMovementsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -14946,6 +15123,7 @@ export type TenantUpdateWithoutStockMovementsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -15025,6 +15203,7 @@ export type TenantUncheckedUpdateWithoutStockMovementsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -15104,6 +15283,7 @@ export type TenantCreateWithoutPromotionsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -15183,6 +15363,7 @@ export type TenantUncheckedCreateWithoutPromotionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -15278,6 +15459,7 @@ export type TenantUpdateWithoutPromotionsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -15357,6 +15539,7 @@ export type TenantUncheckedUpdateWithoutPromotionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -15436,6 +15619,7 @@ export type TenantCreateWithoutPromotionUsagesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -15515,6 +15699,7 @@ export type TenantUncheckedCreateWithoutPromotionUsagesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -15610,6 +15795,7 @@ export type TenantUpdateWithoutPromotionUsagesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -15689,6 +15875,7 @@ export type TenantUncheckedUpdateWithoutPromotionUsagesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -15768,6 +15955,7 @@ export type TenantCreateWithoutReferralsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -15847,6 +16035,7 @@ export type TenantUncheckedCreateWithoutReferralsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -15942,6 +16131,7 @@ export type TenantUpdateWithoutReferralsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -16021,6 +16211,7 @@ export type TenantUncheckedUpdateWithoutReferralsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -16100,6 +16291,7 @@ export type TenantCreateWithoutReferralProgramsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -16179,6 +16371,7 @@ export type TenantUncheckedCreateWithoutReferralProgramsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -16274,6 +16467,7 @@ export type TenantUpdateWithoutReferralProgramsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -16353,6 +16547,7 @@ export type TenantUncheckedUpdateWithoutReferralProgramsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -16432,6 +16627,7 @@ export type TenantCreateWithoutReferralRewardsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -16511,6 +16707,7 @@ export type TenantUncheckedCreateWithoutReferralRewardsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -16606,6 +16803,7 @@ export type TenantUpdateWithoutReferralRewardsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -16685,6 +16883,7 @@ export type TenantUncheckedUpdateWithoutReferralRewardsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -16764,6 +16963,7 @@ export type TenantCreateWithoutRentalsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -16843,6 +17043,7 @@ export type TenantUncheckedCreateWithoutRentalsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -16938,6 +17139,7 @@ export type TenantUpdateWithoutRentalsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -17017,6 +17219,7 @@ export type TenantUncheckedUpdateWithoutRentalsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -17096,6 +17299,7 @@ export type TenantCreateWithoutRentalItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -17175,6 +17379,7 @@ export type TenantUncheckedCreateWithoutRentalItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -17270,6 +17475,7 @@ export type TenantUpdateWithoutRentalItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -17349,6 +17555,7 @@ export type TenantUncheckedUpdateWithoutRentalItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -17428,6 +17635,7 @@ export type TenantCreateWithoutRentalChargesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -17507,6 +17715,7 @@ export type TenantUncheckedCreateWithoutRentalChargesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -17602,6 +17811,7 @@ export type TenantUpdateWithoutRentalChargesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -17681,6 +17891,7 @@ export type TenantUncheckedUpdateWithoutRentalChargesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -17760,6 +17971,7 @@ export type TenantCreateWithoutRentalStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -17839,6 +18051,7 @@ export type TenantUncheckedCreateWithoutRentalStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -17934,6 +18147,7 @@ export type TenantUpdateWithoutRentalStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -18013,6 +18227,7 @@ export type TenantUncheckedUpdateWithoutRentalStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -18092,6 +18307,7 @@ export type TenantCreateWithoutRentalItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -18171,6 +18387,7 @@ export type TenantUncheckedCreateWithoutRentalItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -18266,6 +18483,7 @@ export type TenantUpdateWithoutRentalItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -18345,6 +18563,7 @@ export type TenantUncheckedUpdateWithoutRentalItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -18424,6 +18643,7 @@ export type TenantCreateWithoutReservationsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -18503,6 +18723,7 @@ export type TenantUncheckedCreateWithoutReservationsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -18598,6 +18819,7 @@ export type TenantUpdateWithoutReservationsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -18677,6 +18899,7 @@ export type TenantUncheckedUpdateWithoutReservationsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -18756,6 +18979,7 @@ export type TenantCreateWithoutReservationItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -18835,6 +19059,7 @@ export type TenantUncheckedCreateWithoutReservationItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -18930,6 +19155,7 @@ export type TenantUpdateWithoutReservationItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -19009,6 +19235,7 @@ export type TenantUncheckedUpdateWithoutReservationItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -19088,6 +19315,7 @@ export type TenantCreateWithoutReservationItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -19167,6 +19395,7 @@ export type TenantUncheckedCreateWithoutReservationItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -19262,6 +19491,7 @@ export type TenantUpdateWithoutReservationItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -19341,6 +19571,7 @@ export type TenantUncheckedUpdateWithoutReservationItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -19420,6 +19651,7 @@ export type TenantCreateWithoutSalesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -19499,6 +19731,7 @@ export type TenantUncheckedCreateWithoutSalesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -19594,6 +19827,7 @@ export type TenantUpdateWithoutSalesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -19673,6 +19907,7 @@ export type TenantUncheckedUpdateWithoutSalesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -19752,6 +19987,7 @@ export type TenantCreateWithoutSaleItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -19831,6 +20067,7 @@ export type TenantUncheckedCreateWithoutSaleItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -19926,6 +20163,7 @@ export type TenantUpdateWithoutSaleItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -20005,6 +20243,7 @@ export type TenantUncheckedUpdateWithoutSaleItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -20084,6 +20323,7 @@ export type TenantCreateWithoutSaleChargesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -20163,6 +20403,7 @@ export type TenantUncheckedCreateWithoutSaleChargesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -20258,6 +20499,7 @@ export type TenantUpdateWithoutSaleChargesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -20337,6 +20579,7 @@ export type TenantUncheckedUpdateWithoutSaleChargesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -20416,6 +20659,7 @@ export type TenantCreateWithoutSaleReversalsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -20495,6 +20739,7 @@ export type TenantUncheckedCreateWithoutSaleReversalsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -20590,6 +20835,7 @@ export type TenantUpdateWithoutSaleReversalsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -20669,6 +20915,7 @@ export type TenantUncheckedUpdateWithoutSaleReversalsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -20748,6 +20995,7 @@ export type TenantCreateWithoutReversalItemsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -20827,6 +21075,7 @@ export type TenantUncheckedCreateWithoutReversalItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -20922,6 +21171,7 @@ export type TenantUpdateWithoutReversalItemsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -21001,6 +21251,7 @@ export type TenantUncheckedUpdateWithoutReversalItemsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -21080,6 +21331,7 @@ export type TenantCreateWithoutSaleItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -21159,6 +21411,7 @@ export type TenantUncheckedCreateWithoutSaleItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -21254,6 +21507,7 @@ export type TenantUpdateWithoutSaleItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -21333,6 +21587,7 @@ export type TenantUncheckedUpdateWithoutSaleItemStatusHistoriesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -21412,6 +21667,7 @@ export type TenantCreateWithoutShiftsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -21491,6 +21747,7 @@ export type TenantUncheckedCreateWithoutShiftsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -21586,6 +21843,7 @@ export type TenantUpdateWithoutShiftsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -21665,6 +21923,7 @@ export type TenantUncheckedUpdateWithoutShiftsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -21744,6 +22003,7 @@ export type TenantCreateWithoutTenantConfigsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -21823,6 +22083,7 @@ export type TenantUncheckedCreateWithoutTenantConfigsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -21918,6 +22179,7 @@ export type TenantUpdateWithoutTenantConfigsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -21997,6 +22259,7 @@ export type TenantUncheckedUpdateWithoutTenantConfigsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -22076,6 +22339,7 @@ export type TenantCreateWithoutTenantSubscriptionsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -22155,6 +22419,7 @@ export type TenantUncheckedCreateWithoutTenantSubscriptionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -22250,6 +22515,7 @@ export type TenantUpdateWithoutTenantSubscriptionsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -22329,6 +22595,7 @@ export type TenantUncheckedUpdateWithoutTenantSubscriptionsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -22408,6 +22675,7 @@ export type TenantCreateWithoutTenantModulesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -22487,6 +22755,7 @@ export type TenantUncheckedCreateWithoutTenantModulesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -22582,6 +22851,7 @@ export type TenantUpdateWithoutTenantModulesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -22661,6 +22931,7 @@ export type TenantUncheckedUpdateWithoutTenantModulesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -22740,6 +23011,7 @@ export type TenantCreateWithoutTenantPoliciesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionCreateNestedManyWithoutTenantInput
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -22819,6 +23091,7 @@ export type TenantUncheckedCreateWithoutTenantPoliciesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedCreateNestedManyWithoutTenantInput
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -22914,6 +23187,7 @@ export type TenantUpdateWithoutTenantPoliciesInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUpdateManyWithoutTenantNestedInput
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -22992,6 +23266,343 @@ export type TenantUncheckedUpdateWithoutTenantPoliciesInput = {
   tenantConfigs?: Prisma.TenantConfigUncheckedUpdateManyWithoutTenantNestedInput
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
+  transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
+  transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutTenantsInput
+  branches?: Prisma.BranchCreateNestedManyWithoutTenantInput
+  brands?: Prisma.BrandCreateNestedManyWithoutTenantInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutTenantInput
+  models?: Prisma.ModelCreateNestedManyWithoutTenantInput
+  products?: Prisma.ProductCreateNestedManyWithoutTenantInput
+  clients?: Prisma.ClientCreateNestedManyWithoutTenantInput
+  operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
+  sales?: Prisma.SaleCreateNestedManyWithoutTenantInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutTenantInput
+  productVariants?: Prisma.ProductVariantCreateNestedManyWithoutTenantInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutTenantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutTenantInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutTenantInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutTenantInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutTenantInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutTenantInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutTenantInput
+  attributeTypes?: Prisma.AttributeTypeCreateNestedManyWithoutTenantInput
+  attributeValues?: Prisma.AttributeValueCreateNestedManyWithoutTenantInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutTenantInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutTenantInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutTenantInput
+  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutTenantInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutTenantInput
+  modules?: Prisma.ModuleCreateNestedManyWithoutTenantInput
+  moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutTenantInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
+  payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
+  payrollPolicies?: Prisma.PayrollPolicyCreateNestedManyWithoutTenantInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
+  permissions?: Prisma.PermissionCreateNestedManyWithoutTenantInput
+  roles?: Prisma.RoleCreateNestedManyWithoutTenantInput
+  rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutTenantInput
+  plans?: Prisma.PlanCreateNestedManyWithoutTenantInput
+  planFeatures?: Prisma.PlanFeatureCreateNestedManyWithoutTenantInput
+  planLimits?: Prisma.PlanLimitCreateNestedManyWithoutTenantInput
+  planModules?: Prisma.PlanModuleCreateNestedManyWithoutTenantInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutTenantInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutTenantInput
+  promotions?: Prisma.PromotionCreateNestedManyWithoutTenantInput
+  promotionUsages?: Prisma.PromotionUsageCreateNestedManyWithoutTenantInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutTenantInput
+  referralPrograms?: Prisma.ReferralProgramCreateNestedManyWithoutTenantInput
+  referralRewards?: Prisma.ReferralRewardCreateNestedManyWithoutTenantInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutTenantInput
+  rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutTenantInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutTenantInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutTenantInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutTenantInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutTenantInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryCreateNestedManyWithoutTenantInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutTenantInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutTenantInput
+  saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutTenantInput
+  reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutTenantInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutTenantInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutTenantInput
+  tenantConfigs?: Prisma.TenantConfigCreateNestedManyWithoutTenantInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionCreateNestedManyWithoutTenantInput
+  tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
+  transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  slug: string
+  ownerId: string
+  status?: $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutTenantInput
+  brands?: Prisma.BrandUncheckedCreateNestedManyWithoutTenantInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutTenantInput
+  models?: Prisma.ModelUncheckedCreateNestedManyWithoutTenantInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutTenantInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutTenantInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutTenantInput
+  productVariants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutTenantInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutTenantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutTenantInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutTenantInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutTenantInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutTenantInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutTenantInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutTenantInput
+  attributeTypes?: Prisma.AttributeTypeUncheckedCreateNestedManyWithoutTenantInput
+  attributeValues?: Prisma.AttributeValueUncheckedCreateNestedManyWithoutTenantInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutTenantInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutTenantInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutTenantInput
+  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutTenantInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutTenantInput
+  moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutTenantInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
+  payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
+  payrollPolicies?: Prisma.PayrollPolicyUncheckedCreateNestedManyWithoutTenantInput
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
+  permissions?: Prisma.PermissionUncheckedCreateNestedManyWithoutTenantInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutTenantInput
+  rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutTenantInput
+  plans?: Prisma.PlanUncheckedCreateNestedManyWithoutTenantInput
+  planFeatures?: Prisma.PlanFeatureUncheckedCreateNestedManyWithoutTenantInput
+  planLimits?: Prisma.PlanLimitUncheckedCreateNestedManyWithoutTenantInput
+  planModules?: Prisma.PlanModuleUncheckedCreateNestedManyWithoutTenantInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutTenantInput
+  promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutTenantInput
+  promotionUsages?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutTenantInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutTenantInput
+  referralPrograms?: Prisma.ReferralProgramUncheckedCreateNestedManyWithoutTenantInput
+  referralRewards?: Prisma.ReferralRewardUncheckedCreateNestedManyWithoutTenantInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutTenantInput
+  rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutTenantInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTenantInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutTenantInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutTenantInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutTenantInput
+  saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutTenantInput
+  reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutTenantInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutTenantInput
+  tenantConfigs?: Prisma.TenantConfigUncheckedCreateNestedManyWithoutTenantInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+  tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
+  transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutInvitationsInput, Prisma.TenantUncheckedCreateWithoutInvitationsInput>
+}
+
+export type TenantUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutInvitationsInput, Prisma.TenantUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutInvitationsInput, Prisma.TenantUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutInvitationsInput, Prisma.TenantUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type TenantUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutTenantsNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutTenantNestedInput
+  brands?: Prisma.BrandUpdateManyWithoutTenantNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutTenantNestedInput
+  models?: Prisma.ModelUpdateManyWithoutTenantNestedInput
+  products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutTenantNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutTenantNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutTenantNestedInput
+  productVariants?: Prisma.ProductVariantUpdateManyWithoutTenantNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutTenantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutTenantNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutTenantNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutTenantNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutTenantNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutTenantNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutTenantNestedInput
+  attributeTypes?: Prisma.AttributeTypeUpdateManyWithoutTenantNestedInput
+  attributeValues?: Prisma.AttributeValueUpdateManyWithoutTenantNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutTenantNestedInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutTenantNestedInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutTenantNestedInput
+  guarantees?: Prisma.GuaranteeUpdateManyWithoutTenantNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutTenantNestedInput
+  modules?: Prisma.ModuleUpdateManyWithoutTenantNestedInput
+  moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutTenantNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
+  payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
+  payrollPolicies?: Prisma.PayrollPolicyUpdateManyWithoutTenantNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
+  permissions?: Prisma.PermissionUpdateManyWithoutTenantNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutTenantNestedInput
+  rolePermissions?: Prisma.RolePermissionUpdateManyWithoutTenantNestedInput
+  plans?: Prisma.PlanUpdateManyWithoutTenantNestedInput
+  planFeatures?: Prisma.PlanFeatureUpdateManyWithoutTenantNestedInput
+  planLimits?: Prisma.PlanLimitUpdateManyWithoutTenantNestedInput
+  planModules?: Prisma.PlanModuleUpdateManyWithoutTenantNestedInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutTenantNestedInput
+  promotions?: Prisma.PromotionUpdateManyWithoutTenantNestedInput
+  promotionUsages?: Prisma.PromotionUsageUpdateManyWithoutTenantNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutTenantNestedInput
+  referralPrograms?: Prisma.ReferralProgramUpdateManyWithoutTenantNestedInput
+  referralRewards?: Prisma.ReferralRewardUpdateManyWithoutTenantNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutTenantNestedInput
+  rentalCharges?: Prisma.RentalChargeUpdateManyWithoutTenantNestedInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutTenantNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutTenantNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutTenantNestedInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutTenantNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutTenantNestedInput
+  saleReversals?: Prisma.SaleReversalUpdateManyWithoutTenantNestedInput
+  reversalItems?: Prisma.ReversalItemUpdateManyWithoutTenantNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutTenantNestedInput
+  tenantConfigs?: Prisma.TenantConfigUpdateManyWithoutTenantNestedInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUpdateManyWithoutTenantNestedInput
+  tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
+  transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutTenantNestedInput
+  brands?: Prisma.BrandUncheckedUpdateManyWithoutTenantNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutTenantNestedInput
+  models?: Prisma.ModelUncheckedUpdateManyWithoutTenantNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutTenantNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutTenantNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutTenantNestedInput
+  productVariants?: Prisma.ProductVariantUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutTenantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutTenantNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutTenantNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutTenantNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutTenantNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+  attributeTypes?: Prisma.AttributeTypeUncheckedUpdateManyWithoutTenantNestedInput
+  attributeValues?: Prisma.AttributeValueUncheckedUpdateManyWithoutTenantNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutTenantNestedInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutTenantNestedInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutTenantNestedInput
+  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutTenantNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  modules?: Prisma.ModuleUncheckedUpdateManyWithoutTenantNestedInput
+  moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutTenantNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
+  payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
+  payrollPolicies?: Prisma.PayrollPolicyUncheckedUpdateManyWithoutTenantNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
+  permissions?: Prisma.PermissionUncheckedUpdateManyWithoutTenantNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutTenantNestedInput
+  rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutTenantNestedInput
+  plans?: Prisma.PlanUncheckedUpdateManyWithoutTenantNestedInput
+  planFeatures?: Prisma.PlanFeatureUncheckedUpdateManyWithoutTenantNestedInput
+  planLimits?: Prisma.PlanLimitUncheckedUpdateManyWithoutTenantNestedInput
+  planModules?: Prisma.PlanModuleUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutTenantNestedInput
+  promotions?: Prisma.PromotionUncheckedUpdateManyWithoutTenantNestedInput
+  promotionUsages?: Prisma.PromotionUsageUncheckedUpdateManyWithoutTenantNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutTenantNestedInput
+  referralPrograms?: Prisma.ReferralProgramUncheckedUpdateManyWithoutTenantNestedInput
+  referralRewards?: Prisma.ReferralRewardUncheckedUpdateManyWithoutTenantNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutTenantNestedInput
+  rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutTenantNestedInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTenantNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutTenantNestedInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutTenantNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutTenantNestedInput
+  saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutTenantNestedInput
+  reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutTenantNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutTenantNestedInput
+  tenantConfigs?: Prisma.TenantConfigUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+  tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
@@ -23072,6 +23683,7 @@ export type TenantCreateWithoutUserTenantMembershipsInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionCreateNestedManyWithoutTenantInput
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
@@ -23151,6 +23763,7 @@ export type TenantUncheckedCreateWithoutUserTenantMembershipsInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedCreateNestedManyWithoutTenantInput
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
@@ -23246,6 +23859,7 @@ export type TenantUpdateWithoutUserTenantMembershipsInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUpdateManyWithoutTenantNestedInput
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -23325,6 +23939,7 @@ export type TenantUncheckedUpdateWithoutUserTenantMembershipsInput = {
   tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -23405,6 +24020,7 @@ export type TenantCreateWithoutTransfersInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
 }
@@ -23484,6 +24100,7 @@ export type TenantUncheckedCreateWithoutTransfersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
 }
@@ -23579,6 +24196,7 @@ export type TenantUpdateWithoutTransfersInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
 }
@@ -23658,6 +24276,7 @@ export type TenantUncheckedUpdateWithoutTransfersInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
 }
@@ -23737,6 +24356,7 @@ export type TenantCreateWithoutTransferRoutesInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
 }
@@ -23816,6 +24436,7 @@ export type TenantUncheckedCreateWithoutTransferRoutesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
 }
@@ -23911,6 +24532,7 @@ export type TenantUpdateWithoutTransferRoutesInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
 }
@@ -23990,6 +24612,7 @@ export type TenantUncheckedUpdateWithoutTransferRoutesInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
 }
@@ -24069,6 +24692,7 @@ export type TenantCreateWithoutInventoryMovementsInput = {
   tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
 }
@@ -24148,6 +24772,7 @@ export type TenantUncheckedCreateWithoutInventoryMovementsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
   transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
   transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
 }
@@ -24243,6 +24868,7 @@ export type TenantUpdateWithoutInventoryMovementsInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
 }
@@ -24322,6 +24948,7 @@ export type TenantUncheckedUpdateWithoutInventoryMovementsInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
 }
@@ -24412,6 +25039,7 @@ export type TenantUpdateWithoutOwnerInput = {
   tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
@@ -24491,6 +25119,7 @@ export type TenantUncheckedUpdateWithoutOwnerInput = {
   tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
   transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
   transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
@@ -24578,6 +25207,7 @@ export type TenantCountOutputType = {
   tenantModules: number
   tenantPolicies: number
   userTenantMemberships: number
+  invitations: number
   transfers: number
   transferRoutes: number
   inventoryMovements: number
@@ -24648,6 +25278,7 @@ export type TenantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   tenantModules?: boolean | TenantCountOutputTypeCountTenantModulesArgs
   tenantPolicies?: boolean | TenantCountOutputTypeCountTenantPoliciesArgs
   userTenantMemberships?: boolean | TenantCountOutputTypeCountUserTenantMembershipsArgs
+  invitations?: boolean | TenantCountOutputTypeCountInvitationsArgs
   transfers?: boolean | TenantCountOutputTypeCountTransfersArgs
   transferRoutes?: boolean | TenantCountOutputTypeCountTransferRoutesArgs
   inventoryMovements?: boolean | TenantCountOutputTypeCountInventoryMovementsArgs
@@ -25114,6 +25745,13 @@ export type TenantCountOutputTypeCountUserTenantMembershipsArgs<ExtArgs extends 
 /**
  * TenantCountOutputType without action
  */
+export type TenantCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
+/**
+ * TenantCountOutputType without action
+ */
 export type TenantCountOutputTypeCountTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TransferWhereInput
 }
@@ -25209,6 +25847,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   tenantModules?: boolean | Prisma.Tenant$tenantModulesArgs<ExtArgs>
   tenantPolicies?: boolean | Prisma.Tenant$tenantPoliciesArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Tenant$userTenantMembershipsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Tenant$invitationsArgs<ExtArgs>
   transfers?: boolean | Prisma.Tenant$transfersArgs<ExtArgs>
   transferRoutes?: boolean | Prisma.Tenant$transferRoutesArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Tenant$inventoryMovementsArgs<ExtArgs>
@@ -25323,6 +25962,7 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tenantModules?: boolean | Prisma.Tenant$tenantModulesArgs<ExtArgs>
   tenantPolicies?: boolean | Prisma.Tenant$tenantPoliciesArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Tenant$userTenantMembershipsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Tenant$invitationsArgs<ExtArgs>
   transfers?: boolean | Prisma.Tenant$transfersArgs<ExtArgs>
   transferRoutes?: boolean | Prisma.Tenant$transferRoutesArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Tenant$inventoryMovementsArgs<ExtArgs>
@@ -25403,6 +26043,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     tenantModules: Prisma.$TenantModulePayload<ExtArgs>[]
     tenantPolicies: Prisma.$TenantPolicyPayload<ExtArgs>[]
     userTenantMemberships: Prisma.$UserTenantMembershipPayload<ExtArgs>[]
+    invitations: Prisma.$InvitationPayload<ExtArgs>[]
     transfers: Prisma.$TransferPayload<ExtArgs>[]
     transferRoutes: Prisma.$TransferRoutePayload<ExtArgs>[]
     inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
@@ -25877,6 +26518,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   tenantModules<T extends Prisma.Tenant$tenantModulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$tenantModulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tenantPolicies<T extends Prisma.Tenant$tenantPoliciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$tenantPoliciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userTenantMemberships<T extends Prisma.Tenant$userTenantMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$userTenantMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.Tenant$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transfers<T extends Prisma.Tenant$transfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$transfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferRoutes<T extends Prisma.Tenant$transferRoutesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$transferRoutesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferRoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryMovements<T extends Prisma.Tenant$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -27848,6 +28490,30 @@ export type Tenant$userTenantMembershipsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.UserTenantMembershipScalarFieldEnum | Prisma.UserTenantMembershipScalarFieldEnum[]
+}
+
+/**
+ * Tenant.invitations
+ */
+export type Tenant$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
 }
 
 /**

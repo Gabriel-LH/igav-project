@@ -1,7 +1,7 @@
 // src/app/superadmin/tenants/[id]/page.tsx
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -15,21 +15,15 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
-  Mail,
   Calendar,
   CreditCard,
   Package,
+  User2,
   ArrowLeft,
   Edit,
   Repeat,
   Ban,
 } from "lucide-react";
-
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { MOCK_TENANT } from "@/src/mocks/mock.tenant";
-
-
 
 // Tipos para los límites del plan
 interface PlanLimit {
@@ -39,27 +33,17 @@ interface PlanLimit {
   clients: { used: number; limit: number };
 }
 
-export function TenantIdLayout() {
+export function TenantIdLayout({ initialData }: { initialData: any }) {
   const router = useRouter();
-  const params = useParams();
-  const tenantId = params.id as string;
 
-  // Obtener datos del tenant
-  const tenant = MOCK_TENANT.find((t) => t.id === tenantId);
-  const subscription = TENTANT_SUBSCRIPTIONS_MOCK.find(
-    (s) => s.tenantId === tenantId && s.status === "active",
-  );
-  const plan = subscription
-    ? PLANS_MOCK.find((p) => p.id === subscription.planId)
-    : null;
+  // Obtener datos del tenant desde initialData (DB real)
+  const tenant = initialData.tenant;
+  const owner = tenant?.owner ?? null;
+  const subscription = initialData.subscription;
+  const plan = initialData.plan;
+  const usage = initialData.usage;
 
-  // Mocks de uso (esto vendría de la base de datos)
-  const usage: PlanLimit = {
-    users: { used: 8, limit: 10 },
-    branches: { used: 3, limit: 5 },
-    products: { used: 240, limit: 500 },
-    clients: { used: 45, limit: 100 },
-  };
+  console.log("initialData del tenant", initialData);
 
   if (!tenant) {
     return (
@@ -84,7 +68,7 @@ export function TenantIdLayout() {
           Volver
         </Button>
         <h2 className="text-3xl font-bold tracking-tight">{tenant.name}</h2>
-        <Badge variant={tenant.status === "active" ? "success" : "destructive"}>
+        <Badge variant={tenant.status === "active" ? "default" : "destructive"}>
           {tenant.status}
         </Badge>
       </div>
@@ -108,12 +92,14 @@ export function TenantIdLayout() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Contacto</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Owner</CardTitle>
+            <User2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-sm font-medium">admin@empresa.com</div>
-            <p className="text-xs text-muted-foreground">Dueño del tenant</p>
+            <div className="text-sm font-medium">{owner?.name || "Sin owner"}</div>
+            <p className="text-xs text-muted-foreground">
+              {owner?.email || "Sin correo registrado"}
+            </p>
           </CardContent>
         </Card>
 
@@ -126,12 +112,12 @@ export function TenantIdLayout() {
           </CardHeader>
           <CardContent>
             <div className="text-sm font-medium">
-              {tenant.createdAt.toLocaleDateString()}
+              {new Date(tenant.createdAt).toLocaleDateString()}
             </div>
             <p className="text-xs text-muted-foreground">
               Hace{" "}
               {Math.floor(
-                (Date.now() - tenant.createdAt.getTime()) /
+                (Date.now() - new Date(tenant.createdAt).getTime()) /
                   (1000 * 60 * 60 * 24),
               )}{" "}
               días
@@ -144,16 +130,18 @@ export function TenantIdLayout() {
             <CardTitle className="text-sm font-medium">Próximo pago</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-sm font-medium">
-              {subscription?.currentPeriodEnd.toLocaleDateString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {subscription?.currentPeriodEnd > new Date()
-                ? "Vigente"
-                : "Vencido"}
-            </p>
-          </CardContent>
+          {subscription && (
+            <CardContent>
+              <div className="text-sm font-medium">
+                {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {new Date(subscription.currentPeriodEnd) > new Date()
+                  ? "Vigente"
+                  : "Vencido"}
+              </p>
+            </CardContent>
+          )}
         </Card>
       </div>
 
@@ -177,48 +165,73 @@ export function TenantIdLayout() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Nombre
-                  </p>
-                  <p>{tenant.name}</p>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Tenant</h4>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Nombre
+                    </p>
+                    <p>{tenant.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Slug
+                    </p>
+                    <p>{tenant.slug}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Estado
+                    </p>
+                    <Badge
+                      variant={
+                        tenant.status === "active" ? "default" : "destructive"
+                      }
+                    >
+                      {tenant.status}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Fecha creación
+                    </p>
+                    <p>{new Date(tenant.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Plan actual
+                    </p>
+                    <p className="font-medium">{plan?.name || "Sin plan"}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Slug
-                  </p>
-                  <p>{tenant.slug}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Email contacto
-                  </p>
-                  <p>admin@{tenant.slug}.com</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Estado
-                  </p>
-                  <Badge
-                    variant={
-                      tenant.status === "active" ? "success" : "destructive"
-                    }
-                  >
-                    {tenant.status}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Fecha creación
-                  </p>
-                  <p>{tenant.createdAt.toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Plan actual
-                  </p>
-                  <p className="font-medium">{plan?.name || "Sin plan"}</p>
+
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Owner</h4>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Nombre
+                    </p>
+                    <p>{owner?.name || "Sin owner asignado"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Correo
+                    </p>
+                    <p>{owner?.email || "Sin correo"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Estado
+                    </p>
+                    <p>{owner?.status || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Owner ID
+                    </p>
+                    <p className="break-all">{owner?.id || "N/A"}</p>
+                  </div>
                 </div>
               </div>
 
@@ -298,8 +311,8 @@ export function TenantIdLayout() {
                       <Badge
                         variant={
                           subscription.status === "active"
-                            ? "success"
-                            : "warning"
+                            ? "default"
+                            : "secondary"
                         }
                       >
                         {subscription.status}
@@ -309,15 +322,22 @@ export function TenantIdLayout() {
                       <p className="text-sm font-medium text-muted-foreground">
                         Inicio
                       </p>
-                      <p>{subscription.startedAt.toLocaleDateString()}</p>
+                      <p>
+                        {new Date(subscription.startedAt).toLocaleDateString()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">
                         Período actual
                       </p>
                       <p>
-                        {subscription.currentPeriodStart.toLocaleDateString()} -{" "}
-                        {subscription.currentPeriodEnd.toLocaleDateString()}
+                        {new Date(
+                          subscription.currentPeriodStart,
+                        ).toLocaleDateString()}{" "}
+                        -{" "}
+                        {new Date(
+                          subscription.currentPeriodEnd,
+                        ).toLocaleDateString()}
                       </p>
                     </div>
                     {subscription.trialEndsAt && (
@@ -325,7 +345,11 @@ export function TenantIdLayout() {
                         <p className="text-sm font-medium text-muted-foreground">
                           Fin del trial
                         </p>
-                        <p>{subscription.trialEndsAt.toLocaleDateString()}</p>
+                        <p>
+                          {new Date(
+                            subscription.trialEndsAt,
+                          ).toLocaleDateString()}
+                        </p>
                       </div>
                     )}
                     <div>

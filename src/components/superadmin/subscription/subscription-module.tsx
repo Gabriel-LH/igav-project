@@ -9,48 +9,55 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { TenantSubscription } from "@/src/types/tenant/tenantSuscription";
 
-// Mocks
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { MOCK_TENANT } from "@/src/mocks/mock.tenant";
+import { Plan } from "@/src/types/plan/planSchema";
 
-export function SubscriptionModule() {
+interface SubscriptionModuleProps {
+  initialPlans: Plan[];
+  initialSubscriptions: any[];
+  initialTenants: any[];
+}
+
+export function SubscriptionModule({
+  initialPlans,
+  initialSubscriptions,
+  initialTenants,
+}: SubscriptionModuleProps) {
   const [selectedSubscription, setSelectedSubscription] =
     useState<TenantSubscription | null>(null);
   const [activeTab, setActiveTab] = useState("list");
 
   // Estadísticas
-  const activeSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
+  const activeSubscriptions = initialSubscriptions.filter(
     (s) => s.status === "active",
   ).length;
-  const trialSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
+  const trialSubscriptions = initialSubscriptions.filter(
     (s) => s.status === "trial",
   ).length;
-  const pastDueSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
+  const pastDueSubscriptions = initialSubscriptions.filter(
     (s) => s.status === "past_due",
   ).length;
-  const canceledSubscriptions = TENTANT_SUBSCRIPTIONS_MOCK.filter(
+  const canceledSubscriptions = initialSubscriptions.filter(
     (s) => s.status === "canceled",
   ).length;
 
   // MRR (Monthly Recurring Revenue)
-  const mrr = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "active",
-  ).reduce((total, sub) => {
-    const plan = PLANS_MOCK.find((p) => p.id === sub.planId);
-    if (!plan) return total;
-    if (sub.billingCycle === "yearly" && plan.priceYearly) {
-      return total + plan.priceYearly / 12;
-    }
-    return total + plan.priceMonthly;
-  }, 0);
+  const mrr = initialSubscriptions
+    .filter((s) => s.status === "active")
+    .reduce((total, sub) => {
+      const plan = initialPlans.find((p) => p.id === sub.planId);
+      if (!plan) return total;
+      if (sub.billingCycle === "yearly" && plan.priceYearly) {
+        return total + plan.priceYearly / 12;
+      }
+      return total + (plan.priceMonthly || 0);
+    }, 0);
 
   const getTenantForSubscription = (subscription: TenantSubscription) => {
-    return MOCK_TENANT.find((t) => t.id === subscription.tenantId)!;
+    return initialTenants.find((t) => t.id === subscription.tenantId)!;
   };
 
   const getPlanForSubscription = (subscription: TenantSubscription) => {
-    return PLANS_MOCK.find((p) => p.id === subscription.planId)!;
+    return initialPlans.find((p) => p.id === subscription.planId)!;
   };
 
   return (
@@ -69,7 +76,7 @@ export function SubscriptionModule() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {TENTANT_SUBSCRIPTIONS_MOCK.length}
+                {initialSubscriptions.length}
               </div>
             </CardContent>
           </Card>
@@ -133,7 +140,7 @@ export function SubscriptionModule() {
               <TabsTrigger value="details">
                 Detalle:{" "}
                 {
-                  MOCK_TENANT.find(
+                  initialTenants.find(
                     (t) => t.id === selectedSubscription.tenantId,
                   )?.name
                 }
@@ -148,9 +155,9 @@ export function SubscriptionModule() {
               </CardHeader>
               <CardContent>
                 <SubscriptionsTable
-                  subscriptions={TENTANT_SUBSCRIPTIONS_MOCK}
-                  tenants={MOCK_TENANT}
-                  plans={PLANS_MOCK}
+                  subscriptions={initialSubscriptions}
+                  tenants={initialTenants}
+                  plans={initialPlans}
                   onSelectSubscription={(subscription) => {
                     setSelectedSubscription(subscription);
                     setActiveTab("details");

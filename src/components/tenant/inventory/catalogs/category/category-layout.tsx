@@ -4,13 +4,13 @@ import { useMemo } from "react";
 import { CategoryFormData } from "@/src/types/category/type.category";
 import { CategoriesTable } from "./category-table";
 import { useCategoryStore } from "@/src/store/useCategoryStore";
-import { ZustandCategoryRepository } from "@/src/infrastructure/stores-adapters/ZustandCategoryRepository";
+import { ZustandCategoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandCategoryRepository";
 import {
   CreateCategoryUseCase,
   DeleteCategoryUseCase,
   ListCategoriesUseCase,
   UpdateCategoryUseCase,
-} from "@/src/application/use-cases/category/crudCategory.usecase";
+} from "@/src/application/tenant/use-cases/category/crudCategory.usecase";
 
 export function CategoryLayout() {
   const tenantId = "tenant-a";

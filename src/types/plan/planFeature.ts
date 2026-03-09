@@ -1,24 +1,34 @@
 import z from "zod";
 
 export const PLAN_FEATURE_KEYS = [
+  // Operations
   "sales",
   "rentals",
+  // Inventory
   "inventory",
   "products",
+  "inventoryItems",
+  // Clients
+  "clients",
+  // Payments
   "payments",
-  "userAttendance",
+  // RRHH
   "users",
   "branches",
+  "userAttendance",
+  "shifts",
+  "payroll",
   "permissions",
-  "tenants",
+  // Analytics
   "analytics",
+  "reports",
+  // Marketing
   "promotions",
   "referrals",
-  "reservations",
   "referralRewards",
   "loyalty",
-  "clients",
-  "inventoryItems",
+  // System (superadmin-only features)
+  "tenants",
   "subscriptions",
 ] as const;
 

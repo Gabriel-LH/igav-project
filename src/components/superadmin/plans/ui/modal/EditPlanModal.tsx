@@ -26,10 +26,6 @@ import {
   PlanLimitKey,
 } from "@/src/types/plan/type.planLimitKey";
 
-// Mocks de features y límites para el plan
-import { PLAN_FEATURES_MOCK } from "@/src/mocks/mock.planFeature";
-import { PLAN_LIMITS_MOCK } from "@/src/mocks/mock.planLimit";
-
 const editPlanSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   description: z.string().optional(),
@@ -49,7 +45,7 @@ type EditPlanForm = z.infer<typeof editPlanSchema>;
 interface EditPlanModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  plan: Plan | null;
+  plan: (Plan & { features?: any[]; limits?: any[] }) | null;
   onSuccess?: () => void;
 }
 
@@ -72,7 +68,7 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
     formState: { errors },
     setValue,
   } = useForm<EditPlanForm>({
-    resolver: zodResolver(editPlanSchema),
+    resolver: zodResolver(editPlanSchema) as any,
     defaultValues: {
       name: "",
       description: "",
@@ -97,16 +93,12 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
       setValue("currency", plan.currency);
 
       // Cargar features del plan
-      const planFeatures = PLAN_FEATURES_MOCK.filter(
-        (f) => f.planId === plan.id,
-      ).map((f) => f.featureKey);
-      setSelectedFeatures(new Set(planFeatures));
+      const planFeatures = (plan.features || []).map((f: any) => f.featureKey);
+      setSelectedFeatures(new Set(planFeatures as PlanFeatureKey[]));
 
       // Cargar límites del plan
-      const planLimits = PLAN_LIMITS_MOCK.filter(
-        (l) => l.planId === plan.id,
-      ).reduce(
-        (acc, curr) => ({
+      const planLimits = (plan.limits || []).reduce(
+        (acc: any, curr: any) => ({
           ...acc,
           [curr.limitKey]: curr.limit,
         }),

@@ -3,21 +3,19 @@ import React from "react";
 import { TenantsTable } from "./table/tenants-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
 import { Building2, Users, CreditCard, AlertCircle } from "lucide-react";
+import { getTenantsDashboardData } from "@/src/app/(superadmin)/superadmin/actions/tenant.actions";
 
-// Mocks
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { MOCK_TENANT } from "@/src/mocks/mock.tenant";
+export async function TenantLayout() {
+  const { tenants, plans, subscriptions } = await getTenantsDashboardData();
 
-export function TenantLayout() {
-  const activeTenants = MOCK_TENANT.filter((t) => t.status === "active").length;
-  const totalUsers = 45; // Esto vendría de un mock de usuarios
-  const trialTenants = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "trial",
+  const activeTenants = tenants.filter(
+    (t: any) => t.status === "active",
   ).length;
-  const pastDueTenants = TENTANT_SUBSCRIPTIONS_MOCK.filter(
-    (s) => s.status === "past_due",
-  ).length;
+  const totalUsers = 0; // Se conectará al repo de usuarios luego
+  const trialTenants =
+    subscriptions?.filter((s: any) => s.status === "trial").length || 0;
+  const pastDueTenants =
+    subscriptions?.filter((s: any) => s.status === "past_due").length || 0;
 
   return (
     <>
@@ -32,7 +30,7 @@ export function TenantLayout() {
               <Building2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{MOCK_TENANT.length}</div>
+              <div className="text-2xl font-bold">{tenants.length}</div>
               <p className="text-xs text-muted-foreground">
                 {activeTenants} activos
               </p>
@@ -88,9 +86,9 @@ export function TenantLayout() {
           </CardHeader>
           <CardContent>
             <TenantsTable
-              tenants={MOCK_TENANT}
-              subscriptions={TENTANT_SUBSCRIPTIONS_MOCK}
-              plans={PLANS_MOCK}
+              tenants={tenants}
+              subscriptions={subscriptions}
+              plans={plans}
             />
           </CardContent>
         </Card>

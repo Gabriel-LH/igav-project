@@ -18,12 +18,12 @@ import { DragHandle } from "@/src/components/tenant/dashboard/data-table/ui/Drag
 import { rentalsActiveSchema } from "../type/type.active";
 import { ArrowUpDown, CircleDashed, CircleX, PencilLine } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
-import { CancelRentalUseCase } from "@/src/application/use-cases/cancelRental.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
+import { CancelRentalUseCase } from "@/src/application/tenant/use-cases/cancelRental.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
 import { useState } from "react";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { toast } from "sonner";

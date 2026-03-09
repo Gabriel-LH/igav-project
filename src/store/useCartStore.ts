@@ -12,10 +12,10 @@ import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
   BundleDomainService,
   BundleDefinition,
-} from "@/src/domain/services/bundle.service";
-import { PromotionService } from "../domain/services/promotion.service";
-import { ZustandPromotionRepository } from "../infrastructure/stores-adapters/ZustandPromotionRepository";
-import { PromotionLoaderService } from "../domain/services/promotionLoader.service";
+} from "@/src/domain/tenant/services/bundle.service";
+import { PromotionService } from "../domain/tenant/services/promotion.service";
+import { ZustandPromotionRepository } from "../infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
+import { PromotionLoaderService } from "../domain/tenant/services/promotionLoader.service";
 import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
 import { Promotion } from "../types/promotion/type.promotion";
 

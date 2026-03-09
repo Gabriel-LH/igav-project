@@ -15,15 +15,15 @@ import {
 } from "@/src/types/plan/planFeature";
 import { PlanLimitKey } from "@/src/types/plan/type.planLimitKey";
 
-// Mocks específicos de features
-import { PLAN_FEATURES_MOCK } from "@/src/mocks/mock.planFeature";
-import { PLAN_LIMITS_MOCK } from "@/src/mocks/mock.planLimit";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
 import { CreateFeatureModal } from "./ui/modal/CreateFeatureModal";
 import { CreateLimitModal } from "./ui/modal/CreateLimitModal";
 import { BulkAssignFeaturesModal } from "./ui/modal/BulkAssignFeaturesModal";
 
-export function FeaturesModule() {
+interface FeaturesModuleProps {
+  initialPlans: any[];
+}
+
+export function FeaturesModule({ initialPlans }: FeaturesModuleProps) {
   const [activeTab, setActiveTab] = useState("global");
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
@@ -69,20 +69,25 @@ export function FeaturesModule() {
   };
 
   const getFeaturesForPlan = (planId: string) => {
-    return PLAN_FEATURES_MOCK.filter((f) => f.planId === planId).map(
-      (f) => f.featureKey,
-    );
+    const plan = initialPlans.find((p) => p.id === planId);
+    if (!plan || !plan.features) return [];
+    return plan.features.map((f: any) => f.featureKey);
   };
 
   const getLimitsForPlan = (planId: string) => {
-    return PLAN_LIMITS_MOCK.filter((l) => l.planId === planId).reduce(
-      (acc, curr) => ({
+    const plan = initialPlans.find((p) => p.id === planId);
+    if (!plan || !plan.limits) return {} as Record<PlanLimitKey, number>;
+    return plan.limits.reduce(
+      (acc: any, curr: any) => ({
         ...acc,
         [curr.limitKey]: curr.limit,
       }),
       {} as Record<PlanLimitKey, number>,
     );
   };
+
+  // Derive all features to show in the table
+  const allFeatures = initialPlans.flatMap((p) => p.features || []);
 
   const refreshData = () => {
     // Aquí iría la lógica para refrescar los datos
@@ -157,7 +162,7 @@ export function FeaturesModule() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {PLANS_MOCK.map((plan) => (
+                    {initialPlans.map((plan) => (
                       <Button
                         key={plan.id}
                         variant={
@@ -191,7 +196,7 @@ export function FeaturesModule() {
                     }}
                     mode="plan"
                     planName={
-                      PLANS_MOCK.find((p) => p.id === selectedPlanId)?.name
+                      initialPlans.find((p) => p.id === selectedPlanId)?.name
                     }
                     showSearch={true}
                     onSave={() => console.log("Guardando features del plan...")}
@@ -232,7 +237,7 @@ export function FeaturesModule() {
                       <Settings className="h-4 w-4 mr-2" />
                       Límites Globales
                     </Button>
-                    {PLANS_MOCK.map((plan) => (
+                    {initialPlans.map((plan) => (
                       <Button
                         key={plan.id}
                         variant={
@@ -274,7 +279,7 @@ export function FeaturesModule() {
                     }}
                     mode="plan"
                     planName={
-                      PLANS_MOCK.find((p) => p.id === selectedPlanId)?.name
+                      initialPlans.find((p) => p.id === selectedPlanId)?.name
                     }
                     onSave={() => console.log("Guardando límites del plan...")}
                   />
@@ -302,25 +307,28 @@ export function FeaturesModule() {
             </Button>
           </CardHeader>
           <CardContent>
-            <FeaturesTable features={PLAN_FEATURES_MOCK} plans={PLANS_MOCK} />
+            <FeaturesTable features={allFeatures} plans={initialPlans} />
           </CardContent>
         </Card>
       </div>
 
       {/* Modales */}
       <CreateFeatureModal
+        plans={initialPlans}
         open={createFeatureOpen}
         onOpenChange={setCreateFeatureOpen}
         onSuccess={refreshData}
       />
 
       <CreateLimitModal
+        plans={initialPlans}
         open={createLimitOpen}
         onOpenChange={setCreateLimitOpen}
         onSuccess={refreshData}
       />
 
       <BulkAssignFeaturesModal
+        plans={initialPlans}
         open={bulkAssignOpen}
         onOpenChange={setBulkAssignOpen}
         onSuccess={refreshData}

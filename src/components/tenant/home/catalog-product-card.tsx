@@ -15,15 +15,15 @@ import { productSchema } from "../../../types/product/type.product";
 import { z } from "zod";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig"; 
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { useMemo, useEffect } from "react";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
-import { PromotionLoaderService } from "@/src/domain/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/stores-adapters/ZustandPromotionRepository";
+import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
+import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 
 interface Props {

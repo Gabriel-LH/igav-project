@@ -34,8 +34,30 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Estructura de permisos por módulo
-const PERMISSIONS_STRUCTURE = {
+// MODULE LABELS — map DB module keys to friendly names
+const MODULE_LABELS: Record<string, { label: string; icon: string }> = {
+  sales: { label: "Ventas", icon: "💰" },
+  rentals: { label: "Alquiler", icon: "📦" },
+  reservations: { label: "Reservas", icon: "📅" },
+  inventory: { label: "Inventario", icon: "📋" },
+  clients: { label: "Clientes", icon: "👥" },
+  products: { label: "Productos", icon: "🛍️" },
+  promotions: { label: "Promociones", icon: "🎁" },
+  payments: { label: "Pagos", icon: "💵" },
+  referrals: { label: "Referidos", icon: "🔗" },
+  referralRewards: { label: "Recompensas", icon: "⭐" },
+  users: { label: "Equipo", icon: "👤" },
+  roles: { label: "Roles", icon: "🛡️" },
+  branches: { label: "Sucursales", icon: "🏢" },
+  userAttendance: { label: "Asistencia", icon: "🕐" },
+  userBranchAccess: { label: "Acceso Sucursal", icon: "🔑" },
+  userTenantMembership: { label: "Membresías", icon: "🪪" },
+  permissions: { label: "Permisos (Sistema)", icon: "⚙️" },
+  tenants: { label: "Tenants (Sistema)", icon: "🏗️" },
+};
+
+// (old PERMISSIONS_STRUCTURE removed — now built dynamically from DB)
+const _PERMISSIONS_STRUCTURE_PLACEHOLDER = {
   ventas: {
     label: "Ventas",
     icon: "💰",
@@ -249,6 +271,13 @@ const PERMISSIONS_STRUCTURE = {
       },
     ],
   },
+}; // end placeholder (unused)
+
+type SystemPermission = {
+  id: string;
+  key: string;
+  module: string;
+  description: string | null;
 };
 
 interface RoleFormData {
@@ -263,6 +292,7 @@ interface RoleFormProps {
   initialData?: Partial<RoleFormData>;
   isEditing?: boolean;
   isOwner?: boolean;
+  systemPermissions: SystemPermission[]; // from DB (tenantId = null)
   onSubmit: (data: RoleFormData) => void;
   onCancel: () => void;
 }
@@ -271,9 +301,25 @@ export function RoleForm({
   initialData,
   isEditing = false,
   isOwner = false,
+  systemPermissions,
   onSubmit,
   onCancel,
 }: RoleFormProps) {
+  // Build module structure dynamically from DB permissions
+  const permissionsByModule = systemPermissions.reduce<
+    Record<
+      string,
+      { label: string; icon: string; permissions: SystemPermission[] }
+    >
+  >((acc, perm) => {
+    const meta = MODULE_LABELS[perm.module] ?? {
+      label: perm.module,
+      icon: "🔒",
+    };
+    if (!acc[perm.module]) acc[perm.module] = { ...meta, permissions: [] };
+    acc[perm.module].permissions.push(perm);
+    return acc;
+  }, {});
   const [formData, setFormData] = useState<RoleFormData>({
     name: "",
     description: "",
@@ -284,7 +330,7 @@ export function RoleForm({
   });
 
   const [expandedModules, setExpandedModules] = useState<string[]>(
-    Object.keys(PERMISSIONS_STRUCTURE),
+    Object.keys(permissionsByModule),
   );
 
   const toggleModule = (moduleKey: string) => {
@@ -305,9 +351,9 @@ export function RoleForm({
   };
 
   const toggleAllModule = (moduleKey: string, checked: boolean) => {
-    const module =
-      PERMISSIONS_STRUCTURE[moduleKey as keyof typeof PERMISSIONS_STRUCTURE];
-    const modulePermissionIds = module.permissions.map((p) => p.id);
+    const module = permissionsByModule[moduleKey];
+    if (!module) return;
+    const modulePermissionIds = module.permissions.map((p) => p.key);
 
     setFormData((prev) => ({
       ...prev,
@@ -318,26 +364,24 @@ export function RoleForm({
   };
 
   const isModuleFullySelected = (moduleKey: string) => {
-    const module =
-      PERMISSIONS_STRUCTURE[moduleKey as keyof typeof PERMISSIONS_STRUCTURE];
+    const module = permissionsByModule[moduleKey];
+    if (!module) return false;
     return module.permissions.every((p) =>
-      formData.permissionIds.includes(p.id),
+      formData.permissionIds.includes(p.key),
     );
   };
 
   const isModulePartiallySelected = (moduleKey: string) => {
-    const module =
-      PERMISSIONS_STRUCTURE[moduleKey as keyof typeof PERMISSIONS_STRUCTURE];
+    const module = permissionsByModule[moduleKey];
+    if (!module) return false;
     const selectedCount = module.permissions.filter((p) =>
-      formData.permissionIds.includes(p.id),
+      formData.permissionIds.includes(p.key),
     ).length;
     return selectedCount > 0 && selectedCount < module.permissions.length;
   };
 
   const grantAllPermissions = () => {
-    const allIds = Object.values(PERMISSIONS_STRUCTURE).flatMap((m) =>
-      m.permissions.map((p) => p.id),
-    );
+    const allIds = systemPermissions.map((p) => p.key);
     setFormData((prev) => ({ ...prev, permissionIds: allIds }));
   };
 
@@ -350,12 +394,12 @@ export function RoleForm({
     onSubmit(formData);
   };
 
-  const totalPermissions = Object.values(PERMISSIONS_STRUCTURE).reduce(
-    (acc, m) => acc + m.permissions.length,
-    0,
-  );
+  const totalPermissions = systemPermissions.length;
   const selectedCount = formData.permissionIds.length;
-  const progressPercent = Math.round((selectedCount / totalPermissions) * 100);
+  const progressPercent =
+    totalPermissions > 0
+      ? Math.round((selectedCount / totalPermissions) * 100)
+      : 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -481,7 +525,7 @@ export function RoleForm({
           {/* Acordeón de módulos */}
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-2">
-              {Object.entries(PERMISSIONS_STRUCTURE).map(([key, module]) => {
+              {Object.entries(permissionsByModule).map(([key, module]) => {
                 const fullySelected = isModuleFullySelected(key);
                 const partiallySelected = isModulePartiallySelected(key);
                 const isExpanded = expandedModules.includes(key);
@@ -520,19 +564,19 @@ export function RoleForm({
                       <div className="p-3 space-y-2">
                         {module.permissions.map((permission) => {
                           const isSelected = formData.permissionIds.includes(
-                            permission.id,
+                            permission.key,
                           );
 
                           return (
                             <div
-                              key={permission.id}
+                              key={permission.key}
                               className={cn(
                                 "flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer",
                                 isSelected
                                   ? "border-primary bg-primary/5"
                                   : "hover:bg-muted/50",
                               )}
-                              onClick={() => togglePermission(permission.id)}
+                              onClick={() => togglePermission(permission.key)}
                             >
                               <Checkbox
                                 checked={isSelected}
@@ -543,8 +587,11 @@ export function RoleForm({
                               />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-sm">
-                                    {permission.label}
+                                  <span className="font-medium text-sm capitalize">
+                                    {permission.key
+                                      .split(".")[1]
+                                      ?.replace(/([A-Z])/g, " $1") ??
+                                      permission.key}
                                   </span>
                                   {isSelected && (
                                     <Check className="w-3 h-3 text-primary" />

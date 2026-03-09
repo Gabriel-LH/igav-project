@@ -27,38 +27,6 @@ import { TenantSubscription } from "@/src/types/tenant/tenantSuscription";
 import { Tenant } from "@/src/types/tenant/type.tenant";
 import { Plan } from "@/src/types/plan/planSchema";
 
-// Mock de historial (esto vendría de una API)
-const MOCK_HISTORY = [
-  {
-    id: "1",
-    type: "created",
-    description: "Suscripción creada",
-    date: new Date("2024-01-15"),
-    user: "System",
-  },
-  {
-    id: "2",
-    type: "payment",
-    description: "Pago recibido - S/ 399",
-    date: new Date("2024-02-15"),
-    user: "System",
-  },
-  {
-    id: "3",
-    type: "plan_changed",
-    description: "Cambio de plan: Basic a Pro",
-    date: new Date("2024-02-20"),
-    user: "Admin",
-  },
-  {
-    id: "4",
-    type: "payment",
-    description: "Pago recibido - S/ 199",
-    date: new Date("2024-03-15"),
-    user: "System",
-  },
-];
-
 interface SubscriptionDetailsTabsProps {
   subscription: TenantSubscription;
   tenant: Tenant;
@@ -72,12 +40,9 @@ export const SubscriptionDetailsTabs: React.FC<
   const [activeTab, setActiveTab] = useState("overview");
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "success" | "warning" | "destructive" | "secondary"
-    > = {
-      active: "success",
-      trial: "warning",
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
+      active: "default",
+      trial: "secondary",
       past_due: "destructive",
       canceled: "secondary",
     };
@@ -108,7 +73,9 @@ export const SubscriptionDetailsTabs: React.FC<
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a lista
           </Button>
-          <h3 className="text-2xl font-semibold">Suscripción: {tenant?.name || "Desconocido"}</h3>
+          <h3 className="text-2xl font-semibold">
+            Suscripción: {tenant?.name || "Desconocido"}
+          </h3>
           {getStatusBadge(subscription.status)}
         </div>
         <div className="flex space-x-2">
@@ -161,7 +128,7 @@ export const SubscriptionDetailsTabs: React.FC<
                   <span className="text-muted-foreground">Estado:</span>
                   <Badge
                     variant={
-                      tenant.status === "active" ? "success" : "destructive"
+                      tenant.status === "active" ? "default" : "destructive"
                     }
                   >
                     {tenant.status}
@@ -334,7 +301,7 @@ export const SubscriptionDetailsTabs: React.FC<
                           <TableCell>S/ 399</TableCell>
                           <TableCell>Tarjeta de Crédito</TableCell>
                           <TableCell>
-                            <Badge variant="success">Pagado</Badge>
+                            <Badge variant="default">Pagado</Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -342,7 +309,7 @@ export const SubscriptionDetailsTabs: React.FC<
                           <TableCell>S/ 399</TableCell>
                           <TableCell>Tarjeta de Crédito</TableCell>
                           <TableCell>
-                            <Badge variant="success">Pagado</Badge>
+                            <Badge variant="default">Pagado</Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -350,7 +317,7 @@ export const SubscriptionDetailsTabs: React.FC<
                           <TableCell>S/ 399</TableCell>
                           <TableCell>Tarjeta de Crédito</TableCell>
                           <TableCell>
-                            <Badge variant="success">Pagado</Badge>
+                            <Badge variant="default">Pagado</Badge>
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -373,32 +340,10 @@ export const SubscriptionDetailsTabs: React.FC<
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {MOCK_HISTORY.map((item, index) => (
-                  <div key={item.id} className="relative">
-                    {index < MOCK_HISTORY.length - 1 && (
-                      <div className="absolute left-5 top-8 bottom-0 w-px bg-border" />
-                    )}
-                    <div className="flex items-start space-x-4">
-                      <div className="relative z-10 mt-1">
-                        <div className="rounded-full bg-muted p-2">
-                          {getHistoryIcon(item.type)}
-                        </div>
-                      </div>
-                      <div className="flex-1 pb-4">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium">{item.description}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {item.date.toLocaleDateString()}{" "}
-                            {item.date.toLocaleTimeString()}
-                          </p>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Por: {item.user}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {/* Historial vendrá de la API */}
+                <div className="text-center py-8 text-muted-foreground">
+                  El historial de suscripción se implementará próximamente.
+                </div>
               </div>
             </CardContent>
           </Card>

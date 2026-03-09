@@ -36,7 +36,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
-import { RegisterPaymentInput } from "@/src/application/use-cases/registerPayment.usecase";
+import { RegisterPaymentInput } from "@/src/application/tenant/use-cases/registerPayment.usecase";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { Label } from "@/components/label";
@@ -44,23 +44,23 @@ import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { ConvertReservationUseCase } from "@/src/application/use-cases/reservation/convertReservation.usecase";
+import { ConvertReservationUseCase } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
 import { useAttributeStore } from "@/src/store/useAttributeStore";
-import { ZustandReservationRepository } from "@/src/infrastructure/stores-adapters/ZustandReservationRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/stores-adapters/ZustandOperationRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/ZustandPaymentRepository";
-import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
-import { ZustandClientCreditRepository } from "@/src/infrastructure/stores-adapters/ZustandClientCreditRepository";
-import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
-import { AddClientCreditUseCase } from "@/src/application/use-cases/client/addClientCredit.usecase";
-import { RewardLoyaltyUseCase } from "@/src/application/use-cases/rewardLoyalty.usecase";
-import { RegisterPaymentUseCase } from "@/src/application/use-cases/registerPayment.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
-import { CancelReservationUseCase } from "@/src/application/use-cases/reservation/cancelReservation.usecase";
+import { ZustandReservationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReservationRepository";
+import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
+import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
+import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
+import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
+import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
+import { ZustandClientCreditRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandClientCreditRepository";
+import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
+import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
+import { RewardLoyaltyUseCase } from "@/src/application/tenant/use-cases/rewardLoyalty.usecase";
+import { RegisterPaymentUseCase } from "@/src/application/tenant/use-cases/registerPayment.usecase";
+import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
+import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
