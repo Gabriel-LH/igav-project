@@ -15,6 +15,8 @@ import { ListProductsWithVariantsUseCase } from "@/src/application/use-cases/inv
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Table2 } from "lucide-react";
 import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AddToListIcon } from "@hugeicons/core-free-icons";
 
 export function ProductsLayout() {
   const tenantId = "tenant-a";
@@ -44,7 +46,7 @@ export function ProductsLayout() {
       listProductsWithVariantsUseCase.execute({
         includeDeleted: false,
       }),
-    [listProductsWithVariantsUseCase, productsState, variantsState],
+    [listProductsWithVariantsUseCase],
   );
   const [activeTab, setActiveTab] = useState("create");
 
@@ -79,7 +81,7 @@ export function ProductsLayout() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="create" className="gap-2">
-            <Package className="w-4 h-4" />
+             <HugeiconsIcon icon={AddToListIcon} />
             Crear Producto
           </TabsTrigger>
           <TabsTrigger value="table" className="gap-2">

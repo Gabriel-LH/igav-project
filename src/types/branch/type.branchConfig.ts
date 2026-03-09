@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const branchConfigSchema = z.object({
+  id: z.string(),
   branchId: z.string(),
 
   openHours: z.object({

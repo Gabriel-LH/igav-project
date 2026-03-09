@@ -20,7 +20,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig"; 
 import { formatCurrency } from "@/src/utils/currency-format";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
 import { DateTimeContainer } from "@/src/components/tenant/home/ui/direct-transaction/DataTimeContainer";
@@ -54,7 +54,7 @@ export function PosReservationModal({
   const { items, clearCart, activeTenantId } = useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
 
-  const businessRules = BUSINESS_RULES_MOCK;
+  const businessRules = MOCK_TENANT_CONFIG;
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId!;
 

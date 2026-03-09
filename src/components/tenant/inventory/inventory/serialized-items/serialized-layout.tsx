@@ -1,24 +1,23 @@
 // components/inventory/SerializedLayout.tsx
 "use client";
 
-import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from "react";
 import { Package } from "lucide-react";
 import { SerializedItemForm } from "./serialized-form";
-import { SerializedItemsTable } from "./serialized-table";
+import { SerializedItemsTable } from "./table/serialized-table";
 import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";
 import { CreateSerializedItemsUseCase } from "@/src/application/use-cases/inventory/createSerializedItems.usecase";
 import { DeleteSerializedItemUseCase } from "@/src/application/use-cases/inventory/deleteSerializedItem.usecase";
 import { ListSerializedItemsUseCase } from "@/src/application/use-cases/inventory/listSerializedItems.usecase";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AddToListIcon, ListViewIcon } from "@hugeicons/core-free-icons";
 
 export function SerializedLayout() {
+  const [activeTab, setActiveTab] = useState("form");
   const tenantId = "tenant-a";
-  const inventoryItemsState = useInventoryStore((state) => state.inventoryItems);
-  const productsState = useInventoryStore((state) => state.products);
-  const productVariantsState = useInventoryStore((state) => state.productVariants);
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
   const createSerializedItemsUseCase = useMemo(
     () => new CreateSerializedItemsUseCase(inventoryRepo),
@@ -38,12 +37,7 @@ export function SerializedLayout() {
       listSerializedItemsUseCase.execute({
         branches: MOCK_BRANCHES,
       }),
-    [
-      listSerializedItemsUseCase,
-      inventoryItemsState,
-      productsState,
-      productVariantsState,
-    ],
+    [listSerializedItemsUseCase],
   );
 
   const handleSubmit = (formData: SerializedItemFormData) => {
@@ -58,22 +52,42 @@ export function SerializedLayout() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <SerializedItemForm onSubmit={handleSubmit} />
+    <div className="container mx-auto space-y-6 lg:py-6 md:py-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList>
+          <TabsTrigger value="form">
+            <HugeiconsIcon icon={AddToListIcon} />
+            Crear Serializado
+          </TabsTrigger>
+          <TabsTrigger value="list">
+            <HugeiconsIcon icon={ListViewIcon} />
+            Serializados Registrados
+          </TabsTrigger>
+        </TabsList>
 
-      {items.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Items Serializados ({items.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SerializedItemsTable items={items} onDelete={handleDelete} />
-          </CardContent>
-        </Card>
-      )}
+        <TabsContent value="form">
+          <SerializedItemForm onSubmit={handleSubmit} />
+        </TabsContent>
+
+        <TabsContent value="list">
+          {items.length > 0 && (
+            <div>
+              <div className="text-2xl mb-4 flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                <span>Items Serializados ({items.length})</span>
+              </div>
+
+              <div>
+                <SerializedItemsTable items={items} onDelete={handleDelete} />
+              </div>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -51,6 +51,8 @@ import { NavAdmin } from "../nav-bar/nav-admin";
 import { ShoppingBasket } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { usePlanFeatures } from "@/src/hooks/usePlanFeatures";
+import { NavCRM } from "../nav-bar/nav-crm";
+import { NavAnalytic } from "../nav-bar/nav-analityc";
 
 const data = {
   user: {
@@ -70,21 +72,27 @@ const data = {
       url: "/tenant/pos",
       icon: <HugeiconsIcon icon={ComputerIcon} strokeWidth={2.2} />,
     },
+  ],
+  navOperation: [
     {
-      title: "Dashboard",
-      url: "/tenant/dashboard",
-      icon: <HugeiconsIcon icon={DashboardSquare02Icon} strokeWidth={2.2} />,
-    },
-
-    {
-      title: "Analitica",
-      url: "/tenant/analytics",
-      icon: <HugeiconsIcon icon={Chart02Icon} strokeWidth={2.2} />,
+      title: "Ventas",
+      url: "/tenant/sales",
+      icon: <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2.2} />,
     },
     {
-      title: "Clientes",
-      url: "/tenant/clients",
-      icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2.2} />,
+      title: "Alquileres",
+      url: "/tenant/rentals",
+      icon: <HugeiconsIcon icon={Repeat} strokeWidth={2.2} />,
+    },
+    {
+      title: "Devoluciones",
+      url: "/tenant/returns",
+      icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
+    }, // cambia icono si quieres
+    {
+      title: "Caja",
+      url: "/tenant/cash",
+      icon: <HugeiconsIcon icon={Cashier02Icon} strokeWidth={2.2} />,
     },
   ],
   navInventory: [
@@ -113,26 +121,11 @@ const data = {
       ],
     },
   ],
-  navOperation: [
+  navCRM: [
     {
-      title: "Ventas",
-      url: "/tenant/sales",
-      icon: <HugeiconsIcon icon={SaleTag02Icon} strokeWidth={2.2} />,
-    },
-    {
-      title: "Alquileres",
-      url: "/tenant/rentals",
-      icon: <HugeiconsIcon icon={Repeat} strokeWidth={2.2} />,
-    },
-    {
-      title: "Devoluciones",
-      url: "/tenant/returns",
-      icon: <HugeiconsIcon icon={Undo03Icon} strokeWidth={2.2} />,
-    }, // cambia icono si quieres
-    {
-      title: "Caja",
-      url: "/tenant/cash",
-      icon: <HugeiconsIcon icon={Cashier02Icon} strokeWidth={2.2} />,
+      title: "Clientes",
+      url: "/tenant/clients",
+      icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2.2} />,
     },
   ],
   navRRHH: [
@@ -165,6 +158,19 @@ const data = {
       title: "Sucursales",
       url: "/tenant/branches",
       icon: <HugeiconsIcon icon={StoreLocation01Icon} strokeWidth={2.2} />,
+    },
+  ],
+  navAnalytic: [
+    {
+      title: "Dashboard",
+      url: "/tenant/dashboard",
+      icon: <HugeiconsIcon icon={DashboardSquare02Icon} strokeWidth={2.2} />,
+    },
+
+    {
+      title: "Analitica",
+      url: "/tenant/analytics",
+      icon: <HugeiconsIcon icon={Chart02Icon} strokeWidth={2.2} />,
     },
   ],
   navAdmin: [
@@ -212,14 +218,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       data.navMain.filter((item) => {
         if (item.url === "/tenant/pos")
           return hasModule("sales") || hasModule("rentals");
-        if (item.url === "/tenant/dashboard" || item.url === "/tenant/analytics")
-          return (
-            hasModule("sales") ||
-            hasModule("rentals") ||
-            hasFeature("inventory")
-          );
         if (item.url === "/tenant/clients") return hasFeature("clients");
-        if (item.url === "/tenant/subscriptions") return hasFeature("subscriptions");
+        if (item.url === "/tenant/subscriptions")
+          return hasFeature("subscriptions");
         return true; // home always accessible
       }),
     [hasFeature, hasModule],
@@ -265,6 +266,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     [hasFeature],
   );
 
+  const filteredNavCRM = React.useMemo(
+    () =>
+      data.navCRM.filter((item) => {
+        if (item.url === "/tenant/clients") return hasFeature("clients");
+        return true;
+      }),
+    [hasFeature],
+  );
+
+  const filteredNavAnalytic = React.useMemo(
+    () =>
+      data.navAnalytic.filter((item) => {
+        if (
+          item.url === "/tenant/dashboard" ||
+          item.url === "/tenant/analytics"
+        )
+          return (
+            hasModule("sales") ||
+            hasModule("rentals") ||
+            hasFeature("inventory")
+          );
+        return true;
+      }),
+    [hasFeature, hasModule],
+  );
+
   const filteredNavAdmin = React.useMemo(
     () =>
       data.navAdmin.filter(() => {
@@ -296,14 +323,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {filteredNavMain.length > 0 && (
           <NavMain items={filteredNavMain} pathname={pathname} />
         )}
-        {filteredNavInventory.length > 0 && (
-          <NavInventory items={filteredNavInventory} pathname={pathname} />
-        )}
         {filteredNavOperation.length > 0 && (
           <NavOperation items={filteredNavOperation} pathname={pathname} />
         )}
+        {filteredNavInventory.length > 0 && (
+          <NavInventory items={filteredNavInventory} pathname={pathname} />
+        )}
+        {filteredNavCRM.length > 0 && (
+          <NavCRM items={filteredNavCRM} pathname={pathname} />
+        )}
         {filteredNavRRHH.length > 0 && (
           <NavRRHH items={filteredNavRRHH} pathname={pathname} />
+        )}
+        {filteredNavAnalytic.length > 0 && (
+          <NavAnalytic items={filteredNavAnalytic} pathname={pathname} />
         )}
         {filteredNavAdmin.length > 0 && (
           <NavAdmin items={filteredNavAdmin} pathname={pathname} />

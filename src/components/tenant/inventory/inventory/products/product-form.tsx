@@ -640,7 +640,7 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
         </TabsContent>
 
         {/* TAB 3: VARIANTES */}
-        <TabsContent value="variants" className="space-y-6 mt-6">
+        <TabsContent value="variants" className="space-y-6">
           <VariantsTable
             baseSku={formData.baseSku}
             variants={variants}
@@ -653,7 +653,7 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
             onResetAll={resetAllOverrides}
           />
 
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
             <Button
               type="button"
               variant="outline"

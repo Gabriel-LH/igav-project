@@ -438,7 +438,7 @@ export function SerializedItemsTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap mb-4 items-center gap-3">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input

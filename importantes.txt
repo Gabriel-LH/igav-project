@@ -298,3 +298,7 @@ RRHH
    ├── Attendance
    ├── PayrollConfig
    └── Payroll
+
+   DATABASE_URL="postgresql://neondb_owner:npg_e8WHZzlSRvA3@ep-polished-darkness-a46rwaqt-pooler.us-east-1.aws.neon.tech/neondb?sslmode=verify-full&channel_binding=require"
+
+NEXT_PUBLIC_APP_URL= http://localhost:3000/ 

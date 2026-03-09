@@ -14,7 +14,7 @@ import { addDays, differenceInDays } from "date-fns";
 import { DateTimeContainer } from "../home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "../home/ui/direct-transaction/TimePicker";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 import { toast } from "sonner";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { PosBundlesPanel } from "./ui/PosBundlePanel";
@@ -42,7 +42,7 @@ export function PosCartSection() {
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
-  const businessRules = BUSINESS_RULES_MOCK;
+  const businessRules = MOCK_TENANT_CONFIG;
   const [pickupTime, setPickupTime] = React.useState(
     businessRules.openHours.open,
   );

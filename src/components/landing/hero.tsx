@@ -28,7 +28,7 @@ export function Hero() {
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 pt-8 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-primary" />
-            <span>14 días de prueba gratis</span>
+            <span>7 días de prueba gratis</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-primary" />

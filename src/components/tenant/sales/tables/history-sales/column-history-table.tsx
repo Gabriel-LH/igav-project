@@ -23,7 +23,7 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useState } from "react";
 import { ReturnProductModal } from "../../ui/modals/ReturProductModal";
 import { SaleWithItems } from "@/src/types/sales/type.sale";
-import { CancelSaleUseCase } from "@/src/application/use-cases/cancelSale.usecase";
+import { CancelSaleUseCase } from "@/src/application/use-cases/sale/cancelSale.usecase";
 import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
 import { ZustandSaleReversalRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleReversalRepository";
 import { ZustandInventoryRepository } from "@/src/infrastructure/stores-adapters/ZustandInventoryRepository";

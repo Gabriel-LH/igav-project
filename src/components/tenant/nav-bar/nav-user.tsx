@@ -28,6 +28,22 @@ import {
   WorkoutRunIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { createAuthClient } from "better-auth/react";
+import { useRouter } from "next/navigation";
+
+const authClient = createAuthClient();
 
 export function NavUser({
   user,
@@ -39,6 +55,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -101,8 +118,36 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <IconLogout />
-              Cerrar sesión
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="flex items-center space-x-4 p-3 rounded-lg text-red-500 hover:bg-red-500/10 w-full">
+                    <IconLogout />
+                    Cerrar sesión
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tu sesión actual se cerrará y tendrás que ingresar tus
+                      credenciales nuevamente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-500 hover:bg-red-600"
+                      onClick={async () => {
+                        await authClient.signOut();
+                        toast.success("Sesión cerrada.");
+                        router.refresh();
+                      }}
+                    >
+                      Confirmar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

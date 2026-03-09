@@ -17,7 +17,9 @@ export class CreateAttributeTypeUseCase {
   constructor(private attributeTypeRepo: AttributeTypeRepository) {}
 
   execute(data: CreateAttributeTypeInput): AttributeType {
-    const attributeTypes = this.attributeTypeRepo.getAttributeTypesByTenant(data.tenantId);
+    const attributeTypes = this.attributeTypeRepo.getAttributeTypesByTenant(
+      data.tenantId,
+    );
     const code = data.code.trim().toUpperCase();
 
     if (attributeTypes.some((attributeType) => attributeType.code === code)) {
@@ -62,18 +64,24 @@ export class UpdateAttributeTypeUseCase {
       throw new Error("Ya existe un tipo de atributo con ese código.");
     }
 
-    this.attributeTypeRepo.updateAttributeType(data.attributeTypeId, {
-      name: data.name ?? attributeType.name,
-      code: nextCode,
-      inputType: data.inputType ?? attributeType.inputType,
-      isVariant: data.isVariant ?? attributeType.isVariant,
-      affectsSku: data.affectsSku ?? attributeType.affectsSku,
-      isActive: data.isActive ?? attributeType.isActive,
-    });
+    this.attributeTypeRepo.updateAttributeType(
+      data.tenantId,
+      data.attributeTypeId,
+      {
+        name: data.name ?? attributeType.name,
+        code: nextCode,
+        inputType: data.inputType ?? attributeType.inputType,
+        isVariant: data.isVariant ?? attributeType.isVariant,
+        affectsSku: data.affectsSku ?? attributeType.affectsSku,
+        isActive: data.isActive ?? attributeType.isActive,
+      },
+    );
 
     return (
-      this.attributeTypeRepo.getAttributeTypeById(data.tenantId, data.attributeTypeId) ??
-      attributeType
+      this.attributeTypeRepo.getAttributeTypeById(
+        data.tenantId,
+        data.attributeTypeId,
+      ) ?? attributeType
     );
   }
 }
@@ -103,14 +111,20 @@ export class DeleteAttributeTypeUseCase {
       );
     }
 
-    this.attributeTypeRepo.removeAttributeType(data.attributeTypeId);
+    this.attributeTypeRepo.removeAttributeType(
+      data.tenantId,
+      data.attributeTypeId,
+    );
   }
 }
 
 export class ListAttributeTypesUseCase {
   constructor(private attributeTypeRepo: AttributeTypeRepository) {}
 
-  execute(tenantId: string, options?: ListAttributeTypesOptions): AttributeType[] {
+  execute(
+    tenantId: string,
+    options?: ListAttributeTypesOptions,
+  ): AttributeType[] {
     const includeInactive = options?.includeInactive ?? true;
     return this.attributeTypeRepo
       .getAttributeTypesByTenant(tenantId)

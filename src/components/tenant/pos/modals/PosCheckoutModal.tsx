@@ -22,7 +22,7 @@ import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-trans
 import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
@@ -65,7 +65,7 @@ export function PosCheckoutModal({
     setGlobalTimes,
   } = useCartStore();
 
-  const businessRules = BUSINESS_RULES_MOCK;
+  const businessRules = MOCK_TENANT_CONFIG;
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId!;
 

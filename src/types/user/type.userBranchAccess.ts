@@ -13,13 +13,16 @@ export const userBranchAccessSchema = z.object({
   tenantId: z.string(),
   branchId: z.string(),
 
-  roleOverride: z.enum(["owner", "admin", "gerente", "vendedor"]).optional(),
+  roleId: z.string(),
 
   isPrimary: z.boolean().default(false),
 
-  status: z.enum(["active", "inactive"]).default("active"),
+  status: z.enum(["active", "inactive", "suspended"]).default("active"),
 
   createdAt: z.date(),
+  createdBy: z.string(),
+  updatedAt: z.date(),
+  updatedBy: z.string(),
 });
 
 export type UserBranchAccess = z.infer<typeof userBranchAccessSchema>;

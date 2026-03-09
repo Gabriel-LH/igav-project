@@ -44,7 +44,7 @@ import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { ConvertReservationUseCase } from "@/src/application/use-cases/convertReservation.usecase";
+import { ConvertReservationUseCase } from "@/src/application/use-cases/reservation/convertReservation.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
 import { useAttributeStore } from "@/src/store/useAttributeStore";
@@ -56,11 +56,11 @@ import { ZustandPaymentRepository } from "@/src/infrastructure/stores-adapters/Z
 import { ZustandSaleRepository } from "@/src/infrastructure/stores-adapters/ZustandSaleRepository";
 import { ZustandClientCreditRepository } from "@/src/infrastructure/stores-adapters/ZustandClientCreditRepository";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/stores-adapters/ZustandLoyaltyRepository";
-import { AddClientCreditUseCase } from "@/src/application/use-cases/addClientCredit.usecase";
+import { AddClientCreditUseCase } from "@/src/application/use-cases/client/addClientCredit.usecase";
 import { RewardLoyaltyUseCase } from "@/src/application/use-cases/rewardLoyalty.usecase";
 import { RegisterPaymentUseCase } from "@/src/application/use-cases/registerPayment.usecase";
 import { ZustandRentalRepository } from "@/src/infrastructure/stores-adapters/ZustandRentalRepository";
-import { CancelReservationUseCase } from "@/src/application/use-cases/cancelReservation.usecase";
+import { CancelReservationUseCase } from "@/src/application/use-cases/reservation/cancelReservation.usecase";
 
 export function DetailsReservedViewer({
   reservation: activeRes,

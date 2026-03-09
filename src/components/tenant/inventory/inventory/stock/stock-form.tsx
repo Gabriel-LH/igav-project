@@ -141,7 +141,7 @@ export function StockForm({ onSubmit }: StockFormProps) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-4">
-        <div className="text-lg flex items-center gap-2">
+        <div className="text-2xl flex items-center gap-2">
           <Package className="w-5 h-5" />
           Nuevo Lote de Stock
         </div>

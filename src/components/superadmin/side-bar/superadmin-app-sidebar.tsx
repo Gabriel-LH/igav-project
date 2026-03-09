@@ -28,6 +28,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavBilling } from "../nav-bar/ui/superadmin-nav-billing";
+import { SuperAdminNavUser } from "../nav-bar/ui/Superadmin-nav-user";
 
 const data = {
   user: {
@@ -108,7 +109,7 @@ export function SuperAdminAppSidebar({
         <NavBilling items={data.navBilling} pathname={pathname} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <SuperAdminNavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );

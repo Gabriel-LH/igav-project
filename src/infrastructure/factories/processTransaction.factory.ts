@@ -4,9 +4,9 @@ import { ZustandTenantRepository } from "../stores-adapters/ZustandTenantReposit
 import { SaleTransactionStrategy } from "../../application/use-cases/process-transaction/SaleTransactionStrategy";
 import { RentalTransactionStrategy } from "../../application/use-cases/process-transaction/RentalTransactionStrategy";
 import { ReservationTransactionStrategy } from "../../application/use-cases/process-transaction/ReservationTransactionStrategy";
-import { CreateSaleUseCase } from "../../application/use-cases/createSale.usecase";
-import { CreateRentalUseCase } from "../../application/use-cases/createRental.usecase";
-import { CreateReservationUseCase } from "../../application/use-cases/createReservation.usecase";
+import { CreateSaleUseCase } from "@/src/application/use-cases/sale/createSale.usecase";
+import { CreateRentalUseCase } from "@/src/application/use-cases/createRental.usecase"; 
+import { CreateReservationUseCase } from "@/src/application/use-cases/reservation/createReservation.usecase";
 import { ZustandSaleRepository } from "../stores-adapters/ZustandSaleRepository";
 import { ZustandInventoryRepository } from "../stores-adapters/ZustandInventoryRepository";
 import { ZustandReservationRepository } from "../stores-adapters/ZustandReservationRepository";
@@ -14,7 +14,7 @@ import { ZustandRentalRepository } from "../stores-adapters/ZustandRentalReposit
 import { ZustandGuaranteeRepository } from "../stores-adapters/ZustandGuaranteeRepository";
 import { CreateOperationUseCase } from "../../application/use-cases/createOperation.usecase";
 import { ProcessInitialPaymentUseCase } from "../../application/use-cases/processInitialPayment.usecase";
-import { AddClientCreditUseCase } from "../../application/use-cases/addClientCredit.usecase";
+import { AddClientCreditUseCase } from "@/src/application/use-cases/client/addClientCredit.usecase"; 
 import { RewardLoyaltyUseCase } from "../../application/use-cases/rewardLoyalty.usecase";
 import { ProcessReferralUseCase } from "../../application/use-cases/processReferral.usecase";
 import { ZustandOperationRepository } from "../stores-adapters/ZustandOperationRepository";
