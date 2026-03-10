@@ -67,7 +67,10 @@ export const FeaturesTable: React.FC<FeaturesTableProps> = ({
       cell: ({ row }) => {
         const plan = plans.find((p) => p.id === row.original.planId);
         return (
-          <Badge variant={plan?.isActive ? "success" : "secondary"}>
+          <Badge 
+            variant={plan?.isActive ? "default" : "secondary"}
+            className={plan?.isActive ? "bg-green-500 text-white hover:bg-green-600" : ""}
+          >
             {plan?.isActive ? "Activo" : "Inactivo"}
           </Badge>
         );

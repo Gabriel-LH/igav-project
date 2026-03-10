@@ -17,6 +17,9 @@ import { Plan } from "@/src/types/plan/planSchema";
 
 const duplicatePlanSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  sortOrder: z.number(),
+  isActive: z.boolean(),
+  currency: z.string(),
 });
 
 type DuplicatePlanForm = z.infer<typeof duplicatePlanSchema>;

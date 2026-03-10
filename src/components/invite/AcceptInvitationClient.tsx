@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { acceptInvitationAction } from "./actions";
+import { acceptInvitationAction } from "@/src/app/invite/[token]/actions";
 import { Building2, Shield, UserCheck } from "lucide-react";
 
 interface Props {

@@ -369,6 +369,7 @@ export type PayScheduleType = (typeof PayScheduleType)[keyof typeof PayScheduleT
 export const PlanFeatureKey = {
   sales: 'sales',
   rentals: 'rentals',
+  reservations: 'reservations',
   inventory: 'inventory',
   products: 'products',
   inventoryItems: 'inventoryItems',

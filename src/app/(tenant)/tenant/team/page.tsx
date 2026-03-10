@@ -11,6 +11,10 @@ export default async function TeamPage() {
   const membership = await requireTenantMembership();
   const tenantId = membership.tenantId;
 
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio para ver el equipo.");
+  }
+
   // Fetch in parallel
   const [members, invitations, branches, roles] = await Promise.all([
     getTenantMembersAction() as Promise<any[]>,

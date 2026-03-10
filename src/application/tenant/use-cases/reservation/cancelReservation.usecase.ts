@@ -1,6 +1,6 @@
-import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
-import { PaymentRepository } from "../../domain/repositories/PaymentRepository";
-import { OperationRepository } from "../../domain/repositories/OperationRepository";
+import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
+import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepository";
+import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
 
 export class CancelReservationUseCase {
   constructor(
@@ -26,7 +26,7 @@ export class CancelReservationUseCase {
     const payments = this.paymentRepo.getPaymentsByOperationId(
       reservation.operationId,
     );
-    let totalRefund = payments.reduce(
+    const totalRefund = payments.reduce(
       (acc, p) => acc + (p.direction === "in" ? p.amount : -p.amount),
       0,
     );

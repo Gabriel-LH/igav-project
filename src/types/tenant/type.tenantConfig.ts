@@ -46,6 +46,7 @@ export const tenantConfigSchema = z.object({
     requireClosingReport: z.boolean().default(true),
     allowNegativeCash: z.boolean().default(false),
   }),
+  defaultTransferTime: z.number().default(2),
   createdAt: z.date(),
 });
 

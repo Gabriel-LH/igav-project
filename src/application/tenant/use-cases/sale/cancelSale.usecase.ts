@@ -1,10 +1,10 @@
-import { SaleRepository } from "../../domain/repositories/SaleRepository";
-import { SaleReversalRepository } from "../../domain/repositories/SaleReversalRepository";
-import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
-import { PaymentRepository } from "../../domain/repositories/PaymentRepository";
-import { OperationRepository } from "../../domain/repositories/OperationRepository";
+import { SaleRepository } from "@/src/domain/tenant/repositories/SaleRepository";
+import { SaleReversalRepository } from "@/src/domain/tenant/repositories/SaleReversalRepository";
+import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
+import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepository";
+import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
 import { differenceInHours } from "date-fns";
-import { SaleReversal } from "../../types/sales/type.saleReversal";
+import { SaleReversal } from "@/src/types/sales/type.saleReversal";
 
 export interface CancelSaleInput {
   saleId: string;

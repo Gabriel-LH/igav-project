@@ -1,10 +1,10 @@
-import { SaleRepository } from "../../domain/repositories/SaleRepository";
-import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
-import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
-import { SaleDTO } from "../../../dtos/SaleDTO";
-import { SaleFromReservationDTO } from "../../../dtos/SaleFromReservationDTO";
-import { saleSchema } from "../../../../types/sales/type.sale";
-import { InventoryItemStatus } from "../../../../utils/status-type/InventoryItemStatusType";
+import { SaleRepository } from "@/src/domain/tenant/repositories/SaleRepository";
+import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
+import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
+import { SaleDTO } from "@/src/application/dtos/SaleDTO";
+import { SaleFromReservationDTO } from "@/src/application/dtos/SaleFromReservationDTO";
+import { saleSchema } from "@/src/types/sales/type.sale";
+import { InventoryItemStatus } from "@/src/utils/status-type/InventoryItemStatusType";
 
 export class CreateSaleUseCase {
   constructor(

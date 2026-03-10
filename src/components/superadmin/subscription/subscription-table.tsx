@@ -57,7 +57,6 @@ export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
   plans,
   onSelectSubscription,
 }) => {
-  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -72,16 +71,26 @@ export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "success" | "warning" | "destructive" | "secondary"
-    > = {
-      active: "success",
-      trial: "warning",
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      active: "default",
+      trial: "outline",
       past_due: "destructive",
       canceled: "secondary",
     };
-    return <Badge variant={variants[status] || "secondary"}>{status}</Badge>;
+
+    const colors: Record<string, string> = {
+      active: "bg-green-500 hover:bg-green-600 text-white",
+      trial: "border-orange-500 text-orange-500",
+    };
+
+    return (
+      <Badge
+        variant={variants[status] || "secondary"}
+        className={colors[status] || ""}
+      >
+        {status}
+      </Badge>
+    );
   };
 
   const formatPeriod = (start: Date, end: Date) => {

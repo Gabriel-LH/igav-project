@@ -22,17 +22,11 @@ import {
   Layers,
 } from "lucide-react";
 import Link from "next/link";
+import type { PlanWithFeatures } from "@/src/adapters/subscription-adapter";
 
-type PlanWithFeatures = {
-  id: string;
-  name: string;
-  description: string;
-  priceMonthly: number;
-  priceYearly: number;
-  modules: { mode: "all" | "sales_only" | "rentals_only" };
-  features: Record<string, boolean>;
-  limits: Record<string, number>;
-};
+interface PricingProps {
+  plans: PlanWithFeatures[];
+}
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-PE", {
@@ -46,225 +40,7 @@ const formatLimit = (limit: number) => {
   return limit === -1 ? "Ilimitado" : limit.toString();
 };
 
-const plans: PlanWithFeatures[] = [
-  // Sistema Completo
-  {
-    id: "all-starter",
-    name: "Starter",
-    description: "Para negocios que recién comienzan.",
-    priceMonthly: 9,
-    priceYearly: 90,
-    modules: { mode: "all" },
-    features: {
-      analytics: false,
-      promotions: false,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 2, branches: 1, products: 200, clients: 500, items: 200 },
-  },
-  {
-    id: "all-pro",
-    name: "Pro",
-    description: "Para negocios en crecimiento.",
-    priceMonthly: 29,
-    priceYearly: 290,
-    modules: { mode: "all" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: {
-      users: 5,
-      branches: 2,
-      products: 1000,
-      clients: 2000,
-      items: 1000,
-    },
-  },
-  {
-    id: "all-business",
-    name: "Business",
-    description: "Para empresas consolidadas.",
-    priceMonthly: 79,
-    priceYearly: 790,
-    modules: { mode: "all" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 15, branches: 5, products: -1, clients: -1, items: -1 },
-  },
-  {
-    id: "all-enterprise",
-    name: "Enterprise",
-    description: "Para grandes corporaciones.",
-    priceMonthly: 199,
-    priceYearly: 1990,
-    modules: { mode: "all" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: true,
-      loyalty: true,
-    },
-    limits: { users: -1, branches: -1, products: -1, clients: -1, items: -1 },
-  },
-
-  // Solo Alquiler
-  {
-    id: "rentals-starter",
-    name: "Starter",
-    description: "Para negocios que recién comienzan.",
-    priceMonthly: 5,
-    priceYearly: 50,
-    modules: { mode: "rentals_only" },
-    features: {
-      analytics: false,
-      promotions: false,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 2, branches: 1, products: 200, clients: 500, items: 200 },
-  },
-  {
-    id: "rentals-pro",
-    name: "Pro",
-    description: "Para negocios en crecimiento.",
-    priceMonthly: 19,
-    priceYearly: 190,
-    modules: { mode: "rentals_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: {
-      users: 5,
-      branches: 2,
-      products: 1000,
-      clients: 2000,
-      items: 1000,
-    },
-  },
-  {
-    id: "rentals-business",
-    name: "Business",
-    description: "Para empresas consolidadas.",
-    priceMonthly: 49,
-    priceYearly: 490,
-    modules: { mode: "rentals_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 15, branches: 5, products: -1, clients: -1, items: -1 },
-  },
-  {
-    id: "rentals-enterprise",
-    name: "Enterprise",
-    description: "Para grandes corporaciones.",
-    priceMonthly: 99,
-    priceYearly: 990,
-    modules: { mode: "rentals_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: true,
-      loyalty: true,
-    },
-    limits: { users: -1, branches: -1, products: -1, clients: -1, items: -1 },
-  },
-
-  // Solo Ventas
-  {
-    id: "sales-starter",
-    name: "Starter",
-    description: "Para negocios que recién comienzan.",
-    priceMonthly: 5,
-    priceYearly: 50,
-    modules: { mode: "sales_only" },
-    features: {
-      analytics: false,
-      promotions: false,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 2, branches: 1, products: 200, clients: 500, items: 200 },
-  },
-  {
-    id: "sales-pro",
-    name: "Pro",
-    description: "Para negocios en crecimiento.",
-    priceMonthly: 19,
-    priceYearly: 190,
-    modules: { mode: "sales_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: false,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: {
-      users: 5,
-      branches: 2,
-      products: 1000,
-      clients: 2000,
-      items: 1000,
-    },
-  },
-  {
-    id: "sales-business",
-    name: "Business",
-    description: "Para empresas consolidadas.",
-    priceMonthly: 49,
-    priceYearly: 490,
-    modules: { mode: "sales_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: false,
-      loyalty: false,
-    },
-    limits: { users: 15, branches: 5, products: -1, clients: -1, items: -1 },
-  },
-  {
-    id: "sales-enterprise",
-    name: "Enterprise",
-    description: "Para grandes corporaciones.",
-    priceMonthly: 99,
-    priceYearly: 990,
-    modules: { mode: "sales_only" },
-    features: {
-      analytics: true,
-      promotions: true,
-      referrals: true,
-      rewards: true,
-      loyalty: true,
-    },
-    limits: { users: -1, branches: -1, products: -1, clients: -1, items: -1 },
-  },
-];
-
-export function Pricing() {
+export function Pricing({ plans }: PricingProps) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly",
   );
@@ -276,7 +52,7 @@ export function Pricing() {
     analytics: "Analytics",
     promotions: "Promociones",
     referrals: "Referidos",
-    rewards: "Recompensas",
+    referralRewards: "Recompensas",
     loyalty: "Lealtad",
   };
 
@@ -285,11 +61,11 @@ export function Pricing() {
     branches: "Sucursales",
     products: "Productos",
     clients: "Clientes",
-    items: "Items",
+    inventoryItems: "Items",
   };
 
   const getPrice = (plan: PlanWithFeatures) => {
-    return billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly;
+    return billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly || plan.priceMonthly * 10;
   };
 
   const getSavings = (plan: PlanWithFeatures) => {
@@ -501,7 +277,7 @@ export function Pricing() {
                             {limitLabels[key]}
                           </span>
                           <span className="font-semibold">
-                            {formatLimit(limit)}
+                            {formatLimit(Number(limit))}
                           </span>
                         </div>
                       ))}

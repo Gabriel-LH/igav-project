@@ -25,8 +25,9 @@ import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 
 import { PriceBreakdownBase } from "@/src/components/tenant/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "./CashPaymentSummary";
+import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
-import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
+// ... placeholder, will search first ...
 import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";

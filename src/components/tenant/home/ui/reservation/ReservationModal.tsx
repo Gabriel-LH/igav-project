@@ -13,7 +13,7 @@ import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
-import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
+import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";

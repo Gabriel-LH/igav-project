@@ -19,7 +19,7 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
-import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
+import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";

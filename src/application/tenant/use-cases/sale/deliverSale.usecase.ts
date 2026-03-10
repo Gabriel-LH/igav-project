@@ -1,7 +1,7 @@
-import { SaleRepository } from "../../domain/repositories/SaleRepository";
-import { InventoryRepository } from "../../domain/repositories/InventoryRepository";
-import { ReservationRepository } from "../../domain/repositories/ReservationRepository";
-import { Sale } from "../../types/sales/type.sale";
+import { SaleRepository } from "@/src/domain/tenant/repositories/SaleRepository";
+import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
+import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
+import { Sale } from "@/src/types/sales/type.sale";
 
 export class DeliverSaleUseCase {
   constructor(

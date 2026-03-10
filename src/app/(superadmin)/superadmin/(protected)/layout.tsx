@@ -5,6 +5,8 @@ import { auth } from "@/src/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { type User as AppUser } from "@/src/types/user/type.user";
+
 export default async function SuperAdminLayout({
   children,
 }: {
@@ -18,6 +20,22 @@ export default async function SuperAdminLayout({
     redirect("/auth/login");
   }
 
+  const nameParts = session.user.name.split(" ");
+  const firstName = nameParts[0] || "Super";
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Admin";
+
+  const mappedUser: AppUser = {
+    id: session.user.id,
+    userName: session.user.name,
+    firstName: firstName,
+    lastName: lastName,
+    email: session.user.email,
+    status: "active",
+    createdAt: session.user.createdAt,
+    updatedAt: session.user.updatedAt,
+    image: session.user.image || undefined,
+  };
+
   return (
     <SidebarProvider
       style={
@@ -27,7 +45,7 @@ export default async function SuperAdminLayout({
         } as React.CSSProperties
       }
     >
-      <SuperAdminAppSidebar user={session.user} variant="inset" />
+      <SuperAdminAppSidebar user={mappedUser} variant="inset" />
 
       <SidebarInset>
         <header className="sticky top-0 z-10 w-full border-b rounded-t-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">

@@ -34,9 +34,9 @@ const createPlanSchema = z.object({
     .number()
     .min(0, "Los días de prueba deben ser mayor o igual a 0")
     .optional(),
-  sortOrder: z.number().default(0),
-  isActive: z.boolean().default(true),
-  currency: z.string().default("PEN"),
+  sortOrder: z.number(),
+  isActive: z.boolean(),
+  currency: z.string(),
 });
 
 type CreatePlanForm = z.infer<typeof createPlanSchema>;

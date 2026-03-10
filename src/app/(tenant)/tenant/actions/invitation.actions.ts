@@ -20,6 +20,10 @@ export async function createInvitationAction(input: {
 
   const email = input.email.trim().toLowerCase();
 
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio.");
+  }
+
   // Avoid duplicate pending invitations
   const existing = await prisma.invitation.findFirst({
     where: { tenantId, email, status: "pending" },
@@ -53,7 +57,7 @@ export async function createInvitationAction(input: {
       email,
       roleId: input.roleId,
       branchId: input.branchId,
-      invitedById: membership.userId,
+      invitedById: membership.user.id,
       token,
       expiresAt,
     },
@@ -76,6 +80,10 @@ export async function getTenantInvitationsAction() {
   const membership = await requireTenantMembership();
   const tenantId = membership.tenantId;
 
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio.");
+  }
+
   return prisma.invitation.findMany({
     where: { tenantId },
     orderBy: { createdAt: "desc" },
@@ -94,6 +102,10 @@ export async function revokeInvitationAction(invitationId: string) {
   const membership = await requireTenantMembership();
   const tenantId = membership.tenantId;
 
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio.");
+  }
+
   await prisma.invitation.updateMany({
     where: { id: invitationId, tenantId, status: "pending" },
     data: { status: "revoked" },
@@ -108,6 +120,10 @@ export async function revokeInvitationAction(invitationId: string) {
 export async function getTenantMembersAction() {
   const membership = await requireTenantMembership();
   const tenantId = membership.tenantId;
+
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio.");
+  }
 
   return prisma.userTenantMembership.findMany({
     where: { tenantId },

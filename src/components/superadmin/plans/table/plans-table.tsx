@@ -127,7 +127,10 @@ export const PlansTable: React.FC<PlansTableProps> = ({
       cell: ({ row }) => {
         const isActive = row.original.isActive;
         return (
-          <Badge variant={isActive ? "success" : "secondary"}>
+          <Badge 
+            variant={isActive ? "default" : "secondary"}
+            className={isActive ? "bg-green-500 hover:bg-green-600 text-white" : ""}
+          >
             {isActive ? "Active" : "Inactive"}
           </Badge>
         );

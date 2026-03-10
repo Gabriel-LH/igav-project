@@ -8,6 +8,7 @@ export const userSchema = z.object({
   email: z.string(),
   phone: z.string().optional(),
   status: z.enum(["active", "inactive", "suspended", "blocked"]),
+  role: z.string().optional(),
   image: z.string().optional(),
   createdAt: z.date(),
   createdBy: z.string().optional(),

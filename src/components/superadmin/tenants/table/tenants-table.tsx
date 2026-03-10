@@ -35,7 +35,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
-import { Input } from '@/components/input';
+import { Input } from "@/components/input";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter,
+  DialogDescription
+} from "@/components/ui/dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { assignPlan } from "@/src/app/(superadmin)/superadmin/actions/tenant.actions";
+import { toast } from "sonner";
+import { BillingCycle } from "@prisma/client";
 
 interface TenantsTableProps {
   tenants: Tenant[];
@@ -51,6 +69,11 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Obtener suscripción activa de un tenant
   const getTenantSubscription = (tenantId: string) => {
@@ -63,7 +86,6 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
     if (!subscription) return null;
     return plans.find(p => p.id === subscription.planId);
   };
-
   const columns: ColumnDef<Tenant>[] = [
     {
       accessorKey: 'name',
@@ -108,8 +130,13 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
       header: 'Status',
       cell: ({ row }) => {
         const status = row.original.status;
-        const variant = status === 'active' ? 'success' : 'destructive';
-        return <Badge variant={variant}>{status}</Badge>;
+        const variant = status === "active" ? "default" : "destructive";
+        const className = status === "active" ? "bg-green-500 hover:bg-green-600 text-white" : "";
+        return (
+          <Badge variant={variant} className={className}>
+            {status}
+          </Badge>
+        );
       },
     },
     {
@@ -149,9 +176,8 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
       id: 'actions',
       cell: ({ row }) => {
         const tenant = row.original;
-        const plan = getTenantPlan(tenant.id);
-        const subscription = getTenantSubscription(tenant.id);
-
+        // getTenantPlan and getTenantSubscription are used in other columns, 
+        // they are already defined in the component scope.
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -171,9 +197,18 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
                 Editar
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-yellow-600">
+              <DropdownMenuItem 
+                className="text-yellow-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedTenantId(tenant.id);
+                  const activePlan = plans.find(p => p.id === tenant.currentSubscriptionId);
+                  if (activePlan) setSelectedPlanId(activePlan.id);
+                  setIsAssignDialogOpen(true);
+                }}
+              >
                 <Repeat className="mr-2 h-4 w-4" />
-                Cambiar plan
+                {tenant.currentSubscriptionId ? 'Cambiar plan' : 'Asignar plan'}
               </DropdownMenuItem>
               <DropdownMenuItem className="text-red-600">
                 <Ban className="mr-2 h-4 w-4" />
@@ -282,6 +317,73 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+
+      <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Asignar Plan</DialogTitle>
+            <DialogDescription>
+              Selecciona un plan y el ciclo de facturación para el tenant.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Plan</label>
+              <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un plan" />
+                </SelectTrigger>
+                <SelectContent>
+                  {plans.map((plan) => (
+                    <SelectItem key={plan.id} value={plan.id}>
+                      {plan.name} - S/ {Number(plan.priceMonthly).toFixed(2)} / mes
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Ciclo de Facturación</label>
+              <Select 
+                value={billingCycle} 
+                onValueChange={(val) => setBillingCycle(val as BillingCycle)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona ciclo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Mensual</SelectItem>
+                  <SelectItem value="yearly">Anual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={async () => {
+                if (!selectedTenantId || !selectedPlanId) return;
+                setIsSubmitting(true);
+                try {
+                  await assignPlan(selectedTenantId, selectedPlanId, billingCycle as BillingCycle);
+                  toast.success("Plan asignado correctamente");
+                  setIsAssignDialogOpen(false);
+                } catch (error) {
+                  toast.error("Error al asignar plan");
+                  console.error(error);
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}
+              disabled={isSubmitting || !selectedPlanId}
+            >
+              {isSubmitting ? "Asignando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

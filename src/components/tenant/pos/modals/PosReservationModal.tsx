@@ -18,7 +18,7 @@ import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
-import { makeProcessTransaction } from "@/src/infrastructure/factories/processTransaction.factory";
+import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 import { formatCurrency } from "@/src/utils/currency-format";

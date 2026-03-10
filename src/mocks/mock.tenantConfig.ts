@@ -35,6 +35,7 @@ export const MOCK_TENANT_CONFIG: TenantConfig = {
     requireClosingReport: true,
     allowNegativeCash: false,
   },
+  defaultTransferTime: 2,
   createdAt: new Date("2024-01-01"),
 };
 

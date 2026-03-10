@@ -4,14 +4,20 @@ import { Features } from "./feature";
 import { Pricing } from "./pricing";
 import { Footer } from "./footer";
 
-export function LandingModule() {
+import type { PlanWithFeatures } from "@/src/adapters/subscription-adapter";
+
+interface LandingModuleProps {
+  plans: PlanWithFeatures[];
+}
+
+export function LandingModule({ plans }: LandingModuleProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Navbar />
       <main className="flex-1">
         <Hero />
         <Features />
-        <Pricing />
+        <Pricing plans={plans} />
       </main>
       <Footer />
     </div>

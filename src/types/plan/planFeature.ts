@@ -4,6 +4,7 @@ export const PLAN_FEATURE_KEYS = [
   // Operations
   "sales",
   "rentals",
+  "reservations",
   // Inventory
   "inventory",
   "products",
