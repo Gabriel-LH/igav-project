@@ -10,6 +10,7 @@ export interface PlanWithFeatures {
   description?: string;
   priceMonthly: number;
   priceYearly?: number;
+  trialDays?: number;
   features: {
     analytics: boolean;
     promotions: boolean;

@@ -544,10 +544,14 @@ async function seedPlans() {
         });
         seeded++;
       }
-    } catch (err) {
-      console.warn(`  ⚠️  Plan ${plan.id}:`, (err as Error).message.split("\n")[0]);
+      } catch (err) {
+        const error = err as Error;
+        console.warn(`  ⚠️  Plan ${plan.id}:`, error.message || error);
+        if (error.stack) {
+          console.warn(error.stack);
+        }
+      }
     }
-  }
 
   console.log(`  ✅ ${seeded} plans created, ${updated} plans updated (${plans.length} total)`);
 }

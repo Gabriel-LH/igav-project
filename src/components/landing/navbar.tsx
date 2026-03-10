@@ -28,10 +28,10 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <ModeToggle />
           <div className="hidden sm:flex gap-2">
-            <Button variant="ghost">
+            <Button variant="ghost" asChild>
               <Link href="/auth/login">Iniciar Sesión</Link>
             </Button>
-            <Button>
+            <Button asChild>
               <Link href="/#pricing">Empezar Gratis</Link>
             </Button>
           </div>

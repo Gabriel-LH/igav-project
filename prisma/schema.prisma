@@ -122,8 +122,8 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   status        StatusUser  @default(active)
-  createdBy     String
-  updatedBy     String
+  createdBy     String      @default("system")
+  updatedBy     String      @default("system")
   deletedAt     DateTime?
   deletedBy     String?
   sessions      Session[]
@@ -1006,7 +1006,7 @@ model PayrollPolicy {
   updatedAt          DateTime @updatedAt
   updatedBy          String
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("payroll_policy")
 }
@@ -1074,7 +1074,7 @@ model Role {
   updatedAt   DateTime @updatedAt
 
   // Relaciones
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id])
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   permissions             RolePermission[]
   userBranchAccesses      UserBranchAccess[]
   userRoleBranchHistories UserRoleBranchHistory[]
@@ -2023,7 +2023,7 @@ model Shift {
   createdAt        DateTime    @default(now())
   createdBy        String?
 
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id])
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   userAttendances         UserAttendance[]
   userRoleBranchHistories UserRoleBranchHistory[]
   userShiftAssignments    UserShiftAssignment[]
@@ -2127,7 +2127,7 @@ model TenantConfig {
   updatedAt DateTime @updatedAt
 
   // Relación
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("tenant_configs")
 }
@@ -2167,7 +2167,7 @@ model TenantSubscription {
   createdAt DateTime @default(now())
   createdBy String?
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plan   Plan   @relation(fields: [planId], references: [id])
 
   @@map("tenant_subscriptions")
@@ -2185,7 +2185,7 @@ model TenantModule {
   status    TenantModuleStatus
   staterdAt DateTime
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   module Module @relation(fields: [moduleId], references: [id])
 }
 
@@ -2214,7 +2214,7 @@ model TenantPolicy {
   security     Json // { requirePinForHighDiscount: true, ... }
 
   // Relaciones
-  tenant                Tenant                @relation(fields: [tenantId], references: [id])
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   updatedByUser         User                  @relation(fields: [updatedBy], references: [id])
   tenantPolicyHistories TenantPolicyHistory[]
 
@@ -2300,7 +2300,7 @@ model UserTenantMembership {
   updatedAt       DateTime
 
   user                    User                    @relation(fields: [userId], references: [id])
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id])
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   role                    Role                    @relation(fields: [roleId], references: [id])
   branch                  Branch                  @relation(fields: [defaultBranchId], references: [id])
   userRoleBranchHistories UserRoleBranchHistory[]
@@ -2335,7 +2335,7 @@ model Transfer {
   createdAt           DateTime
   createdBy           String
 
-  tenant            Tenant         @relation(fields: [tenantId], references: [id])
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   branchOrigin      Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
   branchDestination Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
   transferItems     TransferItem[]
@@ -2374,7 +2374,7 @@ model TransferRoute {
 
   createdAt DateTime
 
-  tenant            Tenant @relation(fields: [tenantId], references: [id])
+  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   originBranch      Branch @relation("OriginRoutes", fields: [originBranchId], references: [id])
   destinationBranch Branch @relation("DestinationRoutes", fields: [destinationBranchId], references: [id])
 
@@ -2418,7 +2418,7 @@ model InventoryMovement {
   createdBy DateTime
   createdAt DateTime
 
-  tenant  Tenant          @relation(fields: [tenantId], references: [id])
+  tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   branch  Branch          @relation(fields: [branchId], references: [id])
   product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])

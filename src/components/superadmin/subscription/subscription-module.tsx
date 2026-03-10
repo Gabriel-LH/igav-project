@@ -8,6 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { TenantSubscription } from "@/src/types/tenant/tenantSuscription";
+import { Button } from "@/components/ui/button";
+import { CreateSubscriptionModal } from "./ui/modal/CreateSubscriptionModal";
+import { ChangeSubscriptionPlanModal } from "./ui/modal/ChangeSubscriptionPlanModal";
+import { useRouter } from "next/navigation";
 
 import { Plan } from "@/src/types/plan/planSchema";
 
@@ -22,9 +26,14 @@ export function SubscriptionModule({
   initialSubscriptions,
   initialTenants,
 }: SubscriptionModuleProps) {
+  const router = useRouter();
   const [selectedSubscription, setSelectedSubscription] =
     useState<TenantSubscription | null>(null);
+  const [changePlanSubscription, setChangePlanSubscription] =
+    useState<TenantSubscription | null>(null);
   const [activeTab, setActiveTab] = useState("list");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isChangePlanOpen, setIsChangePlanOpen] = useState(false);
 
   // Estadísticas
   const activeSubscriptions = initialSubscriptions.filter(
@@ -65,6 +74,9 @@ export function SubscriptionModule({
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Suscripciones</h2>
+          <Button onClick={() => setIsCreateOpen(true)}>
+            Nueva Suscripcion
+          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -162,6 +174,10 @@ export function SubscriptionModule({
                     setSelectedSubscription(subscription);
                     setActiveTab("details");
                   }}
+                  onChangePlan={(subscription) => {
+                    setChangePlanSubscription(subscription);
+                    setIsChangePlanOpen(true);
+                  }}
                 />
               </CardContent>
             </Card>
@@ -182,6 +198,28 @@ export function SubscriptionModule({
           </TabsContent>
         </Tabs>
       </div>
+
+      <CreateSubscriptionModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        tenants={initialTenants}
+        plans={initialPlans}
+        onSuccess={() => {
+          setActiveTab("list");
+          router.refresh();
+        }}
+      />
+
+      <ChangeSubscriptionPlanModal
+        open={isChangePlanOpen}
+        onOpenChange={setIsChangePlanOpen}
+        subscription={changePlanSubscription}
+        plans={initialPlans}
+        onSuccess={() => {
+          setActiveTab("list");
+          router.refresh();
+        }}
+      />
     </>
   );
 }

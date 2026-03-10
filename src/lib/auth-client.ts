@@ -51,8 +51,6 @@ export const signUpEmail = async (credentials: {
   });
 
   if (error) throw error;
-
-  await sendVerificationOtp(credentials.email);
 };
 
 export const sendVerificationOtp = async (email: string) => {

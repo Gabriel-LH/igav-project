@@ -32,9 +32,12 @@ export async function getActivePlanFeaturesAction(): Promise<ActivePlanFeatures>
 
     const tenantId = membership.tenantId;
 
-    // Find the active subscription for this tenant
+    // Find the active or trial subscription for this tenant
     const subscription = await prisma.tenantSubscription.findFirst({
-      where: { tenantId, status: "active" },
+      where: {
+        tenantId,
+        status: { in: ["active", "trial"] },
+      },
       select: { planId: true },
     });
 

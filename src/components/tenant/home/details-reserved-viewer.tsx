@@ -24,7 +24,6 @@ import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/badge";
 import { reservationSchema } from "@/src/types/reservation/type.reservation";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { Payment } from "@/src/types/payments/type.payments";

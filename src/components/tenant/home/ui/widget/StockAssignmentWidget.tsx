@@ -19,7 +19,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { OpType } from "@/src/utils/reservation/checkAvailability";
 import { toast } from "sonner";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 
 interface StockAssignmentWidgetProps {
   productId: string;

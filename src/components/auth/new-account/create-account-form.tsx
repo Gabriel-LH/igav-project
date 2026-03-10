@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { LoaderIcon } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, LoaderIcon } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   LockPasswordIcon,
@@ -23,18 +23,35 @@ import {
   City03Icon,
   StoreLocation02Icon,
   SmartPhone03Icon,
+  World,
+  Network,
+  InternetIcon,
 } from "@hugeicons/core-free-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // import { signUpEmail } from "@/src/lib/auth-client";
 import { toast } from "sonner";
 // import { useRegisterStore } from "@/src/store/login/login-store";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
+import {
+  signInEmail,
+  signUpEmail,
+  sendVerificationOtp,
+} from "@/src/lib/auth-client";
+import { useVerifyStore } from "@/src/store/tenant/verify-email/verify-store";
+import { useRegisterStore } from "@/src/store/tenant/login/login-store";
+import {
+  checkTenantSlugAvailabilityPublicAction,
+  createTenantFromSignupAction,
+  markUserEmailVerifiedAction,
+} from "@/src/app/(auth)/auth/new-account/actions";
 // import { useVerifyStore } from "@/src/store/verify-email/verify-store";
 
-export function SignupForm({ ...props }: React.ComponentProps<"div">) {
+export function SignupForm() {
+  type SlugStatus = "idle" | "checking" | "available" | "taken" | "error";
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registered, setRegistered] = useState(false);
@@ -43,57 +60,179 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
   const [city, setCity] = useState("");
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugStatus, setSlugStatus] = useState<SlugStatus>("idle");
+  const [slugTouched, setSlugTouched] = useState(false);
 
   const [isActive, setIsActive] = useState("account");
 
   const router = useRouter();
+  const otpEnabled = process.env.NEXT_PUBLIC_ENABLE_EMAIL_OTP === "true";
+  const searchParams = useSearchParams();
+  const selectedPlanId = searchParams.get("planId") || undefined;
+  const selectedPlanName = searchParams.get("planName") || undefined;
+  const selectedTrialDays = Number(searchParams.get("trialDays") || "7");
 
   const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  //   const registerStore = useRegisterStore();
+  const registerStore = useRegisterStore();
 
-  //   const emailStore = useVerifyStore();
+  const emailStore = useVerifyStore();
+
+  const slugify = (value: string) =>
+    value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/[-\s]+/g, "_")
+      .replace(/[^a-z0-9_]/g, "")
+      .replace(/_+/g, "_")
+      .replace(/^_+|_+$/g, "");
+
+  const suggestedSlug = useMemo(() => slugify(branchName), [branchName]);
+
+  useEffect(() => {
+    const normalized = slugify(slug);
+    if (!normalized) {
+      setSlugStatus("idle");
+      return;
+    }
+    if (!slugTouched) return;
+
+    setSlugStatus("checking");
+    const timeoutId = setTimeout(async () => {
+      try {
+        const result =
+          await checkTenantSlugAvailabilityPublicAction(normalized);
+        setSlugStatus(result.available ? "available" : "taken");
+      } catch {
+        setSlugStatus("error");
+      }
+    }, 400);
+
+    return () => clearTimeout(timeoutId);
+  }, [slug, slugTouched]);
+
+  useEffect(() => {
+    if (!slugTouched) {
+      setSlug(suggestedSlug || "");
+      if (!suggestedSlug) setSlugStatus("idle");
+    }
+  }, [suggestedSlug, slugTouched]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return; // evita doble click
 
-    setIsLoading(true);
+    const normalizedSlug = slugify(slug);
+    if (!normalizedSlug) {
+      toast.error("El slug es requerido.");
+      return;
+    }
+
+    if (!selectedPlanId) {
+      toast.error("Debes seleccionar un plan para continuar.");
+      return;
+    }
 
     // Validación rápida en cliente
     if (password.length < 8) {
       toast.error("La contraseña debe tener al menos 8 caracteres", {
         style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
       });
-      setIsLoading(false);
       return;
-    } else if (!pattern.test(email)) {
+    }
+    if (!pattern.test(email)) {
       toast.error("Combina entre simbolos, letras y números", {
         style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
       });
-      setIsLoading(false);
+      return;
+    }
+    if (!branchName.trim() || !city.trim() || !location.trim()) {
+      toast.error("Completa los datos de la sucursal.");
       return;
     }
 
-    //     try {
-    //       await signUpEmail({ name: name.trim(), email: email.toLowerCase().trim(), password });
-    //       registerStore.setCredentials(email.toLowerCase().trim(), password);
-    //       emailStore.setEmailVerify(email.toLowerCase().trim());
-    //       setRegistered(true);
-    //     } catch (err) {
-    //       const error = err as Error; // Cast 'err' to Error type
+    setIsLoading(true);
 
-    //       const message =
-    //         error.message.includes("already exists")
-    //           ? "Este correo ya está registrado"
-    //           : "Error al crear la cuenta";
+    try {
+      const availability =
+        await checkTenantSlugAvailabilityPublicAction(normalizedSlug);
+      if (!availability.available) {
+        setSlugStatus("taken");
+        toast.error("El slug ya existe. Elige otro.");
+        return;
+      }
 
-    //       toast.error(message, {
-    //         style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
-    //       });
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   };
+      const ownerName = `${name} ${lastName}`.trim();
+      const tenantName = branchName.trim() || ownerName || name.trim();
+
+      await signUpEmail({
+        name: ownerName || name.trim(),
+        email: email.toLowerCase().trim(),
+        password,
+      });
+
+      if (!otpEnabled) {
+        await markUserEmailVerifiedAction(email.toLowerCase().trim());
+        await createTenantFromSignupAction({
+          tenantName,
+          slug: normalizedSlug,
+          ownerName: ownerName || name.trim(),
+          ownerEmail: email.toLowerCase().trim(),
+          branchName: branchName.trim(),
+          city: city.trim(),
+          address: location.trim(),
+          phone: phone.trim(),
+          planId: selectedPlanId,
+          trialDays: Number.isFinite(selectedTrialDays)
+            ? selectedTrialDays
+            : undefined,
+        });
+
+        const { error } = await signInEmail({
+          email: email.toLowerCase().trim(),
+          password,
+          callbackURL: "/tenant/home",
+        });
+        if (error) throw error;
+
+        router.replace("/tenant/home");
+        router.refresh();
+        return;
+      }
+
+      await sendVerificationOtp(email.toLowerCase().trim());
+
+      registerStore.setCredentials(email.toLowerCase().trim(), password);
+      registerStore.setPendingTenant({
+        tenantName,
+        slug: normalizedSlug,
+        ownerName: ownerName || name.trim(),
+        ownerEmail: email.toLowerCase().trim(),
+        branchName: branchName.trim(),
+        city: city.trim(),
+        address: location.trim(),
+        phone: phone.trim(),
+        planId: selectedPlanId,
+        trialDays: Number.isFinite(selectedTrialDays)
+          ? selectedTrialDays
+          : undefined,
+      });
+      emailStore.setEmailVerify(email.toLowerCase().trim());
+      setRegistered(true);
+    } catch (err) {
+      const error = err as Error;
+      const message = error.message.includes("already exists")
+        ? "Este correo ya está registrado"
+        : "Error al crear la cuenta";
+
+      toast.error(message, {
+        style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -112,6 +251,16 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
           <span className=" text-slate-400">
             Únete para empezar a gestionar.
           </span>
+          {selectedPlanId ? (
+            <span className="text-sm mt-2 text-green-700">
+              Plan seleccionado{selectedPlanName ? `: ${selectedPlanName}` : ""}{" "}
+              — Prueba gratis de {selectedTrialDays || 7} días.
+            </span>
+          ) : (
+            <span className="text-sm mt-2 text-red-600">
+              Selecciona un plan para continuar.
+            </span>
+          )}
         </div>
 
         <div>
@@ -129,9 +278,9 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
               </TabsList>
             </div>
 
-            <FieldGroup>
-              <TabsContent value="bussines">
-                <Field>
+            <div className="flex flex-col gap-4">
+              <TabsContent className="flex flex-col gap-3" value="bussines">
+                <div>
                   <FieldLabel htmlFor="branchName">
                     Nombre de la sucursal/negocio
                   </FieldLabel>
@@ -151,9 +300,71 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 "
                     />
                   </div>
-                </Field>
+                </div>
 
-                <Field>
+                <div>
+                  <FieldLabel htmlFor="slug">
+                    Slug sugerido (editable)
+                  </FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="slug"
+                      name="slug"
+                      required
+                      placeholder="la_poderosa"
+                      value={slug}
+                      className={
+                        slugStatus === "taken" || slugStatus === "error"
+                          ? "border-red-500 pl-10 focus-visible:ring-red-500"
+                          : slugStatus === "available"
+                            ? "border-green-600 pl-10 focus-visible:ring-green-600"
+                            : "pl-10"
+                      }
+                      onChange={(e) => {
+                        setSlugTouched(true);
+                        setSlug(e.target.value);
+                      }}
+                      onBlur={() => {
+                        if (slug) setSlug(slugify(slug));
+                      }}
+                    />
+                    <HugeiconsIcon
+                      icon={InternetIcon}
+                      strokeWidth={2}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 "
+                    />
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    Debe ser único. Solo letras, números y "_".
+                  </p>
+                  {slugStatus === "checking" && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Validando slug...
+                    </p>
+                  )}
+                  {slugStatus === "available" && (
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Slug disponible.
+                    </p>
+                  )}
+                  {slugStatus === "taken" && (
+                    <p className="text-xs text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      Slug no disponible.
+                    </p>
+                  )}
+                  {slugStatus === "error" && (
+                    <p className="text-xs text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      No se pudo validar el slug.
+                    </p>
+                  )}
+                </div>
+
+                <div>
                   <FieldLabel htmlFor="city">Ciudad</FieldLabel>
                   <div className="relative">
                     <Input
@@ -171,10 +382,10 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 "
                     />
                   </div>
-                </Field>
+                </div>
 
                 {/* === CAMPO: CORREO ELECTRÓNICO === */}
-                <Field>
+                <div>
                   <FieldLabel htmlFor="location">Ubicación</FieldLabel>
                   <div className="relative">
                     <Input
@@ -192,9 +403,9 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
                     />
                   </div>
-                </Field>
+                </div>
 
-                <Field>
+                <div>
                   <FieldLabel htmlFor="phone">Telefono</FieldLabel>
                   <div className="relative">
                     <Input
@@ -212,11 +423,11 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
                     />
                   </div>
-                </Field>
+                </div>
               </TabsContent>
 
-              <TabsContent value="account">
-                <Field>
+              <TabsContent className="flex flex-col gap-3" value="account">
+                <div>
                   <FieldLabel htmlFor="name">Nombre completo</FieldLabel>
                   <div className="relative">
                     <Input
@@ -234,16 +445,16 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 "
                     />
                   </div>
-                </Field>
+                </div>
 
-                <Field>
+                <div>
                   <FieldLabel htmlFor="lastName">Apellido completo</FieldLabel>
                   <div className="relative">
                     <Input
                       id="lastName"
                       type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       placeholder="Ingrese sus apellido"
                       required
                       className="pl-10 text-sm"
@@ -254,10 +465,10 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 "
                     />
                   </div>
-                </Field>
+                </div>
 
                 {/* === CAMPO: CORREO ELECTRÓNICO === */}
-                <Field>
+                <div>
                   <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
                   <div className="relative">
                     <Input
@@ -275,9 +486,9 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
                     />
                   </div>
-                </Field>
+                </div>
 
-                <Field>
+                <div className="flex flex-col">
                   <FieldLabel htmlFor="confirm-password">Contraseña</FieldLabel>
                   <div className="relative">
                     <Input
@@ -314,7 +525,7 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                       )}
                     </button>
                   </div>
-                </Field>
+                </div>
               </TabsContent>
 
               <Button type="submit" disabled={isLoading}>
@@ -343,7 +554,7 @@ export function SignupForm({ ...props }: React.ComponentProps<"div">) {
                   Ingresar
                 </Link>
               </FieldDescription>
-            </FieldGroup>
+            </div>
           </Tabs>
         </div>
       </div>

@@ -8,15 +8,7 @@ import { AvailablePlansTab } from "./tabs/available-plan-tab";
 import { UsageLimitsTab } from "./tabs/usage-limits-tab";
 import { ChangePlanModal } from "./modal/ChangePlanModal";
 import { CancelSubscriptionModal } from "./modal/CancelSubscriptionModal";
-import { PLANS_MOCK } from "@/src/mocks/mock.plans";
-import { PLAN_FEATURES_MOCK } from "@/src/mocks/mock.planFeature";
-import { PLAN_LIMITS_MOCK } from "@/src/mocks/mock.planLimit";
-import { TENTANT_SUBSCRIPTIONS_MOCK } from "@/src/mocks/mock.tenantSuscription";
-import { PLAN_MODULES_MOCK } from "@/src/mocks/mock.planModules";
-import {
-  mapPlansWithFeatures,
-  getCurrentUsage,
-} from "@/src/adapters/subscription-adapter";
+import type { PlanWithFeatures } from "@/src/adapters/subscription-adapter";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   DashboardSpeed02Icon,
@@ -26,33 +18,42 @@ import {
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useScrollableTabs } from "@/src/utils/scroll/handleTabChange";
+import { TenantSubscription } from "@/src/types/tenant/tenantSuscription";
+import {
+  TenantSubscriptionUsage,
+  changeTenantPlanAction,
+} from "@/src/app/(tenant)/tenant/actions/subscription.actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export function SubscriptionLayout() {
+interface SubscriptionLayoutProps {
+  subscription: TenantSubscription | null;
+  plans: PlanWithFeatures[];
+  currentUsage: TenantSubscriptionUsage | null;
+  hasPaymentMethod?: boolean;
+}
+
+export function SubscriptionLayout({
+  subscription,
+  plans,
+  currentUsage,
+  hasPaymentMethod = false,
+}: SubscriptionLayoutProps) {
   const [activeTab, setActiveTab] = useState("current");
-  const [subscription] = useState(TENTANT_SUBSCRIPTIONS_MOCK[0]);
   const [showChangePlan, setShowChangePlan] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [isChangingPlan, setIsChangingPlan] = useState(false);
+
+  const router = useRouter();
 
   const isMobile = useIsMobile();
 
   // Obtener el plan actual
-  const currentPlan = useMemo(
-    () => PLANS_MOCK.find((p) => p.id === subscription.planId),
-    [subscription.planId],
-  );
-
-  // Obtener todos los planes con sus features y límites
-  const plansWithFeatures = useMemo(
-    () =>
-      mapPlansWithFeatures(
-        PLANS_MOCK,
-        PLAN_FEATURES_MOCK,
-        PLAN_LIMITS_MOCK,
-        PLAN_MODULES_MOCK,
-      ),
-    [],
-  );
+  const currentPlan = useMemo(() => {
+    if (!subscription) return null;
+    return plans.find((p) => p.id === subscription.planId) ?? null;
+  }, [subscription, plans]);
 
   const { tabRefs, scrollToTab } = useScrollableTabs();
 
@@ -65,29 +66,50 @@ export function SubscriptionLayout() {
     }
   };
 
-  // Uso actual del tenant
-  const currentUsage = useMemo(() => getCurrentUsage(), []);
   const currentPlanWithFeatures = useMemo(() => {
-    if (!currentPlan) return plansWithFeatures[0];
-    return (
-      plansWithFeatures.find((p) => p.id === currentPlan.id) ??
-      plansWithFeatures[0]
-    );
-  }, [currentPlan, plansWithFeatures]);
+    if (!currentPlan) return plans[0];
+    return plans.find((p) => p.id === currentPlan.id) ?? plans[0];
+  }, [currentPlan, plans]);
+
+  const canChangePlan =
+    subscription?.status !== "trial" || hasPaymentMethod;
 
   const handleChangePlan = (planId: string) => {
+    if (!canChangePlan) {
+      toast.message("Agrega un método de pago para cambiar de plan.");
+      return;
+    }
     setSelectedPlanId(planId);
     setShowChangePlan(true);
   };
 
-  const handleConfirmChangePlan = (
+  const handleConfirmChangePlan = async (
     planId: string,
     cycle: "monthly" | "yearly",
   ) => {
-    // Aquí iría la lógica para cambiar el plan
-    console.log(`Cambiando a plan ${planId} con ciclo ${cycle}`);
-    setShowChangePlan(false);
-    // Actualizar suscripción
+    if (isChangingPlan) return;
+    setIsChangingPlan(true);
+    try {
+      const result = await changeTenantPlanAction(planId, cycle);
+      if (result?.unchanged) {
+        toast.message("El plan ya está activo con el mismo ciclo.");
+      } else {
+        toast.success("Plan actualizado correctamente");
+      }
+      setShowChangePlan(false);
+      router.refresh();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "No se pudo cambiar el plan";
+      console.error(error);
+      if (message.toLowerCase().includes("payment method")) {
+        toast.error("Agrega un método de pago para cambiar de plan.");
+      } else {
+        toast.error("No se pudo cambiar el plan");
+      }
+    } finally {
+      setIsChangingPlan(false);
+    }
   };
 
   const handleCancelSubscription = (reason: string) => {
@@ -98,6 +120,11 @@ export function SubscriptionLayout() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      {!subscription && (
+        <div className="rounded-md border border-dashed p-6 text-center text-muted-foreground">
+          No hay una suscripción activa o en prueba para este tenant.
+        </div>
+      )}
       {/* Tabs principales */}
       <Tabs
         value={activeTab}
@@ -154,36 +181,46 @@ export function SubscriptionLayout() {
         </div>
 
         <TabsContent value="current" className="space-y-4">
-          <CurrentPlanTab
-            subscription={subscription}
-            currentPlan={currentPlanWithFeatures}
-            currentPlanWithFeatures={currentPlanWithFeatures}
-            currentUsage={currentUsage}
-            onOpenChangePlan={() => {
-              setSelectedPlanId(null);
-              setShowChangePlan(true);
-            }}
-            onOpenCancelModal={() => setShowCancelModal(true)}
-          />
+          {subscription && currentPlanWithFeatures && currentUsage && (
+            <CurrentPlanTab
+              subscription={subscription}
+              currentPlan={currentPlanWithFeatures}
+              currentPlanWithFeatures={currentPlanWithFeatures}
+              currentUsage={currentUsage}
+              onOpenChangePlan={() => {
+                if (!canChangePlan) {
+                  toast.message("Agrega un método de pago para cambiar de plan.");
+                  return;
+                }
+                setSelectedPlanId(null);
+                setShowChangePlan(true);
+              }}
+              onOpenCancelModal={() => setShowCancelModal(true)}
+              disableChangePlan={!canChangePlan}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="plans" className="space-y-4">
           <AvailablePlansTab
-            plans={plansWithFeatures}
+            plans={plans}
             currentPlanId={currentPlan?.id || ""}
             onSelectPlan={handleChangePlan}
+            disableChangePlan={!canChangePlan}
           />
         </TabsContent>
 
         <TabsContent value="usage" className="space-y-4">
-          <UsageLimitsTab
-            usage={currentUsage}
-            limits={currentPlanWithFeatures?.limits}
-            currentPlanName={currentPlan?.name || ""}
-            onUpgrade={() => {
-              setActiveTab("plans");
-            }}
-          />
+          {currentUsage && currentPlanWithFeatures && (
+            <UsageLimitsTab
+              usage={currentUsage}
+              limits={currentPlanWithFeatures?.limits}
+              currentPlanName={currentPlan?.name || ""}
+              onUpgrade={() => {
+                setActiveTab("plans");
+              }}
+            />
+          )}
         </TabsContent>
       </Tabs>
 
@@ -191,7 +228,7 @@ export function SubscriptionLayout() {
       <ChangePlanModal
         open={showChangePlan}
         onOpenChange={setShowChangePlan}
-        plans={plansWithFeatures}
+        plans={plans}
         selectedPlanId={selectedPlanId}
         currentPlanId={currentPlan?.id}
         onConfirm={handleConfirmChangePlan}

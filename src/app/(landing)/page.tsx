@@ -26,6 +26,7 @@ export default async function Page() {
       description: plan.description || undefined,
       priceMonthly: plan.priceMonthly ? Number(plan.priceMonthly) : 0,
       priceYearly: plan.priceYearly ? Number(plan.priceYearly) : 0,
+      trialDays: plan.trialDays ?? undefined,
       features: {
         analytics: (plan.features || []).some((f: any) => f.featureKey === "analytics"),
         promotions: (plan.features || []).some((f: any) => f.featureKey === "promotions"),

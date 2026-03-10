@@ -1,7 +1,7 @@
 // components/subscription/tabs/current-plan-tab.tsx
 "use client";
 
-import { format } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Card,
@@ -29,6 +29,7 @@ import {
 import { TenantSubscription } from "@/src/types/tenant/tenantSuscription";
 import { PlanWithFeatures } from "@/src/adapters/subscription-adapter";
 import { formatCurrency } from "@/src/utils/currency-format";
+import Link from "next/link";
 
 interface CurrentPlanTabProps {
   subscription: TenantSubscription;
@@ -48,6 +49,7 @@ interface CurrentPlanTabProps {
   };
   onOpenChangePlan: () => void;
   onOpenCancelModal: () => void;
+  disableChangePlan?: boolean;
 }
 
 export function CurrentPlanTab({
@@ -57,6 +59,7 @@ export function CurrentPlanTab({
   currentUsage,
   onOpenChangePlan,
   onOpenCancelModal,
+  disableChangePlan = false,
 }: CurrentPlanTabProps) {
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -114,6 +117,22 @@ export function CurrentPlanTab({
     return "bg-green-500";
   };
 
+  const trialEndsAt = subscription.trialEndsAt
+    ? new Date(subscription.trialEndsAt)
+    : null;
+  const trialTotalDays =
+    subscription.status === "trial" && trialEndsAt
+      ? Math.max(1, differenceInCalendarDays(trialEndsAt, subscription.startedAt))
+      : null;
+  const trialDaysLeft =
+    subscription.status === "trial" && trialEndsAt
+      ? Math.max(0, differenceInCalendarDays(trialEndsAt, new Date()))
+      : null;
+  const trialProgress =
+    trialTotalDays && trialDaysLeft !== null
+      ? Math.round((trialDaysLeft / trialTotalDays) * 100)
+      : null;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-6">
       {/* Columna principal - Info del plan */}
@@ -132,6 +151,29 @@ export function CurrentPlanTab({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {subscription.status === "trial" && trialEndsAt && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-amber-900">
+                    Prueba gratuita activa
+                  </span>
+                  <span className="text-amber-900">
+                    {trialDaysLeft} días restantes
+                  </span>
+                </div>
+                {trialProgress !== null && (
+                  <Progress value={trialProgress} className="h-2 mt-2" />
+                )}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-amber-900">
+                    Finaliza: {formatDate(trialEndsAt)}
+                  </span>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/tenant/settings">Agregar método de pago</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -177,7 +219,11 @@ export function CurrentPlanTab({
             </div>
           </CardContent>
           <CardFooter className="grid  grid-cols-1 gap-8 border-t pb-2">
-            <Button onClick={onOpenChangePlan} className="-mt-4">
+            <Button
+              onClick={onOpenChangePlan}
+              className="-mt-4"
+              disabled={disableChangePlan}
+            >
               Cambiar plan
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

@@ -29,6 +29,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/auth/new-account") || pathname.startsWith("/auth/verify-email")) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/superadmin")) {
     if (!session) {
       return NextResponse.redirect(
@@ -43,7 +47,14 @@ export async function proxy(request: NextRequest) {
 
   if (pathname.startsWith("/tenant")) {
     if (!session) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+      // Avoid redirect loops on prefetch or during cookie propagation.
+      if (request.headers.get("purpose") === "prefetch") {
+        return NextResponse.next();
+      }
+      const from = request.nextUrl.clone();
+      return NextResponse.redirect(
+        new URL(`/auth/login?redirect=${encodeURIComponent(from.pathname + from.search)}`, request.url),
+      );
     }
     if (session.user.globalRole === "SUPER_ADMIN") {
       return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));

@@ -49,6 +49,7 @@ interface SubscriptionsTableProps {
   tenants: Tenant[];
   plans: Plan[];
   onSelectSubscription: (subscription: TenantSubscription) => void;
+  onChangePlan: (subscription: TenantSubscription) => void;
 }
 
 export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
@@ -56,6 +57,7 @@ export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
   tenants,
   plans,
   onSelectSubscription,
+  onChangePlan,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -149,11 +151,15 @@ export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
         const subscription = row.original;
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuItem
@@ -163,7 +169,13 @@ export const SubscriptionsTable: React.FC<SubscriptionsTableProps> = ({
                 Ver detalles
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-blue-600">
+              <DropdownMenuItem
+                className="text-blue-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangePlan(subscription);
+                }}
+              >
                 <Repeat className="mr-2 h-4 w-4" />
                 Cambiar plan
               </DropdownMenuItem>

@@ -65,7 +65,9 @@ export function Pricing({ plans }: PricingProps) {
   };
 
   const getPrice = (plan: PlanWithFeatures) => {
-    return billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly || plan.priceMonthly * 10;
+    return billingCycle === "monthly"
+      ? plan.priceMonthly
+      : plan.priceYearly || plan.priceMonthly * 10;
   };
 
   const getSavings = (plan: PlanWithFeatures) => {
@@ -192,12 +194,13 @@ export function Pricing({ plans }: PricingProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {activePlans.map((plan) => {
               const isPopular = plan.name === "Pro";
               const price = getPrice(plan);
               const savings = getSavings(plan);
+              const trialDays = plan.trialDays ?? 7;
 
               return (
                 <Card
@@ -228,6 +231,9 @@ export function Pricing({ plans }: PricingProps) {
                         <span className="text-sm font-normal text-muted-foreground">
                           /{billingCycle === "monthly" ? "mes" : "año"}
                         </span>
+                      </p>
+                      <p className="text-xs font-medium text-green-700 mt-1">
+                        Prueba gratis de {trialDays} días
                       </p>
                       <div className="h-5 mt-1">
                         {savings && billingCycle === "yearly" && (
@@ -286,10 +292,15 @@ export function Pricing({ plans }: PricingProps) {
 
                   <CardFooter className="pt-4 pb-6">
                     <Button
+                      asChild
                       className="w-full text-sm font-semibold"
                       variant={isPopular ? "default" : "secondary"}
                     >
-                      <Link href="/auth/new-account">Elegir este plan</Link>
+                      <Link
+                        href={`/auth/new-account?planId=${plan.id}&planName=${encodeURIComponent(plan.name)}&trialDays=${trialDays}`}
+                      >
+                        Elegir este plan
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>

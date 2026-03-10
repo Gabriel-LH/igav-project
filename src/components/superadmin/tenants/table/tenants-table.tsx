@@ -202,8 +202,8 @@ export const TenantsTable: React.FC<TenantsTableProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedTenantId(tenant.id);
-                  const activePlan = plans.find(p => p.id === tenant.currentSubscriptionId);
-                  if (activePlan) setSelectedPlanId(activePlan.id);
+                  const activeSubscription = getTenantSubscription(tenant.id);
+                  if (activeSubscription) setSelectedPlanId(activeSubscription.planId);
                   setIsAssignDialogOpen(true);
                 }}
               >

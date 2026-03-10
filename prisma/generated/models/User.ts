@@ -381,8 +381,8 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -414,8 +414,8 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -513,8 +513,8 @@ export type UserCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -893,8 +893,8 @@ export type UserCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -925,8 +925,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1037,8 +1037,8 @@ export type UserCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1069,8 +1069,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1181,8 +1181,8 @@ export type UserCreateWithoutUserBranchAccessesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1213,8 +1213,8 @@ export type UserUncheckedCreateWithoutUserBranchAccessesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1325,8 +1325,8 @@ export type UserCreateWithoutUserAttendancesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1357,8 +1357,8 @@ export type UserUncheckedCreateWithoutUserAttendancesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1469,8 +1469,8 @@ export type UserCreateWithoutOpenedCashSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1501,8 +1501,8 @@ export type UserUncheckedCreateWithoutOpenedCashSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1538,8 +1538,8 @@ export type UserCreateWithoutClosedCashSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1570,8 +1570,8 @@ export type UserUncheckedCreateWithoutClosedCashSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1757,8 +1757,8 @@ export type UserCreateWithoutReceivedGuaranteesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1789,8 +1789,8 @@ export type UserUncheckedCreateWithoutReceivedGuaranteesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1826,8 +1826,8 @@ export type UserCreateWithoutReturnedGuaranteesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -1858,8 +1858,8 @@ export type UserUncheckedCreateWithoutReturnedGuaranteesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2045,8 +2045,8 @@ export type UserCreateWithoutOperationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2077,8 +2077,8 @@ export type UserUncheckedCreateWithoutOperationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2189,8 +2189,8 @@ export type UserCreateWithoutPaymentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2221,8 +2221,8 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2333,8 +2333,8 @@ export type UserCreateWithoutStockMovementsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2365,8 +2365,8 @@ export type UserUncheckedCreateWithoutStockMovementsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2477,8 +2477,8 @@ export type UserCreateWithoutTenantsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2509,8 +2509,8 @@ export type UserUncheckedCreateWithoutTenantsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2621,8 +2621,8 @@ export type UserCreateWithoutTenantPoliciesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2653,8 +2653,8 @@ export type UserUncheckedCreateWithoutTenantPoliciesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2765,8 +2765,8 @@ export type UserCreateWithoutTenantPolicyHistoriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2797,8 +2797,8 @@ export type UserUncheckedCreateWithoutTenantPolicyHistoriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2909,8 +2909,8 @@ export type UserCreateWithoutInvitationsSentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2941,8 +2941,8 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -2978,8 +2978,8 @@ export type UserCreateWithoutInvitationsAcceptedInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -3010,8 +3010,8 @@ export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -3197,8 +3197,8 @@ export type UserCreateWithoutUserTenantMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
@@ -3229,8 +3229,8 @@ export type UserUncheckedCreateWithoutUserTenantMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   status?: $Enums.StatusUser
-  createdBy: string
-  updatedBy: string
+  createdBy?: string
+  updatedBy?: string
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole

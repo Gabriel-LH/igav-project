@@ -63,7 +63,7 @@ export function ChangePlanModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Cambiar plan</DialogTitle>
           <DialogDescription>
@@ -71,7 +71,7 @@ export function ChangePlanModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 overflow-y-auto">
           {/* Selección de plan */}
           <RadioGroup
             value={planId}

@@ -25,12 +25,14 @@ interface AvailablePlansTabProps {
   plans: PlanWithFeatures[];
   currentPlanId: string;
   onSelectPlan: (planId: string) => void;
+  disableChangePlan?: boolean;
 }
 
 export function AvailablePlansTab({
   plans,
   currentPlanId,
   onSelectPlan,
+  disableChangePlan = false,
 }: AvailablePlansTabProps) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly",
@@ -115,6 +117,13 @@ export function AvailablePlansTab({
           </TabsList>
         </Tabs>
       </div>
+
+      {disableChangePlan && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Para cambiar de plan durante la prueba, primero agrega un método de
+          pago en Configuración.
+        </div>
+      )}
 
       {orderedSections.map((section) => (
         <div key={section.title} className="space-y-4">
@@ -206,9 +215,13 @@ export function AvailablePlansTab({
                       className="w-full"
                       variant={isCurrentPlan ? "outline" : "default"}
                       onClick={() => onSelectPlan(plan.id)}
-                      disabled={isCurrentPlan}
+                      disabled={isCurrentPlan || disableChangePlan}
                     >
-                      {isCurrentPlan ? "Plan actual" : "Cambiar a este plan"}
+                      {isCurrentPlan
+                        ? "Plan actual"
+                        : disableChangePlan
+                          ? "No disponible en prueba"
+                          : "Cambiar a este plan"}
                     </Button>
                   </CardFooter>
                 </Card>

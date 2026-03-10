@@ -49,7 +49,11 @@ export async function requireTenantMembership() {
   });
 
   if (!membership) {
-    throw new Error("Unauthorized: No active tenant membership");
+    return {
+      user: session.user,
+      membership: null,
+      tenantId: null,
+    };
   }
 
   return {

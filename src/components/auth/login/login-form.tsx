@@ -274,7 +274,7 @@ export function LoginForm({ ...props }: React.ComponentProps<"div">) {
               <FieldDescription className="text-center pt-3 text-muted-foreground">
                 ¿Aun no te registras?{" "}
                 <Link
-                  href={"/auth/new-account"}
+                  href={"/#pricing"}
                   className="text-primary hover:underline font-medium"
                 >
                   Empieza gratis
