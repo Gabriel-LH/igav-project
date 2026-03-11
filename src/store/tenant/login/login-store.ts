@@ -10,6 +10,7 @@ export type PendingTenant = {
   city: string;
   address: string;
   phone?: string;
+  logoUrl?: string;
   planId?: string;
   trialDays?: number;
 };

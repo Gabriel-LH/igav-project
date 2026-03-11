@@ -1,93 +1,105 @@
 "use client";
 
-import { useMemo } from "react";
-import { CategoryFormData } from "@/src/types/category/type.category";
+import { useState, useTransition } from "react";
+import { Category, CategoryFormData } from "@/src/types/category/type.category";
 import { CategoriesTable } from "./category-table";
-import { useCategoryStore } from "@/src/store/useCategoryStore";
-import { ZustandCategoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandCategoryRepository";
+import { toast } from "sonner";
 import {
-  CreateCategoryUseCase,
-  DeleteCategoryUseCase,
-  ListCategoriesUseCase,
-  UpdateCategoryUseCase,
-} from "@/src/application/tenant/use-cases/category/crudCategory.usecase";
+  createCategoryAction,
+  updateCategoryAction,
+  deleteCategoryAction,
+  updateCategoryOrderAction,
+  moveCategoryAction,
+  getCategoriesAction,
+} from "@/src/app/(tenant)/tenant/actions/category.actions";
 
-export function CategoryLayout() {
-  const tenantId = "tenant-a";
-  const categorySnapshot = useCategoryStore((state) => state.categories);
+interface CategoryLayoutProps {
+  initialCategories: Category[];
+}
 
-  const categoryRepo = useMemo(() => new ZustandCategoryRepository(), []);
-  const createCategoryUseCase = useMemo(
-    () => new CreateCategoryUseCase(categoryRepo),
-    [categoryRepo],
-  );
-  const updateCategoryUseCase = useMemo(
-    () => new UpdateCategoryUseCase(categoryRepo),
-    [categoryRepo],
-  );
-  const deleteCategoryUseCase = useMemo(
-    () => new DeleteCategoryUseCase(categoryRepo),
-    [categoryRepo],
-  );
-  const listCategoriesUseCase = useMemo(
-    () => new ListCategoriesUseCase(categoryRepo),
-    [categoryRepo],
-  );
+export function CategoryLayout({ initialCategories }: CategoryLayoutProps) {
+  const [data, setData] = useState<Category[]>(initialCategories);
+  const [isPending, startTransition] = useTransition();
 
-  const data = useMemo(
-    () => listCategoriesUseCase.execute(tenantId, { includeInactive: true }),
-    [categorySnapshot, listCategoriesUseCase],
-  );
-
-  const handleCreate = (formData: CategoryFormData) => {
-    createCategoryUseCase.execute({
-      tenantId,
-      name: formData.name,
-      description: formData.description,
-      parentId: formData.parentId,
-      image: formData.image,
-      color: formData.color,
-      icon: formData.icon,
-      slug: formData.slug,
-      order: formData.order,
-      isActive: formData.isActive,
-      showInPos: formData.showInPos,
-      showInEcommerce: formData.showInEcommerce,
+  const handleCreate = async (formData: CategoryFormData) => {
+    startTransition(async () => {
+      const result = await createCategoryAction(formData);
+      if (result.success && result.data) {
+        setData((prev) => [...prev, result.data!]);
+        toast.success("Categoría creada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear la categoría");
+      }
     });
   };
 
-  const handleUpdate = (id: string, formData: CategoryFormData) => {
-    updateCategoryUseCase.execute({
-      categoryId: id,
-      tenantId,
-      name: formData.name,
-      description: formData.description,
-      parentId: formData.parentId,
-      image: formData.image,
-      color: formData.color,
-      icon: formData.icon,
-      slug: formData.slug,
-      order: formData.order,
-      isActive: formData.isActive,
-      showInPos: formData.showInPos,
-      showInEcommerce: formData.showInEcommerce,
+  const handleUpdate = async (id: string, formData: CategoryFormData) => {
+    startTransition(async () => {
+      const result = await updateCategoryAction(id, formData);
+      if (result.success && result.data) {
+        setData((prev) =>
+          prev.map((c) => (c.id === id ? result.data! : c)),
+        );
+        toast.success("Categoría actualizada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo actualizar la categoría");
+      }
     });
   };
 
-  const handleDelete = (id: string) => {
-    deleteCategoryUseCase.execute({
-      categoryId: id,
-      tenantId,
+  const handleDelete = async (id: string) => {
+    startTransition(async () => {
+      const result = await deleteCategoryAction(id);
+      if (result.success && result.deletedIds) {
+        setData((prev) => prev.filter((c) => !result.deletedIds!.includes(c.id)));
+        toast.success("Categoría eliminada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo eliminar la categoría");
+      }
+    });
+  };
+
+  const handleReorder = async (updates: Array<{ id: string; order: number }>) => {
+    startTransition(async () => {
+      const result = await updateCategoryOrderAction(updates);
+      if (result.success) {
+        const orderMap = new Map(updates.map((u) => [u.id, u.order]));
+        setData((prev) =>
+          prev.map((c) =>
+            orderMap.has(c.id) ? { ...c, order: orderMap.get(c.id)! } : c,
+          ),
+        );
+        toast.success("Orden actualizado");
+      } else {
+        toast.error(result.error || "No se pudo actualizar el orden");
+      }
+    });
+  };
+
+  const handleMove = async (input: { categoryId: string; parentId?: string | null; position?: number }) => {
+    startTransition(async () => {
+      const result = await moveCategoryAction(input);
+      if (result.success) {
+        const refreshed = await getCategoriesAction();
+        if (refreshed.success && refreshed.data) {
+          setData(refreshed.data);
+        }
+        toast.success("Categoría movida");
+      } else {
+        toast.error(result.error || "No se pudo mover la categoría");
+      }
     });
   };
 
   return (
-    <div>
+    <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
       <CategoriesTable
         data={data}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        onReorder={handleReorder}
+        onMove={handleMove}
       />
     </div>
   );

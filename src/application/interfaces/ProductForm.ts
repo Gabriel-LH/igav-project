@@ -4,6 +4,7 @@ export interface ProductFormData {
   name: string;
   baseSku: string;
   modelId: string;
+  brandId: string;
   categoryId: string;
   description: string;
   image?: string;

@@ -37,7 +37,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
 import { Badge } from "@/components/badge";
@@ -114,6 +113,21 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
   } | null>(null);
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
 
+  const MOCK_BRANCHES = useMemo(() => {
+      return [
+        {
+          id: "branch-1",
+          name: "Sucursal 1",
+          status: "active",
+        },
+        {
+          id: "branch-2",
+          name: "Sucursal 2",
+          status: "active",
+        },
+      ];
+    }, []);
+    
   const selectedProduct = availableProducts.find(
     (p) => p.id === formData.productId,
   );

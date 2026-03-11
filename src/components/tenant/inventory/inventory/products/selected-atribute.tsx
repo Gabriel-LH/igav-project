@@ -21,7 +21,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { X, Layers, AlertCircle, Check, ChevronsUpDown } from "lucide-react";
+import {
+  X,
+  Layers,
+  AlertCircle,
+  Check,
+  ChevronsUpDown,
+  Search,
+  Building2,
+  CheckCircle2,
+  Plus,
+} from "lucide-react";
 import { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 import { cn } from "@/lib/utils";
@@ -55,7 +65,8 @@ export function VariantAttributeSelector({
   onChange,
   disabled = false,
 }: VariantAttributeSelectorProps) {
-  const [openPopover, setOpenPopover] = useState<string | null>(null);
+  const [openTypePopover, setOpenTypePopover] = useState(false);
+  const [openValuePopover, setOpenValuePopover] = useState<string | null>(null);
 
   // Memoizar tipos de variante para evitar recálculos
   const variantTypes = useMemo(() => {
@@ -74,12 +85,12 @@ export function VariantAttributeSelector({
     [attributeValues],
   );
 
-  // FIX: Usar useCallback para evitar recreación de funciones
   const toggleAttributeType = useCallback(
     (type: AttributeType) => {
-      const exists = selectedAttributes.find((a) => a.attributeId === type.id);
-
-      if (exists) {
+      const isSelected = selectedAttributes.some(
+        (a) => a.attributeId === type.id,
+      );
+      if (isSelected) {
         onChange(selectedAttributes.filter((a) => a.attributeId !== type.id));
       } else {
         onChange([
@@ -95,7 +106,6 @@ export function VariantAttributeSelector({
     },
     [selectedAttributes, onChange],
   );
-
   // FIX: Manejar cambio de checkbox de forma estable
   const handleCheckboxChange = useCallback(
     (checked: boolean, type: AttributeType) => {
@@ -204,249 +214,263 @@ export function VariantAttributeSelector({
   }
 
   return (
-    <div>
-      {/* PASO 1: Seleccionar Tipos */}
+    <div className="space-y-6">
+      {/* PASO 1: Seleccionar Tipos mediante Popover */}
       <div
-        className={
-          disabled ? "opacity-60 pointer-events-none w-full" : "w-full"
-        }
+        className={cn(
+          "space-y-3",
+          disabled && "opacity-60 pointer-events-none",
+        )}
       >
-        <div className="text-sm font-medium flex items-center mb-2 gap-2">
+        <div className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
           <Layers className="w-4 h-4" />
-          1. Selecciona atributos que generarán variantes
+          1. Atributos de variante
         </div>
 
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-3">
-            {variantTypes.map((type) => {
-              const isSelected = selectedAttributes.some(
-                (a) => a.attributeId === type.id,
-              );
-              const availableValues = getValuesForType(type.id).length;
-
-              return (
-                <div
-                  key={type.id}
-                  className={cn(
-                    "flex items-center space-x-3 bg-primary/3 rounded-lg px-4 py-3 transition-all",
-                    isSelected
-                      ? "border bg-primary/5"
-                      : "border-muted hover:border-muted-foreground/50",
-                  )}
+        <div className="flex flex-col gap-3">
+          <div className="w-full flex gap-10">
+            <Popover open={openTypePopover} onOpenChange={setOpenTypePopover}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full md:w-[300px] justify-between border-dashed"
                 >
-                  {/* FIX: Checkbox con onCheckedChange estable */}
-                  <Checkbox
-                    id={`attr-${type.id}`}
-                    checked={isSelected}
-                    onCheckedChange={(checked) =>
-                      handleCheckboxChange(checked as boolean, type)
-                    }
-                  />
-                  <div className="space-y-0.5">
-                    <Label
-                      htmlFor={`attr-${type.id}`}
-                      className="text-sm font-semibold cursor-pointer"
-                    >
-                      {type.name}
-                    </Label>
-                    <div className="text-xs text-muted-foreground">
-                      {availableValues} valores • {type.inputType}
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    <span>Agregar atributo...</span>
                   </div>
-                </div>
-              );
-            })}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Buscar atributo (Talla, Color...)" />
+                  <CommandList>
+                    <CommandEmpty>No se encontraron atributos.</CommandEmpty>
+                    <CommandGroup title="Atributos Disponibles">
+                      {variantTypes.map((type) => {
+                        const isSelected = selectedAttributes.some(
+                          (a) => a.attributeId === type.id,
+                        );
+                        return (
+                          <CommandItem
+                            key={type.id}
+                            onSelect={() => toggleAttributeType(type)}
+                            className="flex items-center justify-between"
+                          >
+                            <span>{type.name}</span>
+                            {isSelected && (
+                              <Check className="h-4 w-4 text-primary" />
+                            )}
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            <Button variant="outline">
+              <Plus />
+              Crear
+            </Button>
           </div>
 
-          {selectedAttributes.length === 0 && (
-            <Alert className="bg-muted/50 border-dashed">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Selecciona al menos un atributo para generar variantes.
-              </AlertDescription>
-            </Alert>
+          {/* Badges de atributos activos para acceso rápido/borrado */}
+          {selectedAttributes.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedAttributes.map((attr) => (
+                <Badge
+                  key={attr.attributeId}
+                  variant="secondary"
+                  className="pl-2 pr-1 py-1 gap-1"
+                >
+                  {attr.attributeName}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 rounded-full p-0 hover:bg-destructive hover:text-white"
+                    onClick={() => removeAttribute(attr.attributeId)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ))}
+            </div>
           )}
         </div>
+
+        {selectedAttributes.length === 0 && (
+          <Alert className="bg-muted/30 border-dashed">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Selecciona atributos o crea para empezar a crear variantes.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
-      <Separator className="my-4" />
+      {selectedAttributes.length > 0 && <Separator />}
 
-      {/* PASO 2: Seleccionar Valores */}
+      {/* PASO 2: Seleccionar Valores (Tu lógica original mejorada visualmente) */}
       {selectedAttributes.length > 0 && (
-        <div className={disabled ? "opacity-60 pointer-events-none" : ""}>
-          <div className="text-sm font-medium mb-2">
-            2. Selecciona valores del catálogo
+        <div
+          className={cn(
+            "space-y-4",
+            disabled && "opacity-60 pointer-events-none",
+          )}
+        >
+          <div className="text-sm font-medium text-muted-foreground italic">
+            2. Configura los valores para cada atributo seleccionado
           </div>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
             {selectedAttributes.map((attr) => {
               const availableValues = getValuesForType(attr.attributeId);
-              const isOpen = openPopover === attr.attributeId;
+              const isOpen = openValuePopover === attr.attributeId;
 
               return (
                 <div
                   key={attr.attributeId}
-                  className="border rounded-lg p-4 space-y-4 bg-card"
+                  className="border rounded-xl p-3 space-y-2 bg-card shadow-sm"
                 >
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-base flex items-center gap-2">
-                        {attr.attributeName}
-                        <Badge variant="outline" className="font-mono text-xs">
-                          {attr.attributeCode}
-                        </Badge>
-                      </h4>
-                      <p className="text-xs text-muted-foreground">
-                        {availableValues.length} valores disponibles
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-lg">
+                        <Layers className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm uppercase tracking-tight">
+                          {attr.attributeName}
+                        </h4>
+                        <p className="text-[10px] text-muted-foreground font-mono">
+                          CODE: {attr.attributeCode}
+                        </p>
+                      </div>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeAttribute(attr.attributeId)}
-                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                  </div>
+
+                  <div className="flex w-full gap-6">
+                    <Popover
+                      open={isOpen}
+                      onOpenChange={(open) =>
+                        setOpenValuePopover(open ? attr.attributeId : null)
+                      }
                     >
-                      <X className="w-4 h-4" />
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full max-w-10/12 justify-between bg-background"
+                        >
+                          <span
+                            className={
+                              attr.values.length > 0
+                                ? "text-foreground"
+                                : "text-muted-foreground text-xs"
+                            }
+                          >
+                            {attr.values.length > 0
+                              ? `${attr.values.length} valores elegidos`
+                              : `Seleccionar valores de ${attr.attributeName}...`}
+                          </span>
+                          <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0" align="start">
+                        <Command>
+                          <CommandInput placeholder="Buscar valor..." />
+                          <CommandList>
+                            <CommandEmpty>
+                              No hay valores disponibles.
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {availableValues.map((value) => {
+                                const isSelected = attr.values.some(
+                                  (v) => v.valueId === value.id,
+                                );
+                                return (
+                                  <CommandItem
+                                    key={value.id}
+                                    onSelect={() =>
+                                      toggleValue(attr.attributeId, value)
+                                    }
+                                  >
+                                    <div
+                                      className={cn(
+                                        "mr-2 flex h-4 w-4 items-center justify-center rounded border",
+                                        isSelected
+                                          ? "bg-primary border-primary"
+                                          : "opacity-50",
+                                      )}
+                                    >
+                                      {isSelected && (
+                                        <Check className="h-3 w-3 text-white" />
+                                      )}
+                                    </div>
+                                    <span>{value.value}</span>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+
+                    <Button variant="outline">
+                      <Plus />
+                      Crear
                     </Button>
                   </div>
 
-                  <Popover
-                    open={isOpen}
-                    onOpenChange={(open) =>
-                      setOpenPopover(open ? attr.attributeId : null)
-                    }
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
+                  {/* Visualización de valores como Badges */}
+                  <div className="flex flex-wrap gap-2">
+                    {attr.values.map((val) => (
+                      <Badge
+                        key={val.valueId}
                         variant="outline"
-                        className="w-full justify-between"
+                        className="bg-muted/50 py-1 pr-1"
                       >
-                        <span
-                          className={
-                            attr.values.length > 0
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          }
-                        >
-                          {attr.values.length > 0
-                            ? `${attr.values.length} valores seleccionados`
-                            : `Seleccionar valores de ${attr.attributeName.toLowerCase()}...`}
-                        </span>
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-0" align="start">
-                      <Command>
-                        <CommandInput
-                          placeholder={`Buscar ${attr.attributeName.toLowerCase()}...`}
-                        />
-                        <CommandList>
-                          <CommandEmpty>
-                            No hay valores. Agrega en Catálogos &gt; Valores.
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {availableValues.map((value) => {
-                              const isSelected = attr.values.some(
-                                (v) => v.valueId === value.id,
-                              );
-                              return (
-                                <CommandItem
-                                  key={value.id}
-                                  onSelect={() => {
-                                    toggleValue(attr.attributeId, value);
-                                    // No cerrar el popover para permitir selección múltiple
-                                  }}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                >
-                                  <div
-                                    className={cn(
-                                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                      isSelected
-                                        ? "bg-primary text-primary-foreground"
-                                        : "opacity-50 [&_svg]:invisible",
-                                    )}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "h-3 w-3",
-                                        isSelected ? "visible" : "",
-                                      )}
-                                    />
-                                  </div>
-                                  <div className="flex-1">
-                                    <div className="font-medium">
-                                      {value.value}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground font-mono">
-                                      {value.code}
-                                    </div>
-                                  </div>
-                                </CommandItem>
-                              );
-                            })}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  {/* Valores seleccionados */}
-                  <div className="flex flex-wrap gap-2 min-h-[32px]">
-                    {attr.values.length > 0 ? (
-                      attr.values.map((val) => (
-                        <Badge
-                          key={val.valueId}
-                          variant="secondary"
-                          className="px-3 py-1.5 text-sm gap-2 cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                        {val.value}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4 ml-1 hover:text-destructive"
                           onClick={() =>
                             removeValue(attr.attributeId, val.valueId)
                           }
                         >
-                          <span className="font-medium">{val.value}</span>
-                          <span className="text-xs opacity-70 font-mono">
-                            ({val.code})
-                          </span>
-                          <X className="w-3 h-3" />
-                        </Badge>
-                      ))
-                    ) : (
-                      <span className="text-sm text-muted-foreground italic py-1">
-                        Selecciona al menos un valor...
-                      </span>
-                    )}
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               );
             })}
+          </div>
 
-            {hasEmptyValues && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Todos los atributos deben tener al menos un valor
-                  seleccionado.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Resumen */}
-            <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg flex items-center justify-between">
+          {/* Resumen Final */}
+          {!hasEmptyValues && (
+            <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl flex items-center justify-between mt-6">
               <div className="space-y-1">
-                <span className="text-sm font-medium text-primary">
-                  Combinaciones a generar:
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                  Total de Variantes
                 </span>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground">
                   {selectedAttributes
-                    .map((a) => `${a.attributeName} (${a.values.length})`)
-                    .join(" × ")}
+                    .map((a) => `${a.values.length}`)
+                    .join(" × ")}{" "}
+                  combinaciones
                 </p>
               </div>
-              <Badge variant="default" className="text-lg px-4 py-1">
+              <div className="text-3xl font-black text-primary">
                 {totalCombinations}
-              </Badge>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

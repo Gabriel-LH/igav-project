@@ -66,6 +66,7 @@ import { useCategoryStore } from "@/src/store/useCategoryStore";
 
 const initialData: ProductFormData = {
   name: "",
+  brandId: "",
   baseSku: "",
   modelId: "",
   categoryId: "",
@@ -93,7 +94,11 @@ const getInitialFormData = (
   variantOverrides: initialValues?.variantOverrides || {},
 });
 
-export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormProps) {
+export function ProductForm({
+  initialValues,
+  onSubmit,
+  onCreated,
+}: ProductFormProps) {
   const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
   const attributeValues = useAttributeValueStore(
     (state) => state.attributeValues,
@@ -108,6 +113,7 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
 
   const [activeTab, setActiveTab] = useState("general");
   const [openModelPopover, setOpenModelPopover] = useState(false);
+  const [openBrandPopover, setOpenBrandPopover] = useState(false);
 
   // Preparar datos para selectores
   const modelOptions = useMemo(() => {
@@ -142,6 +148,10 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
   const selectedModel = modelOptions.find((m) => m.id === formData.modelId);
   const selectedCategory = categories.find((c) => c.id === formData.categoryId);
 
+  const modelsByBrand = useMemo(() => {
+    return models.filter((model) => model.brandId === formData.brandId);
+  }, [models, formData.brandId]);
+
   const { variants, stats } = useVariantGenerator(
     formData.baseSku,
     formData.selectedAttributes,
@@ -175,16 +185,16 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
     });
   }, []);
 
+  const selectedBrand = brands.find((b) => b.id === formData.brandId);
+
   const resetAllOverrides = useCallback(() => {
     setFormData((prev) => ({ ...prev, variantOverrides: {} }));
   }, []);
 
   // Validaciones
   const canGoToAttributes =
-    formData.baseSku &&
-    formData.name &&
-    formData.modelId &&
-    formData.categoryId;
+    formData.baseSku && formData.name && formData.categoryId;
+
   const canGoToVariants =
     canGoToAttributes &&
     formData.selectedAttributes.length > 0 &&
@@ -203,38 +213,26 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="general" className="gap-2">
-            <Package className="w-4 h-4" />
-            General
-          </TabsTrigger>
-          <TabsTrigger
-            value="attributes"
-            className="gap-2"
-            disabled={!canGoToAttributes}
-          >
-            <Layers className="w-4 h-4" />
-            Atributos
-            {formData.selectedAttributes.length > 0 && (
-              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
-                {formData.selectedAttributes.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger
-            value="variants"
-            className="gap-2"
-            disabled={!canGoToVariants}
-          >
-            <DollarSign className="w-4 h-4" />
-            Variantes
-            {variants.length > 0 && (
-              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
-                {variants.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full flex justify-center">
+          <TabsList>
+            <TabsTrigger value="general" className="gap-2">
+              <Package className="w-4 h-4" />
+              General
+            </TabsTrigger>
+            <TabsTrigger value="variants" className="gap-2">
+              <DollarSign className="w-4 h-4" />
+              Variantes
+              {variants.length > 0 && (
+                <Badge
+                  variant="secondary"
+                  className="ml-1 text-[10px] h-4 px-1"
+                >
+                  {variants.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* TAB 1: GENERAL */}
         <TabsContent value="general" className="space-y-6 mt-3">
@@ -334,308 +332,369 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
 
             <Separator />
 
-            {/* INFO BÁSICA */}
-            <div className="flex  w-full md:flex-row flex-col gap-4">
-              {/* NOMBRE PRIMERO */}
-              <div className="space-y-2 w-full md:col-span-2">
-                <Label htmlFor="name">Nombre del Producto *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="iPhone 15 Pro"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-7">
+              <div className="md:col-span-2">
+                {/* INFO BÁSICA */}
+                <div className="flex  w-full md:flex-row flex-col gap-4">
+                  {/* NOMBRE PRIMERO */}
+                  <div className="space-y-1 w-full md:col-span-2">
+                    <Label htmlFor="name">Nombre del Producto *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="iPhone 15 Pro"
+                    />
+                  </div>
+
+                  {/* SKU BASE CON BOTÓN GENERAR */}
+                  <div className="space-y-1 w-full">
+                    <Label htmlFor="baseSku">SKU Base *</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="baseSku"
+                        value={formData.baseSku}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            baseSku: e.target.value.toUpperCase(),
+                          })
+                        }
+                        placeholder="IPH-15-PRO"
+                        className="font-mono flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                          // Generar SKU base: 3 primeras letras del nombre
+                          const nameWords = formData.name.trim().split(/\s+/);
+                          let sku = "";
+
+                          if (nameWords.length === 1) {
+                            // Una palabra: primeras 3 letras
+                            sku = nameWords[0].substring(0, 3).toUpperCase();
+                          } else {
+                            // Múltiples palabras: primera letra de cada una (max 4)
+                            sku = nameWords
+                              .slice(0, 4)
+                              .map((w) => w[0]?.toUpperCase() || "")
+                              .join("");
+                          }
+
+                          // Agregar timestamp corto para unicidad si está vacío
+                          if (!sku) sku = "PROD";
+
+                          setFormData({ ...formData, baseSku: sku });
+                        }}
+                        disabled={!formData.name}
+                        className="gap-2 whitespace-nowrap"
+                      >
+                        <RefreshCcwIcon className="w-4 h-4" />
+                        Generar
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Prefijo para SKUs de variantes. Ej:{" "}
+                      {formData.baseSku || "XXX"}-NEG-M-01
+                    </p>
+                  </div>
+                </div>
+
+                {/* SELECTOR DE CATEGORÍA JERÁRQUICO */}
+                <div className="flex flex-row gap-4">
+                  <div className="flex items-center align-middle w-full gap-4">
+                    <div className="space-y-1 w-full">
+                      <Label className="flex items-center gap-2">
+                        <FolderTree className="w-4 h-4" />
+                        Categoría *
+                      </Label>
+                      <Select
+                        value={formData.categoryId}
+                        onValueChange={(val) =>
+                          setFormData({ ...formData, categoryId: val })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar categoría..." />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          {flatCategories.map((cat) => (
+                            <SelectItem
+                              key={cat.value}
+                              value={cat.value}
+                              disabled={cat.disabled}
+                            >
+                              <div className="flex items-center">
+                                <span style={{ width: cat.level * 20 }} />
+                                {cat.level > 0 && (
+                                  <span className="text-muted-foreground mr-2">
+                                    └─
+                                  </span>
+                                )}
+                                <span
+                                  className={cn(
+                                    cat.disabled && "text-muted-foreground",
+                                  )}
+                                >
+                                  {cat.label}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Selecciona la categoría más específica (último nivel)
+                      </p>
+                    </div>
+                    <Button variant="outline">
+                      <Plus />
+                      Crear
+                    </Button>
+                  </div>
+                  <div className="flex mt-4 gap-4 w-full">
+                    {/* INFO DE CATEGORÍA (breadcrumb) */}
+                    {selectedCategory && (
+                      <div className="px-3 h-fit py-1 bg-muted rounded-lg w-full">
+                        <div className="text-sm text-muted-foreground">
+                          Ruta de categoría
+                        </div>
+                        <div className="flex items-center gap-2 text-sm flex-wrap">
+                          {selectedCategory.path
+                            ?.split("/")
+                            .map((part, idx, arr) => (
+                              <span key={idx} className="flex items-center">
+                                <span className="capitalize">{part}</span>
+                                {idx < arr.length - 1 && (
+                                  <span className="mx-2 text-muted-foreground">
+                                    /
+                                  </span>
+                                )}
+                              </span>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-1 mt-2">
+                  <Label htmlFor="image">URL de Imagen</Label>
+                  <Input
+                    id="image"
+                    value={formData.image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="space-y-1 mt-2">
+                  <Label htmlFor="description">Descripción</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    placeholder="Descripción detallada del producto..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-1">
+                <div className="flex w-full gap-4 flex-col">
+                  {/* SELECTOR DE MODELO (con Brand implícito) */}
+                  <div className="flex items-center gap-4">
+                    <div className="space-y-1 w-full">
+                      <Label className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4" />
+                        Marca (Opcional)
+                      </Label>
+                      <Popover
+                        open={openBrandPopover}
+                        onOpenChange={setOpenBrandPopover}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between"
+                          >
+                            {selectedBrand ? (
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">
+                                  {selectedBrand.name}
+                                </span>
+                                <Badge variant="secondary" className="text-xs">
+                                  {selectedBrand.name}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">
+                                Seleccionar marca...
+                              </span>
+                            )}
+                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar marca..." />
+                            <CommandList>
+                              <CommandEmpty>
+                                No se encontraron marcas.
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {brands.map((brand) => (
+                                  <CommandItem
+                                    key={brand.id}
+                                    onSelect={() => {
+                                      setFormData({
+                                        ...formData,
+                                        brandId: brand.id,
+                                      });
+                                      setOpenBrandPopover(false);
+                                    }}
+                                    className="flex items-center justify-between"
+                                  >
+                                    <div>
+                                      <div className="font-medium">
+                                        {brand.name}
+                                      </div>
+                                    </div>
+                                    <div
+                                      className={cn(
+                                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                        formData.brandId === brand.id
+                                          ? "bg-primary text-primary-foreground"
+                                          : "opacity-50 [&_svg]:invisible",
+                                      )}
+                                    >
+                                      <CheckCircle2 className="h-3 w-3" />
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <Button className="mt-5" variant="outline">
+                      <Plus />
+                      Crear
+                    </Button>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="space-y-1 w-full">
+                      <Label className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4" />
+                        Modelo (Opcional)
+                      </Label>
+                      <Popover
+                        open={openModelPopover}
+                        onOpenChange={setOpenModelPopover}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between"
+                          >
+                            {selectedModel ? (
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">
+                                  {selectedModel.name}
+                                </span>
+                                <Badge variant="secondary" className="text-xs">
+                                  {selectedModel.brandName}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">
+                                Seleccionar modelo...
+                              </span>
+                            )}
+                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar modelo..." />
+                            <CommandList>
+                              <CommandEmpty>
+                                No se encontraron modelos.
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {modelsByBrand.map((model) => (
+                                  <CommandItem
+                                    key={model.id}
+                                    onSelect={() => {
+                                      setFormData({
+                                        ...formData,
+                                        modelId: model.id,
+                                      });
+                                      setOpenModelPopover(false);
+                                    }}
+                                    className="flex items-center justify-between"
+                                  >
+                                    <div>
+                                      <div className="font-medium">
+                                        {model.name}
+                                      </div>
+                                    </div>
+                                    <div
+                                      className={cn(
+                                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                        formData.modelId === model.id
+                                          ? "bg-primary text-primary-foreground"
+                                          : "opacity-50 [&_svg]:invisible",
+                                      )}
+                                    >
+                                      <CheckCircle2 className="h-3 w-3" />
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Button className="mt-5" variant="outline">
+                      <Plus />
+                      Crear
+                    </Button>
+                  </div>
+                </div>
               </div>
 
-              {/* SKU BASE CON BOTÓN GENERAR */}
-              <div className="space-y-2 w-full">
-                <Label htmlFor="baseSku">SKU Base *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="baseSku"
-                    value={formData.baseSku}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        baseSku: e.target.value.toUpperCase(),
-                      })
-                    }
-                    placeholder="IPH-15-PRO"
-                    className="font-mono flex-1"
-                  />
+              {/* ATTRIBUTES */}
+              <div className="w-full md:col-span-2">
+                <VariantAttributeSelector
+                  attributeTypes={attributeTypes}
+                  attributeValues={attributeValues}
+                  selectedAttributes={formData.selectedAttributes}
+                  onChange={(attrs) =>
+                    setFormData({ ...formData, selectedAttributes: attrs })
+                  }
+                />
+                <div className="flex mt-3 justify-end">
                   <Button
                     type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      // Generar SKU base: 3 primeras letras del nombre
-                      const nameWords = formData.name.trim().split(/\s+/);
-                      let sku = "";
-
-                      if (nameWords.length === 1) {
-                        // Una palabra: primeras 3 letras
-                        sku = nameWords[0].substring(0, 3).toUpperCase();
-                      } else {
-                        // Múltiples palabras: primera letra de cada una (max 4)
-                        sku = nameWords
-                          .slice(0, 4)
-                          .map((w) => w[0]?.toUpperCase() || "")
-                          .join("");
-                      }
-
-                      // Agregar timestamp corto para unicidad si está vacío
-                      if (!sku) sku = "PROD";
-
-                      setFormData({ ...formData, baseSku: sku });
-                    }}
-                    disabled={!formData.name}
-                    className="gap-2 whitespace-nowrap"
+                    onClick={() => setActiveTab("variants")}
+                    disabled={!canGoToVariants}
                   >
-                    <RefreshCcwIcon className="w-4 h-4" />
-                    Generar
+                    Generar {stats.total} Variantes
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Prefijo para SKUs de variantes. Ej:{" "}
-                  {formData.baseSku || "XXX"}-NEG-M-01
-                </p>
               </div>
             </div>
-
-            <div className="flex w-full gap-4 md:flex-row flex-col">
-              {/* SELECTOR DE MODELO (con Brand implícito) */}
-              <div className="space-y-2 w-full">
-                <Label className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Modelo *
-                </Label>
-                <Popover
-                  open={openModelPopover}
-                  onOpenChange={setOpenModelPopover}
-                >
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className="w-full justify-between"
-                    >
-                      {selectedModel ? (
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {selectedModel.name}
-                          </span>
-                          <Badge variant="secondary" className="text-xs">
-                            {selectedModel.brandName}
-                          </Badge>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Seleccionar modelo...
-                        </span>
-                      )}
-                      <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Buscar modelo..." />
-                      <CommandList>
-                        <CommandEmpty>No se encontraron modelos.</CommandEmpty>
-                        <CommandGroup>
-                          {modelOptions.map((model) => (
-                            <CommandItem
-                              key={model.id}
-                              onSelect={() => {
-                                setFormData({
-                                  ...formData,
-                                  modelId: model.id,
-                                });
-                                setOpenModelPopover(false);
-                              }}
-                              className="flex items-center justify-between"
-                            >
-                              <div>
-                                <div className="font-medium">{model.name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {model.brandName}
-                                </div>
-                              </div>
-                              <div
-                                className={cn(
-                                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                  formData.modelId === model.id
-                                    ? "bg-primary text-primary-foreground"
-                                    : "opacity-50 [&_svg]:invisible",
-                                )}
-                              >
-                                <CheckCircle2 className="h-3 w-3" />
-                              </div>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <p className="text-xs text-muted-foreground">
-                  La marca se determina automáticamente del modelo seleccionado
-                </p>
-              </div>
-
-              {/* SELECTOR DE CATEGORÍA JERÁRQUICO */}
-              <div className="space-y-2 w-full">
-                <Label className="flex items-center gap-2">
-                  <FolderTree className="w-4 h-4" />
-                  Categoría *
-                </Label>
-                <Select
-                  value={formData.categoryId}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, categoryId: val })
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar categoría..." />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {flatCategories.map((cat) => (
-                      <SelectItem
-                        key={cat.value}
-                        value={cat.value}
-                        disabled={cat.disabled}
-                      >
-                        <div className="flex items-center">
-                          <span style={{ width: cat.level * 20 }} />
-                          {cat.level > 0 && (
-                            <span className="text-muted-foreground mr-2">
-                              └─
-                            </span>
-                          )}
-                          <span
-                            className={cn(
-                              cat.disabled && "text-muted-foreground",
-                            )}
-                          >
-                            {cat.label}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Selecciona la categoría más específica (último nivel)
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 w-full">
-              {/* INFO DE MARCA (solo lectura) */}
-              {selectedModel && (
-                <div className="p-3 bg-muted rounded-lg flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {selectedModel.brandName[0]}
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Marca</div>
-                    <div className="font-semibold">
-                      {selectedModel.brandName}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* INFO DE CATEGORÍA (breadcrumb) */}
-              {selectedCategory && (
-                <div className="p-3 bg-muted rounded-lg w-full">
-                  <div className="text-sm text-muted-foreground mb-1">
-                    Ruta de categoría
-                  </div>
-                  <div className="flex items-center gap-2 text-sm flex-wrap">
-                    {selectedCategory.path?.split("/").map((part, idx, arr) => (
-                      <span key={idx} className="flex items-center">
-                        <span className="capitalize">{part}</span>
-                        {idx < arr.length - 1 && (
-                          <span className="mx-2 text-muted-foreground">/</span>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Descripción</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Descripción detallada del producto..."
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="image">URL de Imagen</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
-                }
-                placeholder="https://..."
-              />
-            </div>
-
-            {!canGoToAttributes && (
-              <Alert variant="default" className="bg-muted/50 mb-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Completa SKU, Nombre, Modelo y Categoría para continuar.
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              onClick={() => setActiveTab("attributes")}
-              disabled={!canGoToAttributes}
-            >
-              Siguiente: Configurar Atributos
-            </Button>
-          </div>
-        </TabsContent>
-
-        {/* TAB 2: ATRIBUTOS */}
-        <TabsContent value="attributes" className="space-y-6 mt-6">
-          <VariantAttributeSelector
-            attributeTypes={attributeTypes}
-            attributeValues={attributeValues}
-            selectedAttributes={formData.selectedAttributes}
-            onChange={(attrs) =>
-              setFormData({ ...formData, selectedAttributes: attrs })
-            }
-          />
-          <div className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setActiveTab("general")}
-            >
-              Anterior
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setActiveTab("variants")}
-              disabled={!canGoToVariants}
-            >
-              Generar {stats.total} Variantes
-            </Button>
           </div>
         </TabsContent>
 
@@ -657,9 +716,9 @@ export function ProductForm({ initialValues, onSubmit, onCreated }: ProductFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => setActiveTab("attributes")}
+              onClick={() => setActiveTab("general")}
             >
-              Anterior: Modificar Atributos
+              Anterior
             </Button>
 
             <div className="flex items-center gap-4">

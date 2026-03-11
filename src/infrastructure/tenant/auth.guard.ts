@@ -31,6 +31,7 @@ export async function requireTenantMembership() {
           name: true,
           slug: true,
           status: true,
+          metadata: true,
         },
       },
       role: {

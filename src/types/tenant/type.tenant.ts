@@ -11,7 +11,7 @@ export const TenantSchema = z.object({
   currentSubscriptionId: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  metadata: z.string()
+  metadata: z.any().optional(),
 });
 
 export type Tenant = z.infer<typeof TenantSchema>;

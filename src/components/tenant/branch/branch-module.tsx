@@ -5,11 +5,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BranchesTable } from "./table/branches-table";
 import { BranchDetails } from "./branch-details";
-import {
-  MOCK_BRANCHES,
-  MOCK_BRANCH_CONFIGS,
-  MOCK_BRANCH_METRICS,
-} from "@/src/mocks/mock.branch";
+import { getBranchesAction } from "@/src/app/(tenant)/tenant/actions/branch.actions"; 
 import type { Branch } from "@/src/types/branch/type.branch";
 import type { BranchConfig } from "@/src/types/branch/type.branchConfig";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -29,12 +25,10 @@ export function BranchesModule() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simular carga de datos
     const loadData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setBranches(MOCK_BRANCHES);
-      setBranchConfigs(MOCK_BRANCH_CONFIGS);
-      setBranchMetrics(MOCK_BRANCH_METRICS);
+      const branchesResult = await getBranchesAction();
+      const branches = branchesResult.success ? branchesResult.data : [];
+      setBranches(branches);
       setIsLoading(false);
     };
 

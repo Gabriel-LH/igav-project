@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import { Package } from "lucide-react";
 import { SerializedItemForm } from "./serialized-form";
 import { SerializedItemsTable } from "./table/serialized-table";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
 import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
 import { CreateSerializedItemsUseCase } from "@/src/application/tenant/use-cases/inventory/createSerializedItems.usecase";
@@ -32,6 +31,21 @@ export function SerializedLayout() {
     [inventoryRepo],
   );
 
+  const MOCK_BRANCHES = useMemo(() => {
+    return [
+      {
+        id: "branch-1",
+        name: "Sucursal 1",
+        status: "active",
+      },
+      {
+        id: "branch-2",
+        name: "Sucursal 2",
+        status: "active",
+      },
+    ];
+  }, []);
+  
   const items = useMemo(
     () =>
       listSerializedItemsUseCase.execute({

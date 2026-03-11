@@ -54,6 +54,8 @@ import { usePlanFeatures } from "@/src/hooks/usePlanFeatures";
 import { NavCRM } from "../nav-bar/nav-crm";
 import { NavAnalytic } from "../nav-bar/nav-analityc";
 import { User } from "@/src/types/user/type.user";
+import { Tenant } from "@/src/types/tenant/type.tenant";
+import { Branch } from "@/src/types/branch/type.branch";
 
 const data = {
   navMain: [
@@ -205,11 +207,17 @@ const data = {
 };
 
 interface AppSidebarProps {
+  tenant: Tenant;
   user: User;
+  branches: Branch[];
+  logoUrl?: string;
 }
 
 export function AppSidebar({
+  tenant,
   user,
+  branches,
+  logoUrl = "",
   ...props
 }: AppSidebarProps & React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
@@ -309,10 +317,18 @@ export function AppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5! hover:cursor-pointer"
             >
-              <Link href="/home">
-                <ShoppingBasket className="size-5!" />
+              <Link href="/tenant/home">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt="Logo"
+                    className="h-7 w-7 rounded-md object-cover"
+                  />
+                ) : (
+                  <ShoppingBasket className="size-5!" />
+                )}
                 <span className="text-base font-semibold italic">
-                  AZRAEL SHOP
+                  {tenant.name}
                 </span>
               </Link>
             </SidebarMenuButton>
@@ -321,7 +337,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         {filteredNavMain.length > 0 && (
-          <NavMain items={filteredNavMain} pathname={pathname} />
+          <NavMain branches={branches} items={filteredNavMain} pathname={pathname} />
         )}
         {filteredNavOperation.length > 0 && (
           <NavOperation items={filteredNavOperation} pathname={pathname} />

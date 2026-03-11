@@ -145,6 +145,7 @@ type CreateTenantInput = {
   city: string;
   address: string;
   phone?: string;
+  logoUrl?: string;
   planId?: string;
   trialDays?: number;
 };
@@ -157,6 +158,7 @@ export async function createTenantFromSignupAction(input: CreateTenantInput) {
   const city = (input.city || "").trim();
   const address = (input.address || "").trim();
   const phone = (input.phone || "").trim();
+  const logoUrl = (input.logoUrl || "").trim();
   const planId = (input.planId || "").trim();
   const trialDays =
     typeof input.trialDays === "number" && input.trialDays > 0
@@ -213,7 +215,10 @@ export async function createTenantFromSignupAction(input: CreateTenantInput) {
         slug,
         ownerId: owner.id,
         status: "active",
-        metadata: { createdByOwnerId: owner.id },
+        metadata: {
+          createdByOwnerId: owner.id,
+          logoUrl: logoUrl || null,
+        },
       },
     });
 

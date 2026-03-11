@@ -34,7 +34,7 @@ export function SucursalSwitcher({
   value,
   onChange,
 }: SucursalSwitcherProps) {
-  const current = branches.find((b) => b.id === value);
+  const current = branches.find((branch) => branch.id === value);
 
   return (
     <Popover>
@@ -68,7 +68,7 @@ export function SucursalSwitcher({
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    branch.id === value ? "opacity-100" : "opacity-0"
+                    branch.id === value ? "opacity-100" : "opacity-0",
                   )}
                 />
                 {branch.name}

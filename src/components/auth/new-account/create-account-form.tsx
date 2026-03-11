@@ -60,6 +60,7 @@ export function SignupForm() {
   const [city, setCity] = useState("");
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [slug, setSlug] = useState("");
   const [slugStatus, setSlugStatus] = useState<SlugStatus>("idle");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -184,6 +185,7 @@ export function SignupForm() {
           city: city.trim(),
           address: location.trim(),
           phone: phone.trim(),
+          logoUrl: logoUrl.trim() || undefined,
           planId: selectedPlanId,
           trialDays: Number.isFinite(selectedTrialDays)
             ? selectedTrialDays
@@ -214,6 +216,7 @@ export function SignupForm() {
         city: city.trim(),
         address: location.trim(),
         phone: phone.trim(),
+        logoUrl: logoUrl.trim() || undefined,
         planId: selectedPlanId,
         trialDays: Number.isFinite(selectedTrialDays)
           ? selectedTrialDays
@@ -419,6 +422,27 @@ export function SignupForm() {
                     />
                     <HugeiconsIcon
                       icon={SmartPhone03Icon}
+                      strokeWidth={2}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor="logoUrl">
+                    Logo del negocio (URL)
+                  </FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id="logoUrl"
+                      type="url"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="pl-10 text-sm"
+                    />
+                    <HugeiconsIcon
+                      icon={Network}
                       strokeWidth={2}
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
                     />
