@@ -1,8 +1,8 @@
-import { BrandRepository } from "../../../domain/tenant/repositories/BrandRepository";
-import { ModelRepository } from "../../../domain/tenant/repositories/ModelRepository";
-import { Brand } from "../../../types/brand/type.brand";
-import { CreateBrandInput } from "../../interfaces/CreateBrandInput";
-import { UpdateBrandInput } from "../../interfaces/UpdateBrandInput";
+import { BrandRepository } from "../../../../domain/tenant/repositories/BrandRepository";
+import { ModelRepository } from "../../../../domain/tenant/repositories/ModelRepository";
+import { Brand } from "../../../../types/brand/type.brand";
+import { CreateBrandInput } from "../../../interfaces/CreateBrandInput";
+import { UpdateBrandInput } from "../../../interfaces/UpdateBrandInput";
 
 interface DeleteBrandInput {
   tenantId: string;
@@ -34,8 +34,8 @@ const buildUniqueSlug = (baseName: string, existingSlugs: string[]): string => {
 export class CreateBrandUseCase {
   constructor(private brandRepo: BrandRepository) {}
 
-  execute(data: CreateBrandInput): Brand {
-    const brands = this.brandRepo.getBrandsByTenant(data.tenantId);
+  async execute(data: CreateBrandInput): Promise<Brand> {
+    const brands = await this.brandRepo.getBrandsByTenant(data.tenantId);
     const existingSlugs = brands.map((brand) => brand.slug);
     const slug = buildUniqueSlug(data.slug?.trim() || data.name, existingSlugs);
     const now = new Date();
@@ -52,7 +52,7 @@ export class CreateBrandUseCase {
       updatedAt: now,
     };
 
-    this.brandRepo.addBrand(brand);
+    await this.brandRepo.addBrand(brand);
     return brand;
   }
 }
@@ -60,21 +60,24 @@ export class CreateBrandUseCase {
 export class UpdateBrandUseCase {
   constructor(private brandRepo: BrandRepository) {}
 
-  execute(data: UpdateBrandInput): Brand {
-    const brand = this.brandRepo.getBrandById(data.tenantId, data.brandId);
+  async execute(data: UpdateBrandInput): Promise<Brand> {
+    const brand = await this.brandRepo.getBrandById(
+      data.tenantId,
+      data.brandId,
+    );
     if (!brand) {
       throw new Error("La marca no existe para este tenant.");
     }
 
-    const brands = this.brandRepo
-      .getBrandsByTenant(data.tenantId)
-      .filter((item) => item.id !== data.brandId);
+    const brands = (
+      await this.brandRepo.getBrandsByTenant(data.tenantId)
+    ).filter((item) => item.id !== data.brandId);
     const existingSlugs = brands.map((item) => item.slug);
     const slug =
       data.slug?.trim() ||
       (data.name ? buildUniqueSlug(data.name, existingSlugs) : brand.slug);
 
-    this.brandRepo.updateBrand(data.brandId, {
+    await this.brandRepo.updateBrand(data.brandId, {
       name: data.name ?? brand.name,
       slug,
       description: data.description ?? brand.description,
@@ -83,7 +86,9 @@ export class UpdateBrandUseCase {
       updatedAt: new Date(),
     });
 
-    return this.brandRepo.getBrandById(data.tenantId, data.brandId) ?? brand;
+    return (
+      (await this.brandRepo.getBrandById(data.tenantId, data.brandId)) ?? brand
+    );
   }
 }
 
@@ -93,30 +98,40 @@ export class DeleteBrandUseCase {
     private modelRepo: ModelRepository,
   ) {}
 
-  execute(data: DeleteBrandInput): void {
-    const brand = this.brandRepo.getBrandById(data.tenantId, data.brandId);
+  async execute(data: DeleteBrandInput): Promise<void> {
+    const brand = await this.brandRepo.getBrandById(
+      data.tenantId,
+      data.brandId,
+    );
     if (!brand) {
       throw new Error("La marca no existe para este tenant.");
     }
 
-    const models = this.modelRepo.getModelsByBrand(data.tenantId, data.brandId);
+    const models = await this.modelRepo.getModelsByBrand(
+      data.tenantId,
+      data.brandId,
+    );
     if (models.length > 0) {
       throw new Error(
         `No se puede eliminar la marca "${brand.name}" porque tiene ${models.length} modelo(s) asociado(s).`,
       );
     }
 
-    this.brandRepo.removeBrand(data.brandId);
+    await this.brandRepo.removeBrand(data.brandId);
   }
 }
 
 export class ListBrandsUseCase {
   constructor(private brandRepo: BrandRepository) {}
 
-  execute(tenantId: string, options?: ListBrandsOptions): Brand[] {
+  async execute(
+    tenantId: string,
+    options?: ListBrandsOptions,
+  ): Promise<Brand[]> {
     const includeInactive = options?.includeInactive ?? true;
-    return this.brandRepo
-      .getBrandsByTenant(tenantId)
+    const brands = await this.brandRepo.getBrandsByTenant(tenantId);
+
+    return brands
       .filter((brand) => includeInactive || brand.isActive)
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
   }

@@ -300,3 +300,17 @@ RRHH
    └── Payroll
 
 NEXT_PUBLIC_ENABLE_EMAIL_OTP=false
+
+UI
+ ↓
+Server Action
+ ↓
+UseCase
+ ↓
+Domain Interfaces
+ ↓
+Infrastructure Adapter
+ ↓
+Database
+
+se logro crear una marca y un modelo

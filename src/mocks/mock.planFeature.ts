@@ -1,5 +1,5 @@
 import { PlanFeature } from "../types/plan/planFeature";
-import { getPlanMatrixData } from "./mock.planMatrix";
+import { getPlanMatrixData } from "../utils/config-production/config.planMatrix";
 
 export const PLAN_FEATURES_MOCK: PlanFeature[] = getPlanMatrixData().flatMap(
   (plan, planIdx) =>

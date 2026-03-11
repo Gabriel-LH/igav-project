@@ -21,6 +21,7 @@ import {
 import { EntityModal } from "../ui/EntityModal";
 import { Plus, Tag, Hash, Image, FileText } from "lucide-react";
 import { Brand, BrandFormData } from "@/src/types/brand/type.brand";
+import { generateSlug } from "@/src/utils/slug/generate-slug";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
@@ -38,18 +39,11 @@ interface BrandFormProps {
 }
 
 // Generar slug automático
-const generateSlug = (name: string): string => {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-};
 
 export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
+  const [userModifiedSlug, setUserModifiedSlug] = useState(false);
 
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(formSchema),
@@ -65,11 +59,19 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
   // Auto-generar slug cuando cambia el nombre (solo si no está editando)
   const watchName = form.watch("name");
   useEffect(() => {
-    if (!isEditing && watchName && !form.getValues("slug")) {
+    if (!isEditing && watchName && !userModifiedSlug) {
       form.setValue("slug", generateSlug(watchName));
     }
-  }, [form, isEditing, watchName]);
+  }, [form, isEditing, watchName, userModifiedSlug]);
 
+  const _ = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserModifiedSlug(true);
+    const value = e.target.value
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "");
+    form.setValue("slug", value);
+  }
   const handleSubmit = (values: BrandFormValues) => {
     onSubmit(values);
     form.reset();
@@ -125,10 +127,17 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
                     {...field}
                     placeholder="samsung"
                     className="lowercase"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (!isEditing) {
+                        setUserModifiedSlug(true);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormDescription>
-                  Identificador único en URL (minúsculas, sin espacios)
+                  Identificador único en URL (minúsculas, sin espacios, usa _
+                  para separar)
                 </FormDescription>
                 <FormMessage />
               </FormItem>

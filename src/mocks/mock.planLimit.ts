@@ -1,5 +1,5 @@
 import { PlanLimit } from "../types/plan/type.planLimitKey";
-import { getPlanMatrixData } from "./mock.planMatrix";
+import { getPlanMatrixData } from "../utils/config-production/config.planMatrix";
 
 export const PLAN_LIMITS_MOCK: PlanLimit[] = getPlanMatrixData().flatMap(
   (plan, planIdx) =>

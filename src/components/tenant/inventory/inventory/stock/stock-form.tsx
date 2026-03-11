@@ -17,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Plus,
   Package,
@@ -32,11 +31,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
 import { Badge } from "@/components/badge";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
 import { useIsMobile } from "@/src/hooks/use-mobile";
+
 
 const STATUS_OPTIONS = [
   { value: "disponible", label: "Disponible", color: "green" },
@@ -46,9 +45,10 @@ const STATUS_OPTIONS = [
 
 interface StockFormProps {
   onSubmit: (data: StockFormData) => void;
+  initialBranches: Branch[];
 }
 
-export function StockForm({ onSubmit }: StockFormProps) {
+export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
   const productsWithVariants = useInventoryProductOptions(false);
 
   const [formData, setFormData] = useState<Partial<StockFormData>>({
@@ -67,8 +67,8 @@ export function StockForm({ onSubmit }: StockFormProps) {
     (v) => v.id === formData.variantId,
   );
   const availableBranches = useMemo(
-    () => MOCK_BRANCHES.filter((branch) => branch.status === "active"),
-    [],
+    () => initialBranches.filter((branch) => branch.status === "active"),
+    [initialBranches],
   );
   const selectedBranch = availableBranches.find(
     (b) => b.id === formData.branchId,

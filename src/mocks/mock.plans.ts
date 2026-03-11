@@ -1,5 +1,5 @@
 import { Plan } from "../types/plan/planSchema";
-import { getPlanMatrixData } from "./mock.planMatrix";
+import { getPlanMatrixData } from "../utils/config-production/config.planMatrix";
 
 export const PLANS_MOCK: Plan[] = getPlanMatrixData().map((p) => ({
   id: p.id,

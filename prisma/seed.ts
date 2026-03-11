@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { hashPassword } from "better-auth/crypto";
 import dotenv from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { getPlanMatrixData } from "../src/mocks/mock.planMatrix";
+import { getPlanMatrixData } from "../src/utils/config-production/config.planMatrix";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({
@@ -468,7 +468,9 @@ async function seedPlans() {
     select: { id: true },
   });
   if (!superadmin) {
-    console.warn("  ⚠️  No superadmin found — skipping plan seed (run seedSuperAdmin first)");
+    console.warn(
+      "  ⚠️  No superadmin found — skipping plan seed (run seedSuperAdmin first)",
+    );
     return;
   }
 
@@ -507,15 +509,28 @@ async function seedPlans() {
 
           if (plan.features.length > 0)
             await tx.planFeature.createMany({
-              data: plan.features.map((featureKey) => ({ tenantId, planId: plan.id, featureKey })),
+              data: plan.features.map((featureKey) => ({
+                tenantId,
+                planId: plan.id,
+                featureKey,
+              })),
             });
           if (plan.modules.length > 0)
             await tx.planModule.createMany({
-              data: plan.modules.map((moduleKey) => ({ tenantId, planId: plan.id, moduleKey })),
+              data: plan.modules.map((moduleKey) => ({
+                tenantId,
+                planId: plan.id,
+                moduleKey,
+              })),
             });
           if (plan.limits.length > 0)
             await tx.planLimit.createMany({
-              data: plan.limits.map((l) => ({ tenantId, planId: plan.id, limitKey: l.limitKey, limit: l.limit })),
+              data: plan.limits.map((l) => ({
+                tenantId,
+                planId: plan.id,
+                limitKey: l.limitKey,
+                limit: l.limit,
+              })),
             });
         });
         updated++;
@@ -532,30 +547,41 @@ async function seedPlans() {
             isActive: true,
             sortOrder: plan.sortOrder,
             features: {
-              create: plan.features.map((featureKey) => ({ tenantId, featureKey })),
+              create: plan.features.map((featureKey) => ({
+                tenantId,
+                featureKey,
+              })),
             },
             modules: {
-              create: plan.modules.map((moduleKey) => ({ tenantId, moduleKey })),
+              create: plan.modules.map((moduleKey) => ({
+                tenantId,
+                moduleKey,
+              })),
             },
             limits: {
-              create: plan.limits.map((l) => ({ tenantId, limitKey: l.limitKey, limit: l.limit })),
+              create: plan.limits.map((l) => ({
+                tenantId,
+                limitKey: l.limitKey,
+                limit: l.limit,
+              })),
             },
           },
         });
         seeded++;
       }
-      } catch (err) {
-        const error = err as Error;
-        console.warn(`  ⚠️  Plan ${plan.id}:`, error.message || error);
-        if (error.stack) {
-          console.warn(error.stack);
-        }
+    } catch (err) {
+      const error = err as Error;
+      console.warn(`  ⚠️  Plan ${plan.id}:`, error.message || error);
+      if (error.stack) {
+        console.warn(error.stack);
       }
     }
+  }
 
-  console.log(`  ✅ ${seeded} plans created, ${updated} plans updated (${plans.length} total)`);
+  console.log(
+    `  ✅ ${seeded} plans created, ${updated} plans updated (${plans.length} total)`,
+  );
 }
-
 
 async function main() {
   await seedSystemPermissions();

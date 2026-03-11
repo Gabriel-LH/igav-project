@@ -6,7 +6,6 @@ import { Package } from "lucide-react";
 import { StockForm } from "./stock-form";
 import { StockTable } from "./table/stock-table";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
 import { CreateStockLotUseCase } from "@/src/application/tenant/use-cases/inventory/createStockLot.usecase";
 import { DeleteStockLotUseCase } from "@/src/application/tenant/use-cases/inventory/deleteStockLot.usecase";
@@ -14,10 +13,13 @@ import { ListStockLotsUseCase } from "@/src/application/tenant/use-cases/invento
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AddToListIcon, ListViewIcon } from "@hugeicons/core-free-icons";
+import { Branch } from "@/src/types/branch/type.branch";
 
-export function StockLayout() {
+interface Props {
+  initialBranches: Branch[];
+}
+export function StockLayout({ initialBranches }: Props) {
   const [activeTab, setActiveTab] = useState("form");
-  const tenantId = "tenant-a";
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
   const createStockLotUseCase = useMemo(
     () => new CreateStockLotUseCase(inventoryRepo),
@@ -32,16 +34,17 @@ export function StockLayout() {
     [inventoryRepo],
   );
 
-  const stockList = useMemo(
-    () =>
-      listStockLotsUseCase.execute({
-        branches: MOCK_BRANCHES,
-      }),
-    [listStockLotsUseCase],
-  );
+  const stockList = useMemo(() => {
+    if (!initialBranches?.length) return [];
+    return listStockLotsUseCase.execute({
+      branches: initialBranches,
+    });
+  }, [listStockLotsUseCase, initialBranches]);
+
+  const tenantId = initialBranches?.[0]?.tenantId;
 
   const handleSubmit = (formData: StockFormData) => {
-    createStockLotUseCase.execute({ tenantId, formData });
+    createStockLotUseCase.execute({ tenantId: tenantId!, formData });
   };
 
   const handleDelete = (id: string) => {
@@ -67,7 +70,7 @@ export function StockLayout() {
         </TabsList>
         <TabsContent value="form">
           {/* Formulario */}
-          <StockForm onSubmit={handleSubmit} />
+          <StockForm onSubmit={handleSubmit} initialBranches={initialBranches} />
         </TabsContent>
         <TabsContent value="list">
           {/* Tabla de Stock Existente */}

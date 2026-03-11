@@ -1,88 +1,57 @@
-"use client";
+"use client"
 
 import { BrandsTable } from "./brand-table";
-import { useMemo } from "react";
-import { BrandFormData } from "@/src/types/brand/type.brand";
-import { useBrandStore } from "@/src/store/useBrandStore";
-import { ZustandBrandRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandBrandRepository";
-import { ZustandModelRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandModelRepository";
-import {
-  CreateBrandUseCase,
-  DeleteBrandUseCase,
-  ListBrandsUseCase,
-  UpdateBrandUseCase,
-} from "@/src/application/tenant/use-cases/crudBrand.usecase";
+import { useState, useTransition } from "react";
+import { Brand, BrandFormData } from "@/src/types/brand/type.brand";
 import { toast } from "sonner";
+import { createBrandAction, updateBrandAction, deleteBrandAction } from "@/src/app/(tenant)/tenant/actions/brand.actions";
 
-export function BrandLayout() {
-  const tenantId = "tenant-a";
-  const brandSnapshot = useBrandStore((state) => state.brands);
+interface BrandLayoutProps {
+  initialBrands: Brand[];
+}
 
-  const brandRepo = useMemo(() => new ZustandBrandRepository(), []);
-  const modelRepo = useMemo(() => new ZustandModelRepository(), []);
+export function BrandLayout({ initialBrands }: BrandLayoutProps) {
+  const [data, setData] = useState<Brand[]>(initialBrands);
+  const [isPending, startTransition] = useTransition();
 
-  const createBrandUseCase = useMemo(
-    () => new CreateBrandUseCase(brandRepo),
-    [brandRepo],
-  );
-  const updateBrandUseCase = useMemo(
-    () => new UpdateBrandUseCase(brandRepo),
-    [brandRepo],
-  );
-  const deleteBrandUseCase = useMemo(
-    () => new DeleteBrandUseCase(brandRepo, modelRepo),
-    [brandRepo, modelRepo],
-  );
-  const listBrandsUseCase = useMemo(
-    () => new ListBrandsUseCase(brandRepo),
-    [brandRepo],
-  );
-
-  const data = useMemo(
-    () => listBrandsUseCase.execute(tenantId, { includeInactive: true }),
-    [brandSnapshot, listBrandsUseCase],
-  );
-
-  const handleCreate = (formData: BrandFormData) => {
-    createBrandUseCase.execute({
-      tenantId,
-      name: formData.name,
-      slug: formData.slug,
-      description: formData.description,
-      logo: formData.logo,
-      isActive: formData.isActive,
+  const handleCreate = async (formData: BrandFormData) => {
+    startTransition(async () => {
+      const result = await createBrandAction(formData);
+      if (result.success && result.data) {
+        setData((prev) => [...prev, result.data!].sort((a, b) => a.name.localeCompare(b.name)));
+        toast.success("Marca creada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear la marca");
+      }
     });
   };
 
-  const handleUpdate = (id: string, formData: BrandFormData) => {
-    updateBrandUseCase.execute({
-      tenantId,
-      brandId: id,
-      name: formData.name,
-      slug: formData.slug,
-      description: formData.description,
-      logo: formData.logo,
-      isActive: formData.isActive,
+  const handleUpdate = async (id: string, formData: BrandFormData) => {
+    startTransition(async () => {
+      const result = await updateBrandAction(id, formData);
+      if (result.success && result.data) {
+        setData((prev) => prev.map((b) => (b.id === id ? result.data! : b)).sort((a, b) => a.name.localeCompare(b.name)));
+        toast.success("Marca actualizada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo actualizar la marca");
+      }
     });
   };
 
-  const handleDelete = (id: string) => {
-    try {
-      deleteBrandUseCase.execute({
-        tenantId,
-        brandId: id,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar la marca.",
-      );
-    }
+  const handleDelete = async (id: string) => {
+    startTransition(async () => {
+      const result = await deleteBrandAction(id);
+      if (result.success) {
+        setData((prev) => prev.filter((b) => b.id !== id));
+        toast.success("Marca eliminada correctamente");
+      } else {
+        toast.error(result.error || "No se pudo eliminar la marca");
+      }
+    });
   };
 
   return (
-    <div>
+    <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
       <BrandsTable
         data={data}
         onCreate={handleCreate}

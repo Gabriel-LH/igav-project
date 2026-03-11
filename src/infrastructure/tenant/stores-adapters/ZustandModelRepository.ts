@@ -3,35 +3,35 @@ import { Model } from "../../../types/model/type.model";
 import { useModelStore } from "../../../store/useModelStore";
 
 export class ZustandModelRepository implements ModelRepository {
-  addModel(model: Model): void {
+  async addModel(model: Model): Promise<void> {
     useModelStore.getState().addModel(model);
   }
 
-  updateModel(modelId: string, updates: Partial<Model>): void {
+  async updateModel(modelId: string, updates: Partial<Model>): Promise<void> {
     useModelStore.getState().updateModel(modelId, updates);
   }
 
-  getModelById(tenantId: string, modelId: string): Model | undefined {
+  async getModelById(tenantId: string, modelId: string): Promise<Model | undefined> {
     return useModelStore.getState().getModelById(tenantId, modelId);
   }
 
-  getModelsByTenant(tenantId: string): Model[] {
+  async getModelsByTenant(tenantId: string): Promise<Model[]> {
     return useModelStore.getState().getModelsByTenant(tenantId);
   }
 
-  getModelsByBrand(tenantId: string, brandId: string): Model[] {
+  async getModelsByBrand(tenantId: string, brandId: string): Promise<Model[]> {
     return useModelStore.getState().getModelsByBrand(tenantId, brandId);
   }
 
-  markAsActive(modelId: string): void {
+  async markAsActive(modelId: string): Promise<void> {
     useModelStore.getState().markAsActive(modelId);
   }
 
-  markAsInactive(modelId: string): void {
+  async markAsInactive(modelId: string): Promise<void> {
     useModelStore.getState().markAsInactive(modelId);
   }
 
-  removeModel(modelId: string): void {
+  async removeModel(modelId: string): Promise<void> {
     useModelStore.getState().removeModel(modelId);
   }
 }

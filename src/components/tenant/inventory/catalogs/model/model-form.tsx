@@ -29,6 +29,8 @@ import { EntityModal } from "../ui/EntityModal";
 import { Plus, Tag, Hash, FileText, Calendar, Building2 } from "lucide-react";
 import { Model, ModelFormData } from "@/src/types/model/type.model";
 import { Brand } from "@/src/types/brand/type.brand";
+import { generateSlug } from "@/src/utils/slug/generate-slug";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 
 const formSchema = z.object({
   brandId: z.string().min(1, "Marca requerida"),
@@ -47,15 +49,6 @@ interface ModelFormProps {
   trigger?: React.ReactNode;
 }
 
-const generateSlug = (name: string): string => {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-};
-
 export function ModelForm({
   brands,
   initialData,
@@ -64,6 +57,7 @@ export function ModelForm({
 }: ModelFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
+  const [userModifiedSlug, setUserModifiedSlug] = useState(false);
 
   // Solo marcas activas
   const activeBrands = useMemo(
@@ -88,13 +82,22 @@ export function ModelForm({
 
   const watchName = form.watch("name");
   useEffect(() => {
-    if (!isEditing && watchName && !form.getValues("slug")) {
+    if (!isEditing && watchName && !userModifiedSlug) {
       form.setValue("slug", generateSlug(watchName));
     }
-  }, [form, isEditing, watchName]);
+  }, [form, isEditing, watchName, userModifiedSlug]);
 
   const selectedBrandId = form.watch("brandId");
   const selectedBrand = brands.find((b) => b.id === selectedBrandId);
+
+  const _ = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserModifiedSlug(true);
+    const value = e.target.value
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "");
+    form.setValue("slug", value);
+  };
 
   const handleSubmit = (values: ModelFormValues) => {
     onSubmit(values);
@@ -130,10 +133,7 @@ export function ModelForm({
                   <Building2 className="w-4 h-4" />
                   Marca *
                 </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona una marca..." />
@@ -170,9 +170,15 @@ export function ModelForm({
           {/* Info de marca seleccionada */}
           {selectedBrand && (
             <div className="p-3 bg-muted rounded-lg flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                {selectedBrand.name[0]}
-              </div>
+              <Avatar className="h-10 w-10">
+                <AvatarImage
+                  src={selectedBrand.logo}
+                  alt={selectedBrand.name}
+                />
+                <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                  {selectedBrand.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <div className="font-medium">{selectedBrand.name}</div>
                 <div className="text-xs text-muted-foreground">
@@ -214,6 +220,12 @@ export function ModelForm({
                       {...field}
                       placeholder="galaxy-s24"
                       className="lowercase"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (!isEditing) {
+                          setUserModifiedSlug(true);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

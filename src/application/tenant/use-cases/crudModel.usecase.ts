@@ -38,13 +38,13 @@ export class CreateModelUseCase {
     private brandRepo: BrandRepository,
   ) {}
 
-  execute(data: CreateModelInput): Model {
-    const brand = this.brandRepo.getBrandById(data.tenantId, data.brandId);
+  async execute(data: CreateModelInput): Promise<Model> {
+    const brand = await this.brandRepo.getBrandById(data.tenantId, data.brandId);
     if (!brand) {
       throw new Error("La marca seleccionada no existe para este tenant.");
     }
 
-    const models = this.modelRepo.getModelsByTenant(data.tenantId);
+    const models = await this.modelRepo.getModelsByTenant(data.tenantId);
     const existingSlugs = models.map((model) => model.slug);
     const slug = buildUniqueSlug(data.slug?.trim() || data.name, existingSlugs);
     const now = new Date();
@@ -62,7 +62,7 @@ export class CreateModelUseCase {
       updatedAt: now,
     };
 
-    this.modelRepo.addModel(model);
+    await this.modelRepo.addModel(model);
     return model;
   }
 }
@@ -73,20 +73,19 @@ export class UpdateModelUseCase {
     private brandRepo: BrandRepository,
   ) {}
 
-  execute(data: UpdateModelInput): Model {
-    const model = this.modelRepo.getModelById(data.tenantId, data.modelId);
+  async execute(data: UpdateModelInput): Promise<Model> {
+    const model = await this.modelRepo.getModelById(data.tenantId, data.modelId);
     if (!model) {
       throw new Error("El modelo no existe para este tenant.");
     }
 
     const nextBrandId = data.brandId ?? model.brandId;
-    const brand = this.brandRepo.getBrandById(data.tenantId, nextBrandId);
+    const brand = await this.brandRepo.getBrandById(data.tenantId, nextBrandId);
     if (!brand) {
       throw new Error("La marca seleccionada no existe para este tenant.");
     }
 
-    const models = this.modelRepo
-      .getModelsByTenant(data.tenantId)
+    const models = (await this.modelRepo.getModelsByTenant(data.tenantId))
       .filter((item) => item.id !== data.modelId);
     const existingSlugs = models.map((item) => item.slug);
     const nextName = data.name ?? model.name;
@@ -94,7 +93,7 @@ export class UpdateModelUseCase {
       data.slug?.trim() ||
       (data.name ? buildUniqueSlug(nextName, existingSlugs) : model.slug);
 
-    this.modelRepo.updateModel(data.modelId, {
+    await this.modelRepo.updateModel(data.modelId, {
       brandId: nextBrandId,
       name: nextName,
       slug: nextSlug,
@@ -104,32 +103,33 @@ export class UpdateModelUseCase {
       updatedAt: new Date(),
     });
 
-    return this.modelRepo.getModelById(data.tenantId, data.modelId) ?? model;
+    return (await this.modelRepo.getModelById(data.tenantId, data.modelId)) ?? model;
   }
 }
 
 export class DeleteModelUseCase {
   constructor(private modelRepo: ModelRepository) {}
 
-  execute(data: DeleteModelInput): void {
-    const model = this.modelRepo.getModelById(data.tenantId, data.modelId);
+  async execute(data: DeleteModelInput): Promise<void> {
+    const model = await this.modelRepo.getModelById(data.tenantId, data.modelId);
     if (!model) {
       throw new Error("El modelo no existe para este tenant.");
     }
 
-    this.modelRepo.removeModel(data.modelId);
+    await this.modelRepo.removeModel(data.modelId);
   }
 }
 
 export class ListModelsUseCase {
   constructor(private modelRepo: ModelRepository) {}
 
-  execute(tenantId: string, options?: ListModelsOptions): Model[] {
+  async execute(tenantId: string, options?: ListModelsOptions): Promise<Model[]> {
     const includeInactive = options?.includeInactive ?? true;
     const brandId = options?.brandId;
 
-    return this.modelRepo
-      .getModelsByTenant(tenantId)
+    const models = await this.modelRepo.getModelsByTenant(tenantId);
+    
+    return models
       .filter((model) => (brandId ? model.brandId === brandId : true))
       .filter((model) => includeInactive || model.isActive)
       .sort((a, b) => a.name.localeCompare(b.name, "es"));

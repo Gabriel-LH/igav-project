@@ -1,116 +1,62 @@
-"use client";
+"use client"
 
-import { useMemo } from "react";
-import { ModelFormData } from "@/src/types/model/type.model";
+import { useState, useTransition } from "react";
+import { Model, ModelFormData } from "@/src/types/model/type.model";
+import { Brand } from "@/src/types/brand/type.brand";
 import { ModelsTable } from "./model-table";
-import { useBrandStore } from "@/src/store/useBrandStore";
-import { useModelStore } from "@/src/store/useModelStore";
-import { ZustandBrandRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandBrandRepository";
-import { ZustandModelRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandModelRepository";
-import {
-  CreateModelUseCase,
-  DeleteModelUseCase,
-  ListModelsUseCase,
-  UpdateModelUseCase,
-} from "@/src/application/tenant/use-cases/crudModel.usecase";
-import { ListBrandsUseCase } from "@/src/application/tenant/use-cases/crudBrand.usecase";
 import { toast } from "sonner";
+import { createModelAction, updateModelAction, deleteModelAction } from "@/src/app/(tenant)/tenant/actions/brand.actions";
 
-export function ModelLayout() {
-  const tenantId = "tenant-a";
-  const modelSnapshot = useModelStore((state) => state.models);
-  const brandSnapshot = useBrandStore((state) => state.brands);
+interface ModelLayoutProps {
+  initialModels: Model[];
+  initialBrands: Brand[];
+}
 
-  const modelRepo = useMemo(() => new ZustandModelRepository(), []);
-  const brandRepo = useMemo(() => new ZustandBrandRepository(), []);
-  const createModelUseCase = useMemo(
-    () => new CreateModelUseCase(modelRepo, brandRepo),
-    [modelRepo, brandRepo],
-  );
-  const updateModelUseCase = useMemo(
-    () => new UpdateModelUseCase(modelRepo, brandRepo),
-    [modelRepo, brandRepo],
-  );
-  const deleteModelUseCase = useMemo(
-    () => new DeleteModelUseCase(modelRepo),
-    [modelRepo],
-  );
-  const listModelsUseCase = useMemo(
-    () => new ListModelsUseCase(modelRepo),
-    [modelRepo],
-  );
-  const listBrandsUseCase = useMemo(
-    () => new ListBrandsUseCase(brandRepo),
-    [brandRepo],
-  );
+export function ModelLayout({ initialModels, initialBrands }: ModelLayoutProps) {
+  const [models, setModels] = useState<Model[]>(initialModels);
+  const [isPending, startTransition] = useTransition();
 
-  const models = useMemo(
-    () => listModelsUseCase.execute(tenantId, { includeInactive: true }),
-    [modelSnapshot, listModelsUseCase],
-  );
-  const brands = useMemo(
-    () => listBrandsUseCase.execute(tenantId, { includeInactive: true }),
-    [brandSnapshot, listBrandsUseCase],
-  );
-
-  const handleCreate = (formData: ModelFormData) => {
-    try {
-      createModelUseCase.execute({
-        tenantId,
-        brandId: formData.brandId,
-        name: formData.name,
-        slug: formData.slug,
-        description: formData.description,
-        year: formData.year,
-        isActive: formData.isActive,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "No se pudo crear el modelo.",
-      );
-    }
+  const handleCreate = async (formData: ModelFormData) => {
+    startTransition(async () => {
+      const result = await createModelAction(formData);
+      if (result.success && result.data) {
+        setModels((prev) => [...prev, result.data!].sort((a, b) => a.name.localeCompare(b.name)));
+        toast.success("Modelo creado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear el modelo");
+      }
+    });
   };
 
-  const handleUpdate = (id: string, formData: ModelFormData) => {
-    try {
-      updateModelUseCase.execute({
-        tenantId,
-        modelId: id,
-        brandId: formData.brandId,
-        name: formData.name,
-        slug: formData.slug,
-        description: formData.description,
-        year: formData.year,
-        isActive: formData.isActive,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo actualizar el modelo.",
-      );
-    }
+  const handleUpdate = async (id: string, formData: ModelFormData) => {
+    startTransition(async () => {
+      const result = await updateModelAction({ ...formData, modelId: id });
+      if (result.success && result.data) {
+        setModels((prev) => prev.map((m) => (m.id === id ? result.data! : m)).sort((a, b) => a.name.localeCompare(b.name)));
+        toast.success("Modelo actualizado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo actualizar el modelo");
+      }
+    });
   };
 
-  const handleDelete = (id: string) => {
-    try {
-      deleteModelUseCase.execute({
-        tenantId,
-        modelId: id,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar el modelo.",
-      );
-    }
+  const handleDelete = async (id: string) => {
+    startTransition(async () => {
+      const result = await deleteModelAction(id);
+      if (result.success) {
+        setModels((prev) => prev.filter((m) => m.id !== id));
+        toast.success("Modelo eliminado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo eliminar el modelo");
+      }
+    });
   };
+
   return (
-    <div>
+    <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
       <ModelsTable
         data={models}
-        brands={brands}
+        brands={initialBrands}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDelete}

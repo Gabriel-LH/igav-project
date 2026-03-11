@@ -1,6 +1,6 @@
-import { PlanFeatureKey } from "../types/plan/planFeature";
-import { PlanLimitKey } from "../types/plan/type.planLimitKey";
-import { PlanModuleKey } from "../types/plan/type.planModuleKey";
+import { PlanFeatureKey } from "../../types/plan/planFeature";
+import { PlanLimitKey } from "../../types/plan/type.planLimitKey";
+import { PlanModuleKey } from "../../types/plan/type.planModuleKey";
 
 // 3 tiers × 3 tracks = 9 plans
 export const PLAN_TIERS = ["starter", "business", "enterprise"] as const;
