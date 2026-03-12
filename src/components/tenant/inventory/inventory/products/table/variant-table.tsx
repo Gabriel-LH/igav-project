@@ -62,6 +62,7 @@ import { cn } from "@/lib/utils";
 import { generateBarcode } from "@/src/utils/variants/barcode";
 import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
 import { BarcodeScanner } from "../../barcode/BarcodeScanner";
+import { SingleImagePicker } from "../ui/SingleImagePicker";
 
 interface VariantsTableProps {
   baseSku: string;
@@ -82,6 +83,7 @@ interface VariantsTableProps {
   ) => void;
   onResetOverride: (signature: string) => void;
   onResetAll: () => void;
+  existingImages?: string[];
 }
 
 const RENT_UNITS = [
@@ -104,10 +106,12 @@ export function VariantsTable({
   onUpdateOverride,
   onResetOverride,
   onResetAll,
+  existingImages = [],
 }: VariantsTableProps) {
   // Estados locales SOLO para los inputs de aplicación global
   const [globalPriceRent, setGlobalPriceRent] = useState("");
   const [globalPriceSell, setGlobalPriceSell] = useState("");
+  const [globalPurchasePrice, setGlobalPurchasePrice] = useState(""); // NUEVO
   const [globalUnit, setGlobalUnit] = useState("");
   const [copiedBarcode, setCopiedBarcode] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState(10);
@@ -150,6 +154,39 @@ export function VariantsTable({
       }
     });
   }, [canRent, globalUnit, variants, onUpdateOverride]);
+
+  const applyGlobalPurchasePrice = useCallback(() => {
+    const numValue = parseFloat(globalPurchasePrice);
+    if (isNaN(numValue)) return;
+    variants.forEach((v) => {
+      if (v.isActive)
+        onUpdateOverride(v.signature, { purchasePrice: numValue });
+    });
+  }, [globalPurchasePrice, variants, onUpdateOverride]);
+
+  // --- Lógica de Ganancia y Margen (Basada en variantes paginadas o totales) ---
+  const calculateMetrics = () => {
+    const activeVariants = variants.filter(
+      (v) => v.isActive && (v.priceSell || 0) > 0,
+    );
+    if (activeVariants.length === 0) return { profit: 0, margin: 0 };
+
+    const totalSell = activeVariants.reduce(
+      (acc, v) => acc + (v.priceSell || 0),
+      0,
+    );
+    const totalCost = activeVariants.reduce(
+      (acc, v) => acc + (v.purchasePrice || 0),
+      0,
+    );
+    const avgProfit = (totalSell - totalCost) / activeVariants.length;
+    const avgMargin =
+      totalSell > 0 ? ((totalSell - totalCost) / totalSell) * 100 : 0;
+
+    return { profit: avgProfit, margin: avgMargin };
+  };
+
+  const { profit, margin } = calculateMetrics();
 
   const copyBarcode = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
@@ -311,6 +348,31 @@ export function VariantsTable({
               </div>
             )}
 
+            {/* COSTO DE COMPRA MASIVO */}
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase text-muted-foreground font-bold">
+                Costo Compra
+              </Label>
+              <div className="flex gap-1">
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  className="w-24 h-9"
+                  value={globalPurchasePrice}
+                  onChange={(e) => setGlobalPurchasePrice(e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={applyGlobalPurchasePrice}
+                  disabled={!globalPurchasePrice}
+                  type="button"
+                >
+                  Fijar Costo
+                </Button>
+              </div>
+            </div>
+
             {canSell && (
               <div className="space-y-2">
                 <label className="text-xs font-medium">Precio Venta</label>
@@ -356,12 +418,14 @@ export function VariantsTable({
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead className="w-12 text-center">Activo</TableHead>
+              <TableHead className="w-11 text-center">Imagen</TableHead>
               <TableHead>
                 <div className="flex items-center gap-1">
                   <Hash className="w-3 h-3" />
                   SKU
                 </div>
               </TableHead>
+
               <TableHead>
                 <div className="flex items-center gap-1">
                   <Barcode className="w-3 h-3" />
@@ -371,19 +435,25 @@ export function VariantsTable({
               {getAttributeKeys().map((key) => (
                 <TableHead key={key}>{key}</TableHead>
               ))}
+              <TableHead>
+                <div className="flex items-center gap-1">
+                  <span>S/.</span>
+                  Costo de compra
+                </div>
+              </TableHead>
               {canRent && (
                 <TableHead>
                   <div className="flex items-center gap-1">
-                    <DollarSign className="w-3 h-3" />
+                    <span>S/.</span>
                     Precio Renta
                   </div>
                 </TableHead>
               )}
-              {canRent && <TableHead>Unidad</TableHead>}
+              {canRent && <TableHead>Tiempo</TableHead>}
               {canSell && (
                 <TableHead>
                   <div className="flex items-center gap-1">
-                    <DollarSign className="w-3 h-3" />
+                    <span>S/.</span>
                     Precio Venta
                   </div>
                 </TableHead>
@@ -407,6 +477,7 @@ export function VariantsTable({
                   copiedBarcode={copiedBarcode}
                   canRent={canRent}
                   canSell={canSell}
+                  existingImages={existingImages}
                 />
               );
             })}
@@ -414,6 +485,26 @@ export function VariantsTable({
         </Table>
       </div>
       <div className="flex items-center justify-between px-4">
+        {/* Métricas de Rentabilidad */}
+        {canSell && margin < 10 && profit < 0 && (
+          <div className="flex items-center gap-6">
+            {profit < 0 && (
+              <div className="flex flex-col">
+                <span className="text-red-400 text-xs">
+                  Tu venta esta menos que tu compra, revisa tus precios.
+                </span>
+              </div>
+            )}
+            {margin < 10 && (
+              <div className="flex flex-col border-l pl-6">
+                <span className="text-xs text-yellow-400">
+                  El margen de ganancia debe de ser mayor al 10% o 15% para que
+                  sea rentable.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
           <div className="hidden items-center gap-2 lg:flex">
             <Label
@@ -510,6 +601,7 @@ interface VariantRowProps {
   copiedBarcode: string | null;
   canRent: boolean;
   canSell: boolean;
+  existingImages?: string[];
 }
 
 function VariantRow({
@@ -521,10 +613,20 @@ function VariantRow({
   copiedBarcode,
   canRent,
   canSell,
+  existingImages = [],
 }: VariantRowProps) {
   const localRentPrice = variant.priceRent ? String(variant.priceRent) : "";
   const localSellPrice = variant.priceSell ? String(variant.priceSell) : "";
   const localBarcode = variant.barcode || "";
+  const localPurchasePrice =
+    variant.purchasePrice !== undefined ? String(variant.purchasePrice) : "";
+
+  const handlePurchasePriceChange = (value: string) => {
+    const num = value === "" ? 0 : parseFloat(value);
+    if (!isNaN(num)) {
+      onUpdateOverride(variant.signature, { purchasePrice: num });
+    }
+  };
 
   const handleRentPriceChange = (value: string) => {
     if (value === "") {
@@ -558,6 +660,15 @@ function VariantRow({
 
   const attributeKeys = Object.keys(variant.attributes);
 
+  const cost = variant.purchasePrice || 0;
+  const price = variant.priceSell || 0;
+  const profit = price - cost;
+  const margin = price > 0 ? (profit / price) * 100 : 0;
+
+  // 2. Determinar salud financiera de la variante
+  const isLoss = price > 0 && profit < 0;
+  const isLowMargin = price > 0 && margin < 15; // Alerta si es menor al 15%
+
   return (
     <TableRow className={!variant.isActive ? "opacity-50 bg-muted/20" : ""}>
       {/* Activo */}
@@ -569,6 +680,21 @@ function VariantRow({
           }
         />
       </TableCell>
+      {/* IMAGEN DE VARIANTE en VariantRow */}
+      <TableCell>
+        <SingleImagePicker
+          value={
+            Array.isArray(variant.images)
+              ? variant.images[0]
+              : variant.images || ""
+          }
+          onChange={(url) =>
+            onUpdateOverride(variant.signature, { images: [url] })
+          }
+          disabled={!variant.isActive}
+          existingImages={existingImages}
+        />
+      </TableCell>
 
       {/* SKU */}
       <TableCell>
@@ -578,7 +704,7 @@ function VariantRow({
             onUpdateOverride(variant.signature, { variantCode: e.target.value })
           }
           className={cn(
-            "h-8 font-mono text-xs w-32",
+            "h-8 font-mono text-xs w-30",
             variant.hasOverride && "border-blue-500 bg-blue-50/50",
           )}
           disabled={!variant.isActive}
@@ -592,7 +718,7 @@ function VariantRow({
             value={localBarcode}
             onChange={(e) => handleBarcodeChange(e.target.value)}
             className={cn(
-              "h-8 font-mono text-xs w-32",
+              "h-8 font-mono text-xs w-31",
               localBarcode.includes("NaN") && "border-red-500 bg-red-50", // Resaltar error
             )}
             disabled={!variant.isActive}
@@ -704,6 +830,24 @@ function VariantRow({
         </TableCell>
       ))}
 
+      <TableCell>
+        <div className="flex flex-col gap-1">
+          <Input
+            type="number"
+            step="0.01"
+            value={localPurchasePrice}
+            onChange={(e) => handlePurchasePriceChange(e.target.value)}
+            className={cn(
+              "h-8 w-24",
+              variant.purchasePrice! > (variant.priceSell || 0) &&
+                "border-red-500 bg-red-50",
+            )}
+            disabled={!variant.isActive}
+            placeholder="0.00"
+          />
+        </div>
+      </TableCell>
+
       {canRent && (
         <TableCell>
           <Input
@@ -752,6 +896,49 @@ function VariantRow({
           />
         </TableCell>
       )}
+
+      <TableCell className="min-w-[140px] border-l bg-muted/5">
+        <div className="flex flex-col items-end gap-1 px-2">
+          {/* Ganancia en Moneda */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-medium">
+              Ganancia:
+            </span>
+            <span
+              className={cn(
+                "text-xs font-bold flex items-center gap-1",
+                profit > 0 ? "text-green-400" : "text-red-400",
+              )}
+            >
+              {profit > 0 ? (
+                <span>S/.</span>
+              ) : (
+                <AlertTriangle className="w-3 h-3" />
+              )}
+              {profit.toFixed(2)}
+            </span>
+          </div>
+          {/* Margen en Porcentaje */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-medium">
+              Margen:
+            </span>
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-[12px] h-5 px-1.5",
+                margin > 25
+                  ? "text-green-400"
+                  : margin > 10
+                    ? "text-amber-400"
+                    : "text-red-400",
+              )}
+            >
+              {margin.toFixed(1)}%
+            </Badge>
+          </div>
+        </div>
+      </TableCell>
 
       {/* Reset */}
       <TableCell>

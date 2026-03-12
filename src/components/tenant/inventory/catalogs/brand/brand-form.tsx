@@ -101,7 +101,7 @@ export function BrandForm({
       }
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={(e) => { e.stopPropagation(); form.handleSubmit(handleSubmit)(e); }} className="space-y-4">
           <FormField
             control={form.control}
             name="name"

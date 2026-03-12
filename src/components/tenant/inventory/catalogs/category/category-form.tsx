@@ -180,7 +180,7 @@ export function CategoryForm({
       }
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={(e) => { e.stopPropagation(); form.handleSubmit(handleSubmit)(e); }} className="space-y-6">
           {/* Jerarquía - Selector de Padre */}
           <FormField
             control={form.control}

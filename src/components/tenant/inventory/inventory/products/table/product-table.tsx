@@ -32,8 +32,11 @@ import {
   ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/src/utils/currency-format";
+import { CostAdjustmentModal } from "../ui/CostAdjustmentModal";
 
 interface ProductTableProps {
   products: Product[];
@@ -52,6 +55,8 @@ export function ProductTable({
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
+  const [selectedVariantForCost, setSelectedVariantForCost] =
+    useState<ProductVariant | null>(null);
 
   const variantsByProduct = useMemo(() => {
     const map = new Map<string, ProductVariant[]>();
@@ -88,6 +93,12 @@ export function ProductTable({
       }
       return next;
     });
+  };
+
+  // 2. Función que procesa el cambio
+  const handleCostUpdate = (data: any) => {
+    console.log("Enviando a la API y creando registro en PriceHistory:", data);
+    // Aquí llamarías a tu Server Action o API
   };
 
   const pageCount = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
@@ -156,14 +167,20 @@ export function ProductTable({
                       <code>{product.baseSku}</code>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={product.is_serial ? "default" : "secondary"}>
+                      <Badge
+                        variant={product.is_serial ? "default" : "secondary"}
+                      >
                         {product.is_serial ? "Serializado" : "Por lotes"}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        {product.can_rent && <Badge variant="secondary">Renta</Badge>}
-                        {product.can_sell && <Badge variant="secondary">Venta</Badge>}
+                        {product.can_rent && (
+                          <Badge variant="secondary">Renta</Badge>
+                        )}
+                        {product.can_sell && (
+                          <Badge variant="secondary">Venta</Badge>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>{productVariants.length}</TableCell>
@@ -187,22 +204,57 @@ export function ProductTable({
                     <TableCell colSpan={2}>
                       <div className="flex items-center gap-2 pl-12">
                         <Package className="h-4 w-4 text-muted-foreground" />
-                        <code>{variant.variantCode}</code>
+                        <div className="flex flex-col">
+                          <code>{variant.variantCode}</code>
+                          {variant.barcode && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {variant.barcode}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">
-                        {variant.barcode ? "Con barcode" : "Sin barcode"}
-                      </Badge>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-semibold text-muted-foreground uppercase">
+                          Costo
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">
+                            ${variant.purchasePrice || 0}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => setSelectedVariantForCost(variant)} // <--- Disparador
+                          >
+                            <History className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-xs text-muted-foreground">
-                        Renta: {variant.priceRent ?? 0} / Venta: {variant.priceSell ?? 0}
+                      <div className="flex flex-col gap-1 text-xs">
+                        <div className="flex justify-between w-24">
+                          <span className="text-muted-foreground">Renta:</span>
+                          <span className="font-medium">
+                            {formatCurrency(variant.priceRent ?? 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between w-24 border-t pt-1">
+                          <span className="text-muted-foreground">Venta:</span>
+                          <span className="font-medium">
+                            {formatCurrency(variant.priceSell ?? 0)}
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell colSpan={2}>
                       <div className="flex items-center justify-end gap-2">
-                        <span className="text-xs text-muted-foreground">Activo</span>
+                        <span className="text-xs text-muted-foreground">
+                          {variant.isActive ? "Activo" : "Inactivo"}
+                        </span>
                         <Switch
                           checked={variant.isActive}
                           onCheckedChange={(checked) =>
@@ -219,7 +271,10 @@ export function ProductTable({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-muted-foreground"
+                >
                   No hay productos registrados.
                 </TableCell>
               </TableRow>
@@ -230,7 +285,10 @@ export function ProductTable({
       <div className="flex items-center justify-between px-4 pb-4">
         <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
           <div className="hidden items-center gap-2 lg:flex">
-            <Label htmlFor="rows-per-page-product" className="text-sm font-medium">
+            <Label
+              htmlFor="rows-per-page-product"
+              className="text-sm font-medium"
+            >
               Filas por pagina
             </Label>
             <Select
@@ -240,7 +298,11 @@ export function ProductTable({
                 setPageIndex(0);
               }}
             >
-              <SelectTrigger size="sm" className="w-20" id="rows-per-page-product">
+              <SelectTrigger
+                size="sm"
+                className="w-20"
+                id="rows-per-page-product"
+              >
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
@@ -279,7 +341,9 @@ export function ProductTable({
               variant="outline"
               className="size-8"
               size="icon"
-              onClick={() => setPageIndex((prev) => Math.min(prev + 1, pageCount - 1))}
+              onClick={() =>
+                setPageIndex((prev) => Math.min(prev + 1, pageCount - 1))
+              }
               disabled={!canNextPage}
             >
               <span className="sr-only">Ir a la pagina siguiente</span>
@@ -298,8 +362,12 @@ export function ProductTable({
           </div>
         </div>
       </div>
+      <CostAdjustmentModal
+        variant={selectedVariantForCost}
+        isOpen={!!selectedVariantForCost}
+        onClose={() => setSelectedVariantForCost(null)}
+        onConfirm={handleCostUpdate}
+      />
     </div>
   );
 }
-
-

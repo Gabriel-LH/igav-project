@@ -74,6 +74,7 @@ export function AttributeValuesTable({
 }: AttributeValuesTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [open, setOpen] = useState(false);
 
   // Filtrar por tipo de atributo
   const filteredData = useMemo(() => {
@@ -164,6 +165,8 @@ export function AttributeValuesTable({
                 initialData={value}
                 attributeTypes={attributeTypes}
                 onSubmit={(data) => onUpdate(value.id, data)}
+                open={open}
+                onOpenChange={setOpen}
                 trigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <Pencil className="mr-2 h-4 w-4" />

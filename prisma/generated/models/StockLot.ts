@@ -296,6 +296,7 @@ export type StockLotWhereInput = {
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }
 
 export type StockLotOrderByWithRelationInput = {
@@ -321,6 +322,7 @@ export type StockLotOrderByWithRelationInput = {
   rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
   reservationItems?: Prisma.ReservationItemOrderByRelationAggregateInput
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
+  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
 }
 
 export type StockLotWhereUniqueInput = Prisma.AtLeast<{
@@ -349,6 +351,7 @@ export type StockLotWhereUniqueInput = Prisma.AtLeast<{
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }, "id">
 
 export type StockLotOrderByWithAggregationInput = {
@@ -412,6 +415,7 @@ export type StockLotCreateInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateInput = {
@@ -433,6 +437,7 @@ export type StockLotUncheckedCreateInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUpdateInput = {
@@ -454,6 +459,7 @@ export type StockLotUpdateInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateInput = {
@@ -475,6 +481,7 @@ export type StockLotUncheckedUpdateInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateManyInput = {
@@ -532,6 +539,11 @@ export type StockLotListRelationFilter = {
 
 export type StockLotOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type StockLotNullableScalarRelationFilter = {
+  is?: Prisma.StockLotWhereInput | null
+  isNot?: Prisma.StockLotWhereInput | null
 }
 
 export type StockLotCountOrderByAggregateInput = {
@@ -596,11 +608,6 @@ export type StockLotSumOrderByAggregateInput = {
 export type StockLotScalarRelationFilter = {
   is?: Prisma.StockLotWhereInput
   isNot?: Prisma.StockLotWhereInput
-}
-
-export type StockLotNullableScalarRelationFilter = {
-  is?: Prisma.StockLotWhereInput | null
-  isNot?: Prisma.StockLotWhereInput | null
 }
 
 export type StockLotCreateNestedManyWithoutBranchInput = {
@@ -729,6 +736,22 @@ export type StockLotUncheckedUpdateManyWithoutVariantNestedInput = {
   deleteMany?: Prisma.StockLotScalarWhereInput | Prisma.StockLotScalarWhereInput[]
 }
 
+export type StockLotCreateNestedOneWithoutPriceHistoriesInput = {
+  create?: Prisma.XOR<Prisma.StockLotCreateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.StockLotCreateOrConnectWithoutPriceHistoriesInput
+  connect?: Prisma.StockLotWhereUniqueInput
+}
+
+export type StockLotUpdateOneWithoutPriceHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.StockLotCreateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.StockLotCreateOrConnectWithoutPriceHistoriesInput
+  upsert?: Prisma.StockLotUpsertWithoutPriceHistoriesInput
+  disconnect?: Prisma.StockLotWhereInput | boolean
+  delete?: Prisma.StockLotWhereInput | boolean
+  connect?: Prisma.StockLotWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StockLotUpdateToOneWithWhereWithoutPriceHistoriesInput, Prisma.StockLotUpdateWithoutPriceHistoriesInput>, Prisma.StockLotUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
 export type EnumStockLotStatusFieldUpdateOperationsInput = {
   set?: $Enums.StockLotStatus
 }
@@ -851,6 +874,7 @@ export type StockLotCreateWithoutBranchInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutBranchInput = {
@@ -871,6 +895,7 @@ export type StockLotUncheckedCreateWithoutBranchInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutBranchInput = {
@@ -937,6 +962,7 @@ export type StockLotCreateWithoutProductInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutProductInput = {
@@ -957,6 +983,7 @@ export type StockLotUncheckedCreateWithoutProductInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutProductInput = {
@@ -1003,6 +1030,7 @@ export type StockLotCreateWithoutVariantInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutVariantInput = {
@@ -1023,6 +1051,7 @@ export type StockLotUncheckedCreateWithoutVariantInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutVariantInput = {
@@ -1051,6 +1080,106 @@ export type StockLotUpdateManyWithWhereWithoutVariantInput = {
   data: Prisma.XOR<Prisma.StockLotUpdateManyMutationInput, Prisma.StockLotUncheckedUpdateManyWithoutVariantInput>
 }
 
+export type StockLotCreateWithoutPriceHistoriesInput = {
+  id?: string
+  quantity?: number
+  barcode?: string | null
+  expirationDate?: Date | string | null
+  lotNumber?: string | null
+  isForRent: boolean
+  isForSale: boolean
+  status?: $Enums.StockLotStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+}
+
+export type StockLotUncheckedCreateWithoutPriceHistoriesInput = {
+  id?: string
+  tenantId: string
+  productId: string
+  variantId: string
+  branchId: string
+  quantity?: number
+  barcode?: string | null
+  expirationDate?: Date | string | null
+  lotNumber?: string | null
+  isForRent: boolean
+  isForSale: boolean
+  status?: $Enums.StockLotStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+}
+
+export type StockLotCreateOrConnectWithoutPriceHistoriesInput = {
+  where: Prisma.StockLotWhereUniqueInput
+  create: Prisma.XOR<Prisma.StockLotCreateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedCreateWithoutPriceHistoriesInput>
+}
+
+export type StockLotUpsertWithoutPriceHistoriesInput = {
+  update: Prisma.XOR<Prisma.StockLotUpdateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedUpdateWithoutPriceHistoriesInput>
+  create: Prisma.XOR<Prisma.StockLotCreateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedCreateWithoutPriceHistoriesInput>
+  where?: Prisma.StockLotWhereInput
+}
+
+export type StockLotUpdateToOneWithWhereWithoutPriceHistoriesInput = {
+  where?: Prisma.StockLotWhereInput
+  data: Prisma.XOR<Prisma.StockLotUpdateWithoutPriceHistoriesInput, Prisma.StockLotUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
+export type StockLotUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+}
+
+export type StockLotUncheckedUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+}
+
 export type StockLotCreateWithoutStockMovementsInput = {
   id?: string
   quantity?: number
@@ -1069,6 +1198,7 @@ export type StockLotCreateWithoutStockMovementsInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutStockMovementsInput = {
@@ -1089,6 +1219,7 @@ export type StockLotUncheckedCreateWithoutStockMovementsInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutStockMovementsInput = {
@@ -1125,6 +1256,7 @@ export type StockLotUpdateWithoutStockMovementsInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutStockMovementsInput = {
@@ -1145,6 +1277,7 @@ export type StockLotUncheckedUpdateWithoutStockMovementsInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutRentalItemsInput = {
@@ -1165,6 +1298,7 @@ export type StockLotCreateWithoutRentalItemsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutRentalItemsInput = {
@@ -1185,6 +1319,7 @@ export type StockLotUncheckedCreateWithoutRentalItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutRentalItemsInput = {
@@ -1221,6 +1356,7 @@ export type StockLotUpdateWithoutRentalItemsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutRentalItemsInput = {
@@ -1241,6 +1377,7 @@ export type StockLotUncheckedUpdateWithoutRentalItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutReservationItemsInput = {
@@ -1261,6 +1398,7 @@ export type StockLotCreateWithoutReservationItemsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutReservationItemsInput = {
@@ -1281,6 +1419,7 @@ export type StockLotUncheckedCreateWithoutReservationItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutReservationItemsInput = {
@@ -1317,6 +1456,7 @@ export type StockLotUpdateWithoutReservationItemsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutReservationItemsInput = {
@@ -1337,6 +1477,7 @@ export type StockLotUncheckedUpdateWithoutReservationItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutSaleItemsInput = {
@@ -1357,6 +1498,7 @@ export type StockLotCreateWithoutSaleItemsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutSaleItemsInput = {
@@ -1377,6 +1519,7 @@ export type StockLotUncheckedCreateWithoutSaleItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutSaleItemsInput = {
@@ -1413,6 +1556,7 @@ export type StockLotUpdateWithoutSaleItemsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutSaleItemsInput = {
@@ -1433,6 +1577,7 @@ export type StockLotUncheckedUpdateWithoutSaleItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutTenantInput = {
@@ -1453,6 +1598,7 @@ export type StockLotCreateWithoutTenantInput = {
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutTenantInput = {
@@ -1473,6 +1619,7 @@ export type StockLotUncheckedCreateWithoutTenantInput = {
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutTenantInput = {
@@ -1535,6 +1682,7 @@ export type StockLotUpdateWithoutBranchInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutBranchInput = {
@@ -1555,6 +1703,7 @@ export type StockLotUncheckedUpdateWithoutBranchInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutBranchInput = {
@@ -1607,6 +1756,7 @@ export type StockLotUpdateWithoutProductInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutProductInput = {
@@ -1627,6 +1777,7 @@ export type StockLotUncheckedUpdateWithoutProductInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutProductInput = {
@@ -1679,6 +1830,7 @@ export type StockLotUpdateWithoutVariantInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutVariantInput = {
@@ -1699,6 +1851,7 @@ export type StockLotUncheckedUpdateWithoutVariantInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutVariantInput = {
@@ -1751,6 +1904,7 @@ export type StockLotUpdateWithoutTenantInput = {
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutTenantInput = {
@@ -1771,6 +1925,7 @@ export type StockLotUncheckedUpdateWithoutTenantInput = {
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutTenantInput = {
@@ -1799,6 +1954,7 @@ export type StockLotCountOutputType = {
   rentalItems: number
   reservationItems: number
   saleItems: number
+  priceHistories: number
 }
 
 export type StockLotCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1806,6 +1962,7 @@ export type StockLotCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   rentalItems?: boolean | StockLotCountOutputTypeCountRentalItemsArgs
   reservationItems?: boolean | StockLotCountOutputTypeCountReservationItemsArgs
   saleItems?: boolean | StockLotCountOutputTypeCountSaleItemsArgs
+  priceHistories?: boolean | StockLotCountOutputTypeCountPriceHistoriesArgs
 }
 
 /**
@@ -1846,6 +2003,13 @@ export type StockLotCountOutputTypeCountSaleItemsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.SaleItemWhereInput
 }
 
+/**
+ * StockLotCountOutputType without action
+ */
+export type StockLotCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PriceHistoryWhereInput
+}
+
 
 export type StockLotSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1870,6 +2034,7 @@ export type StockLotSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   rentalItems?: boolean | Prisma.StockLot$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.StockLot$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.StockLot$saleItemsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.StockLotCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockLot"]>
 
@@ -1942,6 +2107,7 @@ export type StockLotInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   rentalItems?: boolean | Prisma.StockLot$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.StockLot$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.StockLot$saleItemsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.StockLotCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StockLotIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1968,6 +2134,7 @@ export type $StockLotPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
     reservationItems: Prisma.$ReservationItemPayload<ExtArgs>[]
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
+    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2386,6 +2553,7 @@ export interface Prisma__StockLotClient<T, Null = never, ExtArgs extends runtime
   rentalItems<T extends Prisma.StockLot$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationItems<T extends Prisma.StockLot$reservationItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$reservationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleItems<T extends Prisma.StockLot$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  priceHistories<T extends Prisma.StockLot$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2918,6 +3086,30 @@ export type StockLot$saleItemsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.SaleItemScalarFieldEnum | Prisma.SaleItemScalarFieldEnum[]
+}
+
+/**
+ * StockLot.priceHistories
+ */
+export type StockLot$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PriceHistory
+   */
+  select?: Prisma.PriceHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PriceHistory
+   */
+  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
+  where?: Prisma.PriceHistoryWhereInput
+  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.PriceHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**

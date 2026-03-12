@@ -46,6 +46,8 @@ interface AttributeValueFormProps {
   onSubmit: (data: AttributeValueFormData) => void;
   trigger?: React.ReactNode;
   compact?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function AttributeValueForm({
@@ -53,10 +55,24 @@ export function AttributeValueForm({
   attributeTypes,
   defaultAttributeTypeId,
   onSubmit,
+  open,
+  onOpenChange,
   trigger,
   compact = false,
 }: AttributeValueFormProps) {
-  const [open, setOpen] = useState(false);
+
+  const [userModifiedCode, setUserModifiedCode] = useState(false);
+  const isEditing = !!initialData;
+
+  // Generar código automático desde el valor (primeros 3 chars)
+  const generateCode = (value: string) => {
+    return value
+      .substring(0, 3)
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^A-Z0-9]/g, "");
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,6 +97,14 @@ export function AttributeValueForm({
   const selectedTypeId = form.watch("attributeTypeId");
   const selectedType = attributeTypes.find((t) => t.id === selectedTypeId);
 
+  // Auto-generate code when value changes
+  const watchValue = form.watch("value");
+  useEffect(() => {
+    if (!isEditing && watchValue && !userModifiedCode) {
+      form.setValue("code", generateCode(watchValue));
+    }
+  }, [form, isEditing, watchValue, userModifiedCode]);
+
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const hexColor = values.hexColor?.trim() || undefined;
     if (
@@ -99,25 +123,14 @@ export function AttributeValueForm({
 
     onSubmit(payload);
     form.reset();
-    setOpen(false);
-  };
-
-  const isEditing = !!initialData;
-
-  // Generar código automático desde el valor
-  const generateCode = (value: string) => {
-    return value
-      .toUpperCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "_")
-      .substring(0, 20);
+    setUserModifiedCode(false);
+    onOpenChange?.(false);
   };
 
   return (
     <EntityModal
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       title={isEditing ? "Editar Valor de Atributo" : "Nuevo Valor de Atributo"}
       description="Define un valor específico para un tipo de atributo existente."
       maxWidth="md"
@@ -131,7 +144,7 @@ export function AttributeValueForm({
       }
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={(e) => { e.stopPropagation(); form.handleSubmit(handleSubmit)(e); }} className="space-y-6">
           {/* Selector de Tipo de Atributo */}
           {!(compact && defaultAttributeTypeId) && (
             <FormField
@@ -209,13 +222,6 @@ export function AttributeValueForm({
                         {...field}
                         className="pl-9"
                         placeholder="Ej: Rojo"
-                        onChange={(e) => {
-                          field.onChange(e);
-                          // Auto-generar código si está vacío
-                          if (!form.getValues("code")) {
-                            form.setValue("code", generateCode(e.target.value));
-                          }
-                        }}
                       />
                     </div>
                   </FormControl>
@@ -238,6 +244,10 @@ export function AttributeValueForm({
                         {...field}
                         className="pl-9 uppercase font-mono"
                         placeholder="Ej: ROJO"
+                        onChange={(e) => {
+                          field.onChange(e.target.value.toUpperCase());
+                          setUserModifiedCode(true);
+                        }}
                       />
                     </div>
                   </FormControl>
@@ -313,7 +323,7 @@ export function AttributeValueForm({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => onOpenChange?.(false)}
             >
               Cancelar
             </Button>

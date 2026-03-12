@@ -289,6 +289,7 @@ export type ProductVariantWhereInput = {
   saleItems?: Prisma.SaleItemListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }
 
 export type ProductVariantOrderByWithRelationInput = {
@@ -314,6 +315,7 @@ export type ProductVariantOrderByWithRelationInput = {
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
   transferItems?: Prisma.TransferItemOrderByRelationAggregateInput
   inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
+  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
 }
 
 export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
@@ -342,6 +344,7 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   saleItems?: Prisma.SaleItemListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }, "id" | "variantCode">
 
 export type ProductVariantOrderByWithAggregationInput = {
@@ -405,6 +408,7 @@ export type ProductVariantCreateInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateInput = {
@@ -428,6 +432,7 @@ export type ProductVariantUncheckedCreateInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUpdateInput = {
@@ -451,6 +456,7 @@ export type ProductVariantUpdateInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateInput = {
@@ -474,6 +480,7 @@ export type ProductVariantUncheckedUpdateInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateManyInput = {
@@ -658,6 +665,20 @@ export type ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantUpdateToOneWithWhereWithoutInventoryItemsInput, Prisma.ProductVariantUpdateWithoutInventoryItemsInput>, Prisma.ProductVariantUncheckedUpdateWithoutInventoryItemsInput>
 }
 
+export type ProductVariantCreateNestedOneWithoutPriceHistoriesInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutPriceHistoriesInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+}
+
+export type ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutPriceHistoriesInput
+  upsert?: Prisma.ProductVariantUpsertWithoutPriceHistoriesInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantUpdateToOneWithWhereWithoutPriceHistoriesInput, Prisma.ProductVariantUpdateWithoutPriceHistoriesInput>, Prisma.ProductVariantUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
 export type ProductVariantCreateNestedOneWithoutStockLotsInput = {
   create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutStockLotsInput, Prisma.ProductVariantUncheckedCreateWithoutStockLotsInput>
   connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutStockLotsInput
@@ -806,6 +827,7 @@ export type ProductVariantCreateWithoutProductInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutProductInput = {
@@ -828,6 +850,7 @@ export type ProductVariantUncheckedCreateWithoutProductInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutProductInput = {
@@ -895,6 +918,7 @@ export type ProductVariantCreateWithoutInventoryItemsInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
@@ -917,6 +941,7 @@ export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutInventoryItemsInput = {
@@ -955,6 +980,7 @@ export type ProductVariantUpdateWithoutInventoryItemsInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
@@ -971,6 +997,115 @@ export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
+}
+
+export type ProductVariantCreateWithoutPriceHistoriesInput = {
+  id?: string
+  variantCode: string
+  barcode?: string | null
+  attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  priceSell?: number | null
+  priceRent?: number | null
+  rentUnit?: $Enums.RentUnit | null
+  image?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+}
+
+export type ProductVariantUncheckedCreateWithoutPriceHistoriesInput = {
+  id?: string
+  tenantId: string
+  productId: string
+  variantCode: string
+  barcode?: string | null
+  attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  priceSell?: number | null
+  priceRent?: number | null
+  rentUnit?: $Enums.RentUnit | null
+  image?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+}
+
+export type ProductVariantCreateOrConnectWithoutPriceHistoriesInput = {
+  where: Prisma.ProductVariantWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedCreateWithoutPriceHistoriesInput>
+}
+
+export type ProductVariantUpsertWithoutPriceHistoriesInput = {
+  update: Prisma.XOR<Prisma.ProductVariantUpdateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedUpdateWithoutPriceHistoriesInput>
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedCreateWithoutPriceHistoriesInput>
+  where?: Prisma.ProductVariantWhereInput
+}
+
+export type ProductVariantUpdateToOneWithWhereWithoutPriceHistoriesInput = {
+  where?: Prisma.ProductVariantWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantUpdateWithoutPriceHistoriesInput, Prisma.ProductVariantUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
+export type ProductVariantUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+}
+
+export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
   stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
@@ -999,6 +1134,7 @@ export type ProductVariantCreateWithoutStockLotsInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
@@ -1021,6 +1157,7 @@ export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutStockLotsInput = {
@@ -1059,6 +1196,7 @@ export type ProductVariantUpdateWithoutStockLotsInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
@@ -1081,6 +1219,7 @@ export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutRentalItemsInput = {
@@ -1103,6 +1242,7 @@ export type ProductVariantCreateWithoutRentalItemsInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
@@ -1125,6 +1265,7 @@ export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutRentalItemsInput = {
@@ -1163,6 +1304,7 @@ export type ProductVariantUpdateWithoutRentalItemsInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
@@ -1185,6 +1327,7 @@ export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutReservationItemsInput = {
@@ -1207,6 +1350,7 @@ export type ProductVariantCreateWithoutReservationItemsInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
@@ -1229,6 +1373,7 @@ export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutReservationItemsInput = {
@@ -1267,6 +1412,7 @@ export type ProductVariantUpdateWithoutReservationItemsInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
@@ -1289,6 +1435,7 @@ export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutSaleItemsInput = {
@@ -1311,6 +1458,7 @@ export type ProductVariantCreateWithoutSaleItemsInput = {
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
@@ -1333,6 +1481,7 @@ export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutSaleItemsInput = {
@@ -1371,6 +1520,7 @@ export type ProductVariantUpdateWithoutSaleItemsInput = {
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
@@ -1393,6 +1543,7 @@ export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutTenantInput = {
@@ -1415,6 +1566,7 @@ export type ProductVariantCreateWithoutTenantInput = {
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutTenantInput = {
@@ -1437,6 +1589,7 @@ export type ProductVariantUncheckedCreateWithoutTenantInput = {
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutTenantInput = {
@@ -1485,6 +1638,7 @@ export type ProductVariantCreateWithoutTransferItemsInput = {
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
@@ -1507,6 +1661,7 @@ export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutTransferItemsInput = {
@@ -1545,6 +1700,7 @@ export type ProductVariantUpdateWithoutTransferItemsInput = {
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
@@ -1567,6 +1723,7 @@ export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutInventoryMovementsInput = {
@@ -1589,6 +1746,7 @@ export type ProductVariantCreateWithoutInventoryMovementsInput = {
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
@@ -1611,6 +1769,7 @@ export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutInventoryMovementsInput = {
@@ -1649,6 +1808,7 @@ export type ProductVariantUpdateWithoutInventoryMovementsInput = {
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -1671,6 +1831,7 @@ export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateManyProductInput = {
@@ -1708,6 +1869,7 @@ export type ProductVariantUpdateWithoutProductInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutProductInput = {
@@ -1730,6 +1892,7 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
@@ -1782,6 +1945,7 @@ export type ProductVariantUpdateWithoutTenantInput = {
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutTenantInput = {
@@ -1804,6 +1968,7 @@ export type ProductVariantUncheckedUpdateWithoutTenantInput = {
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutTenantInput = {
@@ -1834,6 +1999,7 @@ export type ProductVariantCountOutputType = {
   saleItems: number
   transferItems: number
   inventoryMovements: number
+  priceHistories: number
 }
 
 export type ProductVariantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1844,6 +2010,7 @@ export type ProductVariantCountOutputTypeSelect<ExtArgs extends runtime.Types.Ex
   saleItems?: boolean | ProductVariantCountOutputTypeCountSaleItemsArgs
   transferItems?: boolean | ProductVariantCountOutputTypeCountTransferItemsArgs
   inventoryMovements?: boolean | ProductVariantCountOutputTypeCountInventoryMovementsArgs
+  priceHistories?: boolean | ProductVariantCountOutputTypeCountPriceHistoriesArgs
 }
 
 /**
@@ -1905,6 +2072,13 @@ export type ProductVariantCountOutputTypeCountInventoryMovementsArgs<ExtArgs ext
   where?: Prisma.InventoryMovementWhereInput
 }
 
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PriceHistoryWhereInput
+}
+
 
 export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1929,6 +2103,7 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   saleItems?: boolean | Prisma.ProductVariant$saleItemsArgs<ExtArgs>
   transferItems?: boolean | Prisma.ProductVariant$transferItemsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
@@ -1995,6 +2170,7 @@ export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.Inter
   saleItems?: boolean | Prisma.ProductVariant$saleItemsArgs<ExtArgs>
   transferItems?: boolean | Prisma.ProductVariant$transferItemsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2018,6 +2194,7 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
     transferItems: Prisma.$TransferItemPayload<ExtArgs>[]
     inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
+    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2436,6 +2613,7 @@ export interface Prisma__ProductVariantClient<T, Null = never, ExtArgs extends r
   saleItems<T extends Prisma.ProductVariant$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferItems<T extends Prisma.ProductVariant$transferItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$transferItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryMovements<T extends Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  priceHistories<T extends Prisma.ProductVariant$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3039,6 +3217,30 @@ export type ProductVariant$inventoryMovementsArgs<ExtArgs extends runtime.Types.
   take?: number
   skip?: number
   distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+}
+
+/**
+ * ProductVariant.priceHistories
+ */
+export type ProductVariant$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PriceHistory
+   */
+  select?: Prisma.PriceHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PriceHistory
+   */
+  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
+  where?: Prisma.PriceHistoryWhereInput
+  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.PriceHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**

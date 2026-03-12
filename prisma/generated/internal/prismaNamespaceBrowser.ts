@@ -95,6 +95,7 @@ export const ModelName = {
   ProductVariant: 'ProductVariant',
   InventoryItem: 'InventoryItem',
   InventoryItemStatusHistory: 'InventoryItemStatusHistory',
+  PriceHistory: 'PriceHistory',
   StockLot: 'StockLot',
   StockMovement: 'StockMovement',
   Promotion: 'Promotion',
@@ -882,6 +883,22 @@ export const InventoryItemStatusHistoryScalarFieldEnum = {
 } as const
 
 export type InventoryItemStatusHistoryScalarFieldEnum = (typeof InventoryItemStatusHistoryScalarFieldEnum)[keyof typeof InventoryItemStatusHistoryScalarFieldEnum]
+
+
+export const PriceHistoryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  variantId: 'variantId',
+  stockLotId: 'stockLotId',
+  inventoryItemId: 'inventoryItemId',
+  oldPrice: 'oldPrice',
+  newPrice: 'newPrice',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  userId: 'userId'
+} as const
+
+export type PriceHistoryScalarFieldEnum = (typeof PriceHistoryScalarFieldEnum)[keyof typeof PriceHistoryScalarFieldEnum]
 
 
 export const StockLotScalarFieldEnum = {

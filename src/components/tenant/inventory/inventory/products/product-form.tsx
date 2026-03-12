@@ -28,6 +28,7 @@ import {
   FolderTree,
   Search,
   RefreshCcwIcon,
+  Info,
 } from "lucide-react";
 import { VariantAttributeSelector } from "./selected-atribute";
 import { VariantsTable } from "./table/variant-table";
@@ -77,6 +78,8 @@ import { BrandForm } from "../../catalogs/brand/brand-form";
 import { ModelForm } from "../../catalogs/model/model-form";
 import { CategoryForm } from "../../catalogs/category/category-form";
 import { toast } from "sonner";
+import { MediaPicker } from "./ui/MeidaPicker";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/tooltip";
 
 const initialData: ProductFormData = {
   name: "",
@@ -85,7 +88,7 @@ const initialData: ProductFormData = {
   modelId: "",
   categoryId: "",
   description: "",
-  image: "",
+  image: [],
   can_rent: true,
   can_sell: true,
   is_serial: true,
@@ -190,7 +193,9 @@ export function ProductForm({
     };
   }, [setBrands, setCategories, setModels]);
 
-  const handleCreateBrand = async (data: Parameters<typeof createBrandAction>[0]) => {
+  const handleCreateBrand = async (
+    data: Parameters<typeof createBrandAction>[0],
+  ) => {
     const result = await createBrandAction(data);
     if (result.success && result.data) {
       addBrand(result.data);
@@ -205,7 +210,9 @@ export function ProductForm({
     }
   };
 
-  const handleCreateModel = async (data: Parameters<typeof createModelAction>[0]) => {
+  const handleCreateModel = async (
+    data: Parameters<typeof createModelAction>[0],
+  ) => {
     const result = await createModelAction(data);
     if (result.success && result.data) {
       addModel(result.data);
@@ -220,7 +227,9 @@ export function ProductForm({
     }
   };
 
-  const handleCreateCategory = async (data: Parameters<typeof createCategoryAction>[0]) => {
+  const handleCreateCategory = async (
+    data: Parameters<typeof createCategoryAction>[0],
+  ) => {
     const result = await createCategoryAction(data);
     if (result.success && result.data) {
       addCategory(result.data);
@@ -339,555 +348,536 @@ export function ProductForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="w-full flex justify-center">
-          <TabsList>
-            <TabsTrigger value="general" className="gap-2">
-              <Package className="w-4 h-4" />
-              General
-            </TabsTrigger>
-            <TabsTrigger value="variants" className="gap-2">
-              <DollarSign className="w-4 h-4" />
-              Variantes
-              {variants.length > 0 && (
-                <Badge
-                  variant="secondary"
-                  className="ml-1 text-[10px] h-4 px-1"
-                >
-                  {variants.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        {/* TAB 1: GENERAL */}
-        <TabsContent value="general" className="space-y-6 mt-3">
-          <div className="space-y-4">
-            {/* FLAGS PRINCIPALES */}
-            <div className="grid border-t pt-3 grid-cols-1 md:grid-cols-3 gap-4">
-              <Card
-                className={`border transition-colors ${
-                  formData.can_rent
-                    ? "border-blue-500 bg-blue-50/10"
-                    : "border-muted"
-                }`}
-              >
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-semibold flex items-center -mt-3">
-                        Disponible para Renta
-                        {formData.can_rent && (
-                          <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                        )}
-                      </Label>
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Los clientes pueden rentar este producto por tiempo
-                      </p>
-                    </div>
-                    <Switch
-                      checked={formData.can_rent}
-                      onCheckedChange={(checked) =>
-                        setFormData({ ...formData, can_rent: checked })
-                      }
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card
-                className={`border transition-colors ${
-                  formData.can_sell
-                    ? "border-green-500 bg-green-50/10"
-                    : "border-muted"
-                }`}
-              >
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-semibold flex items-center -mt-3">
-                        Disponible para Venta
-                        {formData.can_sell && (
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        )}
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Los clientes pueden comprar este producto
-                      </p>
-                    </div>
-                    <Switch
-                      checked={formData.can_sell}
-                      onCheckedChange={(checked) =>
-                        setFormData({ ...formData, can_sell: checked })
-                      }
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card
-                className={`border transition-colors ${
-                  formData.is_serial
-                    ? "border-amber-500 bg-amber-50/10"
-                    : "border-muted"
-                }`}
-              >
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-semibold flex items-center -mt-3">
-                        Ítems Serializados
-                        {formData.is_serial && (
-                          <CheckCircle2 className="w-4 h-4 text-amber-500" />
-                        )}
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Cada unidad tiene número de serie único
-                      </p>
-                    </div>
-                    <Switch
-                      checked={formData.is_serial}
-                      onCheckedChange={(checked) =>
-                        setFormData({ ...formData, is_serial: checked })
-                      }
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-7">
-              <div className="md:col-span-2">
-                {/* INFO BÁSICA */}
-                <div className="flex  w-full md:flex-row flex-col gap-4">
-                  {/* NOMBRE PRIMERO */}
-                  <div className="space-y-1 w-full md:col-span-2">
-                    <Label htmlFor="name">Nombre del Producto *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder="iPhone 15 Pro"
-                    />
-                  </div>
-
-                  {/* SKU BASE CON BOTÓN GENERAR */}
-                  <div className="space-y-1 w-full">
-                    <Label htmlFor="baseSku">SKU Base *</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="baseSku"
-                        value={formData.baseSku}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            baseSku: e.target.value.toUpperCase(),
-                          })
-                        }
-                        placeholder="IPH-15-PRO"
-                        className="font-mono flex-1"
-                      />
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => {
-                          // Generar SKU base: 3 primeras letras del nombre
-                          const nameWords = formData.name.trim().split(/\s+/);
-                          let sku = "";
-
-                          if (nameWords.length === 1) {
-                            // Una palabra: primeras 3 letras
-                            sku = nameWords[0].substring(0, 3).toUpperCase();
-                          } else {
-                            // Múltiples palabras: primera letra de cada una (max 4)
-                            sku = nameWords
-                              .slice(0, 4)
-                              .map((w) => w[0]?.toUpperCase() || "")
-                              .join("");
-                          }
-
-                          // Agregar timestamp corto para unicidad si está vacío
-                          if (!sku) sku = "PROD";
-
-                          setFormData({ ...formData, baseSku: sku });
-                        }}
-                        disabled={!formData.name}
-                        className="gap-2 whitespace-nowrap"
-                      >
-                        <RefreshCcwIcon className="w-4 h-4" />
-                        Generar
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Prefijo para SKUs de variantes. Ej:{" "}
-                      {formData.baseSku || "XXX"}-NEG-M-01
-                    </p>
-                  </div>
-                </div>
-
-                {/* SELECTOR DE CATEGORÍA JERÁRQUICO */}
-                <div className="flex flex-row gap-4">
-                  <div className="flex items-center align-middle w-full gap-4">
-                    <div className="space-y-1 w-full">
-                      <Label className="flex items-center gap-2">
-                        <FolderTree className="w-4 h-4" />
-                        Categoría *
-                      </Label>
-                      <Select
-                        value={formData.categoryId}
-                        onValueChange={(val) =>
-                          setFormData({ ...formData, categoryId: val })
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar categoría..." />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[300px]">
-                          {flatCategories.map((cat) => (
-                            <SelectItem
-                              key={cat.value}
-                              value={cat.value}
-                              disabled={cat.disabled}
-                            >
-                              <div className="flex items-center">
-                                <span style={{ width: cat.level * 20 }} />
-                                {cat.level > 0 && (
-                                  <span className="text-muted-foreground mr-2">
-                                    └─
-                                  </span>
-                                )}
-                                <span
-                                  className={cn(
-                                    cat.disabled && "text-muted-foreground",
-                                  )}
-                                >
-                                  {cat.label}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Selecciona la categoría más específica (último nivel)
-                      </p>
-                    </div>
-                    <CategoryForm
-                      categories={categories}
-                      onSubmit={handleCreateCategory}
-                      compact
-                      trigger={
-                        <Button variant="outline">
-                          <Plus />
-                          Crear
-                        </Button>
-                      }
-                    />
-                  </div>
-                  <div className="flex mt-4 gap-4 w-full">
-                    {/* INFO DE CATEGORÍA (breadcrumb) */}
-                    {selectedCategory && (
-                      <div className="px-3 h-fit py-1 bg-muted rounded-lg w-full">
-                        <div className="text-sm text-muted-foreground">
-                          Ruta de categoría
-                        </div>
-                        <div className="flex items-center gap-2 text-sm flex-wrap">
-                          {selectedCategory.path
-                            ?.split("/")
-                            .map((part, idx, arr) => (
-                              <span key={idx} className="flex items-center">
-                                <span className="capitalize">{part}</span>
-                                {idx < arr.length - 1 && (
-                                  <span className="mx-2 text-muted-foreground">
-                                    /
-                                  </span>
-                                )}
-                              </span>
-                            ))}
-                        </div>
-                      </div>
+      {/* TAB 1: GENERAL */}
+      <div className="space-y-4">
+        {/* FLAGS PRINCIPALES */}
+        <div className="grid border-t pt-3 grid-cols-1 md:grid-cols-3 gap-4">
+          <Card
+            className={`border transition-colors ${
+              formData.can_rent
+                ? "border-blue-500 bg-blue-50/10"
+                : "border-muted"
+            }`}
+          >
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-base font-semibold flex items-center -mt-3">
+                    Disponible para Renta
+                    {formData.can_rent && (
+                      <CheckCircle2 className="w-4 h-4 text-blue-500" />
                     )}
-                  </div>
+                  </Label>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Los clientes pueden rentar este producto por tiempo
+                  </p>
                 </div>
-                <div className="space-y-1 mt-2">
-                  <Label htmlFor="image">URL de Imagen</Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image: e.target.value })
-                    }
-                    placeholder="https://..."
-                  />
-                </div>
-                <div className="space-y-1 mt-2">
-                  <Label htmlFor="description">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Descripción detallada del producto..."
-                    rows={3}
-                  />
-                </div>
-              </div>
-              <div className="md:col-span-1">
-                <div className="flex w-full gap-4 flex-col">
-                  {/* SELECTOR DE MODELO (con Brand implícito) */}
-                  <div className="flex items-center gap-4">
-                    <div className="space-y-1 w-full">
-                      <Label className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4" />
-                        Marca (Opcional)
-                      </Label>
-                      <Popover
-                        open={openBrandPopover}
-                        onOpenChange={setOpenBrandPopover}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="w-full justify-between"
-                          >
-                            {selectedBrand ? (
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">
-                                  {selectedBrand.name}
-                                </span>
-                                <Badge variant="secondary" className="text-xs">
-                                  {selectedBrand.name}
-                                </Badge>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground">
-                                Seleccionar marca...
-                              </span>
-                            )}
-                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[400px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar marca..." />
-                            <CommandList>
-                              <CommandEmpty>
-                                No se encontraron marcas.
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {brands.map((brand) => (
-                                  <CommandItem
-                                    key={brand.id}
-                                    onSelect={() => {
-                                      setFormData({
-                                        ...formData,
-                                        brandId: brand.id,
-                                      });
-                                      setOpenBrandPopover(false);
-                                    }}
-                                    className="flex items-center justify-between"
-                                  >
-                                    <div>
-                                      <div className="font-medium">
-                                        {brand.name}
-                                      </div>
-                                    </div>
-                                    <div
-                                      className={cn(
-                                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                        formData.brandId === brand.id
-                                          ? "bg-primary text-primary-foreground"
-                                          : "opacity-50 [&_svg]:invisible",
-                                      )}
-                                    >
-                                      <CheckCircle2 className="h-3 w-3" />
-                                    </div>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    <BrandForm
-                      onSubmit={handleCreateBrand}
-                      compact
-                      trigger={
-                        <Button className="mt-5" variant="outline">
-                          <Plus />
-                          Crear
-                        </Button>
-                      }
-                    />
-                  </div>
-
-                  <div className="flex gap-4">
-                    <div className="space-y-1 w-full">
-                      <Label className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4" />
-                        Modelo (Opcional)
-                      </Label>
-                      <Popover
-                        open={openModelPopover}
-                        onOpenChange={setOpenModelPopover}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="w-full justify-between"
-                          >
-                            {selectedModel ? (
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">
-                                  {selectedModel.name}
-                                </span>
-                                <Badge variant="secondary" className="text-xs">
-                                  {selectedModel.brandName}
-                                </Badge>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground">
-                                Seleccionar modelo...
-                              </span>
-                            )}
-                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[400px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar modelo..." />
-                            <CommandList>
-                              <CommandEmpty>
-                                No se encontraron modelos.
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {modelsByBrand.map((model) => (
-                                  <CommandItem
-                                    key={model.id}
-                                    onSelect={() => {
-                                      setFormData({
-                                        ...formData,
-                                        modelId: model.id,
-                                      });
-                                      setOpenModelPopover(false);
-                                    }}
-                                    className="flex items-center justify-between"
-                                  >
-                                    <div>
-                                      <div className="font-medium">
-                                        {model.name}
-                                      </div>
-                                    </div>
-                                    <div
-                                      className={cn(
-                                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                        formData.modelId === model.id
-                                          ? "bg-primary text-primary-foreground"
-                                          : "opacity-50 [&_svg]:invisible",
-                                      )}
-                                    >
-                                      <CheckCircle2 className="h-3 w-3" />
-                                    </div>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <ModelForm
-                      brands={brands}
-                      defaultBrandId={formData.brandId || undefined}
-                      onSubmit={handleCreateModel}
-                      compact
-                      trigger={
-                        <Button
-                          className="mt-5"
-                          variant="outline"
-                          disabled={!formData.brandId}
-                        >
-                          <Plus />
-                          Crear
-                        </Button>
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* ATTRIBUTES */}
-              <div className="w-full md:col-span-2">
-                <VariantAttributeSelector
-                  attributeTypes={attributeTypes}
-                  attributeValues={attributeValues}
-                  selectedAttributes={formData.selectedAttributes}
-                  onChange={(attrs) =>
-                    setFormData({ ...formData, selectedAttributes: attrs })
+                <Switch
+                  checked={formData.can_rent}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, can_rent: checked })
                   }
                 />
-                <div className="flex mt-3 justify-end">
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card
+            className={`border transition-colors ${
+              formData.can_sell
+                ? "border-green-500 bg-green-50/10"
+                : "border-muted"
+            }`}
+          >
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-base font-semibold flex items-center -mt-3">
+                    Disponible para Venta
+                    {formData.can_sell && (
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    )}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Los clientes pueden comprar este producto
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.can_sell}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, can_sell: checked })
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card
+            className={`border transition-colors ${
+              formData.is_serial
+                ? "border-amber-500 bg-amber-50/10"
+                : "border-muted"
+            }`}
+          >
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-base font-semibold flex items-center -mt-3">
+                    Ítems Serializados
+                    {formData.is_serial && (
+                      <CheckCircle2 className="w-4 h-4 text-amber-500" />
+                    )}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Cada unidad tiene número de serie único
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.is_serial}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, is_serial: checked })
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Separator />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-7">
+          <div className="md:col-span-2">
+            {/* INFO BÁSICA */}
+            <div className="flex  w-full md:flex-row flex-col gap-4">
+              {/* NOMBRE PRIMERO */}
+              <div className="space-y-1 w-full md:col-span-2">
+                <Label htmlFor="name">Nombre del Producto *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="iPhone 15 Pro"
+                />
+              </div>
+
+              {/* SKU BASE CON BOTÓN GENERAR */}
+              <div className="space-y-1 w-full">
+                <Label htmlFor="baseSku">SKU Base *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="baseSku"
+                    value={formData.baseSku}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        baseSku: e.target.value.toUpperCase(),
+                      })
+                    }
+                    placeholder="IPH-15-PRO"
+                    className="font-mono flex-1"
+                  />
                   <Button
                     type="button"
-                    onClick={() => setActiveTab("variants")}
-                    disabled={!canGoToVariants}
+                    variant="secondary"
+                    onClick={() => {
+                      // Generar SKU base: 3 primeras letras del nombre
+                      const nameWords = formData.name.trim().split(/\s+/);
+                      let sku = "";
+
+                      if (nameWords.length === 1) {
+                        // Una palabra: primeras 3 letras
+                        sku = nameWords[0].substring(0, 3).toUpperCase();
+                      } else {
+                        // Múltiples palabras: primera letra de cada una (max 4)
+                        sku = nameWords
+                          .slice(0, 4)
+                          .map((w) => w[0]?.toUpperCase() || "")
+                          .join("");
+                      }
+
+                      // Agregar timestamp corto para unicidad si está vacío
+                      if (!sku) sku = "PROD";
+
+                      setFormData({ ...formData, baseSku: sku });
+                    }}
+                    disabled={!formData.name}
+                    className="gap-2 whitespace-nowrap"
                   >
-                    Generar {stats.total} Variantes
+                    <RefreshCcwIcon className="w-4 h-4" />
+                    Generar
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Prefijo para SKUs de variantes. Ej:{" "}
+                  {formData.baseSku || "XXX"}-NEG-M-01
+                </p>
+              </div>
+            </div>
+
+            {/* SELECTOR DE CATEGORÍA JERÁRQUICO */}
+            <div className="flex flex-row gap-4">
+              <div className="flex items-center align-middle w-full gap-4">
+                <div className="space-y-1 w-full">
+                  <Label className="flex items-center gap-2">
+                    <FolderTree className="w-4 h-4" />
+                    Categoría *
+                  </Label>
+                  <Select
+                    value={formData.categoryId}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, categoryId: val })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar categoría..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {flatCategories.map((cat) => (
+                        <SelectItem
+                          key={cat.value}
+                          value={cat.value}
+                          disabled={cat.disabled}
+                        >
+                          <div className="flex items-center">
+                            <span style={{ width: cat.level * 20 }} />
+                            {cat.level > 0 && (
+                              <span className="text-muted-foreground mr-2">
+                                └─
+                              </span>
+                            )}
+                            <span
+                              className={cn(
+                                cat.disabled && "text-muted-foreground",
+                              )}
+                            >
+                              {cat.label}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Selecciona la categoría más específica (último nivel)
+                  </p>
+                </div>
+                <CategoryForm
+                  categories={categories}
+                  onSubmit={handleCreateCategory}
+                  compact
+                  trigger={
+                    <Button type="button" variant="outline">
+                      <Plus />
+                      Crear
+                    </Button>
+                  }
+                />
+              </div>
+              <div className="flex mt-4 gap-4 w-full">
+                {/* INFO DE CATEGORÍA (breadcrumb) */}
+                {selectedCategory && (
+                  <div className="px-3 h-fit py-1 bg-muted rounded-lg w-full">
+                    <div className="text-sm text-muted-foreground">
+                      Ruta de categoría
+                    </div>
+                    <div className="flex items-center gap-2 text-sm flex-wrap">
+                      {selectedCategory.path
+                        ?.split("/")
+                        .map((part, idx, arr) => (
+                          <span key={idx} className="flex items-center">
+                            <span className="capitalize">{part}</span>
+                            {idx < arr.length - 1 && (
+                              <span className="mx-2 text-muted-foreground">
+                                /
+                              </span>
+                            )}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="space-y-1 mt-2">
+              <div className="flex gap-6">
+                <Label htmlFor="image">Imagen del Producto</Label>{" "}
+                <Tooltip>
+                  <TooltipTrigger type="button">
+                    <Info className="w-4 h-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      Puedes subir un archivo o pegar una URL externa para
+                      ahorrar espacio.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              {/* Reemplazamos el Input anterior por este: */}
+              <MediaPicker
+                value={formData.image}
+                onChange={(url) => setFormData({ ...formData, image: url })}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Puedes subir un archivo o pegar una URL externa para ahorrar
+                espacio.
+              </p>
+            </div>
+            <div className="space-y-1 mt-2">
+              <Label htmlFor="description">Descripción</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Descripción detallada del producto..."
+                rows={3}
+              />
+            </div>
+          </div>
+          <div className="md:col-span-1">
+            <div className="flex w-full gap-4 flex-col">
+              {/* SELECTOR DE MODELO (con Brand implícito) */}
+              <div className="flex items-center gap-4">
+                <div className="space-y-1 w-full">
+                  <Label className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    Marca (Opcional)
+                  </Label>
+                  <Popover
+                    open={openBrandPopover}
+                    onOpenChange={setOpenBrandPopover}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {selectedBrand ? (
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {selectedBrand.name}
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              {selectedBrand.name}
+                            </Badge>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Seleccionar marca...
+                          </span>
+                        )}
+                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Buscar marca..." />
+                        <CommandList>
+                          <CommandEmpty>No se encontraron marcas.</CommandEmpty>
+                          <CommandGroup>
+                            {brands.map((brand) => (
+                              <CommandItem
+                                key={brand.id}
+                                onSelect={() => {
+                                  setFormData({
+                                    ...formData,
+                                    brandId: brand.id,
+                                  });
+                                  setOpenBrandPopover(false);
+                                }}
+                                className="flex items-center justify-between"
+                              >
+                                <div>
+                                  <div className="font-medium">
+                                    {brand.name}
+                                  </div>
+                                </div>
+                                <div
+                                  className={cn(
+                                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                    formData.brandId === brand.id
+                                      ? "bg-primary text-primary-foreground"
+                                      : "opacity-50 [&_svg]:invisible",
+                                  )}
+                                >
+                                  <CheckCircle2 className="h-3 w-3" />
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <BrandForm
+                  onSubmit={handleCreateBrand}
+                  compact
+                  trigger={
+                    <Button type="button" className="mt-5" variant="outline">
+                      <Plus />
+                      Crear
+                    </Button>
+                  }
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <div className="space-y-1 w-full">
+                  <Label className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    Modelo (Opcional)
+                  </Label>
+                  <Popover
+                    open={openModelPopover}
+                    onOpenChange={setOpenModelPopover}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {selectedModel ? (
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {selectedModel.name}
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              {selectedModel.brandName}
+                            </Badge>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Seleccionar modelo...
+                          </span>
+                        )}
+                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Buscar modelo..." />
+                        <CommandList>
+                          <CommandEmpty>
+                            No se encontraron modelos.
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {modelsByBrand.map((model) => (
+                              <CommandItem
+                                key={model.id}
+                                onSelect={() => {
+                                  setFormData({
+                                    ...formData,
+                                    modelId: model.id,
+                                  });
+                                  setOpenModelPopover(false);
+                                }}
+                                className="flex items-center justify-between"
+                              >
+                                <div>
+                                  <div className="font-medium">
+                                    {model.name}
+                                  </div>
+                                </div>
+                                <div
+                                  className={cn(
+                                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                    formData.modelId === model.id
+                                      ? "bg-primary text-primary-foreground"
+                                      : "opacity-50 [&_svg]:invisible",
+                                  )}
+                                >
+                                  <CheckCircle2 className="h-3 w-3" />
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <ModelForm
+                  brands={brands}
+                  defaultBrandId={formData.brandId || undefined}
+                  onSubmit={handleCreateModel as any}
+                  compact
+                  trigger={
+                    <Button
+                      type="button"
+                      className="mt-5"
+                      variant="outline"
+                      disabled={!formData.brandId}
+                    >
+                      <Plus />
+                      Crear
+                    </Button>
+                  }
+                />
               </div>
             </div>
           </div>
-        </TabsContent>
 
-        {/* TAB 3: VARIANTES */}
-        <TabsContent value="variants" className="space-y-6">
-          <VariantsTable
-            baseSku={formData.baseSku}
-            variants={variants}
-            stats={stats}
-            isSerial={formData.is_serial}
-            canRent={formData.can_rent}
-            canSell={formData.can_sell}
-            onUpdateOverride={updateOverride}
-            onResetOverride={resetOverride}
-            onResetAll={resetAllOverrides}
-          />
-
-          <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setActiveTab("general")}
-            >
-              Anterior
-            </Button>
-
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground text-right">
-                <div>{stats.active} variantes activas</div>
-                <div>
-                  {Object.keys(formData.variantOverrides).length} personalizadas
-                </div>
-              </div>
-              <Button type="submit" size="lg" className="gap-2">
-                <Plus className="w-4 h-4" />
-                {initialValues ? "Guardar Cambios" : "Crear Producto"}
+          {/* ATTRIBUTES */}
+          <div className="w-full md:col-span-2">
+            <VariantAttributeSelector
+              attributeTypes={attributeTypes}
+              attributeValues={attributeValues}
+              selectedAttributes={formData.selectedAttributes}
+              onChange={(attrs) =>
+                setFormData({ ...formData, selectedAttributes: attrs })
+              }
+            />
+            <div className="flex mt-3 justify-end">
+              <Button
+                type="button"
+                onClick={() => setActiveTab("variants")}
+                disabled={!canGoToVariants}
+              >
+                Generar {stats.total} Variantes
               </Button>
             </div>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
+
+      {/* TAB 3: VARIANTES */}
+
+      <VariantsTable
+        baseSku={formData.baseSku}
+        variants={variants}
+        stats={stats}
+        isSerial={formData.is_serial}
+        canRent={formData.can_rent}
+        canSell={formData.can_sell}
+        onUpdateOverride={updateOverride}
+        onResetOverride={resetOverride}
+        onResetAll={resetAllOverrides}
+        existingImages={formData.image}
+      />
+
+      <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
+        <div className="text-sm text-muted-foreground text-right">
+          <div>{stats.active} variantes activas</div>
+          <div>
+            {Object.keys(formData.variantOverrides).length} personalizadas
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Button type="submit" size="lg" className="gap-2">
+            <Plus className="w-4 h-4" />
+            {initialValues ? "Guardar Cambios" : "Crear Producto"}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

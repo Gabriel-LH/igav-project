@@ -5,9 +5,9 @@ export const modelSchema = z.object({
   tenantId: z.string(),
   brandId: z.string(),
   name: z.string(),
-  slug: z.string(),
-  description: z.string().optional(),
-  year: z.number().optional(), // Año del modelo (útil para autos, tech, etc.)
+  slug: z.string().nullable(),
+  description: z.string().nullable().optional(),
+  year: z.number().nullable().optional(), // Año del modelo (útil para autos, tech, etc.)
   isActive: z.boolean().default(true),
   createdAt: z.date(),
   updatedAt: z.date(),

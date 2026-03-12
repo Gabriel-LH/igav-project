@@ -14,9 +14,10 @@ export const productVariantSchema = z.object({
   attributes: z.record(z.string(), z.string()).default({}),
 
   // Precios opcionales por variante
+  purchasePrice: z.number().min(0).optional(),
   priceSell: z.number().min(0).optional(),
   priceRent: z.number().min(0).optional(),
-  rentUnit: z.enum(["día", "evento"]).optional(),
+  rentUnit: z.enum(["hora", "día", "semana", "mes", "evento"]).optional(),
 
   image: z.string().optional(),
 

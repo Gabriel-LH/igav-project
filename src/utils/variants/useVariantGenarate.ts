@@ -101,6 +101,7 @@ export function useVariantGenerator(
         attributes,
         priceRent: canRent ? (override?.priceRent ?? 0) : 0,
         priceSell: canSell ? (override?.priceSell ?? 0) : 0,
+        purchasePrice: override?.purchasePrice ?? 0,
         rentUnit:
           (override?.rentUnit as
             | "hora"
@@ -110,6 +111,7 @@ export function useVariantGenerator(
             | "evento") ?? "día",
         isActive: override?.isActive ?? true,
         hasOverride: !!override,
+        images: override?.images,
       };
     });
   }, [

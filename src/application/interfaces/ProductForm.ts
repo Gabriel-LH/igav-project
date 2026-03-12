@@ -7,7 +7,7 @@ export interface ProductFormData {
   brandId: string;
   categoryId: string;
   description: string;
-  image?: string;
+  image?: string[];
 
   // Flags de comportamiento
   can_rent: boolean;
@@ -51,6 +51,8 @@ export interface VariantOverride {
   isActive?: boolean; // Si desactivó esta variante
   // Metadata para UI
   isEdited?: boolean; // Flag para mostrar "editado por usuario"
+  images?: string[];
+  purchasePrice?: number;
 }
 
 // Tipo calculado (no se guarda, se genera)
@@ -65,6 +67,8 @@ export interface ComputedVariant {
   rentUnit: string;
   isActive: boolean;
   hasOverride: boolean; // Indica si usuario modificó algo
+  images?: string[];
+  purchasePrice?: number;
 }
 
 export interface SelectedValue {

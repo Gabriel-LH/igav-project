@@ -436,6 +436,16 @@ export const StockMovementType = {
 export type StockMovementType = (typeof StockMovementType)[keyof typeof StockMovementType]
 
 
+export const PriceHistoryReason = {
+  purchase: 'purchase',
+  adjustment: 'adjustment',
+  import: 'import',
+  restock_return: 'restock_return'
+} as const
+
+export type PriceHistoryReason = (typeof PriceHistoryReason)[keyof typeof PriceHistoryReason]
+
+
 export const PromotionType = {
   percentage: 'percentage',
   fixed_amount: 'fixed_amount',

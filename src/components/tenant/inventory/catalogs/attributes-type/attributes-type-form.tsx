@@ -1,7 +1,7 @@
 // components/catalogs/attribute-types/AttributeTypeForm.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,14 +31,16 @@ import {
 } from "@/src/types/attributes/type.attribute-type";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon, CheckmarkBadge03Icon, ColorsIcon, TextIcon, TextNumberSignIcon, ToggleOnIcon } from "@hugeicons/core-free-icons";
 
 const inputTypeOptions = [
-  { value: "text", label: "Texto", icon: "T" },
-  { value: "number", label: "Número", icon: "123" },
-  { value: "select", label: "Selección", icon: "☰" },
-  { value: "boolean", label: "Sí/No", icon: "✓" },
-  { value: "color", label: "Color", icon: "●" },
-  { value: "date", label: "Fecha", icon: "📅" },
+  { value: "text", label: "Texto", icon: <HugeiconsIcon icon={TextIcon} /> },
+  { value: "number", label: "Número", icon: <HugeiconsIcon icon={TextNumberSignIcon} /> },
+  { value: "select", label: "Selección", icon: <HugeiconsIcon icon={CheckmarkBadge03Icon} /> },
+  { value: "boolean", label: "Sí/No", icon: <HugeiconsIcon icon={ToggleOnIcon} /> },
+  { value: "color", label: "Color", icon: <HugeiconsIcon icon={ColorsIcon} /> },
+  { value: "date", label: "Fecha", icon: <HugeiconsIcon icon={Calendar03Icon} /> },
 ];
 
 const formSchema = attributeTypeSchema.omit({ id: true, tenantId: true });
@@ -57,6 +59,18 @@ export function AttributeTypeForm({
   compact = false,
 }: AttributeTypeFormProps) {
   const [open, setOpen] = useState(false);
+  const [userModifiedCode, setUserModifiedCode] = useState(false);
+
+  const isEditing = !!initialData;
+
+  const generateCode = (val: string) => {
+    return val
+      .substring(0, 3)
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Remove accents
+      .replace(/[^A-Z0-9]/g, ""); // Remove non-alphanumeric
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,19 +78,26 @@ export function AttributeTypeForm({
       name: "",
       code: "",
       inputType: "text",
-      isVariant: false,
-      affectsSku: false,
+      isVariant: true,
+      affectsSku: true,
       isActive: true,
     },
   });
 
+  // Auto-generate code when name changes
+  const watchName = form.watch("name");
+  useEffect(() => {
+    if (!isEditing && watchName && !userModifiedCode) {
+      form.setValue("code", generateCode(watchName));
+    }
+  }, [form, isEditing, watchName, userModifiedCode]);
+
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
     form.reset();
+    setUserModifiedCode(false);
     setOpen(false);
   };
-
-  const isEditing = !!initialData;
 
   return (
     <EntityModal
@@ -95,7 +116,7 @@ export function AttributeTypeForm({
       }
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={(e) => { e.stopPropagation(); form.handleSubmit(handleSubmit)(e); }} className="space-y-6">
           {/* Nombre y Código */}
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -132,9 +153,10 @@ export function AttributeTypeForm({
                         {...field}
                         className="pl-9 uppercase"
                         placeholder="Ej: COLOR"
-                        onChange={(e) =>
-                          field.onChange(e.target.value.toUpperCase())
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value.toUpperCase());
+                          setUserModifiedCode(true);
+                        }}
                       />
                     </div>
                   </FormControl>

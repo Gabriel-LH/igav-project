@@ -1041,6 +1041,23 @@ export type EnumInventoryStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumInventoryStatusFilter<$PrismaModel>
 }
 
+export type EnumPriceHistoryReasonFilter<$PrismaModel = never> = {
+  equals?: $Enums.PriceHistoryReason | Prisma.EnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel> | $Enums.PriceHistoryReason
+}
+
+export type EnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PriceHistoryReason | Prisma.EnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel> | $Enums.PriceHistoryReason
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
+}
+
 export type EnumStockLotStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.StockLotStatus | Prisma.EnumStockLotStatusFieldRefInput<$PrismaModel>
   in?: $Enums.StockLotStatus[] | Prisma.ListEnumStockLotStatusFieldRefInput<$PrismaModel>
@@ -2547,6 +2564,23 @@ export type NestedEnumInventoryStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumInventoryStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumInventoryStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumPriceHistoryReasonFilter<$PrismaModel = never> = {
+  equals?: $Enums.PriceHistoryReason | Prisma.EnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel> | $Enums.PriceHistoryReason
+}
+
+export type NestedEnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PriceHistoryReason | Prisma.EnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PriceHistoryReason[] | Prisma.ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel> | $Enums.PriceHistoryReason
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
 }
 
 export type NestedEnumStockLotStatusFilter<$PrismaModel = never> = {

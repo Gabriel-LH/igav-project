@@ -238,6 +238,11 @@ export type InventoryItem = Prisma.InventoryItemModel
  */
 export type InventoryItemStatusHistory = Prisma.InventoryItemStatusHistoryModel
 /**
+ * Model PriceHistory
+ * 
+ */
+export type PriceHistory = Prisma.PriceHistoryModel
+/**
  * Model StockLot
  * 
  */

@@ -428,6 +428,7 @@ export const ModelName = {
   ProductVariant: 'ProductVariant',
   InventoryItem: 'InventoryItem',
   InventoryItemStatusHistory: 'InventoryItemStatusHistory',
+  PriceHistory: 'PriceHistory',
   StockLot: 'StockLot',
   StockMovement: 'StockMovement',
   Promotion: 'Promotion',
@@ -478,7 +479,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "jwks" | "userBranchAccess" | "userAttendance" | "userRoleBranchHistory" | "userShiftAssignment" | "attributeType" | "attributeValue" | "branch" | "branchConfig" | "brand" | "cashSession" | "category" | "client" | "clientCreditLedger" | "clientLoyaltyLedger" | "coupon" | "guarantee" | "guaranteeStatusHistory" | "model" | "module" | "moduleFeature" | "operation" | "paymentMethod" | "payment" | "payrollRun" | "payrollItem" | "payrollLineItem" | "payrollPolicy" | "payrollConfig" | "permission" | "role" | "rolePermission" | "plan" | "planFeature" | "planLimit" | "planModule" | "product" | "productVariant" | "inventoryItem" | "inventoryItemStatusHistory" | "stockLot" | "stockMovement" | "promotion" | "promotionBranch" | "promotionUsage" | "referral" | "referralProgram" | "referralReward" | "rental" | "rentalItem" | "rentalCharge" | "rentalStatusHistory" | "rentalItemStatusHistory" | "reservation" | "reservationItem" | "reservationItemStatusHistory" | "sale" | "saleItem" | "saleCharge" | "saleReversal" | "reversalItem" | "saleItemStatusHistory" | "shift" | "tenant" | "tenantConfig" | "tenantSubscription" | "tenantModule" | "tenantPolicy" | "tenantPolicyHistory" | "invitation" | "userTenantMembership" | "transfer" | "transferItem" | "transferRoute" | "inventoryMovement"
+    modelProps: "user" | "session" | "account" | "verification" | "jwks" | "userBranchAccess" | "userAttendance" | "userRoleBranchHistory" | "userShiftAssignment" | "attributeType" | "attributeValue" | "branch" | "branchConfig" | "brand" | "cashSession" | "category" | "client" | "clientCreditLedger" | "clientLoyaltyLedger" | "coupon" | "guarantee" | "guaranteeStatusHistory" | "model" | "module" | "moduleFeature" | "operation" | "paymentMethod" | "payment" | "payrollRun" | "payrollItem" | "payrollLineItem" | "payrollPolicy" | "payrollConfig" | "permission" | "role" | "rolePermission" | "plan" | "planFeature" | "planLimit" | "planModule" | "product" | "productVariant" | "inventoryItem" | "inventoryItemStatusHistory" | "priceHistory" | "stockLot" | "stockMovement" | "promotion" | "promotionBranch" | "promotionUsage" | "referral" | "referralProgram" | "referralReward" | "rental" | "rentalItem" | "rentalCharge" | "rentalStatusHistory" | "rentalItemStatusHistory" | "reservation" | "reservationItem" | "reservationItemStatusHistory" | "sale" | "saleItem" | "saleCharge" | "saleReversal" | "reversalItem" | "saleItemStatusHistory" | "shift" | "tenant" | "tenantConfig" | "tenantSubscription" | "tenantModule" | "tenantPolicy" | "tenantPolicyHistory" | "invitation" | "userTenantMembership" | "transfer" | "transferItem" | "transferRoute" | "inventoryMovement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3735,6 +3736,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.InventoryItemStatusHistoryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.InventoryItemStatusHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    PriceHistory: {
+      payload: Prisma.$PriceHistoryPayload<ExtArgs>
+      fields: Prisma.PriceHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PriceHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PriceHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.PriceHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PriceHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.PriceHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.PriceHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.PriceHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PriceHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.PriceHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        update: {
+          args: Prisma.PriceHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.PriceHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PriceHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PriceHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.PriceHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PriceHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.PriceHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePriceHistory>
+        }
+        groupBy: {
+          args: Prisma.PriceHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PriceHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PriceHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PriceHistoryCountAggregateOutputType> | number
         }
       }
     }
@@ -7103,6 +7178,22 @@ export const InventoryItemStatusHistoryScalarFieldEnum = {
 export type InventoryItemStatusHistoryScalarFieldEnum = (typeof InventoryItemStatusHistoryScalarFieldEnum)[keyof typeof InventoryItemStatusHistoryScalarFieldEnum]
 
 
+export const PriceHistoryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  variantId: 'variantId',
+  stockLotId: 'stockLotId',
+  inventoryItemId: 'inventoryItemId',
+  oldPrice: 'oldPrice',
+  newPrice: 'newPrice',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  userId: 'userId'
+} as const
+
+export type PriceHistoryScalarFieldEnum = (typeof PriceHistoryScalarFieldEnum)[keyof typeof PriceHistoryScalarFieldEnum]
+
+
 export const StockLotScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -8374,6 +8465,20 @@ export type ListEnumInventoryStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'PriceHistoryReason'
+ */
+export type EnumPriceHistoryReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PriceHistoryReason'>
+    
+
+
+/**
+ * Reference to a field of type 'PriceHistoryReason[]'
+ */
+export type ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PriceHistoryReason[]'>
+    
+
+
+/**
  * Reference to a field of type 'StockLotStatus'
  */
 export type EnumStockLotStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StockLotStatus'>
@@ -8973,6 +9078,7 @@ export type GlobalOmitConfig = {
   productVariant?: Prisma.ProductVariantOmit
   inventoryItem?: Prisma.InventoryItemOmit
   inventoryItemStatusHistory?: Prisma.InventoryItemStatusHistoryOmit
+  priceHistory?: Prisma.PriceHistoryOmit
   stockLot?: Prisma.StockLotOmit
   stockMovement?: Prisma.StockMovementOmit
   promotion?: Prisma.PromotionOmit
