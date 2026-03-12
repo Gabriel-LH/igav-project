@@ -4,6 +4,7 @@ import { CATEGORIES_MOCK } from "../mocks/mock.categories";
 
 interface CategoryState {
   categories: Category[];
+  setCategories: (categories: Category[]) => void;
 
   // CRUD básico
   addCategory: (category: Category) => void;
@@ -26,6 +27,7 @@ interface CategoryState {
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
   categories: CATEGORIES_MOCK,
+  setCategories: (categories) => set({ categories }),
 
   // ➕ Agregar categoría
   addCategory: (category) =>

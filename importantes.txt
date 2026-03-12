@@ -303,9 +303,9 @@ NEXT_PUBLIC_ENABLE_EMAIL_OTP=false
 
 UI
  ↓
-Server Action
+Server Action  // presentation
  ↓
-UseCase
+UseCase 
  ↓
 Domain Interfaces
  ↓

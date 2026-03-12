@@ -1,123 +1,78 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import { AttributeValuesTable } from "./attribute-value-table";
-import { useMemo } from "react";
-import { AttributeValueFormData } from "@/src/types/attributes/type.attribute-value";
-import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
-import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
-import { ZustandAttributeTypeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeTypeRepository";
-import { ZustandAttributeValueRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandAttributeValueRepository";
-import { ListAttributeTypesUseCase } from "@/src/application/tenant/use-cases/crudAttributeType.usecase";
 import {
-  CreateAttributeValueUseCase,
-  DeleteAttributeValueUseCase,
-  ListAttributeValuesUseCase,
-  UpdateAttributeValueUseCase,
-} from "@/src/application/tenant/use-cases/crudAttributeValue.usecase";
+  AttributeValue,
+  AttributeValueFormData,
+} from "@/src/types/attributes/type.attribute-value";
+import { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import {
+  createAttributeValueAction,
+  updateAttributeValueAction,
+  deleteAttributeValueAction,
+} from "@/src/app/(tenant)/tenant/actions/attribute.actions";
 import { toast } from "sonner";
 
-export function AttributeValueLayout() {
-  const tenantId = "tenant-a";
-  const attributeTypeSnapshot = useAttributeTypeStore(
-    (state) => state.attributeTypes,
-  );
-  const attributeValueSnapshot = useAttributeValueStore(
-    (state) => state.attributeValues,
-  );
-  const attributeTypeRepo = useMemo(
-    () => new ZustandAttributeTypeRepository(),
-    [],
-  );
-  const attributeValueRepo = useMemo(
-    () => new ZustandAttributeValueRepository(),
-    [],
-  );
+interface AttributeValueLayoutProps {
+  initialAttributeValues: AttributeValue[];
+  attributeTypes: AttributeType[];
+}
 
-  const listAttributeTypesUseCase = useMemo(
-    () => new ListAttributeTypesUseCase(attributeTypeRepo),
-    [attributeTypeRepo],
-  );
-  const createAttributeValueUseCase = useMemo(
-    () =>
-      new CreateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
-    [attributeTypeRepo, attributeValueRepo],
-  );
-  const updateAttributeValueUseCase = useMemo(
-    () =>
-      new UpdateAttributeValueUseCase(attributeValueRepo, attributeTypeRepo),
-    [attributeTypeRepo, attributeValueRepo],
-  );
-  const deleteAttributeValueUseCase = useMemo(
-    () => new DeleteAttributeValueUseCase(attributeValueRepo),
-    [attributeValueRepo],
-  );
-  const listAttributeValuesUseCase = useMemo(
-    () => new ListAttributeValuesUseCase(attributeValueRepo),
-    [attributeValueRepo],
-  );
-
-  const data = useMemo(
-    () =>
-      listAttributeValuesUseCase.execute(tenantId, { includeInactive: true }),
-    [attributeValueSnapshot, listAttributeValuesUseCase],
-  );
-  const types = useMemo(
-    () =>
-      listAttributeTypesUseCase.execute(tenantId, { includeInactive: true }),
-    [attributeTypeSnapshot, listAttributeTypesUseCase],
-  );
+export function AttributeValueLayout({
+  initialAttributeValues,
+  attributeTypes,
+}: AttributeValueLayoutProps) {
+  const [data, setData] = useState<AttributeValue[]>(initialAttributeValues);
+  const [isPending, startTransition] = useTransition();
 
   const handleCreate = (formData: AttributeValueFormData) => {
-    try {
-      createAttributeValueUseCase.execute({
-        tenantId,
-        ...formData,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo crear el valor de atributo.",
-      );
-    }
+    startTransition(async () => {
+      const result = await createAttributeValueAction(formData);
+      if (result.success && result.data) {
+        setData((prev) =>
+          [...prev, result.data!].sort((a, b) => a.value.localeCompare(b.value)),
+        );
+        toast.success("Valor de atributo creado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear el valor de atributo.");
+      }
+    });
   };
 
   const handleUpdate = (id: string, updatedData: AttributeValueFormData) => {
-    try {
-      updateAttributeValueUseCase.execute({
-        tenantId,
-        attributeValueId: id,
-        ...updatedData,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo actualizar el valor de atributo.",
-      );
-    }
+    startTransition(async () => {
+      const result = await updateAttributeValueAction(id, updatedData);
+      if (result.success && result.data) {
+        setData((prev) =>
+          prev
+            .map((item) => (item.id === id ? result.data! : item))
+            .sort((a, b) => a.value.localeCompare(b.value)),
+        );
+        toast.success("Valor de atributo actualizado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo actualizar el valor de atributo.");
+      }
+    });
   };
 
   const handleDelete = (id: string) => {
-    try {
-      deleteAttributeValueUseCase.execute({
-        tenantId,
-        attributeValueId: id,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar el valor de atributo.",
-      );
-    }
+    startTransition(async () => {
+      const result = await deleteAttributeValueAction(id);
+      if (result.success) {
+        setData((prev) => prev.filter((item) => item.id !== id));
+        toast.success("Valor de atributo eliminado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo eliminar el valor de atributo.");
+      }
+    });
   };
 
   return (
-    <div>
+    <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
       <AttributeValuesTable
         data={data}
-        attributeTypes={types}
+        attributeTypes={attributeTypes}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDelete}

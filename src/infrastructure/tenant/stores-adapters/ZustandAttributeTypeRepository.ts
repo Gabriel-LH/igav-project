@@ -3,41 +3,57 @@ import { useAttributeTypeStore } from "../../../store/useAttributeTypeStore";
 import { AttributeType } from "../../../types/attributes/type.attribute-type";
 
 export class ZustandAttributeTypeRepository implements AttributeTypeRepository {
-  addAttributeType(attributeType: AttributeType): void {
+  async addAttributeType(attributeType: AttributeType): Promise<void> {
     useAttributeTypeStore.getState().addAttributeType(attributeType);
   }
 
-  updateAttributeType(
+  async updateAttributeType(
+    tenantId: string,
     attributeTypeId: string,
     updates: Partial<AttributeType>,
-  ): void {
+  ): Promise<void> {
+    void tenantId;
     useAttributeTypeStore
       .getState()
       .updateAttributeType(attributeTypeId, updates);
   }
 
-  getAttributeTypeById(
+  async getAttributeTypeById(
     tenantId: string,
     attributeTypeId: string,
-  ): AttributeType | undefined {
+  ): Promise<AttributeType | undefined> {
     return useAttributeTypeStore
       .getState()
       .getAttributeTypeById(tenantId, attributeTypeId);
   }
 
-  getAttributeTypesByTenant(tenantId: string): AttributeType[] {
+  async getAttributeTypesByTenant(
+    tenantId: string,
+  ): Promise<AttributeType[]> {
     return useAttributeTypeStore.getState().getAttributeTypesByTenant(tenantId);
   }
 
-  markAsActive(attributeTypeId: string): void {
+  async markAsActive(
+    tenantId: string,
+    attributeTypeId: string,
+  ): Promise<void> {
+    void tenantId;
     useAttributeTypeStore.getState().markAsActive(attributeTypeId);
   }
 
-  markAsInactive(attributeTypeId: string): void {
+  async markAsInactive(
+    tenantId: string,
+    attributeTypeId: string,
+  ): Promise<void> {
+    void tenantId;
     useAttributeTypeStore.getState().markAsInactive(attributeTypeId);
   }
 
-  removeAttributeType(attributeTypeId: string): void {
+  async removeAttributeType(
+    tenantId: string,
+    attributeTypeId: string,
+  ): Promise<void> {
+    void tenantId;
     useAttributeTypeStore.getState().removeAttributeType(attributeTypeId);
   }
 }

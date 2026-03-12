@@ -1,21 +1,21 @@
 import { AttributeValue } from "../../../types/attributes/type.attribute-value";
 
 export interface AttributeValueRepository {
-  addAttributeValue(attributeValue: AttributeValue): void;
+  addAttributeValue(attributeValue: AttributeValue): Promise<void>;
   updateAttributeValue(
     attributeValueId: string,
     updates: Partial<AttributeValue>,
-  ): void;
+  ): Promise<void>;
   getAttributeValueById(
     tenantId: string,
     attributeValueId: string,
-  ): AttributeValue | undefined;
-  getAttributeValuesByTenant(tenantId: string): AttributeValue[];
+  ): Promise<AttributeValue | undefined>;
+  getAttributeValuesByTenant(tenantId: string): Promise<AttributeValue[]>;
   getAttributeValuesByType(
     tenantId: string,
     attributeTypeId: string,
-  ): AttributeValue[];
-  markAsActive(attributeValueId: string): void;
-  markAsInactive(attributeValueId: string): void;
-  removeAttributeValue(attributeValueId: string): void;
+  ): Promise<AttributeValue[]>;
+  markAsActive(attributeValueId: string): Promise<void>;
+  markAsInactive(attributeValueId: string): Promise<void>;
+  removeAttributeValue(attributeValueId: string): Promise<void>;
 }

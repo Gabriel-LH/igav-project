@@ -4,6 +4,7 @@ import { AttributeValue } from "../types/attributes/type.attribute-value";
 
 interface AttributeValueState {
   attributeValues: AttributeValue[];
+  setAttributeValues: (attributeValues: AttributeValue[]) => void;
   addAttributeValue: (attributeValue: AttributeValue) => void;
   updateAttributeValue: (
     attributeValueId: string,
@@ -25,6 +26,7 @@ interface AttributeValueState {
 
 export const useAttributeValueStore = create<AttributeValueState>((set, get) => ({
   attributeValues: ATTRIBUTE_VALUES_MOCK,
+  setAttributeValues: (attributeValues) => set({ attributeValues }),
 
   addAttributeValue: (attributeValue) =>
     set((state) => ({

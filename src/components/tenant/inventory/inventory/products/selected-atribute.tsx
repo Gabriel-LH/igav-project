@@ -36,6 +36,17 @@ import { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/separator";
+import { AttributeTypeForm } from "../../catalogs/attributes-type/attributes-type-form";
+import { AttributeValueForm } from "../../catalogs/attribute-value/attribute-value-form";
+import {
+  createAttributeTypeAction,
+  createAttributeValueAction,
+} from "@/src/app/(tenant)/tenant/actions/attribute.actions";
+import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
+import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
+import { AttributeTypeFormData } from "@/src/types/attributes/type.attribute-type";
+import { AttributeValueFormData } from "@/src/types/attributes/type.attribute-value";
+import { toast } from "sonner";
 
 export interface SelectedAttributeConfig {
   attributeId: string;
@@ -67,6 +78,8 @@ export function VariantAttributeSelector({
 }: VariantAttributeSelectorProps) {
   const [openTypePopover, setOpenTypePopover] = useState(false);
   const [openValuePopover, setOpenValuePopover] = useState<string | null>(null);
+  const addAttributeType = useAttributeTypeStore((state) => state.addAttributeType);
+  const addAttributeValue = useAttributeValueStore((state) => state.addAttributeValue);
 
   // Memoizar tipos de variante para evitar recálculos
   const variantTypes = useMemo(() => {
@@ -188,6 +201,67 @@ export function VariantAttributeSelector({
     [selectedAttributes, onChange],
   );
 
+  const handleCreateAttributeType = useCallback(
+    async (data: AttributeTypeFormData) => {
+      const result = await createAttributeTypeAction(data);
+      if (result.success && result.data) {
+        addAttributeType(result.data);
+        const exists = selectedAttributes.some(
+          (attr) => attr.attributeId === result.data!.id,
+        );
+        if (!exists) {
+          onChange([
+            ...selectedAttributes,
+            {
+              attributeId: result.data.id,
+              attributeName: result.data.name,
+              attributeCode: result.data.code,
+              values: [],
+            },
+          ]);
+        }
+        toast.success("Tipo de atributo creado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear el tipo de atributo");
+      }
+    },
+    [addAttributeType, onChange, selectedAttributes],
+  );
+
+  const handleCreateAttributeValue = useCallback(
+    async (attributeTypeId: string, data: AttributeValueFormData) => {
+      const result = await createAttributeValueAction({
+        ...data,
+        attributeTypeId,
+      });
+      if (result.success && result.data) {
+        addAttributeValue(result.data);
+        onChange(
+          selectedAttributes.map((attr) => {
+            if (attr.attributeId !== attributeTypeId) return attr;
+            const exists = attr.values.some((v) => v.valueId === result.data!.id);
+            if (exists) return attr;
+            return {
+              ...attr,
+              values: [
+                ...attr.values,
+                {
+                  valueId: result.data!.id,
+                  code: result.data!.code,
+                  value: result.data!.value,
+                },
+              ],
+            };
+          }),
+        );
+        toast.success("Valor de atributo creado correctamente");
+      } else {
+        toast.error(result.error || "No se pudo crear el valor de atributo");
+      }
+    },
+    [addAttributeValue, onChange, selectedAttributes],
+  );
+
   // Memoizar cálculos
   const totalCombinations = useMemo(() => {
     return selectedAttributes.reduce(
@@ -200,7 +274,7 @@ export function VariantAttributeSelector({
     return selectedAttributes.some((a) => a.values.length === 0);
   }, [selectedAttributes]);
 
-  if (variantTypes.length === 0) {
+  if (false && variantTypes.length === 0) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
@@ -272,10 +346,16 @@ export function VariantAttributeSelector({
               </PopoverContent>
             </Popover>
 
-            <Button variant="outline">
-              <Plus />
-              Crear
-            </Button>
+            <AttributeTypeForm
+              onSubmit={handleCreateAttributeType}
+              compact
+              trigger={
+                <Button variant="outline">
+                  <Plus />
+                  Crear
+                </Button>
+              }
+            />
           </div>
 
           {/* Badges de atributos activos para acceso rápido/borrado */}
@@ -419,10 +499,20 @@ export function VariantAttributeSelector({
                       </PopoverContent>
                     </Popover>
 
-                    <Button variant="outline">
-                      <Plus />
-                      Crear
-                    </Button>
+                    <AttributeValueForm
+                      attributeTypes={attributeTypes}
+                      defaultAttributeTypeId={attr.attributeId}
+                      onSubmit={(data) =>
+                        handleCreateAttributeValue(attr.attributeId, data)
+                      }
+                      compact
+                      trigger={
+                        <Button variant="outline">
+                          <Plus />
+                          Crear
+                        </Button>
+                      }
+                    />
                   </div>
 
                   {/* Visualización de valores como Badges */}

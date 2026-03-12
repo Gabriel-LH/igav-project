@@ -1,7 +1,7 @@
 // components/inventory/ProductForm.tsx
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,20 +17,16 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/badge";
 import { EntityModal, useEntityModal } from "../../catalogs/ui/EntityModal";
 import {
   Plus,
   Package,
-  Layers,
   DollarSign,
-  AlertCircle,
   CheckCircle2,
   Building2,
   FolderTree,
   Search,
-  Hash,
   RefreshCcwIcon,
 } from "lucide-react";
 import { VariantAttributeSelector } from "./selected-atribute";
@@ -63,6 +59,24 @@ import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
 import { useModelStore } from "@/src/store/useModelStore";
 import { useBrandStore } from "@/src/store/useBrandStore";
 import { useCategoryStore } from "@/src/store/useCategoryStore";
+import {
+  getAttributeTypesAction,
+  getAttributeValuesAction,
+} from "@/src/app/(tenant)/tenant/actions/attribute.actions";
+import {
+  createBrandAction,
+  createModelAction,
+  getBrandsAction,
+  getModelsAction,
+} from "@/src/app/(tenant)/tenant/actions/brand.actions";
+import {
+  createCategoryAction,
+  getCategoriesAction,
+} from "@/src/app/(tenant)/tenant/actions/category.actions";
+import { BrandForm } from "../../catalogs/brand/brand-form";
+import { ModelForm } from "../../catalogs/model/model-form";
+import { CategoryForm } from "../../catalogs/category/category-form";
+import { toast } from "sonner";
 
 const initialData: ProductFormData = {
   name: "",
@@ -103,9 +117,122 @@ export function ProductForm({
   const attributeValues = useAttributeValueStore(
     (state) => state.attributeValues,
   );
+  const setAttributeTypes = useAttributeTypeStore(
+    (state) => state.setAttributeTypes,
+  );
+  const setAttributeValues = useAttributeValueStore(
+    (state) => state.setAttributeValues,
+  );
   const models = useModelStore((state) => state.models);
   const brands = useBrandStore((state) => state.brands);
   const categories = useCategoryStore((state) => state.categories);
+  const setBrands = useBrandStore((state) => state.setBrands);
+  const setModels = useModelStore((state) => state.setModels);
+  const setCategories = useCategoryStore((state) => state.setCategories);
+  const addBrand = useBrandStore((state) => state.addBrand);
+  const addModel = useModelStore((state) => state.addModel);
+  const addCategory = useCategoryStore((state) => state.addCategory);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAttributes = async () => {
+      const [typesResult, valuesResult] = await Promise.all([
+        getAttributeTypesAction(),
+        getAttributeValuesAction(),
+      ]);
+
+      if (!isMounted) return;
+
+      if (typesResult.success && typesResult.data) {
+        setAttributeTypes(typesResult.data);
+      }
+
+      if (valuesResult.success && valuesResult.data) {
+        setAttributeValues(valuesResult.data);
+      }
+    };
+
+    void loadAttributes();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setAttributeTypes, setAttributeValues]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCatalogs = async () => {
+      const [brandsResult, modelsResult, categoriesResult] = await Promise.all([
+        getBrandsAction(),
+        getModelsAction(),
+        getCategoriesAction(),
+      ]);
+
+      if (!isMounted) return;
+
+      if (brandsResult.success && brandsResult.data) {
+        setBrands(brandsResult.data);
+      }
+      if (modelsResult.success && modelsResult.data) {
+        setModels(modelsResult.data);
+      }
+      if (categoriesResult.success && categoriesResult.data) {
+        setCategories(categoriesResult.data);
+      }
+    };
+
+    void loadCatalogs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setBrands, setCategories, setModels]);
+
+  const handleCreateBrand = async (data: Parameters<typeof createBrandAction>[0]) => {
+    const result = await createBrandAction(data);
+    if (result.success && result.data) {
+      addBrand(result.data);
+      setFormData((prev) => ({
+        ...prev,
+        brandId: result.data!.id,
+        modelId: "",
+      }));
+      toast.success("Marca creada correctamente");
+    } else {
+      toast.error(result.error || "No se pudo crear la marca");
+    }
+  };
+
+  const handleCreateModel = async (data: Parameters<typeof createModelAction>[0]) => {
+    const result = await createModelAction(data);
+    if (result.success && result.data) {
+      addModel(result.data);
+      setFormData((prev) => ({
+        ...prev,
+        brandId: result.data!.brandId,
+        modelId: result.data!.id,
+      }));
+      toast.success("Modelo creado correctamente");
+    } else {
+      toast.error(result.error || "No se pudo crear el modelo");
+    }
+  };
+
+  const handleCreateCategory = async (data: Parameters<typeof createCategoryAction>[0]) => {
+    const result = await createCategoryAction(data);
+    if (result.success && result.data) {
+      addCategory(result.data);
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: result.data!.id,
+      }));
+      toast.success("Categoría creada correctamente");
+    } else {
+      toast.error(result.error || "No se pudo crear la categoría");
+    }
+  };
 
   const [formData, setFormData] = useState<ProductFormData>(
     getInitialFormData(initialValues),
@@ -450,10 +577,17 @@ export function ProductForm({
                         Selecciona la categoría más específica (último nivel)
                       </p>
                     </div>
-                    <Button variant="outline">
-                      <Plus />
-                      Crear
-                    </Button>
+                    <CategoryForm
+                      categories={categories}
+                      onSubmit={handleCreateCategory}
+                      compact
+                      trigger={
+                        <Button variant="outline">
+                          <Plus />
+                          Crear
+                        </Button>
+                      }
+                    />
                   </div>
                   <div className="flex mt-4 gap-4 w-full">
                     {/* INFO DE CATEGORÍA (breadcrumb) */}
@@ -584,10 +718,16 @@ export function ProductForm({
                       </Popover>
                     </div>
 
-                    <Button className="mt-5" variant="outline">
-                      <Plus />
-                      Crear
-                    </Button>
+                    <BrandForm
+                      onSubmit={handleCreateBrand}
+                      compact
+                      trigger={
+                        <Button className="mt-5" variant="outline">
+                          <Plus />
+                          Crear
+                        </Button>
+                      }
+                    />
                   </div>
 
                   <div className="flex gap-4">
@@ -666,10 +806,22 @@ export function ProductForm({
                         </PopoverContent>
                       </Popover>
                     </div>
-                    <Button className="mt-5" variant="outline">
-                      <Plus />
-                      Crear
-                    </Button>
+                    <ModelForm
+                      brands={brands}
+                      defaultBrandId={formData.brandId || undefined}
+                      onSubmit={handleCreateModel}
+                      compact
+                      trigger={
+                        <Button
+                          className="mt-5"
+                          variant="outline"
+                          disabled={!formData.brandId}
+                        >
+                          <Plus />
+                          Crear
+                        </Button>
+                      }
+                    />
                   </div>
                 </div>
               </div>

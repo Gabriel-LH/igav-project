@@ -16,8 +16,8 @@ interface ListAttributeTypesOptions {
 export class CreateAttributeTypeUseCase {
   constructor(private attributeTypeRepo: AttributeTypeRepository) {}
 
-  execute(data: CreateAttributeTypeInput): AttributeType {
-    const attributeTypes = this.attributeTypeRepo.getAttributeTypesByTenant(
+  async execute(data: CreateAttributeTypeInput): Promise<AttributeType> {
+    const attributeTypes = await this.attributeTypeRepo.getAttributeTypesByTenant(
       data.tenantId,
     );
     const code = data.code.trim().toUpperCase();
@@ -37,7 +37,7 @@ export class CreateAttributeTypeUseCase {
       isActive: data.isActive,
     };
 
-    this.attributeTypeRepo.addAttributeType(attributeType);
+    await this.attributeTypeRepo.addAttributeType(attributeType);
     return attributeType;
   }
 }
@@ -45,8 +45,8 @@ export class CreateAttributeTypeUseCase {
 export class UpdateAttributeTypeUseCase {
   constructor(private attributeTypeRepo: AttributeTypeRepository) {}
 
-  execute(data: UpdateAttributeTypeInput): AttributeType {
-    const attributeType = this.attributeTypeRepo.getAttributeTypeById(
+  async execute(data: UpdateAttributeTypeInput): Promise<AttributeType> {
+    const attributeType = await this.attributeTypeRepo.getAttributeTypeById(
       data.tenantId,
       data.attributeTypeId,
     );
@@ -55,8 +55,8 @@ export class UpdateAttributeTypeUseCase {
       throw new Error("El tipo de atributo no existe para este tenant.");
     }
 
-    const attributeTypes = this.attributeTypeRepo
-      .getAttributeTypesByTenant(data.tenantId)
+    const attributeTypes = (await this.attributeTypeRepo
+      .getAttributeTypesByTenant(data.tenantId))
       .filter((item) => item.id !== data.attributeTypeId);
     const nextCode = (data.code ?? attributeType.code).trim().toUpperCase();
 
@@ -64,7 +64,7 @@ export class UpdateAttributeTypeUseCase {
       throw new Error("Ya existe un tipo de atributo con ese código.");
     }
 
-    this.attributeTypeRepo.updateAttributeType(
+    await this.attributeTypeRepo.updateAttributeType(
       data.tenantId,
       data.attributeTypeId,
       {
@@ -78,10 +78,10 @@ export class UpdateAttributeTypeUseCase {
     );
 
     return (
-      this.attributeTypeRepo.getAttributeTypeById(
+      (await this.attributeTypeRepo.getAttributeTypeById(
         data.tenantId,
         data.attributeTypeId,
-      ) ?? attributeType
+      )) ?? attributeType
     );
   }
 }
@@ -92,8 +92,8 @@ export class DeleteAttributeTypeUseCase {
     private attributeValueRepo: AttributeValueRepository,
   ) {}
 
-  execute(data: DeleteAttributeTypeInput): void {
-    const attributeType = this.attributeTypeRepo.getAttributeTypeById(
+  async execute(data: DeleteAttributeTypeInput): Promise<void> {
+    const attributeType = await this.attributeTypeRepo.getAttributeTypeById(
       data.tenantId,
       data.attributeTypeId,
     );
@@ -101,7 +101,7 @@ export class DeleteAttributeTypeUseCase {
       throw new Error("El tipo de atributo no existe para este tenant.");
     }
 
-    const values = this.attributeValueRepo.getAttributeValuesByType(
+    const values = await this.attributeValueRepo.getAttributeValuesByType(
       data.tenantId,
       data.attributeTypeId,
     );
@@ -111,7 +111,7 @@ export class DeleteAttributeTypeUseCase {
       );
     }
 
-    this.attributeTypeRepo.removeAttributeType(
+    await this.attributeTypeRepo.removeAttributeType(
       data.tenantId,
       data.attributeTypeId,
     );
@@ -121,13 +121,13 @@ export class DeleteAttributeTypeUseCase {
 export class ListAttributeTypesUseCase {
   constructor(private attributeTypeRepo: AttributeTypeRepository) {}
 
-  execute(
+  async execute(
     tenantId: string,
     options?: ListAttributeTypesOptions,
-  ): AttributeType[] {
+  ): Promise<AttributeType[]> {
     const includeInactive = options?.includeInactive ?? true;
-    return this.attributeTypeRepo
-      .getAttributeTypesByTenant(tenantId)
+    return (await this.attributeTypeRepo
+      .getAttributeTypesByTenant(tenantId))
       .filter((attributeType) => includeInactive || attributeType.isActive)
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
   }

@@ -45,15 +45,19 @@ type ModelFormValues = z.infer<typeof formSchema>;
 interface ModelFormProps {
   brands: Brand[]; // Lista de marcas para el selector
   initialData?: Model;
+  defaultBrandId?: string;
   onSubmit: (data: ModelFormData) => void;
   trigger?: React.ReactNode;
+  compact?: boolean;
 }
 
 export function ModelForm({
   brands,
   initialData,
+  defaultBrandId,
   onSubmit,
   trigger,
+  compact = false,
 }: ModelFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
@@ -71,7 +75,7 @@ export function ModelForm({
   const form = useForm<ModelFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      brandId: "",
+      brandId: defaultBrandId || "",
       name: "",
       slug: "",
       description: "",
@@ -80,12 +84,18 @@ export function ModelForm({
     },
   });
 
+  useEffect(() => {
+    if (!initialData && defaultBrandId) {
+      form.setValue("brandId", defaultBrandId);
+    }
+  }, [defaultBrandId, form, initialData]);
+
   const watchName = form.watch("name");
   useEffect(() => {
-    if (!isEditing && watchName && !userModifiedSlug) {
+    if (!isEditing && watchName && (!userModifiedSlug || compact)) {
       form.setValue("slug", generateSlug(watchName));
     }
-  }, [form, isEditing, watchName, userModifiedSlug]);
+  }, [form, isEditing, watchName, userModifiedSlug, compact]);
 
   const selectedBrandId = form.watch("brandId");
   const selectedBrand = brands.find((b) => b.id === selectedBrandId);
@@ -206,9 +216,10 @@ export function ModelForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="slug"
+            {!compact && (
+              <FormField
+                control={form.control}
+                name="slug"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
@@ -231,13 +242,15 @@ export function ModelForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+              />
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="year"
+          {!compact && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="year"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
@@ -263,12 +276,14 @@ export function ModelForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
-          </div>
+              />
+            </div>
+          )}
 
-          <FormField
-            control={form.control}
-            name="description"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="description"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
@@ -285,11 +300,13 @@ export function ModelForm({
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />
+          )}
 
-          <FormField
-            control={form.control}
-            name="isActive"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="isActive"
             render={({ field }) => (
               <FormItem className="flex items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
@@ -306,7 +323,8 @@ export function ModelForm({
                 </FormControl>
               </FormItem>
             )}
-          />
+            />
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button

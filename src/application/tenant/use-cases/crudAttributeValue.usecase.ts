@@ -28,8 +28,8 @@ export class CreateAttributeValueUseCase {
     private attributeTypeRepo: AttributeTypeRepository,
   ) {}
 
-  execute(data: CreateAttributeValueInput): AttributeValue {
-    const attributeType = this.attributeTypeRepo.getAttributeTypeById(
+  async execute(data: CreateAttributeValueInput): Promise<AttributeValue> {
+    const attributeType = await this.attributeTypeRepo.getAttributeTypeById(
       data.tenantId,
       data.attributeTypeId,
     );
@@ -37,7 +37,7 @@ export class CreateAttributeValueUseCase {
       throw new Error("El tipo de atributo seleccionado no existe.");
     }
 
-    const values = this.attributeValueRepo.getAttributeValuesByTenant(
+    const values = await this.attributeValueRepo.getAttributeValuesByTenant(
       data.tenantId,
     );
     const code = data.code.trim().toUpperCase();
@@ -74,7 +74,7 @@ export class CreateAttributeValueUseCase {
       isActive: data.isActive,
     };
 
-    this.attributeValueRepo.addAttributeValue(attributeValue);
+    await this.attributeValueRepo.addAttributeValue(attributeValue);
     return attributeValue;
   }
 }
@@ -85,8 +85,8 @@ export class UpdateAttributeValueUseCase {
     private attributeTypeRepo: AttributeTypeRepository,
   ) {}
 
-  execute(data: UpdateAttributeValueInput): AttributeValue {
-    const attributeValue = this.attributeValueRepo.getAttributeValueById(
+  async execute(data: UpdateAttributeValueInput): Promise<AttributeValue> {
+    const attributeValue = await this.attributeValueRepo.getAttributeValueById(
       data.tenantId,
       data.attributeValueId,
     );
@@ -96,7 +96,7 @@ export class UpdateAttributeValueUseCase {
 
     const nextAttributeTypeId =
       data.attributeTypeId ?? attributeValue.attributeTypeId;
-    const attributeType = this.attributeTypeRepo.getAttributeTypeById(
+    const attributeType = await this.attributeTypeRepo.getAttributeTypeById(
       data.tenantId,
       nextAttributeTypeId,
     );
@@ -104,8 +104,8 @@ export class UpdateAttributeValueUseCase {
       throw new Error("El tipo de atributo seleccionado no existe.");
     }
 
-    const values = this.attributeValueRepo
-      .getAttributeValuesByTenant(data.tenantId)
+    const values = (await this.attributeValueRepo
+      .getAttributeValuesByTenant(data.tenantId))
       .filter((item) => item.id !== data.attributeValueId);
     const nextCode = (data.code ?? attributeValue.code).trim().toUpperCase();
     const repeatedInType = values.some(
@@ -131,7 +131,7 @@ export class UpdateAttributeValueUseCase {
       throw new Error("El color hexadecimal no es válido.");
     }
 
-    this.attributeValueRepo.updateAttributeValue(data.attributeValueId, {
+    await this.attributeValueRepo.updateAttributeValue(data.attributeValueId, {
       code: nextCode,
       value: data.value ?? attributeValue.value,
       attributeTypeId: nextAttributeTypeId,
@@ -140,10 +140,10 @@ export class UpdateAttributeValueUseCase {
     });
 
     return (
-      this.attributeValueRepo.getAttributeValueById(
+      (await this.attributeValueRepo.getAttributeValueById(
         data.tenantId,
         data.attributeValueId,
-      ) ?? attributeValue
+      )) ?? attributeValue
     );
   }
 }
@@ -151,8 +151,8 @@ export class UpdateAttributeValueUseCase {
 export class DeleteAttributeValueUseCase {
   constructor(private attributeValueRepo: AttributeValueRepository) {}
 
-  execute(data: DeleteAttributeValueInput): void {
-    const attributeValue = this.attributeValueRepo.getAttributeValueById(
+  async execute(data: DeleteAttributeValueInput): Promise<void> {
+    const attributeValue = await this.attributeValueRepo.getAttributeValueById(
       data.tenantId,
       data.attributeValueId,
     );
@@ -160,22 +160,22 @@ export class DeleteAttributeValueUseCase {
       throw new Error("El valor de atributo no existe para este tenant.");
     }
 
-    this.attributeValueRepo.removeAttributeValue(data.attributeValueId);
+    await this.attributeValueRepo.removeAttributeValue(data.attributeValueId);
   }
 }
 
 export class ListAttributeValuesUseCase {
   constructor(private attributeValueRepo: AttributeValueRepository) {}
 
-  execute(
+  async execute(
     tenantId: string,
     options?: ListAttributeValuesOptions,
-  ): AttributeValue[] {
+  ): Promise<AttributeValue[]> {
     const includeInactive = options?.includeInactive ?? true;
     const attributeTypeId = options?.attributeTypeId;
 
-    return this.attributeValueRepo
-      .getAttributeValuesByTenant(tenantId)
+    return (await this.attributeValueRepo
+      .getAttributeValuesByTenant(tenantId))
       .filter((attributeValue) =>
         attributeTypeId
           ? attributeValue.attributeTypeId === attributeTypeId

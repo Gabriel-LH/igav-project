@@ -1,7 +1,7 @@
 // components/catalogs/attribute-values/AttributeValueForm.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,15 +42,19 @@ const formSchema = attributeValueSchema
 interface AttributeValueFormProps {
   initialData?: AttributeValue;
   attributeTypes: AttributeType[]; // Lista de tipos disponibles
+  defaultAttributeTypeId?: string;
   onSubmit: (data: AttributeValueFormData) => void;
   trigger?: React.ReactNode;
+  compact?: boolean;
 }
 
 export function AttributeValueForm({
   initialData,
   attributeTypes,
+  defaultAttributeTypeId,
   onSubmit,
   trigger,
+  compact = false,
 }: AttributeValueFormProps) {
   const [open, setOpen] = useState(false);
 
@@ -59,11 +63,20 @@ export function AttributeValueForm({
     defaultValues: initialData || {
       code: "",
       value: "",
-      attributeTypeId: "",
+      attributeTypeId: defaultAttributeTypeId || "",
       hexColor: "",
       isActive: true,
     },
   });
+
+  useEffect(() => {
+    if (!initialData && defaultAttributeTypeId) {
+      const currentTypeId = form.getValues("attributeTypeId");
+      if (!currentTypeId) {
+        form.setValue("attributeTypeId", defaultAttributeTypeId);
+      }
+    }
+  }, [defaultAttributeTypeId, form, initialData]);
 
   const selectedTypeId = form.watch("attributeTypeId");
   const selectedType = attributeTypes.find((t) => t.id === selectedTypeId);
@@ -120,9 +133,10 @@ export function AttributeValueForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           {/* Selector de Tipo de Atributo */}
-          <FormField
-            control={form.control}
-            name="attributeTypeId"
+          {!(compact && defaultAttributeTypeId) && (
+            <FormField
+              control={form.control}
+              name="attributeTypeId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo de Atributo *</FormLabel>
@@ -159,7 +173,8 @@ export function AttributeValueForm({
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />
+          )}
 
           {/* Info del tipo seleccionado */}
           {selectedType && (
@@ -268,9 +283,10 @@ export function AttributeValueForm({
           )}
 
           {/* Switch de Activo */}
-          <FormField
-            control={form.control}
-            name="isActive"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="isActive"
             render={({ field }) => (
               <FormItem className="flex items-center justify-between rounded-lg border p-4 shadow-sm">
                 <div className="space-y-0.5">
@@ -290,7 +306,8 @@ export function AttributeValueForm({
                 </FormControl>
               </FormItem>
             )}
-          />
+            />
+          )}
 
           <div className="flex justify-end gap-3">
             <Button

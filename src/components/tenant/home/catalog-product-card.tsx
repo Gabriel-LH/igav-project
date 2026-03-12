@@ -25,6 +25,7 @@ import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { Card_19 } from "@/components/card-19";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -181,200 +182,209 @@ export function CatalogProductCard({ product }: Props) {
     : MOCK_TENANT_CONFIG.defaultTransferTime;
 
   return (
-    <Card className="group pt-0 pb-1 overflow-hidden transition-all shadow-xl">
-      <div className=" bg-muted relative overflow-hidden group">
-        <div className="absolute top-2 right-2 flex gap-1 z-20 pointer-events-none">
-          {product.can_sell && hasSaleStock && (
-            <Badge className="bg-slate-900/80 backdrop-blur-sm font-bold text-white border-none text-[9px]">
-              Venta
-            </Badge>
-          )}
-          {product.can_rent && hasRentalStock && (
-            <Badge className="bg-amber-100/90 backdrop-blur-sm font-bold text-amber-800 border-amber-200 text-[9px]">
-              Alquiler
-            </Badge>
-          )}
-        </div>
+    <>
+      <div className="group border rounded-xl relative overflow-hidden">
+        <div className=" bg-muted relative overflow-hidden group">
+          <div className="absolute top-2 right-2 flex gap-1 z-20 pointer-events-none">
+            {product.can_sell && hasSaleStock && (
+              <Badge className="bg-slate-900/80 backdrop-blur-sm font-bold text-white border-none text-[9px]">
+                Venta
+              </Badge>
+            )}
+            {product.can_rent && hasRentalStock && (
+              <Badge className="bg-amber-100/90 backdrop-blur-sm font-bold text-amber-800 border-amber-200 text-[9px]">
+                Alquiler
+              </Badge>
+            )}
+          </div>
 
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
-          {bestOverallDiscount && (
-            <Badge className="bg-red-500 hover:bg-red-600 text-white border-none text-[10px] uppercase font-black px-2 shadow-sm animate-pulse w-fit  text-center">
-              {bestOverallDiscount.reason || "DESCUENTO APLICADO!"}
-              {" - "}
-              {bestOverallDiscount.discount}% DSCTO.
-            </Badge>
-          )}
-          {hasLocal ? (
-            <Badge className="bg-emerald-500/90 text-white border-none text-[8px] uppercase w-fit">
-              En esta sede
-            </Badge>
-          ) : hasRemote ? (
-            <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse w-fit">
-              Disponible para traslado (Llega en {days}{" "}
-              {days === 1 ? "día" : "días"}) 🚚
-            </Badge>
-          ) : (
-            <Badge variant="destructive" className="text-[8px] uppercase w-fit">
-              Agotado
-            </Badge>
-          )}
-        </div>
+          <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
+            {bestOverallDiscount && (
+              <Badge className="bg-red-500 hover:bg-red-600 text-white border-none text-[10px] uppercase font-black px-2 shadow-sm animate-pulse w-fit  text-center">
+                {bestOverallDiscount.reason || "DESCUENTO APLICADO!"}
+                {" - "}
+                {bestOverallDiscount.discount}% DSCTO.
+              </Badge>
+            )}
+            {hasLocal ? (
+              <Badge className="bg-emerald-500/90 text-white border-none text-[8px] uppercase w-fit">
+                En esta sede
+              </Badge>
+            ) : hasRemote ? (
+              <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse w-fit">
+                Disponible para traslado (Llega en {days}{" "}
+                {days === 1 ? "día" : "días"}) 🚚
+              </Badge>
+            ) : (
+              <Badge
+                variant="destructive"
+                className="text-[8px] uppercase w-fit"
+              >
+                Agotado
+              </Badge>
+            )}
+          </div>
 
-        <div className="relative bg-neutral-100 group overflow-hidden rounded-t-xl">
-          <div className="relative aspect-square">
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              priority
-              className="object-contain transition-transform duration-700 ease-in-out group-hover:scale-110"
-            />
+          <div className="relative bg-transparent group  rounded-t-xl">
+            <div className="relative bg-transparent aspect-square">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                priority
+                className="object-contain bg-transparent transition-transform duration-700 ease-in-out group-hover:scale-110"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <CardHeader className="px-4 space-y-1">
-        <div className="flex w-full justify-between">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-            {product.categoryId
-              ? getCategoryById(product.categoryId)?.name || "General"
-              : "General"}
-          </p>
-        </div>
-        <CardTitle className="text-base line-clamp-1 transition-colors group-hover:text-primary">
-          {product.name}
-        </CardTitle>
-      </CardHeader>
+        <div className="isolate z-50 flex flex-col gap-2 ab grow justify-end">
+          <CardHeader className="px-4 space-y-1">
+            <div className="flex w-full justify-between">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                {product.categoryId
+                  ? getCategoryById(product.categoryId)?.name || "General"
+                  : "General"}
+              </p>
+            </div>
+            <CardTitle className="text-base line-clamp-1 transition-colors group-hover:text-primary">
+              {product.name}
+            </CardTitle>
+          </CardHeader>
 
-      <CardContent className="px-4 space-y-1">
-        <div className="space-y-1 border-muted/50 py-2">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase font-bold text-muted-foreground">
-                Colores disponibles {hasLocal ? "locales" : "en otras sedes"}:
-              </span>
-              <div className="flex gap-1.5">
-                {activeColors.length > 0 ? (
-                  activeColors.map((color) => (
-                    <div
-                      key={color.name}
-                      className="h-3 w-3 rounded-full border border-black/10 shadow-sm"
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
+          <CardContent className="px-4 space-y-1">
+            <div className="space-y-1 border-muted/50 py-2">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">
+                    Colores disponibles{" "}
+                    {hasLocal ? "locales" : "en otras sedes"}:
+                  </span>
+                  <div className="flex gap-1.5">
+                    {activeColors.length > 0 ? (
+                      activeColors.map((color) => (
+                        <div
+                          key={color.name}
+                          className="h-3 w-3 rounded-full border border-black/10 shadow-sm"
+                          style={{ backgroundColor: color.hex }}
+                          title={color.name}
+                        />
+                      ))
+                    ) : (
+                      <span className="text-[8px] uppercase font-bold text-red-500">
+                        Sin stock
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">
+                    Tallas disponibles {hasLocal ? "locales" : "en otras sedes"}
+                    :
+                  </span>
+                  <div className="flex gap-1">
+                    {activeSizes.length > 0 ? (
+                      activeSizes.map((size) => (
+                        <span
+                          key={size}
+                          className="rounded-[4px] border bg-card px-1.5 py-0.5 text-[9px] font-black text-card-foreground"
+                        >
+                          {size}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[8px] uppercase italic text-muted-foreground">
+                        Agotado
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2 flex flex-col gap-0.5">
+              {product.can_rent && (
+                <div
+                  className={`flex items-center justify-between text-[13px] ${bestPromoRent && bestPromoRent.discount > 0 ? "text-green-600" : ""}`}
+                >
+                  <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
+                    <HugeiconsIcon
+                      icon={Calendar03Icon}
+                      className="h-3.5 w-3.5 shrink-0"
                     />
-                  ))
-                ) : (
-                  <span className="text-[8px] uppercase font-bold text-red-500">
-                    Sin stock
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase font-bold text-muted-foreground">
-                Tallas disponibles {hasLocal ? "locales" : "en otras sedes"}:
-              </span>
-              <div className="flex gap-1">
-                {activeSizes.length > 0 ? (
-                  activeSizes.map((size) => (
-                    <span
-                      key={size}
-                      className="rounded-[4px] border bg-card px-1.5 py-0.5 text-[9px] font-black text-card-foreground"
-                    >
-                      {size}
+                    <span>
+                      Alquiler{" "}
+                      {bestPromoRent && bestPromoRent.discount > 0 && (
+                        <span className="text-[9px] font-bold text-red-500 ml-1">
+                          (-{formatCurrency(bestPromoRent.discount)})
+                        </span>
+                      )}
                     </span>
-                  ))
-                ) : (
-                  <span className="text-[8px] uppercase italic text-muted-foreground">
-                    Agotado
-                  </span>
-                )}
-              </div>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    {bestPromoRent && bestPromoRent.discount > 0 && (
+                      <span className="text-[10px] line-through text-muted-foreground/60">
+                        {formatCurrency(priceRent)}
+                      </span>
+                    )}
+                    <span className="font-bold">
+                      {formatCurrency(
+                        bestPromoRent ? bestPromoRent.finalPrice : priceRent,
+                      )}{" "}
+                      / {rentUnit}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {product.can_sell && (
+                <div
+                  className={`flex items-center justify-between text-[13px] ${bestPromoSell && bestPromoSell.discount > 0 ? "text-green-600" : ""}`}
+                >
+                  <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
+                    <HugeiconsIcon
+                      icon={SaleTag02Icon}
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
+                    <span>
+                      Venta{" "}
+                      {bestPromoSell && bestPromoSell.discount > 0 && (
+                        <span className="text-[9px] font-bold text-red-500 ml-1">
+                          (-{formatCurrency(bestPromoSell.discount)})
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    {bestPromoSell && bestPromoSell.discount > 0 && (
+                      <span className="text-[10px] line-through text-muted-foreground/60">
+                        {formatCurrency(priceSell)}
+                      </span>
+                    )}
+                    <span className="font-bold text-primary">
+                      {formatCurrency(
+                        bestPromoSell ? bestPromoSell.finalPrice : priceSell,
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </CardContent>
         </div>
 
-        <div className="mt-2 flex flex-col gap-0.5">
-          {product.can_rent && (
-            <div
-              className={`flex items-center justify-between text-[13px] ${bestPromoRent && bestPromoRent.discount > 0 ? "text-green-600" : ""}`}
-            >
-              <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
-                <HugeiconsIcon
-                  icon={Calendar03Icon}
-                  className="h-3.5 w-3.5 shrink-0"
-                />
-                <span>
-                  Alquiler{" "}
-                  {bestPromoRent && bestPromoRent.discount > 0 && (
-                    <span className="text-[9px] font-bold text-red-500 ml-1">
-                      (-{formatCurrency(bestPromoRent.discount)})
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                {bestPromoRent && bestPromoRent.discount > 0 && (
-                  <span className="text-[10px] line-through text-muted-foreground/60">
-                    {formatCurrency(priceRent)}
-                  </span>
-                )}
-                <span className="font-bold">
-                  {formatCurrency(
-                    bestPromoRent ? bestPromoRent.finalPrice : priceRent,
-                  )}{" "}
-                  / {rentUnit}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {product.can_sell && (
-            <div
-              className={`flex items-center justify-between text-[13px] ${bestPromoSell && bestPromoSell.discount > 0 ? "text-green-600" : ""}`}
-            >
-              <div className="flex items-center gap-1.5 text-muted-foreground line-clamp-1">
-                <HugeiconsIcon
-                  icon={SaleTag02Icon}
-                  className="h-3.5 w-3.5 shrink-0"
-                />
-                <span>
-                  Venta{" "}
-                  {bestPromoSell && bestPromoSell.discount > 0 && (
-                    <span className="text-[9px] font-bold text-red-500 ml-1">
-                      (-{formatCurrency(bestPromoSell.discount)})
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                {bestPromoSell && bestPromoSell.discount > 0 && (
-                  <span className="text-[10px] line-through text-muted-foreground/60">
-                    {formatCurrency(priceSell)}
-                  </span>
-                )}
-                <span className="font-bold text-primary">
-                  {formatCurrency(
-                    bestPromoSell ? bestPromoSell.finalPrice : priceSell,
-                  )}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-4 pt-0">
-        <Link
-          href={`/product-details/${encodeURIComponent(product.id)}`}
-          className="w-full"
-        >
-          <Badge className="w-full justify-center py-2 cursor-pointer hover:opacity-90">
-            Ver detalles
-          </Badge>
-        </Link>
-      </CardFooter>
-    </Card>
+        <CardFooter className="p-4 pt-0">
+          <Link
+            href={`/product-details/${encodeURIComponent(product.id)}`}
+            className="w-full"
+          >
+            <Badge className="w-full justify-center py-2 cursor-pointer hover:opacity-90">
+              Ver detalles
+            </Badge>
+          </Link>
+        </CardFooter>
+      </div>
+    </>
   );
 }

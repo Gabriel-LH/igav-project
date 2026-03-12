@@ -32,7 +32,6 @@ import {
   FolderTree,
   Image as ImageIcon,
   Palette,
-  Eye,
   ShoppingCart,
   GripVertical,
 } from "lucide-react";
@@ -81,6 +80,7 @@ interface CategoryFormProps {
   defaultParentId?: string;
   onSubmit: (data: CategoryFormData) => void;
   trigger?: React.ReactNode;
+  compact?: boolean;
 }
 
 export function CategoryForm({
@@ -89,6 +89,7 @@ export function CategoryForm({
   defaultParentId,
   onSubmit,
   trigger,
+  compact = false,
 }: CategoryFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
@@ -267,9 +268,10 @@ export function CategoryForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="order"
+            {!compact && (
+              <FormField
+                control={form.control}
+                name="order"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
@@ -289,116 +291,169 @@ export function CategoryForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+              />
+            )}
           </div>
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descripción</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Descripción de la categoría..."
-                    rows={2}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Visual: Icono, Color, Imagen */}
-          <div className="grid grid-cols-3 gap-4">
+          {!compact && (
             <FormField
               control={form.control}
-              name="icon"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Icono</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Descripción de la categoría..."
+                      rows={2}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          {!compact && (
+            <div className="grid grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="icon"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Icono</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {AVAILABLE_ICONS.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Palette className="w-4 h-4" />
+                      Color
+                    </FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar..." />
-                      </SelectTrigger>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          {...field}
+                          className="w-12 h-10 p-1"
+                        />
+                        <Input
+                          {...field}
+                          placeholder="#3b82f6"
+                          className="flex-1"
+                        />
+                      </div>
                     </FormControl>
-                    <SelectContent>
-                      {AVAILABLE_ICONS.map((icon) => (
-                        <SelectItem key={icon} value={icon}>
-                          {icon}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Palette className="w-4 h-4" />
-                    Color
-                  </FormLabel>
-                  <FormControl>
-                    <div className="flex gap-2">
-                      <Input
-                        type="color"
-                        {...field}
-                        className="w-12 h-10 p-1"
-                      />
-                      <Input
-                        {...field}
-                        placeholder="#3b82f6"
-                        className="flex-1"
-                      />
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      URL Imagen
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="https://..." />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {!compact && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="showInPos"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="flex items-center gap-2">
+                        <ShoppingCart className="w-4 h-4" />
+                        Mostrar en POS
+                      </FormLabel>
+                      <FormDescription>Visible en punto de venta</FormDescription>
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
+              {/* E-commerce (comentado por ahora) */}
+              {/*
+              <FormField
+                control={form.control}
+                name="showInEcommerce"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="flex items-center gap-2">
+                        <Eye className="w-4 h-4" />
+                        Mostrar en Tienda
+                      </FormLabel>
+                      <FormDescription>Visible en e-commerce</FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              */}
+            </div>
+          )}
+
+          {!compact && (
             <FormField
               control={form.control}
-              name="image"
+              name="isActive"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" />
-                    URL Imagen
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="https://..." />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Switches de comportamiento */}
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="showInPos"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex items-center justify-between rounded-lg border p-4 bg-muted/50">
                   <div className="space-y-0.5">
-                    <FormLabel className="flex items-center gap-2">
-                      <ShoppingCart className="w-4 h-4" />
-                      Mostrar en POS
-                    </FormLabel>
-                    <FormDescription>Visible en punto de venta</FormDescription>
+                    <FormLabel className="text-base">Categoría Activa</FormLabel>
+                    <FormDescription>
+                      Desactivar oculta la categoría y sus subcategorías
+                    </FormDescription>
                   </div>
                   <FormControl>
                     <Switch
@@ -409,50 +464,7 @@ export function CategoryForm({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="showInEcommerce"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
-                      Mostrar en Tienda
-                    </FormLabel>
-                    <FormDescription>Visible en e-commerce</FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="isActive"
-            render={({ field }) => (
-              <FormItem className="flex items-center justify-between rounded-lg border p-4 bg-muted/50">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">Categoría Activa</FormLabel>
-                  <FormDescription>
-                    Desactivar oculta la categoría y sus subcategorías
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          )}
 
           <div className="flex justify-end gap-3">
             <Button
@@ -482,3 +494,4 @@ function getDescendantIds(categories: Category[], parentId: string): string[] {
   });
   return result;
 }
+

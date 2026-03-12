@@ -319,10 +319,12 @@ export function CategoriesTable({
             <Switch checked={node.showInPos} disabled />
           </TableCell>
 
-          {/* Celda: E-commerce */}
+          {/* Celda: E-commerce (comentado por ahora) */}
+          {/*
           <TableCell>
             <Switch checked={node.showInEcommerce} disabled />
           </TableCell>
+          */}
 
           {/* Celda: Estado */}
           <TableCell>
@@ -534,7 +536,7 @@ export function CategoriesTable({
                   <TableHead>Categoría</TableHead>
                   <TableHead>Nivel</TableHead>
                   <TableHead>POS</TableHead>
-                  <TableHead>E-commerce</TableHead>
+                  {/* <TableHead>E-commerce</TableHead> */}
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
@@ -545,7 +547,7 @@ export function CategoriesTable({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={5}
                       className="h-32 text-center text-muted-foreground"
                     >
                       {globalFilter ? (

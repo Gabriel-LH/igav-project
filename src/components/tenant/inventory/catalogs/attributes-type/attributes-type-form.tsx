@@ -47,12 +47,14 @@ interface AttributeTypeFormProps {
   initialData?: AttributeType;
   onSubmit: (data: AttributeTypeFormData) => void;
   trigger?: React.ReactNode;
+  compact?: boolean;
 }
 
 export function AttributeTypeForm({
   initialData,
   onSubmit,
   trigger,
+  compact = false,
 }: AttributeTypeFormProps) {
   const [open, setOpen] = useState(false);
 
@@ -232,29 +234,31 @@ export function AttributeTypeForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base flex items-center gap-2">
-                      <ToggleLeft className="w-4 h-4" />
-                      Activo
-                    </FormLabel>
-                    <FormDescription>
-                      Disponible para usar en productos
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {!compact && (
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base flex items-center gap-2">
+                        <ToggleLeft className="w-4 h-4" />
+                        Activo
+                      </FormLabel>
+                      <FormDescription>
+                        Disponible para usar en productos
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           <div className="flex justify-end gap-3">

@@ -1,18 +1,18 @@
 import { AttributeType } from "../../../types/attributes/type.attribute-type";
 
 export interface AttributeTypeRepository {
-  addAttributeType(attributeType: AttributeType): void;
+  addAttributeType(attributeType: AttributeType): Promise<void>;
   updateAttributeType(
     tenantId: string,
     attributeTypeId: string,
     updates: Partial<AttributeType>,
-  ): void;
+  ): Promise<void>;
   getAttributeTypeById(
     tenantId: string,
     attributeTypeId: string,
-  ): AttributeType | undefined;
-  getAttributeTypesByTenant(tenantId: string): AttributeType[];
-  markAsActive(tenantId: string, attributeTypeId: string): void;
-  markAsInactive(tenantId: string, attributeTypeId: string): void;
-  removeAttributeType(tenantId: string, attributeTypeId: string): void;
+  ): Promise<AttributeType | undefined>;
+  getAttributeTypesByTenant(tenantId: string): Promise<AttributeType[]>;
+  markAsActive(tenantId: string, attributeTypeId: string): Promise<void>;
+  markAsInactive(tenantId: string, attributeTypeId: string): Promise<void>;
+  removeAttributeType(tenantId: string, attributeTypeId: string): Promise<void>;
 }

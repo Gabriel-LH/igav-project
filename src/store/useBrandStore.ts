@@ -4,6 +4,7 @@ import { BRANDS_MOCK } from "../mocks/mock.brand";
 
 interface BrandState {
   brands: Brand[];
+  setBrands: (brands: Brand[]) => void;
   addBrand: (brand: Brand) => void;
   updateBrand: (brandId: string, updates: Partial<Brand>) => void;
   getBrandById: (tenantId: string, brandId: string) => Brand | undefined;
@@ -15,6 +16,7 @@ interface BrandState {
 
 export const useBrandStore = create<BrandState>((set, get) => ({
   brands: BRANDS_MOCK,
+  setBrands: (brands) => set({ brands }),
 
   addBrand: (brand) =>
     set((state) => ({

@@ -4,6 +4,7 @@ import { MODELS_MOCK } from "../mocks/mock.models";
 
 interface ModelState {
   models: Model[];
+  setModels: (models: Model[]) => void;
   addModel: (model: Model) => void;
   updateModel: (modelId: string, updates: Partial<Model>) => void;
   getModelById: (tenantId: string, modelId: string) => Model | undefined;
@@ -16,6 +17,7 @@ interface ModelState {
 
 export const useModelStore = create<ModelState>((set, get) => ({
   models: MODELS_MOCK,
+  setModels: (models) => set({ models }),
 
   addModel: (model) =>
     set((state) => ({

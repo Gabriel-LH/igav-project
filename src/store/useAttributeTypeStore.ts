@@ -4,6 +4,7 @@ import { AttributeType } from "../types/attributes/type.attribute-type";
 
 interface AttributeTypeState {
   attributeTypes: AttributeType[];
+  setAttributeTypes: (attributeTypes: AttributeType[]) => void;
   addAttributeType: (attributeType: AttributeType) => void;
   updateAttributeType: (
     attributeTypeId: string,
@@ -21,6 +22,7 @@ interface AttributeTypeState {
 
 export const useAttributeTypeStore = create<AttributeTypeState>((set, get) => ({
   attributeTypes: ATTRIBUTE_TYPES_MOCK,
+  setAttributeTypes: (attributeTypes) => set({ attributeTypes }),
 
   addAttributeType: (attributeType) =>
     set((state) => ({

@@ -3,52 +3,54 @@ import { useAttributeValueStore } from "../../../store/useAttributeValueStore";
 import { AttributeValue } from "../../../types/attributes/type.attribute-value";
 
 export class ZustandAttributeValueRepository implements AttributeValueRepository {
-  addAttributeValue(attributeValue: AttributeValue): void {
+  async addAttributeValue(attributeValue: AttributeValue): Promise<void> {
     useAttributeValueStore.getState().addAttributeValue(attributeValue);
   }
 
-  updateAttributeValue(
+  async updateAttributeValue(
     attributeValueId: string,
     updates: Partial<AttributeValue>,
-  ): void {
+  ): Promise<void> {
     useAttributeValueStore
       .getState()
       .updateAttributeValue(attributeValueId, updates);
   }
 
-  getAttributeValueById(
+  async getAttributeValueById(
     tenantId: string,
     attributeValueId: string,
-  ): AttributeValue | undefined {
+  ): Promise<AttributeValue | undefined> {
     return useAttributeValueStore
       .getState()
       .getAttributeValueById(tenantId, attributeValueId);
   }
 
-  getAttributeValuesByTenant(tenantId: string): AttributeValue[] {
+  async getAttributeValuesByTenant(
+    tenantId: string,
+  ): Promise<AttributeValue[]> {
     return useAttributeValueStore
       .getState()
       .getAttributeValuesByTenant(tenantId);
   }
 
-  getAttributeValuesByType(
+  async getAttributeValuesByType(
     tenantId: string,
     attributeTypeId: string,
-  ): AttributeValue[] {
+  ): Promise<AttributeValue[]> {
     return useAttributeValueStore
       .getState()
       .getAttributeValuesByType(tenantId, attributeTypeId);
   }
 
-  markAsActive(attributeValueId: string): void {
+  async markAsActive(attributeValueId: string): Promise<void> {
     useAttributeValueStore.getState().markAsActive(attributeValueId);
   }
 
-  markAsInactive(attributeValueId: string): void {
+  async markAsInactive(attributeValueId: string): Promise<void> {
     useAttributeValueStore.getState().markAsInactive(attributeValueId);
   }
 
-  removeAttributeValue(attributeValueId: string): void {
+  async removeAttributeValue(attributeValueId: string): Promise<void> {
     useAttributeValueStore.getState().removeAttributeValue(attributeValueId);
   }
 }

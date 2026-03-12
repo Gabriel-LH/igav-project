@@ -36,11 +36,17 @@ interface BrandFormProps {
   initialData?: Brand;
   onSubmit: (data: BrandFormData) => void;
   trigger?: React.ReactNode;
+  compact?: boolean;
 }
 
 // Generar slug automático
 
-export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
+export function BrandForm({
+  initialData,
+  onSubmit,
+  trigger,
+  compact = false,
+}: BrandFormProps) {
   const [open, setOpen] = useState(false);
   const isEditing = !!initialData;
   const [userModifiedSlug, setUserModifiedSlug] = useState(false);
@@ -59,10 +65,10 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
   // Auto-generar slug cuando cambia el nombre (solo si no está editando)
   const watchName = form.watch("name");
   useEffect(() => {
-    if (!isEditing && watchName && !userModifiedSlug) {
+    if (!isEditing && watchName && (!userModifiedSlug || compact)) {
       form.setValue("slug", generateSlug(watchName));
     }
-  }, [form, isEditing, watchName, userModifiedSlug]);
+  }, [form, isEditing, watchName, userModifiedSlug, compact]);
 
   const _ = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserModifiedSlug(true);
@@ -113,9 +119,10 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="slug"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="slug"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
@@ -142,11 +149,13 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />
+          )}
 
-          <FormField
-            control={form.control}
-            name="description"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="description"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
@@ -163,11 +172,13 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />
+          )}
 
-          <FormField
-            control={form.control}
-            name="logo"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="logo"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
@@ -183,11 +194,13 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />
+          )}
 
-          <FormField
-            control={form.control}
-            name="isActive"
+          {!compact && (
+            <FormField
+              control={form.control}
+              name="isActive"
             render={({ field }) => (
               <FormItem className="flex items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
@@ -204,7 +217,8 @@ export function BrandForm({ initialData, onSubmit, trigger }: BrandFormProps) {
                 </FormControl>
               </FormItem>
             )}
-          />
+            />
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button
