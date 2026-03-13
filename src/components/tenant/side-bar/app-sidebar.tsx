@@ -103,6 +103,10 @@ const data = {
         { title: "Stock", url: "/tenant/inventory/stock" },
         { title: "Items Serializados", url: "/tenant/inventory/items" },
         { title: "Transferencias", url: "/tenant/inventory/transfers" },
+        {
+          title: "Configuración de Catálogo",
+          url: "/tenant/inventory/catalog-config",
+        },
       ],
     },
     {
@@ -337,7 +341,11 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         {filteredNavMain.length > 0 && (
-          <NavMain branches={branches} items={filteredNavMain} pathname={pathname} />
+          <NavMain
+            branches={branches}
+            items={filteredNavMain}
+            pathname={pathname}
+          />
         )}
         {filteredNavOperation.length > 0 && (
           <NavOperation items={filteredNavOperation} pathname={pathname} />

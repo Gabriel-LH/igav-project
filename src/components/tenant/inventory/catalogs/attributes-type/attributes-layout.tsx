@@ -5,7 +5,7 @@ import {
   AttributeType,
   AttributeTypeFormData,
 } from "@/src/types/attributes/type.attribute-type";
-import { AttributeTypesTable } from "./attributes-type-table";
+import { AttributeTypesTable } from "./table/attributes-type-table"; 
 import {
   createAttributeTypeAction,
   updateAttributeTypeAction,

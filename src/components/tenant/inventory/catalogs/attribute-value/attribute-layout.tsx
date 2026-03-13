@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AttributeValuesTable } from "./attribute-value-table";
+import { AttributeValuesTable } from "@/src/components/tenant/inventory/catalogs/attribute-value/table/attribute-value-table";
 import {
   AttributeValue,
   AttributeValueFormData,
