@@ -16,13 +16,10 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/badge";
 import { EntityModal, useEntityModal } from "../../catalogs/ui/EntityModal";
 import {
   Plus,
-  Package,
-  DollarSign,
   CheckCircle2,
   Building2,
   FolderTree,
@@ -835,15 +832,6 @@ export function ProductForm({
                 setFormData({ ...formData, selectedAttributes: attrs })
               }
             />
-            <div className="flex mt-3 justify-end">
-              <Button
-                type="button"
-                onClick={() => setActiveTab("variants")}
-                disabled={!canGoToVariants}
-              >
-                Generar {stats.total} Variantes
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -861,6 +849,7 @@ export function ProductForm({
         onResetOverride={resetOverride}
         onResetAll={resetAllOverrides}
         existingImages={formData.image}
+        variantOverrides={formData.variantOverrides}
       />
 
       <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">

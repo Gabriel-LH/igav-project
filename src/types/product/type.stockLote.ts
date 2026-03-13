@@ -15,13 +15,21 @@ export const stockLotSchema = z.object({
   expirationDate: z.date().optional(),
 
   lotNumber: z.string().optional(),
+  condition: z.enum(["Nuevo", "Usado", "Vintage"]).optional(),
 
   isForRent: z.boolean(),
   isForSale: z.boolean(),
 
   status: z
-    .enum(["disponible", "bajo_pedido", "discontinuado"])
-    .default("disponible"),
+    .enum([
+      "en_transito",
+      "disponible",
+      "bajo_pedido",
+      "discontinuado",
+      "alquilado",
+      "vendido",
+    ])
+    .default("en_transito"),
 
   createdAt: z.date(),
   updatedAt: z.date(),

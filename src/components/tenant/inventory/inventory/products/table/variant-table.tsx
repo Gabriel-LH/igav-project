@@ -1,7 +1,7 @@
 // components/inventory/VariantsTable.tsx
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import {
   Table,
   TableBody,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -45,7 +46,6 @@ import {
   Package,
   AlertTriangle,
   Hash,
-  DollarSign,
   Copy,
   Check,
   RefreshCw,
@@ -84,6 +84,7 @@ interface VariantsTableProps {
   onResetOverride: (signature: string) => void;
   onResetAll: () => void;
   existingImages?: string[];
+  variantOverrides: Record<string, VariantOverride>;
 }
 
 const RENT_UNITS = [
@@ -107,6 +108,7 @@ export function VariantsTable({
   onResetOverride,
   onResetAll,
   existingImages = [],
+  variantOverrides,
 }: VariantsTableProps) {
   // Estados locales SOLO para los inputs de aplicación global
   const [globalPriceRent, setGlobalPriceRent] = useState("");
@@ -117,18 +119,64 @@ export function VariantsTable({
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
 
+  // --- Selección de variantes ---
+  const [selectedSignatures, setSelectedSignatures] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleSelection = useCallback((signature: string) => {
+    setSelectedSignatures((prev) => {
+      const next = new Set(prev);
+      if (next.has(signature)) {
+        next.delete(signature);
+      } else {
+        next.add(signature);
+      }
+      return next;
+    });
+  }, []);
+
+  const pageCount = Math.max(1, Math.ceil(variants.length / pageSize));
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
+  const paginatedVariants = useMemo(
+    () =>
+      variants.slice(
+        safePageIndex * pageSize,
+        safePageIndex * pageSize + pageSize,
+      ),
+    [variants, safePageIndex, pageSize],
+  );
+
+  const toggleAllPage = useCallback(() => {
+    const allPageSelected = paginatedVariants.every((v) =>
+      selectedSignatures.has(v.signature),
+    );
+    setSelectedSignatures((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        paginatedVariants.forEach((v) => next.delete(v.signature));
+      } else {
+        paginatedVariants.forEach((v) => next.add(v.signature));
+      }
+      return next;
+    });
+  }, [paginatedVariants, selectedSignatures]);
+
   // Aplicar precio de renta en masa
   const applyGlobalRentPrice = useCallback(() => {
     if (!canRent) return;
     const numValue = parseFloat(globalPriceRent);
     if (isNaN(numValue)) return;
 
-    variants.forEach((variant) => {
-      if (variant.isActive) {
-        onUpdateOverride(variant.signature, { priceRent: numValue });
-      }
+    const targets =
+      selectedSignatures.size > 0
+        ? variants.filter((v) => selectedSignatures.has(v.signature))
+        : variants.filter((v) => v.isActive);
+
+    targets.forEach((variant) => {
+      onUpdateOverride(variant.signature, { priceRent: numValue });
     });
-  }, [canRent, globalPriceRent, variants, onUpdateOverride]);
+  }, [canRent, globalPriceRent, variants, onUpdateOverride, selectedSignatures]);
 
   // Aplicar precio de venta en masa
   const applyGlobalSellPrice = useCallback(() => {
@@ -136,33 +184,49 @@ export function VariantsTable({
     const numValue = parseFloat(globalPriceSell);
     if (isNaN(numValue)) return;
 
-    variants.forEach((variant) => {
-      if (variant.isActive) {
-        onUpdateOverride(variant.signature, { priceSell: numValue });
-      }
+    const targets =
+      selectedSignatures.size > 0
+        ? variants.filter((v) => selectedSignatures.has(v.signature))
+        : variants.filter((v) => v.isActive);
+
+    targets.forEach((variant) => {
+      onUpdateOverride(variant.signature, { priceSell: numValue });
     });
-  }, [canSell, globalPriceSell, variants, onUpdateOverride]);
+  }, [canSell, globalPriceSell, variants, onUpdateOverride, selectedSignatures]);
 
   // Aplicar unidad en masa
   const applyGlobalUnit = useCallback(() => {
     if (!canRent) return;
     if (!globalUnit) return;
 
-    variants.forEach((variant) => {
-      if (variant.isActive) {
-        onUpdateOverride(variant.signature, { rentUnit: globalUnit });
-      }
+    const targets =
+      selectedSignatures.size > 0
+        ? variants.filter((v) => selectedSignatures.has(v.signature))
+        : variants.filter((v) => v.isActive);
+
+    targets.forEach((variant) => {
+      onUpdateOverride(variant.signature, { rentUnit: globalUnit });
     });
-  }, [canRent, globalUnit, variants, onUpdateOverride]);
+  }, [canRent, globalUnit, variants, onUpdateOverride, selectedSignatures]);
 
   const applyGlobalPurchasePrice = useCallback(() => {
     const numValue = parseFloat(globalPurchasePrice);
     if (isNaN(numValue)) return;
-    variants.forEach((v) => {
-      if (v.isActive)
-        onUpdateOverride(v.signature, { purchasePrice: numValue });
+
+    const targets =
+      selectedSignatures.size > 0
+        ? variants.filter((v) => selectedSignatures.has(v.signature))
+        : variants.filter((v) => v.isActive);
+
+    targets.forEach((v) => {
+      onUpdateOverride(v.signature, { purchasePrice: numValue });
     });
-  }, [globalPurchasePrice, variants, onUpdateOverride]);
+  }, [
+    globalPurchasePrice,
+    variants,
+    onUpdateOverride,
+    selectedSignatures,
+  ]);
 
   // --- Lógica de Ganancia y Margen (Basada en variantes paginadas o totales) ---
   const calculateMetrics = () => {
@@ -187,6 +251,14 @@ export function VariantsTable({
   };
 
   const { profit, margin } = calculateMetrics();
+
+  const skuCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    variants.forEach((v) => {
+      counts[v.variantCode] = (counts[v.variantCode] || 0) + 1;
+    });
+    return counts;
+  }, [variants]);
 
   const copyBarcode = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
@@ -223,12 +295,10 @@ export function VariantsTable({
     );
   }
 
-  const pageCount = Math.max(1, Math.ceil(variants.length / pageSize));
-  const safePageIndex = Math.min(pageIndex, pageCount - 1);
-  const paginatedVariants = variants.slice(
-    safePageIndex * pageSize,
-    safePageIndex * pageSize + pageSize,
-  );
+  const isAllPageSelected =
+    paginatedVariants.length > 0 &&
+    paginatedVariants.every((v) => selectedSignatures.has(v.signature));
+
   const canPreviousPage = safePageIndex > 0;
   const canNextPage = safePageIndex < pageCount - 1;
 
@@ -417,6 +487,13 @@ export function VariantsTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
+              <TableHead className="w-12 text-center">
+                <Checkbox
+                  checked={isAllPageSelected}
+                  onCheckedChange={toggleAllPage}
+                  aria-label="Select all on page"
+                />
+              </TableHead>
               <TableHead className="w-12 text-center">Activo</TableHead>
               <TableHead className="w-11 text-center">Imagen</TableHead>
               <TableHead>
@@ -478,6 +555,10 @@ export function VariantsTable({
                   canRent={canRent}
                   canSell={canSell}
                   existingImages={existingImages}
+                  variantOverrides={variantOverrides}
+                  isSelected={selectedSignatures.has(variant.signature)}
+                  onToggleSelection={toggleSelection}
+                  isDuplicateSku={skuCounts[variant.variantCode] > 1}
                 />
               );
             })}
@@ -602,9 +683,13 @@ interface VariantRowProps {
   canRent: boolean;
   canSell: boolean;
   existingImages?: string[];
+  variantOverrides: Record<string, VariantOverride>;
+  isSelected: boolean;
+  onToggleSelection: (signature: string) => void;
+  isDuplicateSku?: boolean;
 }
 
-function VariantRow({
+const VariantRow = memo(function VariantRow({
   variant,
   onUpdateOverride,
   onResetOverride,
@@ -614,6 +699,10 @@ function VariantRow({
   canRent,
   canSell,
   existingImages = [],
+  variantOverrides,
+  isSelected,
+  onToggleSelection,
+  isDuplicateSku,
 }: VariantRowProps) {
   const localRentPrice = variant.priceRent ? String(variant.priceRent) : "";
   const localSellPrice = variant.priceSell ? String(variant.priceSell) : "";
@@ -658,19 +747,39 @@ function VariantRow({
     onUpdateOverride(variant.signature, { rentUnit: value });
   };
 
-  const attributeKeys = Object.keys(variant.attributes);
+  const attributeKeys = useMemo(
+    () => Object.keys(variant.attributes),
+    [variant.attributes],
+  );
 
   const cost = variant.purchasePrice || 0;
   const price = variant.priceSell || 0;
   const profit = price - cost;
   const margin = price > 0 ? (profit / price) * 100 : 0;
 
-  // 2. Determinar salud financiera de la variante
-  const isLoss = price > 0 && profit < 0;
-  const isLowMargin = price > 0 && margin < 15; // Alerta si es menor al 15%
+  const override = variantOverrides[variant.signature];
+  const isBarcodeOverridden = override?.barcode !== undefined;
+  const isPurchasePriceOverridden = override?.purchasePrice !== undefined;
+  const isVariantCodeOverridden = override?.variantCode !== undefined;
+  const isPriceRentOverridden = override?.priceRent !== undefined;
+  const isPriceSellOverridden = override?.priceSell !== undefined;
+  const isRentUnitOverridden = override?.rentUnit !== undefined;
 
   return (
-    <TableRow className={!variant.isActive ? "opacity-50 bg-muted/20" : ""}>
+    <TableRow
+      className={cn(
+        !variant.isActive && "opacity-50 bg-muted/20",
+        isSelected && "bg-primary/5",
+      )}
+    >
+      {/* Selección */}
+      <TableCell className="text-center">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelection(variant.signature)}
+          aria-label={`Select ${variant.variantCode}`}
+        />
+      </TableCell>
       {/* Activo */}
       <TableCell className="text-center">
         <Switch
@@ -704,8 +813,9 @@ function VariantRow({
             onUpdateOverride(variant.signature, { variantCode: e.target.value })
           }
           className={cn(
-            "h-8 font-mono text-xs w-30",
-            variant.hasOverride && "border-blue-500 bg-blue-50/50",
+            "h-8 font-mono text-xs w-30 transition-colors",
+            isVariantCodeOverridden && "border-amber-500 bg-amber-50/30",
+            isDuplicateSku && "border-red-500 bg-red-50",
           )}
           disabled={!variant.isActive}
         />
@@ -718,7 +828,8 @@ function VariantRow({
             value={localBarcode}
             onChange={(e) => handleBarcodeChange(e.target.value)}
             className={cn(
-              "h-8 font-mono text-xs w-31",
+              "h-8 font-mono text-xs w-31 transition-colors",
+              isBarcodeOverridden && "border-amber-500 bg-amber-50/30",
               localBarcode.includes("NaN") && "border-red-500 bg-red-50", // Resaltar error
             )}
             disabled={!variant.isActive}
@@ -838,7 +949,8 @@ function VariantRow({
             value={localPurchasePrice}
             onChange={(e) => handlePurchasePriceChange(e.target.value)}
             className={cn(
-              "h-8 w-24",
+              "h-8 w-24 transition-colors",
+              isPurchasePriceOverridden && "border-amber-500 bg-amber-50/30",
               variant.purchasePrice! > (variant.priceSell || 0) &&
                 "border-red-500 bg-red-50",
             )}
@@ -855,7 +967,10 @@ function VariantRow({
             step="0.01"
             value={localRentPrice}
             onChange={(e) => handleRentPriceChange(e.target.value)}
-            className="h-8 w-24"
+            className={cn(
+              "h-8 w-24 transition-colors",
+              isPriceRentOverridden && "border-amber-500 bg-amber-50/30",
+            )}
             disabled={!variant.isActive}
             placeholder="0.00"
           />
@@ -869,7 +984,12 @@ function VariantRow({
             onValueChange={(e) => handleUnitChange(e)}
             disabled={!variant.isActive}
           >
-            <SelectTrigger className="h-8 w-24">
+            <SelectTrigger
+              className={cn(
+                "h-8 w-24 transition-colors",
+                isRentUnitOverridden && "border-amber-500 bg-amber-50/30",
+              )}
+            >
               <SelectValue placeholder="Seleccionar..." />
             </SelectTrigger>
             <SelectContent>
@@ -890,7 +1010,10 @@ function VariantRow({
             step="0.01"
             value={localSellPrice}
             onChange={(e) => handleSellPriceChange(e.target.value)}
-            className="h-8 w-24"
+            className={cn(
+              "h-8 w-24 transition-colors",
+              isPriceSellOverridden && "border-amber-500 bg-amber-50/30",
+            )}
             disabled={!variant.isActive}
             placeholder="0.00"
           />
@@ -956,4 +1079,4 @@ function VariantRow({
       </TableCell>
     </TableRow>
   );
-}
+});

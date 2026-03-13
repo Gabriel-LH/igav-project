@@ -23,6 +23,7 @@ export const productVariantSchema = z.object({
 
   isActive: z.boolean().default(true),
 
+
   createdAt: z.date(),
   updatedAt: z.date(),
 });

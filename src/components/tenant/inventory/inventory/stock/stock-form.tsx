@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import {
   Plus,
   Package,
@@ -28,19 +29,23 @@ import {
   ScanLine,
   CheckCircle2,
   AlertCircle,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
-import { Badge } from "@/components/badge";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
-import { useIsMobile } from "@/src/hooks/use-mobile";
+import { Branch } from "@/src/types/branch/type.branch";
 
+const CONDITION_OPTIONS = [
+  { value: "Nuevo", label: "Nuevo", color: "green" },
+  { value: "Usado", label: "Usado", color: "orange" },
+  { value: "Vintage", label: "Vintage", color: "purple" },
+];
 
 const STATUS_OPTIONS = [
+  { value: "en_transito", label: "En Tránsito", color: "blue" },
   { value: "disponible", label: "Disponible", color: "green" },
-  { value: "bajo_pedido", label: "Bajo Pedido", color: "orange" },
-  { value: "discontinuado", label: "Discontinuado", color: "red" },
 ];
 
 interface StockFormProps {
@@ -51,9 +56,14 @@ interface StockFormProps {
 export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
   const productsWithVariants = useInventoryProductOptions(false);
 
-  const [formData, setFormData] = useState<Partial<StockFormData>>({
+  const [formData, setFormData] = useState<Partial<StockFormData & { rentQuantity?: number, sellQuantity?: number }>>({
     quantity: 0,
-    status: "disponible",
+    rentQuantity: 0,
+    sellQuantity: 0,
+    status: "en_transito",
+    condition: "Nuevo",
+    isForRent: false,
+    isForSale: false,
   });
   const [scanMessage, setScanMessage] = useState<{
     type: "success" | "error";
@@ -74,7 +84,6 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
     (b) => b.id === formData.branchId,
   );
 
-  const isMobile = useIsMobile();
 
   const handleScan = (barcode: string) => {
     setScanMessage(null);
@@ -106,49 +115,75 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
     e.preventDefault();
     if (!selectedProduct || !selectedVariant || !formData.branchId) return;
 
-    const data: StockFormData = {
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      variantId: selectedVariant.id,
-      variantName: selectedVariant.name,
-      variantCode: selectedVariant.variantCode,
-      variantBarcode: selectedVariant.barcode,
-      branchId: formData.branchId,
-      branchName: selectedBranch?.name || "",
-      quantity: formData.quantity || 0,
-      barcode: formData.barcode || selectedVariant.barcode,
-      expirationDate: formData.expirationDate,
-      lotNumber: formData.lotNumber,
-      isForRent: selectedProduct.can_rent,
-      isForSale: selectedProduct.can_sell,
-      status: formData.status || "disponible",
-    };
+    if (formData.isForRent && (formData.rentQuantity || 0) > 0) {
+      onSubmit({
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        variantId: selectedVariant.id,
+        variantName: selectedVariant.name,
+        variantCode: selectedVariant.variantCode,
+        variantBarcode: selectedVariant.barcode,
+        branchId: formData.branchId,
+        branchName: selectedBranch?.name || "",
+        quantity: formData.rentQuantity || 0,
+        barcode: formData.barcode || selectedVariant.barcode,
+        expirationDate: formData.expirationDate,
+        lotNumber: formData.lotNumber,
+        isForRent: true,
+        isForSale: false,
+        status: formData.status || "disponible",
+        condition: formData.condition || "Nuevo",
+      });
+    }
 
-    onSubmit(data);
+    if (formData.isForSale && (formData.sellQuantity || 0) > 0) {
+      onSubmit({
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        variantId: selectedVariant.id,
+        variantName: selectedVariant.name,
+        variantCode: selectedVariant.variantCode,
+        variantBarcode: selectedVariant.barcode,
+        branchId: formData.branchId,
+        branchName: selectedBranch?.name || "",
+        quantity: formData.sellQuantity || 0,
+        barcode: formData.barcode || selectedVariant.barcode,
+        expirationDate: formData.expirationDate,
+        lotNumber: formData.lotNumber,
+        isForRent: false,
+        isForSale: true,
+        status: formData.status || "disponible",
+        condition: formData.condition || "Nuevo",
+      });
+    }
 
     setFormData({
       quantity: 0,
+      rentQuantity: 0,
+      sellQuantity: 0,
       status: "disponible",
       productId: undefined,
       variantId: undefined,
       barcode: undefined,
       lotNumber: undefined,
       expirationDate: undefined,
+      isForRent: false,
+      isForSale: false,
     });
     setScanMessage(null);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="space-y-4">
-        <div className="text-2xl flex items-center gap-2">
-          <Package className="w-5 h-5" />
+      <div className="space-y-6">
+        <div className="text-2xl flex items-center gap-2 font-semibold">
+          <Package className="w-6 h-6 text-primary" />
           Nuevo Lote de Stock
         </div>
 
-        {/* PRODUCTO */}
-        <div className=" flex gap-4 md:flex-row flex-col space-y-2">
-          <div className="w-full space-y-1">
+        {/* SECCIÓN 1: PRODUCTO Y VARIANTE */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-card">
+          <div className="space-y-1">
             <Label>Producto *</Label>
             <Select
               value={formData.productId}
@@ -158,6 +193,8 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
                   productId: val,
                   variantId: undefined,
                   barcode: undefined,
+                  isForRent: false,
+                  isForSale: false,
                 })
               }
             >
@@ -174,187 +211,109 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
             </Select>
           </div>
 
-          {/* VARIANTE CON ESCANER */}
-
-          <div className="w-full space-y-1">
+          <div className="space-y-1">
             <Label className="flex items-center gap-2">
               <Barcode className="w-4 h-4" />
               Variante *
             </Label>
-
-            <div className="flex gap-3 items-start">
-              <div className="flex-1">
-                <Select
-                  value={formData.variantId}
-                  onValueChange={(val) => {
-                    const variant = selectedProduct?.variants.find(
-                      (v) => v.id === val,
-                    );
-                    if (variant) {
-                      setFormData({
-                        ...formData,
-                        variantId: val,
-                        barcode: variant.barcode,
-                      });
-                      setScanMessage(null);
-                    }
-                  }}
-                  disabled={!selectedProduct}
-                >
-                  <SelectTrigger
-                    className={cn(selectedVariant && "bg-primary/5", "w-full")}
-                  >
-                    <SelectValue
-                      placeholder={
-                        selectedProduct
-                          ? "Seleccionar variante..."
-                          : "Primero selecciona un producto"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {selectedProduct ? (
-                      selectedProduct.variants.map((variant) => (
-                        <SelectItem key={variant.id} value={variant.id}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">{variant.name}</span>
-                            <span className="text-xs text-muted-foreground font-mono">
-                              {variant.variantCode} • Barcode: {variant.barcode}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="disabled" disabled>
-                        Selecciona un producto primero
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="flex gap-2">
+              <Select
+                value={formData.variantId}
+                onValueChange={(val) => {
+                  const variant = selectedProduct?.variants.find(
+                    (v) => v.id === val,
+                  );
+                  if (variant) {
+                    setFormData({
+                      ...formData,
+                      variantId: val,
+                      barcode: variant.barcode,
+                    });
+                    setScanMessage(null);
+                  }
+                }}
+                disabled={!selectedProduct}
+              >
+                <SelectTrigger className={cn(selectedVariant && "bg-primary/5", "w-full")}>
+                  <SelectValue placeholder={selectedProduct ? "Seleccionar variante..." : "Selecciona un producto"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedProduct?.variants.map((variant) => (
+                    <SelectItem key={variant.id} value={variant.id}>
+                      <div className="flex flex-col items-start leading-tight">
+                        <span>{variant.name}</span>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          {variant.variantCode}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="gap-2 shrink-0"
-                  >
+                  <Button type="button" variant="outline" size="icon" className="shrink-0">
                     <ScanLine className="w-4 h-4" />
-                    {isMobile ? "" : "Escanear"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80" align="end">
                   <div className="space-y-3">
                     <h4 className="font-semibold flex items-center gap-2">
                       <ScanLine className="w-4 h-4" />
-                      Escanear Código de Barras
+                      Escanear Código
                     </h4>
-                    <p className="text-xs text-muted-foreground">
-                      Escanea el código de la variante para autocompletar
-                    </p>
                     <BarcodeScanner onScan={handleScan} />
                   </div>
                 </PopoverContent>
               </Popover>
             </div>
-
-            {scanMessage && (
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm p-2 rounded-md",
-                  scanMessage.type === "success"
-                    ? "bg-green-50/10 text-green-700 border"
-                    : "bg-red-50/10 text-red-700 border",
-                )}
-              >
-                {scanMessage.type === "success" ? (
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                )}
-                {scanMessage.text}
-              </div>
-            )}
           </div>
 
-          {/* CANTIDAD */}
-          <div className="w-full space-y-1">
-            <Label className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              Cantidad *
-            </Label>
-            <Input
-              type="number"
-              min={0}
-              value={formData.quantity}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  quantity: parseInt(e.target.value) || 0,
-                })
-              }
-              placeholder="0"
-            />
-          </div>
+          {scanMessage && (
+            <div className={cn(
+              "col-span-full flex items-center gap-2 text-sm p-2 rounded border",
+              scanMessage.type === "success" ? "bg-green-50/50 text-green-700 border-green-200" : "bg-red-50/50 text-red-700 border-red-200"
+            )}>
+              {scanMessage.type === "success" ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+              {scanMessage.text}
+            </div>
+          )}
         </div>
 
-        {/* DATOS OPCIONALES DEL LOTE */}
-        <div className="flex w-full md:flex-row flex-col gap-4">
-          <div className="space-y-2 w-full">
+        {/* SECCIÓN 2: DATOS DEL LOTE */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-card">
+          <div className="space-y-1">
             <Label className="flex items-center gap-2">
-              <Tag className="w-4 h-4" />
-              Número de Lote (Opcional)
+              <Tag className="w-4 h-4" /> Número de Lote
             </Label>
             <Input
               value={formData.lotNumber || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, lotNumber: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, lotNumber: e.target.value })}
               placeholder="Ej: LOTE-2024-001"
             />
           </div>
 
-          <div className="space-y-2 w-full">
+          <div className="space-y-1">
             <Label className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Fecha de Expiración{" "}
-              <span className="text-xs text-muted-foreground">
-                (Solo para productos con fecha de vencimiento)
-              </span>
+              <Calendar className="w-4 h-4" /> Expira
             </Label>
             <Input
               type="date"
-              value={
-                formData.expirationDate
-                  ? formData.expirationDate.toISOString().split("T")[0]
-                  : ""
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  expirationDate: e.target.value
-                    ? new Date(e.target.value)
-                    : undefined,
-                })
-              }
+              value={formData.expirationDate ? formData.expirationDate.toISOString().split("T")[0] : ""}
+              onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value ? new Date(e.target.value) : undefined })}
             />
           </div>
 
-          {/* SUCURSAL */}
-          <div className="space-y-2 w-full">
+          <div className="space-y-1">
             <Label className="flex items-center gap-2">
-              <Store className="w-4 h-4" />
-              Sucursal *
+              <Store className="w-4 h-4" /> Sucursal *
             </Label>
             <Select
               value={formData.branchId}
-              onValueChange={(val) =>
-                setFormData({ ...formData, branchId: val })
-              }
+              onValueChange={(val) => setFormData({ ...formData, branchId: val })}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar sucursal..." />
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar..." />
               </SelectTrigger>
               <SelectContent>
                 {availableBranches.map((branch) => (
@@ -367,60 +326,96 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
           </div>
         </div>
 
-        <div className="flex w-full md:flex-row flex-col items-center gap-4">
-          {/* USOS DEL PRODUCTO PADRE */}
-          <div className="flex rounded-md border h-10 px-3 w-full mt-4 bg-muted/30">
-            <Label className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
-              Política comercial del producto:
-            </Label>
-            <div className="flex items-center ml-4">
-              {selectedProduct ? (
-                <>
-                  {selectedProduct.can_rent && (
-                    <Badge variant="secondary">Renta</Badge>
-                  )}
-                  {selectedProduct.can_sell && (
-                    <Badge variant="secondary">Venta</Badge>
-                  )}
-                  {!selectedProduct.can_rent && !selectedProduct.can_sell && (
-                    <Badge variant="destructive">Sin uso comercial</Badge>
-                  )}
-                </>
-              ) : (
-                <span className="text-sm text-muted-foreground">
-                  Selecciona un producto para ver su política de uso.
-                </span>
-              )}
-            </div>
-          </div>
+        {/* SECCIÓN 3: POLÍTICA Y CANTIDADES */}
+        <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+          <Label className="text-base flex items-center gap-2 font-semibold">
+            <DollarSign className="w-5 h-5 text-primary" />
+            Configuración de Inventario por Uso
+          </Label>
 
-          {/* ESTADO */}
-          <div className="space-y-2 w-full">
-            <Label>Estado</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* RENTA */}
+            {(selectedProduct?.can_rent || !selectedProduct) && (
+              <div className={cn(
+                "space-y-3 p-4 border rounded-md transition-opacity",
+                !selectedProduct?.can_rent && selectedProduct && "opacity-40 grayscale pointer-events-none"
+              )}>
+                <div className="flex items-center justify-between">
+                  <Label className="font-semibold cursor-pointer" htmlFor="isForRent">Para Alquiler</Label>
+                  <Switch
+                    id="isForRent"
+                    disabled={!selectedProduct?.can_rent}
+                    checked={formData.isForRent}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isForRent: checked })}
+                  />
+                </div>
+                <Input
+                  type="number"
+                  min={0}
+                  disabled={!formData.isForRent}
+                  value={formData.rentQuantity}
+                  onChange={(e) => setFormData({ ...formData, rentQuantity: parseInt(e.target.value) || 0 })}
+                  placeholder="Cantidad..."
+                />
+              </div>
+            )}
+
+            {/* VENTA */}
+            {(selectedProduct?.can_sell || !selectedProduct) && (
+              <div className={cn(
+                "space-y-3 p-4 border rounded-md transition-opacity",
+                !selectedProduct?.can_sell && selectedProduct && "opacity-40 grayscale pointer-events-none"
+              )}>
+                <div className="flex items-center justify-between">
+                  <Label className="font-semibold cursor-pointer" htmlFor="isForSale">Para Venta</Label>
+                  <Switch
+                    id="isForSale"
+                    disabled={!selectedProduct?.can_sell}
+                    checked={formData.isForSale}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isForSale: checked })}
+                  />
+                </div>
+                <Input
+                  type="number"
+                  min={0}
+                  disabled={!formData.isForSale}
+                  value={formData.sellQuantity}
+                  onChange={(e) => setFormData({ ...formData, sellQuantity: parseInt(e.target.value) || 0 })}
+                  placeholder="Cantidad..."
+                />
+              </div>
+            )}
+          </div>
+          
+          {!selectedProduct && (
+            <p className="text-center text-xs text-muted-foreground pb-2 italic">
+              * Selecciona un producto para configurar cantidades.
+            </p>
+          )}
+        </div>
+
+        {/* SECCIÓN 4: CONDICIÓN Y ESTADO */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <Label className="flex items-center gap-2">
+              <Settings className="w-4 h-4" /> Condición
+            </Label>
             <Select
-              value={formData.status}
-              onValueChange={(val) =>
-                setFormData({
-                  ...formData,
-                  status: val as StockFormData["status"],
-                })
-              }
+              value={formData.condition}
+              onValueChange={(val) => setFormData({ ...formData, condition: val as StockFormData["condition"] })}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
+                {CONDITION_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     <div className="flex items-center gap-2">
-                      <div
-                        className={cn("w-2 h-2 rounded-full", {
-                          "bg-green-500": opt.color === "green",
-                          "bg-orange-500": opt.color === "orange",
-                          "bg-red-500": opt.color === "red",
-                        })}
-                      />
+                      <div className={cn("w-2 h-2 rounded-full", {
+                        "bg-green-500": opt.color === "green",
+                        "bg-orange-500": opt.color === "orange",
+                        "bg-purple-500": opt.color === "purple",
+                      })} />
                       {opt.label}
                     </div>
                   </SelectItem>
@@ -429,20 +424,49 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
             </Select>
           </div>
 
-          <div className="w-full">
-            {/* BOTÓN SUBMIT */}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={
-                !selectedProduct || !selectedVariant || !formData.branchId
-              }
+          <div className="space-y-1">
+            <Label>Estado</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(val) => setFormData({ ...formData, status: val as StockFormData["status"] })}
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Agregar Lote de Stock
-            </Button>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-2 h-2 rounded-full", {
+                        "bg-blue-500": opt.color === "blue",
+                        "bg-green-500": opt.color === "green",
+                      })} />
+                      {opt.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
+
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full font-bold"
+          disabled={
+            !selectedProduct || 
+            !selectedVariant || 
+            !formData.branchId ||
+            (!formData.isForRent && !formData.isForSale) ||
+            (formData.isForRent && (formData.rentQuantity || 0) <= 0 && !formData.isForSale) ||
+            (formData.isForSale && (formData.sellQuantity || 0) <= 0 && !formData.isForRent) ||
+            (formData.isForRent && formData.isForSale && (formData.rentQuantity || 0) <= 0 && (formData.sellQuantity || 0) <= 0)
+          }
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Registrar Lotes de Stock
+        </Button>
       </div>
     </form>
   );

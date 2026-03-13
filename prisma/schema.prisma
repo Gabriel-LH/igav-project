@@ -74,7 +74,14 @@ enum InventoryCondition {
   Vintage
 }
 
+enum StockLotCondition {
+  Nuevo
+  Usado
+  Vintage
+}
+
 enum InventoryStatus {
+  en_transito
   disponible
   en_mantenimiento
   alquilado
@@ -87,9 +94,12 @@ enum InventoryStatus {
 }
 
 enum StockLotStatus {
+  en_transito
   disponible
   bajo_pedido
   discontinuado
+  alquilado
+  vendido
 }
 
 enum RentUnit {
@@ -1368,20 +1378,21 @@ model PriceHistory {
 }
 
 model StockLot {
-  id             String         @id @default(uuid())
+  id             String            @id @default(uuid())
   tenantId       String
   productId      String
   variantId      String
   branchId       String
-  quantity       Int            @default(0)
+  quantity       Int               @default(0)
   barcode        String?
   expirationDate DateTime?
   lotNumber      String?
   isForRent      Boolean
   isForSale      Boolean
-  status         StockLotStatus @default(disponible)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  condition      StockLotCondition @default(Nuevo)
+  status         StockLotStatus    @default(disponible)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)

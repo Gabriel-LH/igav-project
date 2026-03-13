@@ -14,6 +14,7 @@ export const inventoryItemSchema = z.object({
   lastMaintenance: z.date().optional(),
   condition: z.enum(["Nuevo", "Usado", "Vintage"]),
   status: z.enum([
+    "en_transito",
     "disponible",
     "en_mantenimiento",
     "alquilado",

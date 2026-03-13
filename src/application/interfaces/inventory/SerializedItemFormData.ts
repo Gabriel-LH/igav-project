@@ -12,8 +12,8 @@ export interface SerializedItemFormData {
   isForRent: boolean;
   isForSale: boolean;
   condition: "Nuevo" | "Usado" | "Vintage";
-  status: "disponible" | "en_mantenimiento" | "retirado";
-  lastMaintenance?: Date;
+  status: "en_transito" | "disponible";
+  expirationDate?: Date;
   damageNotes?: string;
   autoGenerateSerials: boolean;
   prefix?: string;

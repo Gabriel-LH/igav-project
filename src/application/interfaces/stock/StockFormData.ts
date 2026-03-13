@@ -18,5 +18,7 @@ export interface StockFormData {
   isForRent: boolean;
   isForSale: boolean;
 
-  status: "disponible" | "bajo_pedido" | "discontinuado";
+  status: "en_transito" | "disponible" | "bajo_pedido" | "discontinuado";
+
+  condition: "Nuevo" | "Usado" | "Vintage";
 }
