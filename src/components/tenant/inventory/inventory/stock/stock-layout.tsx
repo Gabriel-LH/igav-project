@@ -17,8 +17,14 @@ import { Branch } from "@/src/types/branch/type.branch";
 
 interface Props {
   initialBranches: Branch[];
+  initialProductId?: string;
+  initialVariantId?: string;
 }
-export function StockLayout({ initialBranches }: Props) {
+export function StockLayout({ 
+  initialBranches,
+  initialProductId,
+  initialVariantId
+}: Props) {
   const [activeTab, setActiveTab] = useState("form");
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
   const createStockLotUseCase = useMemo(
@@ -70,7 +76,12 @@ export function StockLayout({ initialBranches }: Props) {
         </TabsList>
         <TabsContent value="form">
           {/* Formulario */}
-          <StockForm onSubmit={handleSubmit} initialBranches={initialBranches} />
+          <StockForm 
+            onSubmit={handleSubmit} 
+            initialBranches={initialBranches} 
+            initialProductId={initialProductId}
+            initialVariantId={initialVariantId}
+          />
         </TabsContent>
         <TabsContent value="list">
           {/* Tabla de Stock Existente */}

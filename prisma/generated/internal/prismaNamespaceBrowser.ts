@@ -837,6 +837,7 @@ export const ProductVariantScalarFieldEnum = {
   variantCode: 'variantCode',
   barcode: 'barcode',
   attributes: 'attributes',
+  purchasePrice: 'purchasePrice',
   priceSell: 'priceSell',
   priceRent: 'priceRent',
   rentUnit: 'rentUnit',
@@ -913,6 +914,7 @@ export const StockLotScalarFieldEnum = {
   lotNumber: 'lotNumber',
   isForRent: 'isForRent',
   isForSale: 'isForSale',
+  condition: 'condition',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

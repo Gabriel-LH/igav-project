@@ -7130,6 +7130,7 @@ export const ProductVariantScalarFieldEnum = {
   variantCode: 'variantCode',
   barcode: 'barcode',
   attributes: 'attributes',
+  purchasePrice: 'purchasePrice',
   priceSell: 'priceSell',
   priceRent: 'priceRent',
   rentUnit: 'rentUnit',
@@ -7206,6 +7207,7 @@ export const StockLotScalarFieldEnum = {
   lotNumber: 'lotNumber',
   isForRent: 'isForRent',
   isForSale: 'isForSale',
+  condition: 'condition',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -8475,6 +8477,20 @@ export type EnumPriceHistoryReasonFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'PriceHistoryReason[]'
  */
 export type ListEnumPriceHistoryReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PriceHistoryReason[]'>
+    
+
+
+/**
+ * Reference to a field of type 'StockLotCondition'
+ */
+export type EnumStockLotConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StockLotCondition'>
+    
+
+
+/**
+ * Reference to a field of type 'StockLotCondition[]'
+ */
+export type ListEnumStockLotConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StockLotCondition[]'>
     
 
 

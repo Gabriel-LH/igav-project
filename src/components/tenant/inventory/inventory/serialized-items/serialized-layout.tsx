@@ -14,7 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AddToListIcon, ListViewIcon } from "@hugeicons/core-free-icons";
 
-export function SerializedLayout() {
+interface Props {
+  initialProductId?: string;
+  initialVariantId?: string;
+}
+
+export function SerializedLayout({ initialProductId, initialVariantId }: Props) {
   const [activeTab, setActiveTab] = useState("form");
   const tenantId = "tenant-a";
   const inventoryRepo = useMemo(() => new ZustandInventoryRepository(), []);
@@ -84,7 +89,11 @@ export function SerializedLayout() {
         </TabsList>
 
         <TabsContent value="form">
-          <SerializedItemForm onSubmit={handleSubmit} />
+          <SerializedItemForm 
+            onSubmit={handleSubmit} 
+            initialProductId={initialProductId}
+            initialVariantId={initialVariantId}
+          />
         </TabsContent>
 
         <TabsContent value="list">

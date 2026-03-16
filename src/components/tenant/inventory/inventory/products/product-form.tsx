@@ -26,6 +26,7 @@ import {
   Search,
   RefreshCcwIcon,
   Info,
+  Loader2,
 } from "lucide-react";
 import { VariantAttributeSelector } from "./selected-atribute";
 import { VariantsTable } from "./table/variant-table";
@@ -95,7 +96,7 @@ const initialData: ProductFormData = {
 
 interface ProductFormProps {
   initialValues?: Partial<ProductFormData>;
-  onSubmit: (data: ProductFormData) => boolean | void;
+  onSubmit: (data: ProductFormData) => boolean | void | Promise<boolean | void>;
   onCreated?: () => void;
 }
 
@@ -244,9 +245,27 @@ export function ProductForm({
     getInitialFormData(initialValues),
   );
 
+  // Sincronizar formData cuando los initialValues cambian (ej: al cargar para editar)
+  useEffect(() => {
+    if (initialValues) {
+      const data = getInitialFormData(initialValues);
+      
+      // Si falta brandId pero hay modelId, intentar derivarlo de los modelos cargados
+      if (!data.brandId && data.modelId && models.length > 0) {
+        const model = models.find(m => m.id === data.modelId);
+        if (model) {
+          data.brandId = model.brandId;
+        }
+      }
+      
+      setFormData(data);
+    }
+  }, [initialValues, models]);
+
   const [activeTab, setActiveTab] = useState("general");
   const [openModelPopover, setOpenModelPopover] = useState(false);
   const [openBrandPopover, setOpenBrandPopover] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Preparar datos para selectores
   const modelOptions = useMemo(() => {
@@ -324,18 +343,23 @@ export function ProductForm({
     setFormData((prev) => ({ ...prev, variantOverrides: {} }));
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const wasSuccessful = onSubmit(formData);
+    setLoading(true);
+    const wasSuccessful = await onSubmit(formData);
     if (!initialValues && wasSuccessful !== false) {
       setFormData(getInitialFormData(undefined));
       setActiveTab("general");
       onCreated?.();
     }
+    setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-full min-w-0">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 w-full max-w-full min-w-0"
+    >
       {/* TAB 1: GENERAL */}
       <div className="space-y-4">
         {/* FLAGS PRINCIPALES */}
@@ -551,19 +575,19 @@ export function ProductForm({
                     Selecciona la categoría más específica (último nivel)
                   </p>
                 </div>
-               <div className="flex items-center pb-3">
-                 <CategoryForm
-                  categories={categories}
-                  onSubmit={handleCreateCategory}
-                  compact
-                  trigger={
-                    <Button type="button" variant="outline">
-                      <Plus />
-                      Crear
-                    </Button>
-                  }
-                />
-               </div>
+                <div className="flex items-center pb-3">
+                  <CategoryForm
+                    categories={categories}
+                    onSubmit={handleCreateCategory}
+                    compact
+                    trigger={
+                      <Button type="button" variant="outline">
+                        <Plus />
+                        Crear
+                      </Button>
+                    }
+                  />
+                </div>
               </div>
               <div className="flex mt-4 gap-4 w-full">
                 {/* INFO DE CATEGORÍA (breadcrumb) */}
@@ -855,7 +879,8 @@ export function ProductForm({
         </div>
 
         <div className="flex items-center gap-4">
-          <Button type="submit" size="lg" className="gap-2">
+          <Button disabled={loading} type="submit" size="lg" className="gap-2">
+            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             <Plus className="w-4 h-4" />
             {initialValues ? "Guardar Cambios" : "Crear Producto"}
           </Button>

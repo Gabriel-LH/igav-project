@@ -10,7 +10,7 @@ export const inventoryItemSchema = z.object({
   branchId: z.string(),
   isForRent: z.boolean(),
   isForSale: z.boolean(),
-  usageCount: z.number().min(0),
+  usageCount: z.number().min(0).optional(), // Contador de usos despues de cada alquiler 
   lastMaintenance: z.date().optional(),
   condition: z.enum(["Nuevo", "Usado", "Vintage"]),
   status: z.enum([
@@ -25,7 +25,7 @@ export const inventoryItemSchema = z.object({
     "retirado",
     "vendido",
   ]),
-  damageNotes: z.string().optional(),
+  damageNotes: z.string().optional(), // Notas de daño en devolucion
   createdAt: z.date(),
   updatedAt: z.date(),
 });

@@ -1,8 +1,9 @@
-import { InventoryRepository } from "../../../../domain/tenant/repositories/InventoryRepository";
+import { ProductRepository } from "../../../../domain/tenant/repositories/ProductRepository";
 import { Product } from "../../../../types/product/type.product";
 import { ProductVariant } from "../../../../types/product/type.productVariant";
 
 interface ListProductsWithVariantsInput {
+  tenantId: string;
   includeDeleted?: boolean;
   onlySerializable?: boolean;
 }
@@ -13,27 +14,27 @@ interface ListProductsWithVariantsOutput {
 }
 
 export class ListProductsWithVariantsUseCase {
-  constructor(private readonly inventoryRepo: InventoryRepository) {}
+  constructor(private readonly productRepo: ProductRepository) {}
 
-  execute(
-    input: ListProductsWithVariantsInput = {},
-  ): ListProductsWithVariantsOutput {
-    const includeDeleted = input.includeDeleted ?? false;
+  async execute(
+    input: ListProductsWithVariantsInput,
+  ): Promise<ListProductsWithVariantsOutput> {
+    const products = await this.productRepo.getProductsByTenant(input.tenantId, {
+      includeDeleted: input.includeDeleted,
+    });
 
-    const products = this.inventoryRepo
-      .getProducts()
-      .filter((product) => includeDeleted || !product.isDeleted)
-      .filter((product) =>
-        typeof input.onlySerializable === "boolean"
-          ? product.is_serial === input.onlySerializable
-          : true,
-      );
+    const filteredProducts = products.filter((product) =>
+      typeof input.onlySerializable === "boolean"
+        ? product.is_serial === input.onlySerializable
+        : true,
+    );
 
-    const productIds = new Set(products.map((product) => product.id));
-    const variants = this.inventoryRepo
-      .getProductVariants()
-      .filter((variant) => productIds.has(variant.productId));
+    const variants = await this.productRepo.getVariantsByTenant(input.tenantId);
 
-    return { products, variants };
+    // Filter variants to only include those belonging to the filtered products
+    const productIds = new Set(filteredProducts.map((p) => p.id));
+    const filteredVariants = variants.filter((v) => productIds.has(v.productId));
+
+    return { products: filteredProducts, variants: filteredVariants };
   }
 }

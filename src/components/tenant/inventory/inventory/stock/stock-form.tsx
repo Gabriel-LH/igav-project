@@ -30,25 +30,38 @@ import {
   CheckCircle2,
   AlertCircle,
   Settings,
+  Blocks,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
 import { Branch } from "@/src/types/branch/type.branch";
-import { CONDITION_OPTIONS, STATUS_OPTIONS } from "@/src/utils/serialize/options";
+import {
+  CONDITION_OPTIONS,
+  STATUS_OPTIONS,
+} from "@/src/utils/serialize/options";
 
 interface StockFormProps {
   onSubmit: (data: StockFormData) => void;
   initialBranches: Branch[];
+  initialProductId?: string;
+  initialVariantId?: string;
 }
 
-export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
+export function StockForm({ 
+  onSubmit, 
+  initialBranches,
+  initialProductId,
+  initialVariantId 
+}: StockFormProps) {
   const productsWithVariants = useInventoryProductOptions(false);
 
   const [formData, setFormData] = useState<
     Partial<StockFormData & { rentQuantity?: number; sellQuantity?: number }>
   >({
+    productId: initialProductId || "",
+    variantId: initialVariantId || "",
     quantity: 0,
     rentQuantity: 0,
     sellQuantity: 0,
@@ -172,7 +185,7 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
           Nuevo Lote de Stock
         </div>
 
-        <div className="flex flex-col gap-4 border rounded-lg p-4 shadow-xl/20 dark:shadow-slate-500/50">
+        <div className="flex flex-col gap-4 border rounded-lg shadow-lg/20 dark:shadow-slate-500/50">
           {/* SECCIÓN 1: PRODUCTO Y VARIANTE */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 w-full justify-between ">
             <div className="space-y-1">
@@ -299,14 +312,14 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
 
             <div className="space-y-1">
               <Label className="flex items-center gap-2">
-                <Package className="w-4 h-4" /> Cantidad
+                <Tag className="w-4 h-4" /> Número de Lote
               </Label>
               <Input
-                type="number"
-                value={formData.quantity}
+                value={formData.lotNumber || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, quantity: Number(e.target.value) })
+                  setFormData({ ...formData, lotNumber: e.target.value })
                 }
+                placeholder="Ej: LOTE-2024-001"
               />
             </div>
 
@@ -331,19 +344,6 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
 
           {/* SECCIÓN 2: DATOS DEL LOTE */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 ">
-            <div className="space-y-1">
-              <Label className="flex items-center gap-2">
-                <Tag className="w-4 h-4" /> Número de Lote
-              </Label>
-              <Input
-                value={formData.lotNumber || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, lotNumber: e.target.value })
-                }
-                placeholder="Ej: LOTE-2024-001"
-              />
-            </div>
-
             <div className="space-y-1">
               <Label className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" /> Expira
@@ -435,9 +435,9 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
           </div>
         </div>
         {/* SECCIÓN 3: POLÍTICA Y CANTIDADES */}
-        <div className="space-y-4 p-4 border rounded-lg bg-muted/10 shadow-xl/20 dark:shadow-slate-500/50">
+        <div className="space-y-4 p-4 border rounded-lg shadow-lg/20 dark:shadow-slate-500/50">
           <Label className="text-base flex items-center gap-2 font-semibold">
-            <DollarSign className="w-5 h-5 text-primary" />
+            <Blocks className="w-5 h-5 text-primary" />
             Configuración de Inventario por Uso
           </Label>
 
@@ -457,7 +457,7 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
                     className="font-semibold cursor-pointer"
                     htmlFor="isForRent"
                   >
-                    Para Alquiler
+                    Cantidad Para Alquiler
                   </Label>
                   <Switch
                     id="isForRent"
@@ -499,7 +499,7 @@ export function StockForm({ onSubmit, initialBranches }: StockFormProps) {
                     className="font-semibold cursor-pointer"
                     htmlFor="isForSale"
                   >
-                    Para Venta
+                    Cantidad Para Venta
                   </Label>
                   <Switch
                     id="isForSale"

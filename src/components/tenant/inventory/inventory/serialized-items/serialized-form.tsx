@@ -63,15 +63,23 @@ type BatchState = {
 
 interface SerializedItemFormProps {
   onSubmit: (data: SerializedItemFormData) => void;
+  initialProductId?: string;
+  initialVariantId?: string;
 }
 
-export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
+export function SerializedItemForm({ 
+  onSubmit,
+  initialProductId,
+  initialVariantId
+}: SerializedItemFormProps) {
   const availableProducts = useInventoryProductOptions(true);
   const isMobile = useIsMobile();
   const [isRentModalOpen, setIsRentModalOpen] = useState(false);
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
 
   const [formData, setFormData] = useState<Partial<SerializedItemFormData>>({
+    productId: initialProductId || "",
+    variantId: initialVariantId || "",
     condition: "Nuevo",
     status: "en_transito",
     damageNotes: "",
@@ -280,8 +288,8 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
       </div>
 
       <div className="space-y-2">
-        <div className="flex flex-col space-y-6 border rounded-lg p-4 shadow-xl/20 dark:shadow-slate-500/50">
-          <div className="grid md:grid-cols-3 grid-cols-1 gap-6">
+        <div className="flex flex-col gap-4 border rounded-lg shadow-xl/20 dark:shadow-slate-500/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 w-full justify-between">
             <div className="space-y-2 min-w-0">
               <Label>Producto *</Label>
               <Select
@@ -448,7 +456,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
             </div>
           )}
 
-          <div className="grid md:grid-cols-4 grid-cols-1 pr-3 gap-4">
+          <div className="grid md:grid-cols-3 p-4 grid-cols-1 pr-3 gap-4">
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -469,19 +477,6 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                       : undefined,
                   })
                 }
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label className="flex items-center gap-2">
-                <FileWarning className="w-4 h-4" />
-                Observaciones
-              </Label>
-              <Input
-                value={formData.damageNotes || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, damageNotes: e.target.value })
-                }
-                placeholder="Observaciones..."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -559,7 +554,8 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedVariant && selectedBranch &&
+          {selectedVariant &&
+            selectedBranch &&
             (selectedProduct?.can_rent || !selectedProduct) && (
               <Accordion
                 type="multiple"
@@ -735,16 +731,23 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                                       <ScanLine className="w-4 h-4" />
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-80 p-4" align="end">
+                                  <PopoverContent
+                                    className="w-80 p-4"
+                                    align="end"
+                                  >
                                     <div className="space-y-4">
                                       <h4 className="font-medium leading-none flex items-center gap-2">
                                         <ScanLine className="w-4 h-4" />
                                         Escanear para Item #{i + 1}
                                       </h4>
-                                      <BarcodeScanner 
+                                      <BarcodeScanner
                                         onScan={(code) => {
-                                          handleManualSerialChange("rent", i, code);
-                                        }} 
+                                          handleManualSerialChange(
+                                            "rent",
+                                            i,
+                                            code,
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </PopoverContent>
@@ -772,7 +775,8 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
               </Accordion>
             )}
 
-          {selectedVariant && selectedBranch &&
+          {selectedVariant &&
+            selectedBranch &&
             (selectedProduct?.can_sell || !selectedProduct) && (
               <Accordion
                 type="multiple"
@@ -948,16 +952,23 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                                       <ScanLine className="w-4 h-4" />
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-80 p-4" align="end">
+                                  <PopoverContent
+                                    className="w-80 p-4"
+                                    align="end"
+                                  >
                                     <div className="space-y-4">
                                       <h4 className="font-medium leading-none flex items-center gap-2">
                                         <ScanLine className="w-4 h-4" />
                                         Escanear para Item #{i + 1}
                                       </h4>
-                                      <BarcodeScanner 
+                                      <BarcodeScanner
                                         onScan={(code) => {
-                                          handleManualSerialChange("sale", i, code);
-                                        }} 
+                                          handleManualSerialChange(
+                                            "sale",
+                                            i,
+                                            code,
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </PopoverContent>

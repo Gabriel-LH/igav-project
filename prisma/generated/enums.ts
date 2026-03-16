@@ -102,7 +102,17 @@ export const InventoryCondition = {
 export type InventoryCondition = (typeof InventoryCondition)[keyof typeof InventoryCondition]
 
 
+export const StockLotCondition = {
+  Nuevo: 'Nuevo',
+  Usado: 'Usado',
+  Vintage: 'Vintage'
+} as const
+
+export type StockLotCondition = (typeof StockLotCondition)[keyof typeof StockLotCondition]
+
+
 export const InventoryStatus = {
+  en_transito: 'en_transito',
   disponible: 'disponible',
   en_mantenimiento: 'en_mantenimiento',
   alquilado: 'alquilado',
@@ -118,16 +128,22 @@ export type InventoryStatus = (typeof InventoryStatus)[keyof typeof InventorySta
 
 
 export const StockLotStatus = {
+  en_transito: 'en_transito',
   disponible: 'disponible',
   bajo_pedido: 'bajo_pedido',
-  discontinuado: 'discontinuado'
+  discontinuado: 'discontinuado',
+  alquilado: 'alquilado',
+  vendido: 'vendido'
 } as const
 
 export type StockLotStatus = (typeof StockLotStatus)[keyof typeof StockLotStatus]
 
 
 export const RentUnit = {
+  hora: 'hora',
   dia: 'dia',
+  semana: 'semana',
+  mes: 'mes',
   evento: 'evento'
 } as const
 

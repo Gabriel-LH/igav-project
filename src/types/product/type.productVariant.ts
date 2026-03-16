@@ -8,21 +8,21 @@ export const productVariantSchema = z.object({
   productId: z.string(),
 
   variantCode: z.string(), // SKU único variante
+  variantSignature: z.string(), // Identificador único de combinación
   barcode: z.string().optional(),
 
   // Atributos flexibles (talla, color, RAM, storage, etc)
   attributes: z.record(z.string(), z.string()).default({}),
 
   // Precios opcionales por variante
-  purchasePrice: z.number().min(0).optional(),
-  priceSell: z.number().min(0).optional(),
-  priceRent: z.number().min(0).optional(),
-  rentUnit: z.enum(["hora", "día", "semana", "mes", "evento"]).optional(),
+  purchasePrice: z.number().min(0).optional().default(0), // Precio de compra
+  priceSell: z.number().min(0).optional(), // Precio de venta
+  priceRent: z.number().min(0).optional(), // Precio de alquiler
+  rentUnit: z.enum(["hora", "día", "semana", "mes", "evento"]).optional(), // Unidad de alquiler
 
-  image: z.string().optional(),
+  image: z.array(z.string()).default([]), // Imágenes de la variante
 
-  isActive: z.boolean().default(true),
-
+  isActive: z.boolean().default(true), // Estado de la variante
 
   createdAt: z.date(),
   updatedAt: z.date(),

@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { Product } from "@/src/types/product/type.product";
 import { ProductVariant } from "@/src/types/product/type.productVariant";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/badge";
 import { Switch } from "@/components/ui/switch";
@@ -33,16 +34,21 @@ import {
   ChevronsLeft,
   ChevronsRight,
   History,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { CostAdjustmentModal } from "../ui/CostAdjustmentModal";
+import { VariantEditModal } from "../ui/VariantEditModal";
+import { PlusCircle } from "lucide-react";
 
 interface ProductTableProps {
   products: Product[];
   variants: ProductVariant[];
   onDeleteProduct: (productId: string) => void;
   onToggleVariant: (variantId: string, isActive: boolean) => void;
+  onEditProduct: (productId: string) => void;
+  onRefresh?: () => void;
 }
 
 export function ProductTable({
@@ -50,6 +56,8 @@ export function ProductTable({
   variants,
   onDeleteProduct,
   onToggleVariant,
+  onEditProduct,
+  onRefresh,
 }: ProductTableProps) {
   const [filter, setFilter] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -57,6 +65,8 @@ export function ProductTable({
   const [pageIndex, setPageIndex] = useState(0);
   const [selectedVariantForCost, setSelectedVariantForCost] =
     useState<ProductVariant | null>(null);
+  const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
+  const router = useRouter();
 
   const variantsByProduct = useMemo(() => {
     const map = new Map<string, ProductVariant[]>();
@@ -185,14 +195,23 @@ export function ProductTable({
                     </TableCell>
                     <TableCell>{productVariants.length}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => onDeleteProduct(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onEditProduct(product.id)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => onDeleteProduct(product.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -252,6 +271,29 @@ export function ProductTable({
                     </TableCell>
                     <TableCell colSpan={2}>
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => setEditingVariant(variant)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
+                          title="Asignar Stock"
+                          onClick={() => {
+                            const product = products.find(p => p.id === variant.productId);
+                            const path = product?.is_serial 
+                              ? "/tenant/inventory/items" 
+                              : "/tenant/inventory/stock";
+                            router.push(`${path}?productId=${variant.productId}&variantId=${variant.id}`);
+                          }}
+                        >
+                          <PlusCircle className="h-4 w-4" />
+                        </Button>
                         <span className="text-xs text-muted-foreground">
                           {variant.isActive ? "Activo" : "Inactivo"}
                         </span>
@@ -367,6 +409,19 @@ export function ProductTable({
         isOpen={!!selectedVariantForCost}
         onClose={() => setSelectedVariantForCost(null)}
         onConfirm={handleCostUpdate}
+      />
+      <VariantEditModal
+        variant={editingVariant}
+        product={
+          editingVariant
+            ? products.find((p) => p.id === editingVariant.productId) || null
+            : null
+        }
+        isOpen={!!editingVariant}
+        onClose={() => setEditingVariant(null)}
+        onSuccess={() => {
+          onRefresh?.();
+        }}
       />
     </div>
   );

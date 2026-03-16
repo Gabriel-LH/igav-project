@@ -1,5 +1,5 @@
 import { ProductFormData } from "../../../interfaces/ProductForm";
-import { InventoryRepository } from "../../../../domain/tenant/repositories/InventoryRepository";
+import { ProductRepository } from "../../../../domain/tenant/repositories/ProductRepository";
 import { Product } from "../../../../types/product/type.product";
 import { ProductVariant } from "../../../../types/product/type.productVariant";
 import { buildVariantsFromProductForm } from "../../../../utils/variants/buildVariantsFromForm";
@@ -16,11 +16,11 @@ interface CreateProductWithVariantsOutput {
 }
 
 export class CreateProductWithVariantsUseCase {
-  constructor(private inventoryRepo: InventoryRepository) {}
+  constructor(private productRepo: ProductRepository) {}
 
-  execute(
+  async execute(
     input: CreateProductWithVariantsInput,
-  ): CreateProductWithVariantsOutput {
+  ): Promise<CreateProductWithVariantsOutput> {
     const now = new Date();
     const productId = `prod-${crypto.randomUUID()}`;
 
@@ -28,7 +28,7 @@ export class CreateProductWithVariantsUseCase {
       id: productId,
       tenantId: input.tenantId,
       name: input.formData.name,
-      image: input.formData.image || "",
+      image: input.formData.image || [],
       baseSku: input.formData.baseSku,
       modelId: input.formData.modelId,
       categoryId: input.formData.categoryId,
@@ -52,8 +52,8 @@ export class CreateProductWithVariantsUseCase {
       input.formData,
     );
 
-    this.inventoryRepo.addProduct(product);
-    this.inventoryRepo.addProductVariants(variants);
+    await this.productRepo.createProduct(product);
+    await this.productRepo.createVariants(variants);
 
     return { product, variants };
   }

@@ -480,9 +480,9 @@ export type ModelSumOrderByAggregateInput = {
   year?: Prisma.SortOrder
 }
 
-export type ModelScalarRelationFilter = {
-  is?: Prisma.ModelWhereInput
-  isNot?: Prisma.ModelWhereInput
+export type ModelNullableScalarRelationFilter = {
+  is?: Prisma.ModelWhereInput | null
+  isNot?: Prisma.ModelWhereInput | null
 }
 
 export type ModelCreateNestedManyWithoutBrandInput = {
@@ -541,10 +541,12 @@ export type ModelCreateNestedOneWithoutProductsInput = {
   connect?: Prisma.ModelWhereUniqueInput
 }
 
-export type ModelUpdateOneRequiredWithoutProductsNestedInput = {
+export type ModelUpdateOneWithoutProductsNestedInput = {
   create?: Prisma.XOR<Prisma.ModelCreateWithoutProductsInput, Prisma.ModelUncheckedCreateWithoutProductsInput>
   connectOrCreate?: Prisma.ModelCreateOrConnectWithoutProductsInput
   upsert?: Prisma.ModelUpsertWithoutProductsInput
+  disconnect?: Prisma.ModelWhereInput | boolean
+  delete?: Prisma.ModelWhereInput | boolean
   connect?: Prisma.ModelWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ModelUpdateToOneWithWhereWithoutProductsInput, Prisma.ModelUpdateWithoutProductsInput>, Prisma.ModelUncheckedUpdateWithoutProductsInput>
 }

@@ -103,7 +103,10 @@ enum StockLotStatus {
 }
 
 enum RentUnit {
+  hora
   dia
+  semana
+  mes
   evento
 }
 
@@ -1245,10 +1248,10 @@ model Product {
   id           String    @id @default(uuid())
   tenantId     String
   name         String
-  image        String?
+  image        String[]  @default([])
   baseSku      String    @unique
-  modelId      String
-  categoryId   String
+  modelId      String?
+  categoryId   String?
   description  String?
   is_serial    Boolean
   can_rent     Boolean
@@ -1263,8 +1266,8 @@ model Product {
   isDeleted    Boolean   @default(false)
 
   tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  model              Model               @relation(fields: [modelId], references: [id], onDelete: Restrict)
-  category           Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  model              Model?              @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  category           Category?           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   variants           ProductVariant[]
   inventoryItems     InventoryItem[]
   stockLots          StockLot[]
@@ -1278,19 +1281,20 @@ model Product {
 }
 
 model ProductVariant {
-  id          String    @id @default(uuid())
-  tenantId    String
-  productId   String
-  variantCode String    @unique
-  barcode     String?
-  attributes  Json      @default("{}")
-  priceSell   Float?
-  priceRent   Float?
-  rentUnit    RentUnit?
-  image       String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(uuid())
+  tenantId      String
+  productId     String
+  variantCode   String    @unique
+  barcode       String?
+  attributes    Json      @default("{}")
+  purchasePrice Float?    @default(0)
+  priceSell     Float?
+  priceRent     Float?
+  rentUnit      RentUnit?
+  image         String[]  @default([])
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)

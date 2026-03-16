@@ -27,11 +27,13 @@ export type AggregateProductVariant = {
 }
 
 export type ProductVariantAvgAggregateOutputType = {
+  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
 }
 
 export type ProductVariantSumAggregateOutputType = {
+  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
 }
@@ -42,10 +44,10 @@ export type ProductVariantMinAggregateOutputType = {
   productId: string | null
   variantCode: string | null
   barcode: string | null
+  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
-  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,10 +59,10 @@ export type ProductVariantMaxAggregateOutputType = {
   productId: string | null
   variantCode: string | null
   barcode: string | null
+  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
-  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -73,6 +75,7 @@ export type ProductVariantCountAggregateOutputType = {
   variantCode: number
   barcode: number
   attributes: number
+  purchasePrice: number
   priceSell: number
   priceRent: number
   rentUnit: number
@@ -85,11 +88,13 @@ export type ProductVariantCountAggregateOutputType = {
 
 
 export type ProductVariantAvgAggregateInputType = {
+  purchasePrice?: true
   priceSell?: true
   priceRent?: true
 }
 
 export type ProductVariantSumAggregateInputType = {
+  purchasePrice?: true
   priceSell?: true
   priceRent?: true
 }
@@ -100,10 +105,10 @@ export type ProductVariantMinAggregateInputType = {
   productId?: true
   variantCode?: true
   barcode?: true
+  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
-  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -115,10 +120,10 @@ export type ProductVariantMaxAggregateInputType = {
   productId?: true
   variantCode?: true
   barcode?: true
+  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
-  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -131,6 +136,7 @@ export type ProductVariantCountAggregateInputType = {
   variantCode?: true
   barcode?: true
   attributes?: true
+  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
@@ -234,10 +240,11 @@ export type ProductVariantGroupByOutputType = {
   variantCode: string
   barcode: string | null
   attributes: runtime.JsonValue
+  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
-  image: string | null
+  image: string[]
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -273,10 +280,11 @@ export type ProductVariantWhereInput = {
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
@@ -299,10 +307,11 @@ export type ProductVariantOrderByWithRelationInput = {
   variantCode?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   priceSell?: Prisma.SortOrderInput | Prisma.SortOrder
   priceRent?: Prisma.SortOrderInput | Prisma.SortOrder
   rentUnit?: Prisma.SortOrderInput | Prisma.SortOrder
-  image?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -328,10 +337,11 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
@@ -354,10 +364,11 @@ export type ProductVariantOrderByWithAggregationInput = {
   variantCode?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   priceSell?: Prisma.SortOrderInput | Prisma.SortOrder
   priceRent?: Prisma.SortOrderInput | Prisma.SortOrder
   rentUnit?: Prisma.SortOrderInput | Prisma.SortOrder
-  image?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -378,10 +389,11 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   variantCode?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonWithAggregatesFilter<"ProductVariant">
+  purchasePrice?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableWithAggregatesFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
@@ -392,10 +404,11 @@ export type ProductVariantCreateInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -418,10 +431,11 @@ export type ProductVariantUncheckedCreateInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -440,10 +454,11 @@ export type ProductVariantUpdateInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -466,10 +481,11 @@ export type ProductVariantUncheckedUpdateInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -490,10 +506,11 @@ export type ProductVariantCreateManyInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -504,10 +521,11 @@ export type ProductVariantUpdateManyMutationInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -520,10 +538,11 @@ export type ProductVariantUncheckedUpdateManyInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -546,6 +565,7 @@ export type ProductVariantCountOrderByAggregateInput = {
   variantCode?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
@@ -556,6 +576,7 @@ export type ProductVariantCountOrderByAggregateInput = {
 }
 
 export type ProductVariantAvgOrderByAggregateInput = {
+  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
 }
@@ -566,10 +587,10 @@ export type ProductVariantMaxOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -581,16 +602,17 @@ export type ProductVariantMinOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProductVariantSumOrderByAggregateInput = {
+  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
 }
@@ -647,8 +669,17 @@ export type ProductVariantUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.ProductVariantScalarWhereInput | Prisma.ProductVariantScalarWhereInput[]
 }
 
+export type ProductVariantCreateimageInput = {
+  set: string[]
+}
+
 export type NullableEnumRentUnitFieldUpdateOperationsInput = {
   set?: $Enums.RentUnit | null
+}
+
+export type ProductVariantUpdateimageInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type ProductVariantCreateNestedOneWithoutInventoryItemsInput = {
@@ -812,10 +843,11 @@ export type ProductVariantCreateWithoutProductInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -836,10 +868,11 @@ export type ProductVariantUncheckedCreateWithoutProductInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -889,10 +922,11 @@ export type ProductVariantScalarWhereInput = {
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
@@ -903,10 +937,11 @@ export type ProductVariantCreateWithoutInventoryItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -928,10 +963,11 @@ export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -965,10 +1001,11 @@ export type ProductVariantUpdateWithoutInventoryItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -990,10 +1027,11 @@ export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1011,10 +1049,11 @@ export type ProductVariantCreateWithoutPriceHistoriesInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1036,10 +1075,11 @@ export type ProductVariantUncheckedCreateWithoutPriceHistoriesInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1073,10 +1113,11 @@ export type ProductVariantUpdateWithoutPriceHistoriesInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1098,10 +1139,11 @@ export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1119,10 +1161,11 @@ export type ProductVariantCreateWithoutStockLotsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1144,10 +1187,11 @@ export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1181,10 +1225,11 @@ export type ProductVariantUpdateWithoutStockLotsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1206,10 +1251,11 @@ export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1227,10 +1273,11 @@ export type ProductVariantCreateWithoutRentalItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1252,10 +1299,11 @@ export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1289,10 +1337,11 @@ export type ProductVariantUpdateWithoutRentalItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1314,10 +1363,11 @@ export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1335,10 +1385,11 @@ export type ProductVariantCreateWithoutReservationItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1360,10 +1411,11 @@ export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1397,10 +1449,11 @@ export type ProductVariantUpdateWithoutReservationItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1422,10 +1475,11 @@ export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1443,10 +1497,11 @@ export type ProductVariantCreateWithoutSaleItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1468,10 +1523,11 @@ export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1505,10 +1561,11 @@ export type ProductVariantUpdateWithoutSaleItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1530,10 +1587,11 @@ export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1551,10 +1609,11 @@ export type ProductVariantCreateWithoutTenantInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1575,10 +1634,11 @@ export type ProductVariantUncheckedCreateWithoutTenantInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1623,10 +1683,11 @@ export type ProductVariantCreateWithoutTransferItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1648,10 +1709,11 @@ export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1685,10 +1747,11 @@ export type ProductVariantUpdateWithoutTransferItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1710,10 +1773,11 @@ export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1731,10 +1795,11 @@ export type ProductVariantCreateWithoutInventoryMovementsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1756,10 +1821,11 @@ export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1793,10 +1859,11 @@ export type ProductVariantUpdateWithoutInventoryMovementsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1818,10 +1885,11 @@ export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1840,10 +1908,11 @@ export type ProductVariantCreateManyProductInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1854,10 +1923,11 @@ export type ProductVariantUpdateWithoutProductInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1878,10 +1948,11 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1901,10 +1972,11 @@ export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1916,10 +1988,11 @@ export type ProductVariantCreateManyTenantInput = {
   variantCode: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: string | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1930,10 +2003,11 @@ export type ProductVariantUpdateWithoutTenantInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1954,10 +2028,11 @@ export type ProductVariantUncheckedUpdateWithoutTenantInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1977,10 +2052,11 @@ export type ProductVariantUncheckedUpdateManyWithoutTenantInput = {
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2087,6 +2163,7 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   variantCode?: boolean
   barcode?: boolean
   attributes?: boolean
+  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
@@ -2114,6 +2191,7 @@ export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   variantCode?: boolean
   barcode?: boolean
   attributes?: boolean
+  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
@@ -2132,6 +2210,7 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   variantCode?: boolean
   barcode?: boolean
   attributes?: boolean
+  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
@@ -2150,6 +2229,7 @@ export type ProductVariantSelectScalar = {
   variantCode?: boolean
   barcode?: boolean
   attributes?: boolean
+  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
@@ -2159,7 +2239,7 @@ export type ProductVariantSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "barcode" | "attributes" | "priceSell" | "priceRent" | "rentUnit" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "barcode" | "attributes" | "purchasePrice" | "priceSell" | "priceRent" | "rentUnit" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -2203,10 +2283,11 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
     variantCode: string
     barcode: string | null
     attributes: runtime.JsonValue
+    purchasePrice: number | null
     priceSell: number | null
     priceRent: number | null
     rentUnit: $Enums.RentUnit | null
-    image: string | null
+    image: string[]
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -2649,10 +2730,11 @@ export interface ProductVariantFieldRefs {
   readonly variantCode: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly barcode: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly attributes: Prisma.FieldRef<"ProductVariant", 'Json'>
+  readonly purchasePrice: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly priceSell: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly priceRent: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly rentUnit: Prisma.FieldRef<"ProductVariant", 'RentUnit'>
-  readonly image: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly image: Prisma.FieldRef<"ProductVariant", 'String[]'>
   readonly isActive: Prisma.FieldRef<"ProductVariant", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
