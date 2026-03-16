@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Category, CategoryFormData } from "@/src/types/category/type.category";
-import { CategoriesTable } from "./category-table";
+import { CategoriesTable } from "./table/category-table";
 import { toast } from "sonner";
 import {
   createCategoryAction,

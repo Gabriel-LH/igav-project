@@ -38,23 +38,19 @@ import {
   RefreshCw,
   Calendar,
   FileWarning,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "../barcode/BarcodeScanner";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
 import { useIsMobile } from "@/src/hooks/use-mobile";
-
-const CONDITION_OPTIONS = [
-  { value: "Nuevo", label: "Nuevo", color: "green" },
-  { value: "Usado", label: "Usado", color: "orange" },
-  { value: "Vintage", label: "Vintage", color: "purple" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "en_transito", label: "En Tránsito", color: "blue" },
-  { value: "disponible", label: "Disponible", color: "green" },
-];
+import { BatchQRModal } from "../qr/BatchQRModal";
+import { generateSerialCodes } from "@/src/utils/serialize/generate-serailze";
+import {
+  CONDITION_OPTIONS,
+  STATUS_OPTIONS,
+} from "@/src/utils/serialize/options";
 
 type BatchState = {
   enabled: boolean;
@@ -69,45 +65,11 @@ interface SerializedItemFormProps {
   onSubmit: (data: SerializedItemFormData) => void;
 }
 
-// Generador de códigos seriales únicos
-function generateSerialCodes(
-  prefix: string,
-  variantCode: string,
-  quantity: number,
-  existingCodes: string[] = [],
-): string[] {
-  const codes: string[] = [];
-  const usedCodes = new Set(existingCodes);
-
-  // Limpiar prefijo
-  const cleanPrefix = prefix.trim().toUpperCase();
-  const cleanVariant = variantCode.replace(/-/g, "").substring(0, 8);
-
-  let attempts = 0;
-  const maxAttempts = quantity * 100; // Prevenir loop infinito
-
-  while (codes.length < quantity && attempts < maxAttempts) {
-    attempts++;
-
-    // Formato: PREFIX-VARIANT-TIMESTAMP-RANDOM
-    const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const sequential = String(codes.length + 1).padStart(3, "0");
-
-    const serialCode = `${cleanPrefix}-${cleanVariant}-${timestamp}${random}-${sequential}`;
-
-    if (!usedCodes.has(serialCode)) {
-      codes.push(serialCode);
-      usedCodes.add(serialCode);
-    }
-  }
-
-  return codes;
-}
-
 export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
   const availableProducts = useInventoryProductOptions(true);
   const isMobile = useIsMobile();
+  const [isRentModalOpen, setIsRentModalOpen] = useState(false);
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
 
   const [formData, setFormData] = useState<Partial<SerializedItemFormData>>({
     condition: "Nuevo",
@@ -121,7 +83,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
   }>({
     rent: {
       enabled: false,
-      quantity: 1,
+      quantity: 0,
       prefix: "RENT",
       autoGenerate: true,
       manualCodes: [],
@@ -129,7 +91,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
     },
     sale: {
       enabled: false,
-      quantity: 1,
+      quantity: 0,
       prefix: "SALE",
       autoGenerate: true,
       manualCodes: [],
@@ -204,33 +166,15 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
     setScanMessage({ type: "error", text: "Código no encontrado" });
   };
 
-  const handleManualSerialChange = (
-    type: "rent" | "sale",
-    index: number,
-    value: string,
-  ) => {
-    setBatches((prev) => {
-      const newManual = [...prev[type].manualCodes];
-      newManual[index] = value.toUpperCase();
-      return { ...prev, [type]: { ...prev[type], manualCodes: newManual } };
-    });
-  };
-
-  const regenerateCodes = (type: "rent" | "sale") => {
-    if (!selectedVariant) return;
-    refreshGeneratedCodes(
-      type,
-      batches[type].quantity,
-      batches[type].prefix,
-      selectedVariant.variantCode,
-    );
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const processSubmission = (submissionType: "all" | "rent" | "sale") => {
     if (!selectedProduct || !selectedVariant || !formData.branchId) return;
 
-    (["rent", "sale"] as const).forEach((type) => {
+    const batchesToProcess =
+      submissionType === "all"
+        ? (["rent", "sale"] as const)
+        : ([submissionType] as const);
+
+    batchesToProcess.forEach((type) => {
       const batch = batches[type];
       if (batch.enabled && batch.quantity > 0) {
         const codes = batch.autoGenerate
@@ -261,26 +205,71 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
       }
     });
 
-    setFormData({ condition: "Nuevo", status: "en_transito", damageNotes: "" });
-    setBatches({
-      rent: {
-        enabled: false,
-        quantity: 1,
-        prefix: "RENT",
-        autoGenerate: true,
-        manualCodes: [],
-        generatedCodes: [],
-      },
-      sale: {
-        enabled: false,
-        quantity: 1,
-        prefix: "SALE",
-        autoGenerate: true,
-        manualCodes: [],
-        generatedCodes: [],
-      },
+    // Reset logic
+    if (submissionType === "all") {
+      setFormData({
+        condition: "Nuevo",
+        status: "en_transito",
+        damageNotes: "",
+      });
+      setBatches({
+        rent: {
+          enabled: false,
+          quantity: 1,
+          prefix: "RENT",
+          autoGenerate: true,
+          manualCodes: [],
+          generatedCodes: [],
+        },
+        sale: {
+          enabled: false,
+          quantity: 1,
+          prefix: "SALE",
+          autoGenerate: true,
+          manualCodes: [],
+          generatedCodes: [],
+        },
+      });
+      setScanMessage(null);
+    } else {
+      // If single type, just disable it
+      setBatches((prev) => ({
+        ...prev,
+        [submissionType]: {
+          ...prev[submissionType],
+          enabled: false,
+          generatedCodes: [],
+          manualCodes: [],
+        },
+      }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    processSubmission("all");
+  };
+
+  const handleManualSerialChange = (
+    type: "rent" | "sale",
+    index: number,
+    value: string,
+  ) => {
+    setBatches((prev) => {
+      const newManual = [...prev[type].manualCodes];
+      newManual[index] = value.toUpperCase();
+      return { ...prev, [type]: { ...prev[type], manualCodes: newManual } };
     });
-    setScanMessage(null);
+  };
+
+  const regenerateCodes = (type: "rent" | "sale") => {
+    if (!selectedVariant) return;
+    refreshGeneratedCodes(
+      type,
+      batches[type].quantity,
+      batches[type].prefix,
+      selectedVariant.variantCode,
+    );
   };
 
   return (
@@ -290,182 +279,296 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
         Nuevo Item Serializado
       </div>
 
-      <div className="space-y-4">
-        <div className="grid lg:grid-cols-4 gap-4 grid-cols-1">
-          <div className="space-y-2">
-            <Label>Producto *</Label>
-            <Select
-              value={formData.productId}
-              onValueChange={(val) => {
-                setFormData({
-                  ...formData,
-                  productId: val,
-                  variantId: undefined,
-                });
-                setBatches({
-                  rent: {
-                    ...batches.rent,
-                    generatedCodes: [],
-                    manualCodes: [],
-                  },
-                  sale: {
-                    ...batches.sale,
-                    generatedCodes: [],
-                    manualCodes: [],
-                  },
-                });
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar producto..." />
-              </SelectTrigger>
-              <SelectContent>
-                {availableProducts.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Store className="w-4 h-4" />
-              Sucursal *
-            </Label>
-            <Select
-              value={formData.branchId}
-              onValueChange={(val) =>
-                setFormData({ ...formData, branchId: val })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar sucursal..." />
-              </SelectTrigger>
-              <SelectContent>
-                {availableBranches.map((b) => (
-                  <SelectItem key={b.id} value={b.id}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              Variante *
-            </Label>
-            <div className="flex gap-4">
+      <div className="space-y-2">
+        <div className="flex flex-col space-y-6 border rounded-lg p-4 shadow-xl/20 dark:shadow-slate-500/50">
+          <div className="grid md:grid-cols-3 grid-cols-1 gap-6">
+            <div className="space-y-2 min-w-0">
+              <Label>Producto *</Label>
               <Select
-                value={formData.variantId}
+                value={formData.productId}
                 onValueChange={(val) => {
-                  const variant = selectedProduct?.variants.find(
-                    (v) => v.id === val,
-                  );
-                  if (variant) {
-                    setFormData({ ...formData, variantId: val });
-                    if (batches.rent.enabled && batches.rent.autoGenerate)
-                      refreshGeneratedCodes(
-                        "rent",
-                        batches.rent.quantity,
-                        batches.rent.prefix,
-                        variant.variantCode,
-                      );
-                    if (batches.sale.enabled && batches.sale.autoGenerate)
-                      refreshGeneratedCodes(
-                        "sale",
-                        batches.sale.quantity,
-                        batches.sale.prefix,
-                        variant.variantCode,
-                      );
-                    setScanMessage(null);
-                  }
+                  setFormData({
+                    ...formData,
+                    productId: val,
+                    variantId: undefined,
+                  });
+                  setBatches({
+                    rent: {
+                      ...batches.rent,
+                      generatedCodes: [],
+                      manualCodes: [],
+                    },
+                    sale: {
+                      ...batches.sale,
+                      generatedCodes: [],
+                      manualCodes: [],
+                    },
+                  });
                 }}
-                disabled={!selectedProduct}
               >
-                <SelectTrigger
-                  className={cn(
-                    selectedVariant && "border-primary bg-primary/5",
-                  )}
-                >
-                  <SelectValue
-                    placeholder={
-                      selectedProduct
-                        ? "Seleccionar variante..."
-                        : "Primero selecciona un producto"
-                    }
-                  />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar producto..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {selectedProduct?.variants.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{v.name}</span>
-                        <span className="text-xs text-muted-foreground font-mono">
-                          {v.variantCode} • Barcode: {v.barcode}
-                        </span>
-                      </div>
+                  {availableProducts.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="gap-2 shrink-0"
+            </div>
+
+            <div className="space-y-2 min-w-0">
+              <Label className="flex">
+                <Package className="w-4 h-4" />
+                Variante *
+              </Label>
+              <div className="flex gap-2 items-end">
+                <div className="flex-1 min-w-0">
+                  <Select
+                    value={formData.variantId}
+                    onValueChange={(val) => {
+                      const variant = selectedProduct?.variants.find(
+                        (v) => v.id === val,
+                      );
+                      if (variant) {
+                        setFormData({ ...formData, variantId: val });
+                        if (batches.rent.enabled && batches.rent.autoGenerate)
+                          refreshGeneratedCodes(
+                            "rent",
+                            batches.rent.quantity,
+                            batches.rent.prefix,
+                            variant.variantCode,
+                          );
+                        if (batches.sale.enabled && batches.sale.autoGenerate)
+                          refreshGeneratedCodes(
+                            "sale",
+                            batches.sale.quantity,
+                            batches.sale.prefix,
+                            variant.variantCode,
+                          );
+                        setScanMessage(null);
+                      }
+                    }}
+                    disabled={!selectedProduct}
                   >
-                    <ScanLine className="w-4 h-4" />
-                    {isMobile ? "" : "Escanear"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
+                    <SelectTrigger
+                      className={cn(
+                        "w-full",
+                        selectedVariant && "border-primary bg-primary/5",
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={
+                          selectedProduct
+                            ? "Seleccionar variante..."
+                            : "Primero selecciona un producto"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedProduct?.variants.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{v.name}</span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {v.variantCode} • Barcode: {v.barcode}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="gap-2 shrink-0"
+                    >
                       <ScanLine className="w-4 h-4" />
-                      Escanear Variante
-                    </h4>
-                    <BarcodeScanner onScan={handleScan} />
-                  </div>
-                </PopoverContent>
-              </Popover>
+                      {isMobile ? "" : "Escanear"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-3">
+                      <h4 className="font-semibold flex items-center gap-2">
+                        <ScanLine className="w-4 h-4" />
+                        Escanear Variante
+                      </h4>
+                      <BarcodeScanner onScan={handleScan} />
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            <div className="space-y-2 min-w-0">
+              <Label className="flex items-center gap-2">
+                <Store className="w-4 h-4" />
+                Sucursal *
+              </Label>
+              <Select
+                value={formData.branchId}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, branchId: val })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar sucursal..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableBranches.map((b) => (
+                    <SelectItem key={b.id} value={b.id}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {scanMessage && (
+            <div
+              className={cn(
+                "flex items-center gap-2 text-sm -mt-3 mb-3",
+                scanMessage.type === "success"
+                  ? "text-green-700"
+                  : "text-red-700",
+              )}
+            >
+              {scanMessage.type === "success" ? (
+                <CheckCircle2 className="w-4 h-4" />
+              ) : (
+                <AlertCircle className="w-4 h-4" />
+              )}
+              {scanMessage.text}
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-4 grid-cols-1 pr-3 gap-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Fecha de Expiración
+              </Label>
+              <Input
+                type="date"
+                value={
+                  formData.expirationDate
+                    ? formData.expirationDate.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    expirationDate: e.target.value
+                      ? new Date(e.target.value)
+                      : undefined,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label className="flex items-center gap-2">
+                <FileWarning className="w-4 h-4" />
+                Observaciones
+              </Label>
+              <Input
+                value={formData.damageNotes || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, damageNotes: e.target.value })
+                }
+                placeholder="Observaciones..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Condición
+                </Label>
+                <Select
+                  value={formData.condition}
+                  onValueChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      condition: val as SerializedItemFormData["condition"],
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CONDITION_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn("w-2 h-2 rounded-full", {
+                              "bg-green-500": opt.color === "green",
+                              "bg-orange-500": opt.color === "orange",
+                              "bg-purple-500": opt.color === "purple",
+                            })}
+                          />
+                          {opt.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Wrench className="w-4 h-4" />
+                  Estado Inicial
+                </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      status: val as SerializedItemFormData["status"],
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn("w-2 h-2 rounded-full", {
+                              "bg-blue-500": opt.color === "blue",
+                              "bg-green-500": opt.color === "green",
+                            })}
+                          />
+                          {opt.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
 
-        {scanMessage && (
-          <div
-            className={cn(
-              "flex items-center gap-2 text-sm p-2 rounded-md",
-              scanMessage.type === "success"
-                ? "bg-green-50 text-green-700 border-green-200"
-                : "bg-red-50 text-red-700 border-red-200",
-            )}
-          >
-            {scanMessage.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4" />
-            ) : (
-              <AlertCircle className="w-4 h-4" />
-            )}
-            {scanMessage.text}
-          </div>
-        )}
-
-        {selectedVariant && (
-          <div className="space-y-4">
-            <Accordion
-              type="multiple"
-              defaultValue={["rent", "sale"]}
-              className="w-full"
-            >
-              {(selectedProduct?.can_rent || !selectedProduct) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {selectedVariant && selectedBranch &&
+            (selectedProduct?.can_rent || !selectedProduct) && (
+              <Accordion
+                type="multiple"
+                defaultValue={["rent"]}
+                className="w-full"
+              >
                 <AccordionItem
                   value="rent"
-                  className="border rounded-lg bg-card px-4 mb-4"
+                  className="border rounded-lg px-4 mb-4 shadow-xl/20 dark:shadow-slate-500/50"
                 >
                   <div className="flex items-center justify-between py-2">
                     <AccordionTrigger className="hover:no-underline py-2">
@@ -497,28 +600,30 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                           ...prev,
                           rent: { ...prev.rent, enabled: checked },
                         }));
-                        if (checked && selectedVariant)
-                          refreshGeneratedCodes(
-                            "rent",
-                            batches.rent.quantity,
-                            batches.rent.prefix,
-                            selectedVariant.variantCode,
-                          );
+                        // if (checked && selectedVariant)
+                        //   refreshGeneratedCodes(
+                        //     "rent",
+                        //     batches.rent.quantity,
+                        //     batches.rent.prefix,
+                        //     selectedVariant.variantCode,
+                        //   );
                       }}
                       disabled={!selectedProduct?.can_rent}
                       className="ml-4"
                     />
                   </div>
+
                   <AccordionContent className="pt-2 pb-4 space-y-4 border-t mt-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <Label className="text-xs">Cantidad *</Label>
                         <Input
                           type="number"
-                          min={1}
+                          min={0}
                           value={batches.rent.quantity}
+                          disabled={!batches.rent.enabled}
                           onChange={(e) => {
-                            const qty = parseInt(e.target.value) || 1;
+                            const qty = parseInt(e.target.value) || 0;
                             setBatches((prev) => ({
                               ...prev,
                               rent: { ...prev.rent, quantity: qty },
@@ -537,6 +642,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                         <Label className="text-xs">Prefijo</Label>
                         <Input
                           value={batches.rent.prefix}
+                          disabled={!batches.rent.enabled}
                           onChange={(e) => {
                             const pfx = e.target.value.toUpperCase();
                             setBatches((prev) => ({
@@ -565,6 +671,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                             rent: { ...prev.rent, autoGenerate: !!checked },
                           }))
                         }
+                        disabled={!batches.rent.enabled}
                       />
                       <Label
                         htmlFor="auto-rent"
@@ -574,6 +681,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                       </Label>
                       {batches.rent.autoGenerate && (
                         <Button
+                          disabled={!batches.rent.enabled}
                           type="button"
                           variant="ghost"
                           size="sm"
@@ -584,47 +692,96 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                         </Button>
                       )}
                     </div>
-                    {batches.rent.autoGenerate ? (
-                      <div className="max-h-32 overflow-y-auto space-y-1 p-2 bg-muted/50 rounded border text-xs font-mono">
-                        {batches.rent.generatedCodes.map((c, i) => (
-                          <div
-                            key={i}
-                            className="flex gap-2 text-muted-foreground"
-                          >
-                            <span className="w-4">{i + 1}.</span>
-                            <span className="truncate">{c}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {Array.from({ length: batches.rent.quantity }).map(
-                          (_, i) => (
-                            <Input
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {batches.rent.autoGenerate ? (
+                        <div className="max-h-32 overflow-y-auto w-full space-y-1 p-2 bg-muted/50 rounded border text-xs font-mono">
+                          {batches.rent.generatedCodes.map((c, i) => (
+                            <div
                               key={i}
-                              placeholder={`Serial #${i + 1}`}
-                              value={batches.rent.manualCodes[i] || ""}
-                              onChange={(e) =>
-                                handleManualSerialChange(
-                                  "rent",
-                                  i,
-                                  e.target.value,
-                                )
-                              }
-                              className="font-mono uppercase text-xs h-8"
-                            />
-                          ),
-                        )}
+                              className="flex gap-2 text-muted-foreground"
+                            >
+                              <span className="w-4">{i + 1}.</span>
+                              <span className="truncate">{c}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-2 w-full">
+                          {Array.from({ length: batches.rent.quantity }).map(
+                            (_, i) => (
+                              <div key={i} className="flex gap-2 items-center">
+                                <Input
+                                  placeholder={`Serial #${i + 1}`}
+                                  value={batches.rent.manualCodes[i] || ""}
+                                  onChange={(e) =>
+                                    handleManualSerialChange(
+                                      "rent",
+                                      i,
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="font-mono uppercase text-xs h-8 flex-1"
+                                />
+
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={!batches.rent.enabled}
+                                      className="h-8 px-2"
+                                    >
+                                      <ScanLine className="w-4 h-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-80 p-4" align="end">
+                                    <div className="space-y-4">
+                                      <h4 className="font-medium leading-none flex items-center gap-2">
+                                        <ScanLine className="w-4 h-4" />
+                                        Escanear para Item #{i + 1}
+                                      </h4>
+                                      <BarcodeScanner 
+                                        onScan={(code) => {
+                                          handleManualSerialChange("rent", i, code);
+                                        }} 
+                                      />
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={!batches.rent.enabled}
+                          onClick={() => setIsRentModalOpen(true)}
+                          className="w-fit"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Ver
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
-              )}
+              </Accordion>
+            )}
 
-              {(selectedProduct?.can_sell || !selectedProduct) && (
+          {selectedVariant && selectedBranch &&
+            (selectedProduct?.can_sell || !selectedProduct) && (
+              <Accordion
+                type="multiple"
+                defaultValue={["sale"]}
+                className="w-full"
+              >
                 <AccordionItem
                   value="sale"
-                  className="border rounded-lg bg-card px-4"
+                  className="border rounded-lg px-4 shadow-xl/20 dark:shadow-slate-500/50"
                 >
                   <div className="flex items-center justify-between py-2">
                     <AccordionTrigger className="hover:no-underline py-2">
@@ -656,28 +813,30 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                           ...prev,
                           sale: { ...prev.sale, enabled: checked },
                         }));
-                        if (checked && selectedVariant)
-                          refreshGeneratedCodes(
-                            "sale",
-                            batches.sale.quantity,
-                            batches.sale.prefix,
-                            selectedVariant.variantCode,
-                          );
+                        // if (checked && selectedVariant)
+                        //   refreshGeneratedCodes(
+                        //     "sale",
+                        //     batches.sale.quantity,
+                        //     batches.sale.prefix,
+                        //     selectedVariant.variantCode,
+                        //   );
                       }}
                       disabled={!selectedProduct?.can_sell}
                       className="ml-4"
                     />
                   </div>
+
                   <AccordionContent className="pt-2 pb-4 space-y-4 border-t mt-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <Label className="text-xs">Cantidad *</Label>
                         <Input
                           type="number"
-                          min={1}
+                          min={0}
+                          disabled={!batches.sale.enabled}
                           value={batches.sale.quantity}
                           onChange={(e) => {
-                            const qty = parseInt(e.target.value) || 1;
+                            const qty = parseInt(e.target.value) || 0;
                             setBatches((prev) => ({
                               ...prev,
                               sale: { ...prev.sale, quantity: qty },
@@ -696,6 +855,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                         <Label className="text-xs">Prefijo</Label>
                         <Input
                           value={batches.sale.prefix}
+                          disabled={!batches.sale.enabled}
                           onChange={(e) => {
                             const pfx = e.target.value.toUpperCase();
                             setBatches((prev) => ({
@@ -724,6 +884,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                             sale: { ...prev.sale, autoGenerate: !!checked },
                           }))
                         }
+                        disabled={!batches.sale.enabled}
                       />
                       <Label
                         htmlFor="auto-sale"
@@ -733,6 +894,7 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                       </Label>
                       {batches.sale.autoGenerate && (
                         <Button
+                          disabled={!batches.sale.enabled}
                           type="button"
                           variant="ghost"
                           size="sm"
@@ -743,156 +905,86 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
                         </Button>
                       )}
                     </div>
-                    {batches.sale.autoGenerate ? (
-                      <div className="max-h-32 overflow-y-auto space-y-1 p-2 bg-muted/50 rounded border text-xs font-mono">
-                        {batches.sale.generatedCodes.map((c, i) => (
-                          <div
-                            key={i}
-                            className="flex gap-2 text-muted-foreground"
-                          >
-                            <span className="w-4">{i + 1}.</span>
-                            <span className="truncate">{c}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {Array.from({ length: batches.sale.quantity }).map(
-                          (_, i) => (
-                            <Input
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {batches.sale.autoGenerate ? (
+                        <div className="max-h-32 overflow-y-auto w-full space-y-1 p-2 bg-muted/50 rounded border text-xs font-mono">
+                          {batches.sale.generatedCodes.map((c, i) => (
+                            <div
                               key={i}
-                              placeholder={`Serial #${i + 1}`}
-                              value={batches.sale.manualCodes[i] || ""}
-                              onChange={(e) =>
-                                handleManualSerialChange(
-                                  "sale",
-                                  i,
-                                  e.target.value,
-                                )
-                              }
-                              className="font-mono uppercase text-xs h-8"
-                            />
-                          ),
-                        )}
+                              className="flex gap-2 text-muted-foreground"
+                            >
+                              <span className="w-4">{i + 1}.</span>
+                              <span className="truncate">{c}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-2 w-full">
+                          {Array.from({ length: batches.sale.quantity }).map(
+                            (_, i) => (
+                              <div key={i} className="flex gap-2 items-center">
+                                <Input
+                                  placeholder={`Serial #${i + 1}`}
+                                  value={batches.sale.manualCodes[i] || ""}
+                                  onChange={(e) =>
+                                    handleManualSerialChange(
+                                      "sale",
+                                      i,
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="font-mono uppercase text-xs h-8 flex-1"
+                                />
+
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={!batches.sale.enabled}
+                                      className="h-8 px-2"
+                                    >
+                                      <ScanLine className="w-4 h-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-80 p-4" align="end">
+                                    <div className="space-y-4">
+                                      <h4 className="font-medium leading-none flex items-center gap-2">
+                                        <ScanLine className="w-4 h-4" />
+                                        Escanear para Item #{i + 1}
+                                      </h4>
+                                      <BarcodeScanner 
+                                        onScan={(code) => {
+                                          handleManualSerialChange("sale", i, code);
+                                        }} 
+                                      />
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={!batches.sale.enabled}
+                          onClick={() => setIsSaleModalOpen(true)}
+                          className="w-fit"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Ver
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
-              )}
-            </Accordion>
-          </div>
-        )}
-
-        <div className="grid lg:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Fecha de Expiración
-            </Label>
-            <Input
-              type="date"
-              value={
-                formData.expirationDate
-                  ? formData.expirationDate.toISOString().split("T")[0]
-                  : ""
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  expirationDate: e.target.value
-                    ? new Date(e.target.value)
-                    : undefined,
-                })
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <FileWarning className="w-4 h-4" />
-              Observaciones
-            </Label>
-            <Input
-              value={formData.damageNotes || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, damageNotes: e.target.value })
-              }
-              placeholder="Observaciones..."
-            />
-          </div>
+              </Accordion>
+            )}
         </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Condición
-            </Label>
-            <Select
-              value={formData.condition}
-              onValueChange={(val) =>
-                setFormData({
-                  ...formData,
-                  condition: val as SerializedItemFormData["condition"],
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CONDITION_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={cn("w-2 h-2 rounded-full", {
-                          "bg-green-500": opt.color === "green",
-                          "bg-orange-500": opt.color === "orange",
-                          "bg-purple-500": opt.color === "purple",
-                        })}
-                      />
-                      {opt.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Wrench className="w-4 h-4" />
-              Estado Inicial
-            </Label>
-            <Select
-              value={formData.status}
-              onValueChange={(val) =>
-                setFormData({
-                  ...formData,
-                  status: val as SerializedItemFormData["status"],
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={cn("w-2 h-2 rounded-full", {
-                          "bg-blue-500": opt.color === "blue",
-                          "bg-green-500": opt.color === "green",
-                        })}
-                      />
-                      {opt.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
         <Button
           type="submit"
           className="w-full font-bold"
@@ -919,6 +1011,35 @@ export function SerializedItemForm({ onSubmit }: SerializedItemFormProps) {
           Registrar Items Serializados
         </Button>
       </div>
+
+      <BatchQRModal
+        isOpen={isRentModalOpen}
+        onClose={() => setIsRentModalOpen(false)}
+        type="RENT"
+        title="Generador de QRs para Alquiler"
+        codes={
+          batches.rent.autoGenerate
+            ? batches.rent.generatedCodes
+            : batches.rent.manualCodes
+        }
+        productName={selectedProduct?.name || ""}
+        branchName={selectedBranch?.name || "Sucursal no seleccionada"}
+      />
+
+      {/* MODAL DE VENTA */}
+      <BatchQRModal
+        isOpen={isSaleModalOpen}
+        onClose={() => setIsSaleModalOpen(false)}
+        type="SALE"
+        title="Generador de QRs para Venta"
+        codes={
+          batches.sale.autoGenerate
+            ? batches.sale.generatedCodes
+            : batches.sale.manualCodes
+        }
+        productName={selectedProduct?.name || ""}
+        branchName={selectedBranch?.name || "Sucursal no seleccionada"}
+      />
     </form>
   );
 }

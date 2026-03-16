@@ -59,7 +59,7 @@ export default async function TenantLayout({
           </header>
 
           {/* Contenido dinámico */}
-          <div className="flex flex-1 flex-col ">{children}</div>
+          <div className="flex flex-1 flex-col min-w-0 w-full">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </PlanFeaturesProvider>

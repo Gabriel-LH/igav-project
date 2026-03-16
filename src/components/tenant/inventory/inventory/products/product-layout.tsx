@@ -77,7 +77,7 @@ export function ProductsLayout() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="create" className="gap-2">
@@ -90,7 +90,7 @@ export function ProductsLayout() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="create" className="mt-4">
+        <TabsContent value="create" className="mt-4 w-full max-w-full min-w-0 overflow-hidden">
           <ProductForm
             onSubmit={handleSubmit}
             onCreated={() => setActiveTab("table")}

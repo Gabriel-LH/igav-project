@@ -3,10 +3,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Command,
@@ -27,9 +24,6 @@ import {
   AlertCircle,
   Check,
   ChevronsUpDown,
-  Search,
-  Building2,
-  CheckCircle2,
   Plus,
 } from "lucide-react";
 import { AttributeType } from "@/src/types/attributes/type.attribute-type";
@@ -544,7 +538,7 @@ export function VariantAttributeSelector({
 
           {/* Resumen Final */}
           {!hasEmptyValues && (
-            <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl flex items-center justify-between mt-6">
+            <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-xl flex items-center justify-between mt-6">
               <div className="space-y-1">
                 <span className="text-xs font-bold text-primary uppercase tracking-wider">
                   Total de Variantes

@@ -324,15 +324,6 @@ export function ProductForm({
     setFormData((prev) => ({ ...prev, variantOverrides: {} }));
   }, []);
 
-  // Validaciones
-  const canGoToAttributes =
-    formData.baseSku && formData.name && formData.categoryId;
-
-  const canGoToVariants =
-    canGoToAttributes &&
-    formData.selectedAttributes.length > 0 &&
-    formData.selectedAttributes.every((a) => a.values.length > 0);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const wasSuccessful = onSubmit(formData);
@@ -344,7 +335,7 @@ export function ProductForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-full min-w-0">
       {/* TAB 1: GENERAL */}
       <div className="space-y-4">
         {/* FLAGS PRINCIPALES */}
@@ -443,7 +434,7 @@ export function ProductForm({
         <Separator />
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-7">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 border min-w-0 p-4 rounded-md shadow-xl/20">
             {/* INFO BÁSICA */}
             <div className="flex  w-full md:flex-row flex-col gap-4">
               {/* NOMBRE PRIMERO */}
@@ -560,7 +551,8 @@ export function ProductForm({
                     Selecciona la categoría más específica (último nivel)
                   </p>
                 </div>
-                <CategoryForm
+               <div className="flex items-center pb-3">
+                 <CategoryForm
                   categories={categories}
                   onSubmit={handleCreateCategory}
                   compact
@@ -571,6 +563,7 @@ export function ProductForm({
                     </Button>
                   }
                 />
+               </div>
               </div>
               <div className="flex mt-4 gap-4 w-full">
                 {/* INFO DE CATEGORÍA (breadcrumb) */}
@@ -635,7 +628,7 @@ export function ProductForm({
               />
             </div>
           </div>
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 border h-fit p-4 rounded-md shadow-xl/20">
             <div className="flex w-full gap-4 flex-col">
               {/* SELECTOR DE MODELO (con Brand implícito) */}
               <div className="flex items-center gap-4">
@@ -725,7 +718,7 @@ export function ProductForm({
                 />
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 ">
                 <div className="space-y-1 w-full">
                   <Label className="flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
@@ -823,7 +816,7 @@ export function ProductForm({
           </div>
 
           {/* ATTRIBUTES */}
-          <div className="w-full md:col-span-2">
+          <div className="w-full md:col-span-2 border h-fit p-4 rounded-md shadow-xl/20">
             <VariantAttributeSelector
               attributeTypes={attributeTypes}
               attributeValues={attributeValues}
@@ -837,20 +830,21 @@ export function ProductForm({
       </div>
 
       {/* TAB 3: VARIANTES */}
-
-      <VariantsTable
-        baseSku={formData.baseSku}
-        variants={variants}
-        stats={stats}
-        isSerial={formData.is_serial}
-        canRent={formData.can_rent}
-        canSell={formData.can_sell}
-        onUpdateOverride={updateOverride}
-        onResetOverride={resetOverride}
-        onResetAll={resetAllOverrides}
-        existingImages={formData.image}
-        variantOverrides={formData.variantOverrides}
-      />
+      <div className="w-full max-w-full overflow-x-auto min-w-0">
+        <VariantsTable
+          baseSku={formData.baseSku}
+          variants={variants}
+          stats={stats}
+          isSerial={formData.is_serial}
+          canRent={formData.can_rent}
+          canSell={formData.can_sell}
+          onUpdateOverride={updateOverride}
+          onResetOverride={resetOverride}
+          onResetAll={resetAllOverrides}
+          existingImages={formData.image}
+          variantOverrides={formData.variantOverrides}
+        />
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
         <div className="text-sm text-muted-foreground text-right">

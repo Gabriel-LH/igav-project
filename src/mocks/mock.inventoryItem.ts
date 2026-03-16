@@ -9,7 +9,7 @@ export const INVENTORY_ITEMS_MOCK: InventoryItem[] = [
     productId: "1",
     branchId: "branch-003",
     isForRent: true,
-    isForSale: false,
+    isForSale: true,
     usageCount: 15,
     lastMaintenance: new Date("2026-01-10"),
     condition: "Nuevo",

@@ -1,6 +1,6 @@
 "use client"
 
-import { BrandsTable } from "./brand-table";
+import { BrandsTable } from "./table/brand-table";
 import { useState, useTransition } from "react";
 import { Brand, BrandFormData } from "@/src/types/brand/type.brand";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import { MOCK_BRANCHES } from "../mocks/mock.branch";
+
 import { USER_MOCK } from "../mocks/mock.user";
 import { Client } from "../types/clients/type.client";
 import { Product } from "../types/product/type.product";

@@ -206,8 +206,8 @@ export function ModelsTable({
   return (
     <div className="space-y-4">
       {/* Header con filtros */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex gap-2 flex-1">
+      <div className="lg:flex grid grid-cols-1 md:grid-cols-3 justify-between gap-4">
+        <div className="flex gap-2 flex-1 md:col-span-2">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input

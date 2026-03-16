@@ -2,8 +2,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
 import QRCodeStyling from "qr-code-styling";
 
 interface QRCodeDisplayProps {
@@ -30,8 +28,6 @@ const CART_LOGO = `<svg
 
 const cartLogoSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(CART_LOGO)}`;
 
-let globalQrInstance: QRCodeStyling | null = null;
-
 export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -41,42 +37,33 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
 
     const generateQR = async () => {
       try {
-        // Usar una sola instancia global para evitar conflictos
-        if (!globalQrInstance) {
-          globalQrInstance = new QRCodeStyling({
-            width: 200,
-            height: 200,
-            data: value,
-            image: cartLogoSvgDataUrl,
-            dotsOptions: {
-              color: "#000000",
-              type: "rounded",
-            },
-            backgroundOptions: {
-              color: "#ffffff",
-            },
-            cornersSquareOptions: {
-              type: "extra-rounded",
-            },
-            cornersDotOptions: {
-              type: "dot",
-            },
-            imageOptions: {
-              crossOrigin: "anonymous",
-              margin: 4,
-              imageSize: 0.5,
-              hideBackgroundDots: true,
-            },
-          });
-        } else {
-          // Actualizar datos en instancia existente
-          globalQrInstance.update({
-            data: value,
-          });
-        }
+        const qrInstance = new QRCodeStyling({
+          width: 128,
+          height: 128,
+          data: value,
+          image: cartLogoSvgDataUrl,
+          dotsOptions: {
+            color: "#000000",
+            type: "rounded",
+          },
+          backgroundOptions: {
+            color: "#ffffff",
+          },
+          cornersSquareOptions: {
+            type: "extra-rounded",
+          },
+          cornersDotOptions: {
+            type: "dot",
+          },
+          imageOptions: {
+            crossOrigin: "anonymous",
+            margin: 2,
+            imageSize: 0.4,
+            hideBackgroundDots: true,
+          },
+        });
 
-        // Obtener blob como data URL
-        const blob = await globalQrInstance.getRawData("png");
+        const blob = await qrInstance.getRawData("png");
         if (!blob || !isMounted) return;
 
         const reader = new FileReader();
@@ -92,31 +79,18 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
       }
     };
 
-    // Delay para evitar conflictos con React render cycle
-    const timer = setTimeout(generateQR, 50);
+    generateQR();
 
     return () => {
       isMounted = false;
-      clearTimeout(timer);
     };
   }, [value]);
 
-  const handleDownload = () => {
-    if (globalQrInstance) {
-      globalQrInstance.download({
-        extension: "png",
-        name: `qr-${value.slice(-8)}`,
-      });
-    }
-  };
-
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="border rounded-lg p-2 bg-white w-[200px] h-[200px] flex items-center justify-center">
+    <div className="flex flex-col items-center gap-2 p-1">
+      <div className="w-[128px] h-[128px] flex items-center justify-center bg-white border rounded shadow-sm">
         {!isReady || !qrDataUrl ? (
-          <div className="w-full h-full bg-muted animate-pulse rounded flex items-center justify-center">
-            <span className="text-xs text-muted-foreground">Generando...</span>
-          </div>
+          <div className="w-full h-full bg-muted animate-pulse rounded" />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -127,23 +101,12 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
         )}
       </div>
 
-      <div className="text-center space-y-1">
-        <p className="font-medium text-sm">{title}</p>
-        <code className="text-xs font-mono text-muted-foreground block max-w-[200px] truncate">
+      <div className="text-center w-full min-w-0">
+        <p className="font-bold text-[10px] uppercase truncate">{title}</p>
+        <code className="text-[8px] font-mono text-muted-foreground block truncate">
           {value}
         </code>
       </div>
-
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={handleDownload}
-        className="gap-2"
-        disabled={!isReady}
-      >
-        <Printer className="w-4 h-4" />
-        Descargar QR
-      </Button>
     </div>
   );
 }

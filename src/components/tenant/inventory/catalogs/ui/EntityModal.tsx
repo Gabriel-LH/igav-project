@@ -52,7 +52,7 @@ export function EntityModal({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <ScrollArea className="max-h-[calc(90vh-8rem)] pr-4">
+        <ScrollArea className="max-h-[calc(90vh-8rem)] w-full min-w-0 pr-4">
           {children}
         </ScrollArea>
       </DialogContent>

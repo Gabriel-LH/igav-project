@@ -78,7 +78,7 @@ function NavInventoryItem({
                   className={
                     isSubActive
                       ? "bg-primary/10 text-primary font-medium border-l-2 border-primary"
-                      : "hover:bg-muted text-neutral-300"
+                      : "hover:bg-muted"
                   }
                 >
                   <Link href={subItem.url}>

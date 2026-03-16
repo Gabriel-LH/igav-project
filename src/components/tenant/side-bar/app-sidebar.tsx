@@ -109,18 +109,18 @@ const data = {
         },
       ],
     },
-    {
-      title: "Catálogos",
-      icon: <HugeiconsIcon size={17} icon={CatalogueIcon} strokeWidth={2.2} />,
-      url: "/tenant/catalogs",
-      items: [
-        { title: "Marcas", url: "/tenant/catalogs/brands" },
-        { title: "Modelos", url: "/tenant/catalogs/models" },
-        { title: "Categorías", url: "/tenant/catalogs/categories" },
-        { title: "Tipos de Atributos", url: "/tenant/catalogs/attributes" },
-        { title: "Valores de Atributos", url: "/tenant/catalogs/values" },
-      ],
-    },
+    // {
+    //   title: "Catálogos",
+    //   icon: <HugeiconsIcon size={17} icon={CatalogueIcon} strokeWidth={2.2} />,
+    //   url: "/tenant/catalogs",
+    //   items: [
+    //     { title: "Marcas", url: "/tenant/catalogs/brands" },
+    //     { title: "Modelos", url: "/tenant/catalogs/models" },
+    //     { title: "Categorías", url: "/tenant/catalogs/categories" },
+    //     { title: "Tipos de Atributos", url: "/tenant/catalogs/attributes" },
+    //     { title: "Valores de Atributos", url: "/tenant/catalogs/values" },
+    //   ],
+    // },
   ],
   navCRM: [
     {

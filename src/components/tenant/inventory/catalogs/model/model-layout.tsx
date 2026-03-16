@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Model, ModelFormData } from "@/src/types/model/type.model";
 import { Brand } from "@/src/types/brand/type.brand";
-import { ModelsTable } from "./model-table";
+import { ModelsTable } from "./table/model-table";
 import { toast } from "sonner";
 import { createModelAction, updateModelAction, deleteModelAction } from "@/src/app/(tenant)/tenant/actions/brand.actions";
 

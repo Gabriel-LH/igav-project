@@ -53,6 +53,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Combine,
 } from "lucide-react";
 import {
   ComputedVariant,
@@ -306,11 +307,11 @@ export function VariantsTable({
     <div className="space-y-6">
       {/* Resumen superior */}
 
-      <div className="pt-6">
+      <div>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" />
+              <Combine className="w-5 h-5 text-primary" />
               {stats.total} variantes generadas
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -483,7 +484,7 @@ export function VariantsTable({
 
       {/* Tabla de variantes */}
 
-      <div className="overflow-x-auto rounded-md border">
+      <div className="overflow-x-auto w-full max-w-full rounded-md border">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -565,10 +566,10 @@ export function VariantsTable({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between px-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between px-4 gap-4">
         {/* Métricas de Rentabilidad */}
         {canSell && margin < 10 && profit < 0 && (
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             {profit < 0 && (
               <div className="flex flex-col">
                 <span className="text-red-400 text-xs">
@@ -577,7 +578,7 @@ export function VariantsTable({
               </div>
             )}
             {margin < 10 && (
-              <div className="flex flex-col border-l pl-6">
+              <div className="flex flex-col sm:border-l sm:pl-6">
                 <span className="text-xs text-yellow-400">
                   El margen de ganancia debe de ser mayor al 10% o 15% para que
                   sea rentable.
@@ -586,7 +587,7 @@ export function VariantsTable({
             )}
           </div>
         )}
-        <div className="flex w-full items-center justify-end gap-8 lg:w-fit lg:ml-auto">
+        <div className="flex w-full items-center justify-end gap-4 sm:gap-8 lg:w-fit lg:ml-auto flex-wrap sm:flex-nowrap">
           <div className="hidden items-center gap-2 lg:flex">
             <Label
               htmlFor="rows-per-page-variant"
