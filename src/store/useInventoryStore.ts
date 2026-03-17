@@ -1,9 +1,6 @@
+// src/store/useInventoryStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { PRODUCTS_MOCK } from "../mocks/mocks.product";
-import { INVENTORY_ITEMS_MOCK } from "../mocks/mock.inventoryItem";
-import { STOCK_LOTS_MOCK } from "../mocks/mock.stockLote";
-import { PRODUCT_VARIANTS_MOCK } from "../mocks/mock.productVariant";
 import { InventoryItemStatus } from "../utils/status-type/InventoryItemStatusType";
 import { Product } from "../types/product/type.product";
 import { ProductVariant } from "../types/product/type.productVariant";
@@ -17,18 +14,17 @@ interface InventoryLog {
   toBranch: string;
   userId: string;
   reason: string;
-  quantity?: number; // Agregamos cantidad para logs de lotes
+  quantity?: number;
 }
 
 interface InventoryStore {
-  inventoryItems: typeof INVENTORY_ITEMS_MOCK;
-  stockLots: typeof STOCK_LOTS_MOCK;
-  products: typeof PRODUCTS_MOCK;
-  productVariants: typeof PRODUCT_VARIANTS_MOCK;
+  inventoryItems: InventoryItem[];
+  stockLots: StockLot[];
+  products: Product[];
+  productVariants: ProductVariant[];
   inventoryLogs: InventoryLog[];
 
   // 1. Acciones para SERIALIZADOS (Items únicos)
-  // Cambia estado y ubicación de un item específico
   updateItemStatus: (
     itemId: string,
     newStatus: InventoryItemStatus,
@@ -37,12 +33,8 @@ interface InventoryStore {
   ) => void;
 
   // 2. Acciones para LOTES (Cantidad)
-  // Resta cantidad de un lote (Venta/Salida)
   decreaseLotQuantity: (lotId: string, quantity: number) => void;
-
   increaseLotQuantity: (lotId: string, quantity: number) => void;
-
-  // Mueve cantidad de un lote a otro (Transferencia entre sucursales)
   transferLotQuantity: (
     sourceLotId: string,
     targetBranchId: string,
@@ -63,32 +55,34 @@ interface InventoryStore {
   removeStockLot: (stockLotId: string) => void;
   addInventoryItems: (items: InventoryItem[]) => void;
   removeInventoryItem: (itemId: string) => void;
+
+  // 3. Acciones de Sincronización (DB -> Store)
+  setProducts: (products: Product[]) => void;
+  setProductVariants: (variants: ProductVariant[]) => void;
+  setInventoryItems: (items: InventoryItem[]) => void;
+  setStockLots: (lots: StockLot[]) => void;
 }
 
 export const useInventoryStore = create<InventoryStore>()(
   persist(
     (set, get) => ({
-      inventoryItems: INVENTORY_ITEMS_MOCK,
-      stockLots: STOCK_LOTS_MOCK,
-      products: PRODUCTS_MOCK,
-      productVariants: PRODUCT_VARIANTS_MOCK,
+      inventoryItems: [],
+      stockLots: [],
+      products: [],
+      productVariants: [],
       inventoryLogs: [],
 
-      // Getter unificado para que la UI no se rompa (Simula una lista plana)
+      // Getter unificado para que la UI no se rompa
       get stock() {
-        // Unimos items y lotes en una sola lista para el POS/Buscador
         const items = get().inventoryItems.map((i) => ({
           ...i,
           quantity: 1,
           type: "serial",
         }));
-        const lots = get().stockLots.map((l) => ({ ...l, type: "lot" })); // Ya tiene quantity
+        const lots = get().stockLots.map((l) => ({ ...l, type: "lot" }));
         return [...items, ...lots];
       },
 
-      // -----------------------------------------------------------
-      // 1. LÓGICA PARA ITEMS SERIALIZADOS (Ropa, Activos)
-      // -----------------------------------------------------------
       updateItemStatus: (itemId, newStatus, targetBranchId, adminId) => {
         set((state) => {
           const itemIndex = state.inventoryItems.findIndex(
@@ -100,7 +94,6 @@ export const useInventoryStore = create<InventoryStore>()(
           const newLogs = [...state.inventoryLogs];
           let newBranchId = item.branchId;
 
-          // Si hay cambio de sucursal, registramos log y actualizamos branchId
           if (targetBranchId && targetBranchId !== item.branchId) {
             newBranchId = targetBranchId;
             if (adminId) {
@@ -128,9 +121,6 @@ export const useInventoryStore = create<InventoryStore>()(
         });
       },
 
-      // -----------------------------------------------------------
-      // 2. LÓGICA PARA LOTES (Accesorios, Consumibles)
-      // -----------------------------------------------------------
       decreaseLotQuantity: (lotId, quantity) => {
         set((state) => ({
           stockLots: state.stockLots.map((lot) => {
@@ -159,23 +149,15 @@ export const useInventoryStore = create<InventoryStore>()(
       },
 
       transferLotQuantity: (sourceLotId, targetBranchId, quantity, adminId) => {
-        // ESTO ES COMPLEJO: Implica restar de Lote A y sumar a Lote B (o crearlo)
-        // Por ahora, simplificamos asumiendo que solo restamos del origen
-        // (la lógica de "recibir" suele ser otro proceso)
         set((state) => {
           const sourceLot = state.stockLots.find((l) => l.id === sourceLotId);
           if (!sourceLot || sourceLot.quantity < quantity) return state;
 
-          // 1. Restar del origen
           const updatedLots = state.stockLots.map((l) =>
             l.id === sourceLotId
               ? { ...l, quantity: l.quantity - quantity, updatedAt: new Date() }
               : l,
           );
-
-          // 2. Buscar o Crear destino (Simulado)
-          // En un backend real, harías un UPSERT en la tabla de lotes destino.
-          // Aquí solo logueamos la salida.
 
           const newLogs = [
             ...state.inventoryLogs,
@@ -264,6 +246,11 @@ export const useInventoryStore = create<InventoryStore>()(
             (item) => item.id !== itemId,
           ),
         })),
+
+      setProducts: (products) => set({ products }),
+      setProductVariants: (productVariants) => set({ productVariants }),
+      setInventoryItems: (inventoryItems) => set({ inventoryItems }),
+      setStockLots: (stockLots) => set({ stockLots }),
     }),
     {
       name: "inventory-storage",

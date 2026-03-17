@@ -9,13 +9,13 @@ import {
   DeleteAttributeTypeUseCase,
   ListAttributeTypesUseCase,
   UpdateAttributeTypeUseCase,
-} from "@/src/application/tenant/use-cases/crudAttributeType.usecase";
+} from "@/src/application/tenant/use-cases/attribute/crudAttributeType.usecase";
 import {
   CreateAttributeValueUseCase,
   DeleteAttributeValueUseCase,
   ListAttributeValuesUseCase,
   UpdateAttributeValueUseCase,
-} from "@/src/application/tenant/use-cases/crudAttributeValue.usecase";
+} from "@/src/application/tenant/use-cases/attribute/crudAttributeValue.usecase";
 import { AttributeTypeFormData } from "@/src/types/attributes/type.attribute-type";
 import { AttributeValueFormData } from "@/src/types/attributes/type.attribute-value";
 

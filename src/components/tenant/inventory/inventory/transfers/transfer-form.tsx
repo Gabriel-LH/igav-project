@@ -39,7 +39,7 @@ import {
   Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BarcodeScanner } from "../barcode/BarcodeScanner";
+import { BarcodeScanner } from "../barcode/Scanner";
 
 // Tipos
 export interface TransferItem {

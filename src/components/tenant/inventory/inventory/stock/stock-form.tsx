@@ -35,7 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { StockFormData } from "@/src/application/interfaces/stock/StockFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
-import { BarcodeScanner } from "../barcode/BarcodeScanner";
+import { BarcodeScanner } from "../barcode/Scanner";
 import { Branch } from "@/src/types/branch/type.branch";
 import {
   CONDITION_OPTIONS,
@@ -49,11 +49,11 @@ interface StockFormProps {
   initialVariantId?: string;
 }
 
-export function StockForm({ 
-  onSubmit, 
+export function StockForm({
+  onSubmit,
   initialBranches,
   initialProductId,
-  initialVariantId 
+  initialVariantId,
 }: StockFormProps) {
   const productsWithVariants = useInventoryProductOptions(false);
 

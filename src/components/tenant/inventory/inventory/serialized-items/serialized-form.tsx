@@ -41,7 +41,7 @@ import {
   Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BarcodeScanner } from "../barcode/BarcodeScanner";
+import { BarcodeScanner } from "../barcode/Scanner";
 import { SerializedItemFormData } from "@/src/application/interfaces/inventory/SerializedItemFormData";
 import { useInventoryProductOptions } from "@/src/hooks/inventory/useInventoryProductOptions";
 import { useIsMobile } from "@/src/hooks/use-mobile";
@@ -67,10 +67,10 @@ interface SerializedItemFormProps {
   initialVariantId?: string;
 }
 
-export function SerializedItemForm({ 
+export function SerializedItemForm({
   onSubmit,
   initialProductId,
-  initialVariantId
+  initialVariantId,
 }: SerializedItemFormProps) {
   const availableProducts = useInventoryProductOptions(true);
   const isMobile = useIsMobile();

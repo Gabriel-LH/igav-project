@@ -122,4 +122,30 @@ export class PrismaStockAdapter implements StockRepository {
 
     return summary;
   }
+
+  async getLotsByTenant(tenantId: string): Promise<StockLot[]> {
+    const lots = await this.prisma.stockLot.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return lots.map(l => ({
+      ...l,
+      condition: l.condition as any,
+      status: l.status as any,
+    })) as unknown as StockLot[];
+  }
+
+  async getItemsByTenant(tenantId: string): Promise<InventoryItem[]> {
+    const items = await this.prisma.inventoryItem.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return items.map(i => ({
+      ...i,
+      condition: i.condition as any,
+      status: i.status as any,
+    })) as unknown as InventoryItem[];
+  }
 }

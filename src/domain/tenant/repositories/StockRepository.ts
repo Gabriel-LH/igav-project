@@ -23,11 +23,21 @@ export interface StockRepository {
   getItemsByVariant(variantId: string): Promise<InventoryItem[]>;
 
   /**
-   * Gets stock summary for a product (all variants)
+   * Gets all stock lots for a product (all variants)
    */
   getStockSummaryByProduct(productId: string): Promise<{
     variantId: string;
     totalQuantity: number;
     serializedCount: number;
   }[]>;
+
+  /**
+   * Gets all stock lots for a tenant
+   */
+  getLotsByTenant(tenantId: string): Promise<StockLot[]>;
+
+  /**
+   * Gets all serialized items for a tenant
+   */
+  getItemsByTenant(tenantId: string): Promise<InventoryItem[]>;
 }

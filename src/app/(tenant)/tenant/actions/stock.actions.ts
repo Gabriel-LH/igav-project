@@ -55,7 +55,42 @@ export async function assignSerializedAction(input: Omit<AssignSerializedItemsIn
     console.error("Error al asignar items serializados:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error desconocido al asignar items serializados",
+    };
+  }
+}
+
+export async function listStockLotsAction() {
+  try {
+    const { tenantId } = await requireTenantMembership();
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const stockRepo = new PrismaStockAdapter();
+    const lots = await stockRepo.getLotsByTenant(tenantId);
+
+    return { success: true, data: lots };
+  } catch (error) {
+    console.error("Error al listar lotes de stock:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido al listar lotes de stock",
+    };
+  }
+}
+
+export async function listSerializedItemsAction() {
+  try {
+    const { tenantId } = await requireTenantMembership();
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const stockRepo = new PrismaStockAdapter();
+    const items = await stockRepo.getItemsByTenant(tenantId);
+
+    return { success: true, data: items };
+  } catch (error) {
+    console.error("Error al listar items serializados:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido al listar items serializados",
     };
   }
 }

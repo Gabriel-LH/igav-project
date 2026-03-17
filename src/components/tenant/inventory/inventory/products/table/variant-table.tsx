@@ -62,7 +62,7 @@ import {
 import { cn } from "@/lib/utils";
 import { generateBarcode } from "@/src/utils/variants/barcode";
 import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
-import { BarcodeScanner } from "../../barcode/BarcodeScanner";
+import { BarcodeScanner } from "../../barcode/Scanner";
 import { SingleImagePicker } from "../ui/SingleImagePicker";
 
 interface VariantsTableProps {
@@ -177,7 +177,13 @@ export function VariantsTable({
     targets.forEach((variant) => {
       onUpdateOverride(variant.signature, { priceRent: numValue });
     });
-  }, [canRent, globalPriceRent, variants, onUpdateOverride, selectedSignatures]);
+  }, [
+    canRent,
+    globalPriceRent,
+    variants,
+    onUpdateOverride,
+    selectedSignatures,
+  ]);
 
   // Aplicar precio de venta en masa
   const applyGlobalSellPrice = useCallback(() => {
@@ -193,7 +199,13 @@ export function VariantsTable({
     targets.forEach((variant) => {
       onUpdateOverride(variant.signature, { priceSell: numValue });
     });
-  }, [canSell, globalPriceSell, variants, onUpdateOverride, selectedSignatures]);
+  }, [
+    canSell,
+    globalPriceSell,
+    variants,
+    onUpdateOverride,
+    selectedSignatures,
+  ]);
 
   // Aplicar unidad en masa
   const applyGlobalUnit = useCallback(() => {
@@ -222,12 +234,7 @@ export function VariantsTable({
     targets.forEach((v) => {
       onUpdateOverride(v.signature, { purchasePrice: numValue });
     });
-  }, [
-    globalPurchasePrice,
-    variants,
-    onUpdateOverride,
-    selectedSignatures,
-  ]);
+  }, [globalPurchasePrice, variants, onUpdateOverride, selectedSignatures]);
 
   // --- Lógica de Ganancia y Margen (Basada en variantes paginadas o totales) ---
   const calculateMetrics = () => {

@@ -100,6 +100,7 @@ const data = {
       url: "/tenant/inventory",
       items: [
         { title: "Productos", url: "/tenant/inventory/products" },
+        { title: "Recepción de Inventario", url: "/tenant/inventory/receive" },
         { title: "Stock", url: "/tenant/inventory/stock" },
         { title: "Items Serializados", url: "/tenant/inventory/items" },
         { title: "Transferencias", url: "/tenant/inventory/transfers" },
