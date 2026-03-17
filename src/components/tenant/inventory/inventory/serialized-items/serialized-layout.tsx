@@ -13,18 +13,29 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { getProductsAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
 import { assignSerializedAction, listSerializedItemsAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
 import { toast } from "sonner";
+import { GLOBAL_BRANCH_ID, useBranchStore } from "@/src/store/useBranchStore";
+import { Branch } from "@/src/types/branch/type.branch";
 
 interface Props {
+  initialBranches: Branch[];
   initialProductId?: string;
   initialVariantId?: string;
 }
 
-export function SerializedLayout({ initialProductId, initialVariantId }: Props) {
+export function SerializedLayout({
+  initialBranches,
+  initialProductId,
+  initialVariantId,
+}: Props) {
   const [activeTab, setActiveTab] = useState("form");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   const { setProducts, setProductVariants, setInventoryItems, inventoryItems } = useInventoryStore();
+  const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+  const canUseGlobal = useBranchStore((state) => state.canUseGlobal);
+  const isGlobal = canUseGlobal && selectedBranchId === GLOBAL_BRANCH_ID;
+  const canAssign = canUseGlobal;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -98,6 +109,11 @@ export function SerializedLayout({ initialProductId, initialVariantId }: Props) 
     });
   }, [inventoryItems]);
 
+  const visibleItems = useMemo(() => {
+    if (isGlobal || !selectedBranchId) return formattedItems;
+    return formattedItems.filter((item) => item.branchId === selectedBranchId);
+  }, [formattedItems, isGlobal, selectedBranchId]);
+
   const handleDelete = (id: string) => {
     console.log("Delete item:", id);
     toast.info("Funcionalidad de eliminar item en desarrollo");
@@ -106,16 +122,18 @@ export function SerializedLayout({ initialProductId, initialVariantId }: Props) 
   return (
     <div className="container mx-auto space-y-6 lg:py-6 md:py-6">
       <Tabs
-        value={activeTab}
+        value={canAssign ? activeTab : "list"}
         onValueChange={setActiveTab}
         className="space-y-4"
       >
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="form">
-              <HugeiconsIcon icon={AddToListIcon} />
-              Crear Serializado
-            </TabsTrigger>
+            {canAssign && (
+              <TabsTrigger value="form">
+                <HugeiconsIcon icon={AddToListIcon} />
+                Crear Serializado
+              </TabsTrigger>
+            )}
             <TabsTrigger value="list">
               <HugeiconsIcon icon={ListViewIcon} />
               Serializados Registrados
@@ -126,24 +144,28 @@ export function SerializedLayout({ initialProductId, initialVariantId }: Props) 
           )}
         </div>
 
-        <TabsContent value="form">
-          <SerializedItemForm 
-            onSubmit={handleSubmit} 
-            initialProductId={initialProductId}
-            initialVariantId={initialVariantId}
-          />
-        </TabsContent>
+        {canAssign && (
+          <TabsContent value="form">
+            <SerializedItemForm 
+              onSubmit={handleSubmit} 
+              initialProductId={initialProductId}
+              initialVariantId={initialVariantId}
+              initialBranchId={isGlobal ? undefined : selectedBranchId}
+              initialBranches={initialBranches}
+            />
+          </TabsContent>
+        )}
 
         <TabsContent value="list">
-          {formattedItems.length > 0 ? (
+          {visibleItems.length > 0 ? (
             <div>
               <div className="text-2xl mb-4 flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                <span>Items Serializados ({formattedItems.length})</span>
+                <span>Items Serializados ({visibleItems.length})</span>
               </div>
 
               <div>
-                <SerializedItemsTable items={formattedItems as any} onDelete={handleDelete} />
+                <SerializedItemsTable items={visibleItems as any} onDelete={handleDelete} />
               </div>
             </div>
           ) : (

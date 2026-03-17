@@ -20,7 +20,6 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
 import { DateTimeContainer } from "@/src/components/tenant/home/ui/direct-transaction/DataTimeContainer";
@@ -41,6 +40,7 @@ import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBund
 import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -54,7 +54,6 @@ export function PosReservationModal({
   const { items, clearCart, activeTenantId } = useCartStore();
   const { inventoryItems, stockLots } = useInventoryStore();
 
-  const businessRules = MOCK_TENANT_CONFIG;
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId!;
 
@@ -75,10 +74,10 @@ export function PosReservationModal({
     to: addDays(new Date(), 3),
   });
   const [pickupTime, setPickupTime] = React.useState(
-    businessRules.openHours.open,
+    MOCK_BRANCH_CONFIG.openHours.open,
   );
   const [returnTime, setReturnTime] = React.useState(
-    businessRules.openHours.close,
+    MOCK_BRANCH_CONFIG.openHours.close,
   );
 
   // Financieros

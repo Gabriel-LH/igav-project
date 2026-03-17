@@ -2,11 +2,12 @@ import { Product } from "../../../types/product/type.product";
 import { ProductVariant } from "../../../types/product/type.productVariant";
 
 /**
- * Product is the Aggregate Root.
- * All access to ProductVariant goes through Product.
- */
+ * Producto es la raíz del agregado.
+ * Todo acceso a ProductVariant pasa por Producto.
+*/
+
 export interface ProductRepository {
-  // ── Product (Aggregate Root) ──────────────────────────
+  // ── Producto (Aggregate Root) ──────────────────────────
   createProduct(product: Product): Promise<void>;
   updateProduct(productId: string, updates: Partial<Product>): Promise<void>;
   getProductById(tenantId: string, productId: string): Promise<Product | null>;
@@ -16,7 +17,7 @@ export interface ProductRepository {
   ): Promise<Product[]>;
   softDeleteProduct(productId: string, deletedBy: string): Promise<void>;
 
-  // ── ProductVariant (part of Product aggregate) ────────
+  // ── ProductVariant (parte del agregado Product) ────────
   createVariants(variants: ProductVariant[]): Promise<void>;
   getVariantsByProductId(productId: string): Promise<ProductVariant[]>;
   getVariantsByTenant(tenantId: string): Promise<ProductVariant[]>;

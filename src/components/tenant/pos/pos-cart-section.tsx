@@ -14,14 +14,14 @@ import { addDays, differenceInDays } from "date-fns";
 import { DateTimeContainer } from "../home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "../home/ui/direct-transaction/TimePicker";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
-import { toast } from "sonner";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { PosBundlesPanel } from "./ui/PosBundlePanel";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
+import { toast } from "sonner";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 
 export function PosCartSection() {
+  const { productVariants } = useInventoryStore();
   const {
     items,
     getTotal,
@@ -42,12 +42,12 @@ export function PosCartSection() {
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
-  const businessRules = MOCK_TENANT_CONFIG;
+  
   const [pickupTime, setPickupTime] = React.useState(
-    businessRules.openHours.open,
+    MOCK_BRANCH_CONFIG.openHours.open,
   );
   const [returnTime, setReturnTime] = React.useState(
-    businessRules.openHours.close,
+    MOCK_BRANCH_CONFIG.openHours.close,
   );
 
   const alquilerItems = items.filter((i) => i.operationType === "alquiler");
@@ -68,7 +68,7 @@ export function PosCartSection() {
 
       setGlobalTimes({
         pickup: currentTime,
-        return: businessRules.openHours.close,
+        return: MOCK_BRANCH_CONFIG.openHours.close,
       });
     }
   }, [
@@ -76,7 +76,7 @@ export function PosCartSection() {
     currentTime,
     setGlobalDates,
     setGlobalTimes,
-    businessRules.openHours.close,
+    MOCK_BRANCH_CONFIG.openHours.close,
   ]);
 
   const dateRange = React.useMemo(
@@ -97,8 +97,6 @@ export function PosCartSection() {
     dateRange.from && dateRange.to
       ? differenceInDays(dateRange.to, dateRange.from)
       : 0;
-  const branchId = USER_MOCK[0].branchId;
-
   const getMultiplier = (
     operationType: "venta" | "alquiler",
     rentUnit?: string,
@@ -255,7 +253,7 @@ export function PosCartSection() {
                         curr.quantity *
                         getMultiplier(
                           curr.operationType,
-                          PRODUCT_VARIANTS_MOCK.find(
+                          productVariants.find(
                             (v: any) => v.id === curr.variantId,
                           )?.rentUnit || (curr.product as any).rent_unit,
                         ),
@@ -278,7 +276,7 @@ export function PosCartSection() {
                         curr.quantity *
                         getMultiplier(
                           curr.operationType,
-                          PRODUCT_VARIANTS_MOCK.find(
+                          productVariants.find(
                             (v: any) => v.id === curr.variantId,
                           )?.rentUnit || (curr.product as any).rent_unit,
                         ),

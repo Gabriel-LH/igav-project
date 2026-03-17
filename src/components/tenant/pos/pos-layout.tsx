@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useBranchStore, GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
 import { useCartStore } from "@/src/store/useCartStore";
 import { toast } from "sonner";
 import { PosProductSection } from "./pos-product-section";
@@ -12,11 +13,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
+import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
 
 export function PosLayout() {
   const { products, inventoryItems, stockLots } = useInventoryStore();
+  const { selectedBranchId } = useInventorySync();
   const { addItem, applyPromotions, items } = useCartStore();
 
   const [preferredMode, setPreferredMode] = useState<"venta" | "alquiler">(
@@ -51,11 +54,16 @@ export function PosLayout() {
 
   useEffect(() => {
     if (items.length === 0) return;
-    applyPromotions(USER_MOCK[0].branchId!);
-  }, [promotionsFingerprint, items.length, applyPromotions]);
+    if (!selectedBranchId || selectedBranchId === GLOBAL_BRANCH_ID) return;
+    applyPromotions(selectedBranchId);
+  }, [promotionsFingerprint, items.length, applyPromotions, selectedBranchId]);
 
   useBarcodeScanner({
     onScan: (code) => {
+      if (!selectedBranchId || selectedBranchId === GLOBAL_BRANCH_ID) {
+        toast.error("Selecciona una sucursal para usar el POS.");
+        return;
+      }
       console.log("Escaneado:", code);
 
       // 1. BUSCAR EN INVENTARIO (Seriales o Lotes)

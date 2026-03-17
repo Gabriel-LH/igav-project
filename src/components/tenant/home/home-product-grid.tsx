@@ -17,18 +17,20 @@ import {
 // Mocks e IDs
 import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { toast } from "sonner";
 
 export function ProductGrid() {
   const { products, productVariants, inventoryItems, stockLots } = useInventoryStore();
+  const { selectedBranchId } = useInventorySync();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState("todos");
@@ -36,7 +38,6 @@ export function ProductGrid() {
   const [viewMode, setViewMode] = useState("catalog");
 
   const showReserved = viewMode === "reserved";
-  const currentUser = USER_MOCK[0];
   const query = searchQuery.toLowerCase();
 
   useBarcodeScanner({
@@ -73,14 +74,14 @@ export function ProductGrid() {
         isAvailable = inventoryItems.some(
           (i) =>
             String(i.productId) === String(product.id) &&
-            i.branchId === currentUser.branchId &&
+            i.branchId === selectedBranchId &&
             i.status === "disponible",
         );
       } else {
         isAvailable = stockLots.some(
           (l) =>
             String(l.productId) === String(product.id) &&
-            l.branchId === currentUser.branchId &&
+            l.branchId === selectedBranchId &&
             l.status === "disponible" &&
             l.quantity > 0,
         );
@@ -104,7 +105,7 @@ export function ProductGrid() {
     stockLots,
     query,
     activeTab,
-    currentUser.branchId,
+    selectedBranchId,
   ]);
 
   const { reservations } = useReservationStore();
@@ -112,8 +113,7 @@ export function ProductGrid() {
   // --- 2. LÓGICA DE OPERACIONES (RESERVAS ACTIVAS) ---
   const filteredReservations = useMemo(() => {
     return reservations.filter((res) => {
-      const isMyBranch =
-        currentUser.role === "admin" || res.branchId === currentUser.branchId;
+      const isMyBranch = res.branchId === selectedBranchId;
       if (!isMyBranch) return false;
 
       const isReadyForPickup =
@@ -134,37 +134,37 @@ export function ProductGrid() {
 
       return matchesClient || matchesAnyProduct;
     });
-  }, [query, currentUser.branchId, currentUser.role, reservations]);
+  }, [query, selectedBranchId, reservations]);
 
   const filteredLaundry = useMemo(() => {
     return [
       ...inventoryItems.filter(
         (i) =>
-          i.branchId === currentUser.branchId &&
+          i.branchId === selectedBranchId &&
           (i.status as any) === "en_lavanderia",
       ),
       ...stockLots.filter(
         (l) =>
-          l.branchId === currentUser.branchId &&
+          l.branchId === selectedBranchId &&
           (l.status as any) === "en_lavanderia",
       ),
     ];
-  }, [inventoryItems, stockLots, currentUser.branchId]);
+  }, [inventoryItems, stockLots, selectedBranchId]);
 
   const filteredMaintenance = useMemo(() => {
     return [
       ...inventoryItems.filter(
         (i) =>
-          i.branchId === currentUser.branchId &&
+          i.branchId === selectedBranchId &&
           (i.status as any) === "en_mantenimiento",
       ),
       ...stockLots.filter(
         (l) =>
-          l.branchId === currentUser.branchId &&
+          l.branchId === selectedBranchId &&
           (l.status as any) === "en_mantenimiento",
       ),
     ];
-  }, [inventoryItems, stockLots, currentUser.branchId]);
+  }, [inventoryItems, stockLots, selectedBranchId]);
 
   // Decidir qué lista mostrar
   const displayList = useMemo(() => {

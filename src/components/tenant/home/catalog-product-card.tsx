@@ -25,7 +25,6 @@ import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
-import { Card_19 } from "@/components/card-19";
 
 interface Props {
   product: z.infer<typeof productSchema>;

@@ -1,7 +1,7 @@
 // components/inventory/SerializedItemForm.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,6 +51,7 @@ import {
   CONDITION_OPTIONS,
   STATUS_OPTIONS,
 } from "@/src/utils/serialize/options";
+import { Branch } from "@/src/types/branch/type.branch";
 
 type BatchState = {
   enabled: boolean;
@@ -63,14 +64,18 @@ type BatchState = {
 
 interface SerializedItemFormProps {
   onSubmit: (data: SerializedItemFormData) => void;
+  initialBranches: Branch[];
   initialProductId?: string;
   initialVariantId?: string;
+  initialBranchId?: string;
 }
 
 export function SerializedItemForm({
   onSubmit,
+  initialBranches,
   initialProductId,
   initialVariantId,
+  initialBranchId,
 }: SerializedItemFormProps) {
   const availableProducts = useInventoryProductOptions(true);
   const isMobile = useIsMobile();
@@ -80,6 +85,7 @@ export function SerializedItemForm({
   const [formData, setFormData] = useState<Partial<SerializedItemFormData>>({
     productId: initialProductId || "",
     variantId: initialVariantId || "",
+    branchId: initialBranchId || "",
     condition: "Nuevo",
     status: "en_transito",
     damageNotes: "",
@@ -112,12 +118,11 @@ export function SerializedItemForm({
     text: string;
   } | null>(null);
 
-  const MOCK_BRANCHES = useMemo(() => {
-    return [
-      { id: "branch-1", name: "Sucursal 1", status: "active" },
-      { id: "branch-2", name: "Sucursal 2", status: "active" },
-    ];
-  }, []);
+  useEffect(() => {
+    if (initialBranchId && !formData.branchId) {
+      setFormData((prev) => ({ ...prev, branchId: initialBranchId }));
+    }
+  }, [initialBranchId, formData.branchId]);
 
   const selectedProduct = availableProducts.find(
     (p) => p.id === formData.productId,
@@ -126,8 +131,8 @@ export function SerializedItemForm({
     (v) => v.id === formData.variantId,
   );
   const availableBranches = useMemo(
-    () => MOCK_BRANCHES.filter((branch) => branch.status === "active"),
-    [MOCK_BRANCHES],
+    () => initialBranches.filter((branch) => branch.status === "active"),
+    [initialBranches],
   );
   const selectedBranch = availableBranches.find(
     (b) => b.id === formData.branchId,

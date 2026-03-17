@@ -56,6 +56,7 @@ import { NavAnalytic } from "../nav-bar/nav-analityc";
 import { User } from "@/src/types/user/type.user";
 import { Tenant } from "@/src/types/tenant/type.tenant";
 import { Branch } from "@/src/types/branch/type.branch";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 const data = {
   navMain: [
@@ -215,6 +216,7 @@ interface AppSidebarProps {
   tenant: Tenant;
   user: User;
   branches: Branch[];
+  membershipRoleName?: string;
   logoUrl?: string;
 }
 
@@ -222,11 +224,40 @@ export function AppSidebar({
   tenant,
   user,
   branches,
+  membershipRoleName,
   logoUrl = "",
   ...props
 }: AppSidebarProps & React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { hasFeature, hasModule } = usePlanFeatures();
+  const setBranches = useBranchStore((state) => state.setBranches);
+  const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+  const setSelectedBranchId = useBranchStore(
+    (state) => state.setSelectedBranchId,
+  );
+  const setCanUseGlobal = useBranchStore((state) => state.setCanUseGlobal);
+  const resolvedRole = (membershipRoleName || user.role || "").toLowerCase();
+  const isPrivileged = resolvedRole === "owner" || resolvedRole === "admin";
+
+  React.useEffect(() => {
+    setBranches(branches);
+  }, [branches, setBranches]);
+
+  React.useEffect(() => {
+    setCanUseGlobal(isPrivileged);
+  }, [isPrivileged, setCanUseGlobal]);
+
+  React.useEffect(() => {
+    if (!user.branchId) return;
+    if (!selectedBranchId) {
+      setSelectedBranchId(user.branchId);
+      return;
+    }
+    const exists = branches.some((branch) => branch.id === selectedBranchId);
+    if (!exists && selectedBranchId !== "global") {
+      setSelectedBranchId(user.branchId);
+    }
+  }, [branches, user.branchId, selectedBranchId, setSelectedBranchId]);
 
   const filteredNavMain = React.useMemo(
     () =>

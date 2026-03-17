@@ -1232,6 +1232,8 @@ model PlanModule {
 
 enum StockMovementType {
   stock_inicial // carga inicial
+  recepcion_transito // recepción parcial desde tránsito
+  recepcion_disponible // recepción completa
   salida_alquiler // se alquila
   retorno_alquiler // se devuelve
   vendido // venta confirmada
@@ -1416,6 +1418,7 @@ model StockMovement {
   tenantId    String
   stockLotId  String
   type        StockMovementType
+  quantity    Int
   reason      String?
   operationId String?
   changedBy   String?

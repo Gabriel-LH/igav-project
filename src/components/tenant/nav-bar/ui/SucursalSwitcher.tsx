@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StoreLocation02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
 
 type Branch = {
   id: string;
@@ -27,14 +28,19 @@ interface SucursalSwitcherProps {
   branches: Branch[];
   value: string;
   onChange: (branchId: string) => void;
+  includeGlobal?: boolean;
 }
 
 export function SucursalSwitcher({
   branches,
   value,
   onChange,
+  includeGlobal = false,
 }: SucursalSwitcherProps) {
-  const current = branches.find((branch) => branch.id === value);
+  const options = includeGlobal
+    ? [{ id: GLOBAL_BRANCH_ID, name: "Global" }, ...branches]
+    : branches;
+  const current = options.find((branch) => branch.id === value);
 
   return (
     <Popover>
@@ -59,7 +65,7 @@ export function SucursalSwitcher({
           <CommandInput placeholder="Buscar sucursal..." />
           <CommandEmpty>No hay resultados.</CommandEmpty>
           <CommandGroup>
-            {branches.map((branch) => (
+            {options.map((branch) => (
               <CommandItem
                 key={branch.id}
                 value={branch.name}

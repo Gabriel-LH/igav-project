@@ -148,4 +148,117 @@ export class PrismaStockAdapter implements StockRepository {
       status: i.status as any,
     })) as unknown as InventoryItem[];
   }
+
+  async getLotById(stockLotId: string): Promise<StockLot | null> {
+    const lot = await this.prisma.stockLot.findUnique({
+      where: { id: stockLotId },
+    });
+    if (!lot) return null;
+    return {
+      ...lot,
+      condition: lot.condition as any,
+      status: lot.status as any,
+    } as unknown as StockLot;
+  }
+
+  async findAvailableLotLike(lot: StockLot): Promise<StockLot | null> {
+    const found = await this.prisma.stockLot.findFirst({
+      where: {
+        tenantId: lot.tenantId,
+        productId: lot.productId,
+        variantId: lot.variantId,
+        branchId: lot.branchId,
+        status: "disponible",
+        barcode: lot.barcode ?? null,
+        lotNumber: lot.lotNumber ?? null,
+        condition: lot.condition as any,
+        isForRent: lot.isForRent,
+        isForSale: lot.isForSale,
+        expirationDate: lot.expirationDate ?? null,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!found) return null;
+    return {
+      ...found,
+      condition: found.condition as any,
+      status: found.status as any,
+    } as unknown as StockLot;
+  }
+
+  async updateStockLotQuantity(
+    stockLotId: string,
+    quantity: number,
+  ): Promise<StockLot> {
+    const updated = await this.prisma.stockLot.update({
+      where: { id: stockLotId },
+      data: { quantity },
+    });
+
+    return {
+      ...updated,
+      condition: updated.condition as any,
+      status: updated.status as any,
+    } as unknown as StockLot;
+  }
+
+  async updateStockLotStatus(
+    stockLotId: string,
+    status: StockLot["status"],
+  ): Promise<StockLot> {
+    const updated = await this.prisma.stockLot.update({
+      where: { id: stockLotId },
+      data: { status: status as any },
+    });
+
+    return {
+      ...updated,
+      condition: updated.condition as any,
+      status: updated.status as any,
+    } as unknown as StockLot;
+  }
+
+  async updateInventoryItemStatus(
+    itemId: string,
+    status: InventoryItem["status"],
+  ): Promise<InventoryItem> {
+    const updated = await this.prisma.inventoryItem.update({
+      where: { id: itemId },
+      data: { status: status as any },
+    });
+
+    return {
+      ...updated,
+      condition: updated.condition as any,
+      status: updated.status as any,
+    } as unknown as InventoryItem;
+  }
+
+  async addStockMovement(input: {
+    tenantId: string;
+    stockLotId: string;
+    type:
+      | "stock_inicial"
+      | "recepcion_transito"
+      | "recepcion_disponible"
+      | "ajuste_incremento"
+      | "ajuste_decremento";
+    quantity: number;
+    reason?: string;
+    operationId?: string;
+    changedBy?: string;
+  }): Promise<void> {
+    await this.prisma.stockMovement.create({
+      data: {
+        tenantId: input.tenantId,
+        stockLotId: input.stockLotId,
+        type: input.type as any,
+        quantity: input.quantity,
+        reason: input.reason,
+        operationId: input.operationId,
+        changedBy: input.changedBy,
+      },
+    });
+  }
 }

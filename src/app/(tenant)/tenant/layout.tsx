@@ -33,7 +33,7 @@ export default async function TenantLayout({
       ? ((tenant.metadata as any).logoUrl as string)
       : "";
 
-  console.log("logoUrl", logoUrl);
+  console.log("tenantRole", access.membership.role);
 
   return (
     <PlanFeaturesProvider initialData={planFeatures}>
@@ -50,6 +50,7 @@ export default async function TenantLayout({
           branches={branches}
           tenant={tenant}
           user={access.user as any}
+          membershipRoleName={access.membership.role?.name}
           logoUrl={logoUrl}
         />
 

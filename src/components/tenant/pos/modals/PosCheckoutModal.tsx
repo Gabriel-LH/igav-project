@@ -45,6 +45,7 @@ import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { useCouponStore } from "@/src/store/useCouponStore";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -65,7 +66,6 @@ export function PosCheckoutModal({
     setGlobalTimes,
   } = useCartStore();
 
-  const businessRules = MOCK_TENANT_CONFIG;
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId!;
 
@@ -107,8 +107,8 @@ export function PosCheckoutModal({
     });
   };
 
-  const pickupTime = globalRentalTimes?.pickup || businessRules.openHours.open;
-  const returnTime = globalRentalTimes?.return || businessRules.openHours.close;
+  const pickupTime = globalRentalTimes?.pickup || MOCK_BRANCH_CONFIG.openHours.open;
+  const returnTime = globalRentalTimes?.return || MOCK_BRANCH_CONFIG.openHours.close;
 
   // Financieros
   const [paymentMethod, setPaymentMethod] = useState<
@@ -150,7 +150,7 @@ export function PosCheckoutModal({
     [alquilerItems],
   );
 
-  const IGV_RATE = BUSINESS_RULES_MOCK.taxRate; // 0.18
+  const IGV_RATE = MOCK_TENANT_CONFIG.tax.rate; // 0.18
 
   const subtotalBruto = items.reduce(
     (acc, item) =>

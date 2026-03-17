@@ -17,10 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { useRouter } from "next/navigation";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 interface PosProductCardProps {
   product: Product;
@@ -35,15 +34,16 @@ function VariantSelector({
   type: "venta" | "alquiler";
   onClose: () => void;
 }) {
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { inventoryItems, stockLots, productVariants: allVariants } =
+    useInventoryStore();
   const { addItem, items } = useCartStore();
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId);
 
   const validVariants = useMemo(() => {
-    return PRODUCT_VARIANTS_MOCK.filter(
+    return allVariants.filter(
       (v) => v.productId === product.id && v.isActive,
     );
-  }, [product.id]);
+  }, [product.id, allVariants]);
 
   const handleConfirm = (variantId: string) => {
     let variantStock;
@@ -152,9 +152,9 @@ function VariantSelector({
 export function PosProductCard({ product }: PosProductCardProps) {
   const router = useRouter();
   const { addItem, items } = useCartStore();
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { inventoryItems, stockLots, productVariants: allVariants } = useInventoryStore();
   const { getModelById, getCategoryById } = useAttributeStore();
-  const currentBranchId = USER_MOCK[0].branchId;
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId);
 
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [operationType, setOperationType] = useState<"venta" | "alquiler">(
@@ -207,8 +207,8 @@ export function PosProductCard({ product }: PosProductCardProps) {
 
     const variants = itemsForBranch.some((i) => i.variantId);
 
-    const v = PRODUCT_VARIANTS_MOCK.filter(
-      (v) => v.productId === product.id && v.isActive,
+    const v = allVariants.filter(
+      (variant) => variant.productId === product.id && variant.isActive,
     );
 
     return {
@@ -225,6 +225,7 @@ export function PosProductCard({ product }: PosProductCardProps) {
     inventoryItems,
     stockLots,
     currentBranchId,
+    allVariants,
   ]);
 
   const inCartSale = items

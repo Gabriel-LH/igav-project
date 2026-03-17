@@ -14,6 +14,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { getProductsAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
 import { assignStockAction, listStockLotsAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
 import { toast } from "sonner";
+import { GLOBAL_BRANCH_ID, useBranchStore } from "@/src/store/useBranchStore";
 
 interface Props {
   initialBranches: Branch[];
@@ -31,6 +32,10 @@ export function StockLayout({
   const [isPending, startTransition] = useTransition();
 
   const { setProducts, setProductVariants, setStockLots, stockLots } = useInventoryStore();
+  const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+  const canUseGlobal = useBranchStore((state) => state.canUseGlobal);
+  const isGlobal = canUseGlobal && selectedBranchId === GLOBAL_BRANCH_ID;
+  const canAssign = canUseGlobal;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -109,6 +114,11 @@ export function StockLayout({
     });
   }, [stockLots, initialBranches]);
 
+  const visibleStockLots = useMemo(() => {
+    if (isGlobal || !selectedBranchId) return formattedStockLots;
+    return formattedStockLots.filter((lot) => lot.branchId === selectedBranchId);
+  }, [formattedStockLots, isGlobal, selectedBranchId]);
+
   const handleDelete = (id: string) => {
     console.log("Delete lot:", id);
     toast.info("Funcionalidad de eliminar lote en desarrollo");
@@ -117,16 +127,18 @@ export function StockLayout({
   return (
     <div className="container mx-auto space-y-6 lg:py-6 md:py-6">
       <Tabs
-        value={activeTab}
+        value={canAssign ? activeTab : "list"}
         onValueChange={setActiveTab}
         className="space-y-4"
       >
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="form">
-              <HugeiconsIcon icon={AddToListIcon} />
-              Crear Stock
-            </TabsTrigger>
+            {canAssign && (
+              <TabsTrigger value="form">
+                <HugeiconsIcon icon={AddToListIcon} />
+                Crear Stock
+              </TabsTrigger>
+            )}
             <TabsTrigger value="list">
               <HugeiconsIcon icon={ListViewIcon} />
               Stock Registrados
@@ -137,23 +149,26 @@ export function StockLayout({
           )}
         </div>
 
-        <TabsContent value="form">
-          <StockForm 
-            onSubmit={handleSubmit} 
-            initialBranches={initialBranches} 
-            initialProductId={initialProductId}
-            initialVariantId={initialVariantId}
-          />
-        </TabsContent>
+        {canAssign && (
+          <TabsContent value="form">
+            <StockForm 
+              onSubmit={handleSubmit} 
+              initialBranches={initialBranches} 
+              initialProductId={initialProductId}
+              initialVariantId={initialVariantId}
+              initialBranchId={isGlobal ? undefined : selectedBranchId}
+            />
+          </TabsContent>
+        )}
         <TabsContent value="list">
-          {formattedStockLots.length > 0 ? (
+          {visibleStockLots.length > 0 ? (
             <div>
               <div className="text-2xl flex items-center gap-2 mb-4">
                 <Package className="w-5 h-5" />
-                Stock Registrado ({formattedStockLots.length} lotes)
+                Stock Registrado ({visibleStockLots.length} lotes)
               </div>
               <div>
-                <StockTable stockList={formattedStockLots as any} onDelete={handleDelete} />
+                <StockTable stockList={visibleStockLots as any} onDelete={handleDelete} />
               </div>
             </div>
           ) : (

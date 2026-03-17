@@ -40,4 +40,58 @@ export interface StockRepository {
    * Gets all serialized items for a tenant
    */
   getItemsByTenant(tenantId: string): Promise<InventoryItem[]>;
+
+  /**
+   * Gets a stock lot by id
+   */
+  getLotById(stockLotId: string): Promise<StockLot | null>;
+
+  /**
+   * Finds an available lot matching the given lot signature
+   */
+  findAvailableLotLike(
+    lot: StockLot,
+  ): Promise<StockLot | null>;
+
+  /**
+   * Updates stock lot quantity
+   */
+  updateStockLotQuantity(
+    stockLotId: string,
+    quantity: number,
+  ): Promise<StockLot>;
+
+  /**
+   * Updates stock lot status
+   */
+  updateStockLotStatus(
+    stockLotId: string,
+    status: StockLot["status"],
+  ): Promise<StockLot>;
+
+  /**
+   * Updates serialized item status
+   */
+  updateInventoryItemStatus(
+    itemId: string,
+    status: InventoryItem["status"],
+  ): Promise<InventoryItem>;
+
+  /**
+   * Adds a stock movement entry
+   */
+  addStockMovement(input: {
+    tenantId: string;
+    stockLotId: string;
+    type:
+      | "stock_inicial"
+      | "recepcion_transito"
+      | "recepcion_disponible"
+      | "ajuste_incremento"
+      | "ajuste_decremento";
+    quantity: number;
+    reason?: string;
+    operationId?: string;
+    changedBy?: string;
+  }): Promise<void>;
 }

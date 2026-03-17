@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { IconSearch } from "@tabler/icons-react";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { PosProductCard } from "./ui/POSProductCard";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 export function PosProductSection() {
-  const products = useInventoryStore((s) => s.products);
+  const { products, inventoryItems, stockLots } = useInventoryStore();
+  const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -20,6 +22,28 @@ export function PosProductSection() {
         p.categoryId.toLowerCase().includes(q),
     );
   }, [products, search]);
+
+  const availableProducts = useMemo(() => {
+    if (!selectedBranchId) return [];
+    return filtered.filter((product) => {
+      if (product.is_serial) {
+        return inventoryItems.some(
+          (item) =>
+            item.productId === product.id &&
+            item.branchId === selectedBranchId &&
+            item.status === "disponible",
+        );
+      }
+
+      return stockLots.some(
+        (lot) =>
+          lot.productId === product.id &&
+          lot.branchId === selectedBranchId &&
+          lot.status === "disponible" &&
+          lot.quantity > 0,
+      );
+    });
+  }, [filtered, inventoryItems, stockLots, selectedBranchId]);
 
   return (
     <div className="flex flex-col h-full">
@@ -39,13 +63,13 @@ export function PosProductSection() {
 
       {/* Grid de Productos */}
       <div className="flex-1 overflow-y-auto p-4">
-        {filtered.length === 0 ? (
+        {availableProducts.length === 0 ? (
           <div className="text-center text-muted-foreground py-10 text-sm">
             No se encontraron productos
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
-            {filtered.map((product) => (
+            {availableProducts.map((product) => (
               <PosProductCard key={product.id} product={product} />
             ))}
           </div>

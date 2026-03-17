@@ -1,7 +1,7 @@
 // components/inventory/StockForm.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +47,7 @@ interface StockFormProps {
   initialBranches: Branch[];
   initialProductId?: string;
   initialVariantId?: string;
+  initialBranchId?: string;
 }
 
 export function StockForm({
@@ -54,6 +55,7 @@ export function StockForm({
   initialBranches,
   initialProductId,
   initialVariantId,
+  initialBranchId,
 }: StockFormProps) {
   const productsWithVariants = useInventoryProductOptions(false);
 
@@ -62,6 +64,7 @@ export function StockForm({
   >({
     productId: initialProductId || "",
     variantId: initialVariantId || "",
+    branchId: initialBranchId || "",
     quantity: 0,
     rentQuantity: 0,
     sellQuantity: 0,
@@ -74,6 +77,12 @@ export function StockForm({
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (initialBranchId && !formData.branchId) {
+      setFormData((prev) => ({ ...prev, branchId: initialBranchId }));
+    }
+  }, [initialBranchId, formData.branchId]);
 
   const selectedProduct = productsWithVariants.find(
     (p) => p.id === formData.productId,

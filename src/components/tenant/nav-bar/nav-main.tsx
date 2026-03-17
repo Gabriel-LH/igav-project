@@ -12,6 +12,7 @@ import React from "react";
 import { SucursalSwitcher } from "./ui/SucursalSwitcher";
 import { cn } from "@/lib/utils";
 import { Branch } from "@/src/types/branch/type.branch";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 export function NavMain({
   items,
@@ -26,15 +27,21 @@ export function NavMain({
   pathname: string;
   branches: Branch[];
 }) {
+  const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+  const setSelectedBranchId = useBranchStore(
+    (state) => state.setSelectedBranchId,
+  );
+  const canUseGlobal = useBranchStore((state) => state.canUseGlobal);
+  const effectiveBranchId = selectedBranchId || branches[0]?.id || "";
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SucursalSwitcher
           branches={branches}
-          value="1"
-          onChange={(id) => {
-            console.log("Sucursal seleccionada:", id);
-          }}
+          value={effectiveBranchId}
+          onChange={setSelectedBranchId}
+          includeGlobal={canUseGlobal}
         />
 
         <SidebarMenu>

@@ -6,6 +6,8 @@ const stockMovementSchema = z.object({
 
   type: z.enum([
     "stock_inicial",        // carga inicial
+    "recepcion_transito",   // recepción parcial
+    "recepcion_disponible", // recepción completa
     "salida_alquiler",             // se alquila
     "retorno_alquiler",          // se devuelve
     "vendido",                 // venta confirmada

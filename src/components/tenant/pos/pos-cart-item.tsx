@@ -15,9 +15,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { StockAssignmentWidget } from "../home/ui/widget/StockAssignmentWidget";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { differenceInDays } from "date-fns";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 interface PosCartItemProps {
   item: CartItem;
@@ -26,16 +25,15 @@ interface PosCartItemProps {
 export function PosCartItem({ item }: PosCartItemProps) {
   const { removeItem, updateQuantity, updateSelectedStock, globalRentalDates } =
     useCartStore();
-  const { inventoryItems, stockLots } = useInventoryStore();
-
-  const currentBranchId = USER_MOCK[0].branchId!;
+  const { inventoryItems, stockLots, productVariants } = useInventoryStore();
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId);
   const isRent = item.operationType === "alquiler";
   const isSerial = item.product.is_serial;
 
   // Variantes
   const variantParams = useMemo(
-    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId),
-    [item.variantId],
+    () => productVariants.find((v) => v.id === item.variantId),
+    [item.variantId, productVariants],
   );
 
   const { getSizeById, getColorById, getCategoryById, getModelById } =
