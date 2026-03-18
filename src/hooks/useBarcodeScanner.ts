@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface UseBarcodeScannerProps {
   onScan: (code: string) => void;
 }
 
 export const useBarcodeScanner = ({ onScan }: UseBarcodeScannerProps) => {
-  const [barcode, setBarcode] = useState("");
+  // Use refs to avoid stale closures — critical for rapid scanning
+  const barcodeRef = useRef("");
+  const onScanRef = useRef(onScan);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Always keep the latest callback
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Si el usuario está escribiendo en un Input (Buscador), no interceptamos
+      // Si el usuario está escribiendo en un Input, no interceptamos
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
         return;
@@ -21,24 +27,29 @@ export const useBarcodeScanner = ({ onScan }: UseBarcodeScannerProps) => {
 
       // Si presiona Enter, asumimos que terminó el escaneo
       if (e.key === "Enter") {
-        if (barcode.length > 2) { // Evitar Enters accidentales
-          onScan(barcode);
-          setBarcode("");
+        if (barcodeRef.current.length > 2) {
+          onScanRef.current(barcodeRef.current);
+          barcodeRef.current = "";
         }
         return;
       }
 
-      // Si presiona teclas normales (números/letras), las acumulamos
+      // Acumular caracteres directamente en el ref (sin re-render)
       if (e.key.length === 1) {
-        setBarcode((prev) => prev + e.key);
+        barcodeRef.current += e.key;
 
-        // Los escáneres son rápidos (ms). Si pasan 100ms sin teclas, reseteamos (no fue un escáner, fue un humano lento)
-        clearTimeout(timeout);
-        timeout = setTimeout(() => setBarcode(""), 100);
+        // Reset tras 100ms sin teclas (no fue un escáner)
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          barcodeRef.current = "";
+        }, 100);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [barcode, onScan]);
-};
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []); // Empty deps — refs handle everything, no stale closures
+};

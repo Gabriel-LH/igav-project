@@ -70,6 +70,7 @@ export const buildVariantsFromProductForm = (
       tenantId,
       productId,
       variantCode,
+      variantSignature: signature,
       barcode,
       attributes,
       purchasePrice: override?.purchasePrice ?? 0,

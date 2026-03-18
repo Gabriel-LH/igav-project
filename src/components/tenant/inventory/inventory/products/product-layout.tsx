@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { ProductForm } from "./product-form";
 import { ProductTable } from "./product-table";
 import { ProductFormData } from "@/src/application/interfaces/ProductForm";
@@ -12,6 +12,7 @@ import { AddToListIcon } from "@hugeicons/core-free-icons";
 import {
   createProductAction,
   getProductsAction,
+  getProductsBootstrapAction,
   deleteProductAction,
   toggleVariantAction,
   updateProductAction,
@@ -19,14 +20,33 @@ import {
 } from "@/src/app/(tenant)/tenant/actions/product.actions";
 import { Product } from "@/src/types/product/type.product";
 import { ProductVariant } from "@/src/types/product/type.productVariant";
+import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
+import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
+import { useModelStore } from "@/src/store/useModelStore";
+import { reconstructSelectedAttributes } from "@/src/utils/variants/reconstructSelectedAttributes";
+import type { ProductsBootstrapData } from "@/src/app/(tenant)/tenant/actions/product.actions";
+
+let cachedBootstrapData: ProductsBootstrapData | null = null;
+let bootstrapPromise: Promise<
+  { success: true; data: ProductsBootstrapData } | { success: false; error: string }
+> | null = null;
 
 export function ProductsLayout() {
   const [activeTab, setActiveTab] = useState("create");
   const [products, setProducts] = useState<Product[]>([]);
   const [variants, setVariants] = useState<ProductVariant[]>([]);
+  const [bootstrapData, setBootstrapData] = useState<ProductsBootstrapData | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ product: Product; variants: ProductVariant[] } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  // Stores needed for reconstructing selectedAttributes and brandId
+  const attributeTypes = useAttributeTypeStore((s) => s.attributeTypes);
+  const attributeValues = useAttributeValueStore((s) => s.attributeValues);
+  const models = useModelStore((s) => s.models);
+  const setAttributeTypes = useAttributeTypeStore((s) => s.setAttributeTypes);
+  const setAttributeValues = useAttributeValueStore((s) => s.setAttributeValues);
+  const setModels = useModelStore((s) => s.setModels);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -40,9 +60,41 @@ export function ProductsLayout() {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchData();
+  const fetchBootstrap = useCallback(async () => {
+    setIsLoading(true);
+    if (cachedBootstrapData) {
+      setProducts(cachedBootstrapData.products);
+      setVariants(cachedBootstrapData.variants);
+      setBootstrapData(cachedBootstrapData);
+      setAttributeTypes(cachedBootstrapData.attributeTypes);
+      setAttributeValues(cachedBootstrapData.attributeValues);
+      setModels(cachedBootstrapData.models);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!bootstrapPromise) {
+      bootstrapPromise = getProductsBootstrapAction();
+    }
+
+    const result = await bootstrapPromise;
+    if (result.success && result.data) {
+      cachedBootstrapData = result.data;
+      setProducts(result.data.products);
+      setVariants(result.data.variants);
+      setBootstrapData(result.data);
+      setAttributeTypes(result.data.attributeTypes);
+      setAttributeValues(result.data.attributeValues);
+      setModels(result.data.models);
+    } else {
+      toast.error(result.error || "Error al cargar productos");
+    }
+    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchBootstrap();
+  }, [fetchBootstrap]);
 
   const handleSubmit = async (formData: ProductFormData): Promise<boolean> => {
     let success = false;
@@ -119,22 +171,65 @@ export function ProductsLayout() {
         </div>
 
         <TabsContent value="create" className="mt-4 w-full max-w-full min-w-0 overflow-hidden">
-          <ProductForm
-            initialValues={editingProduct ? {
-              ...editingProduct.product,
-              modelId: editingProduct.product.modelId ?? undefined,
-              categoryId: editingProduct.product.categoryId ?? undefined,
-              variantOverrides: editingProduct.variants.reduce((acc, v) => ({
-                ...acc,
-                [v.variantSignature]: v as unknown as any
-              }), {})
-            } : undefined}
-            onSubmit={handleSubmit}
-            onCreated={() => {
-              setEditingProduct(null);
-              setActiveTab("table");
-            }}
-          />
+          {!bootstrapData ? (
+            <div className="flex items-center justify-center py-12 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Cargando catálogos...
+            </div>
+          ) : (
+            <ProductForm
+              initialValues={editingProduct ? (() => {
+                // Reconstruct selectedAttributes from existing variants
+                const reconstructedAttrs = reconstructSelectedAttributes(
+                  editingProduct.variants,
+                  bootstrapData.attributeTypes,
+                  bootstrapData.attributeValues,
+                );
+
+                // Resolve brandId from the model
+                const resolvedBrandId = editingProduct.product.modelId
+                  ? bootstrapData.models.find(m => m.id === editingProduct.product.modelId)?.brandId
+                  : undefined;
+
+                return {
+                  ...editingProduct.product,
+                  brandId: resolvedBrandId,
+                  modelId: editingProduct.product.modelId ?? undefined,
+                  categoryId: editingProduct.product.categoryId ?? undefined,
+                  selectedAttributes: reconstructedAttrs,
+                  variantOverrides: editingProduct.variants.reduce((acc, v) => ({
+                    ...acc,
+                    [v.variantSignature]: {
+                      variantSignature: v.variantSignature,
+                      variantCode: v.variantCode,
+                      barcode: v.barcode,
+                      priceRent: v.priceRent,
+                      priceSell: v.priceSell,
+                      purchasePrice: v.purchasePrice,
+                      rentUnit: v.rentUnit,
+                      isActive: v.isActive,
+                      images: v.image,
+                      isEdited: true, // marca como override existente
+                    },
+                  }), {}),
+                };
+              })() : undefined}
+              initialCatalogs={{
+                brands: bootstrapData.brands,
+                models: bootstrapData.models,
+                categories: bootstrapData.categories,
+              }}
+              initialAttributes={{
+                attributeTypes: bootstrapData.attributeTypes,
+                attributeValues: bootstrapData.attributeValues,
+              }}
+              onSubmit={handleSubmit}
+              onCreated={() => {
+                setEditingProduct(null);
+                setActiveTab("table");
+              }}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="table" className="mt-4">

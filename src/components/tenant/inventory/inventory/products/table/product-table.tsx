@@ -35,12 +35,17 @@ import {
   ChevronsRight,
   History,
   Pencil,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { CostAdjustmentModal } from "../ui/CostAdjustmentModal";
 import { VariantEditModal } from "../ui/VariantEditModal";
+
+import { ConfirmModal } from "../ui/ConfirmModal";
 import { PlusCircle } from "lucide-react";
+import { toast } from "sonner";
+import { deleteProductAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
 
 interface ProductTableProps {
   products: Product[];
@@ -66,6 +71,9 @@ export function ProductTable({
   const [selectedVariantForCost, setSelectedVariantForCost] =
     useState<ProductVariant | null>(null);
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
+
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   const variantsByProduct = useMemo(() => {
@@ -105,10 +113,8 @@ export function ProductTable({
     });
   };
 
-  // 2. Función que procesa el cambio
   const handleCostUpdate = (data: any) => {
-    console.log("Enviando a la API y creando registro en PriceHistory:", data);
-    // Aquí llamarías a tu Server Action o API
+    console.log("Enviando a la API:", data);
   };
 
   const pageCount = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
@@ -199,6 +205,15 @@ export function ProductTable({
                         <Button
                           variant="ghost"
                           size="icon"
+                          title="Gestionar Variantes"
+                          className="text-primary hover:text-primary hover:bg-primary/10"
+                          onClick={() => onEditProduct(product.id)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => onEditProduct(product.id)}
                         >
                           <Pencil className="h-4 w-4" />
@@ -207,7 +222,7 @@ export function ProductTable({
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive"
-                          onClick={() => onDeleteProduct(product.id)}
+                          onClick={() => setProductToDelete(product)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -246,7 +261,7 @@ export function ProductTable({
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
-                            onClick={() => setSelectedVariantForCost(variant)} // <--- Disparador
+                            onClick={() => setSelectedVariantForCost(variant)}
                           >
                             <History className="h-3 w-3" />
                           </Button>
@@ -421,6 +436,33 @@ export function ProductTable({
         onClose={() => setEditingVariant(null)}
         onSuccess={() => {
           onRefresh?.();
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        loading={deleting}
+        title="¿Eliminar producto?"
+        description={`Esta acción eliminará el producto "${productToDelete?.name}" y todas sus variantes de forma permanente. ¿Deseas continuar?`}
+        confirmText="Eliminar Producto"
+        onConfirm={async () => {
+          if (!productToDelete) return;
+          setDeleting(true);
+          try {
+            const result = await deleteProductAction(productToDelete.id);
+            if (result.success) {
+              toast.success("Producto eliminado correctamente");
+              onRefresh?.();
+              setProductToDelete(null);
+            } else {
+              toast.error(result.error || "No se pudo eliminar el producto");
+            }
+          } catch (error) {
+            toast.error("Error al procesar la eliminación");
+          } finally {
+            setDeleting(false);
+          }
         }}
       />
     </div>

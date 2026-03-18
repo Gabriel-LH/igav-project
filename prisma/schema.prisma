@@ -1286,7 +1286,8 @@ model ProductVariant {
   id            String    @id @default(uuid())
   tenantId      String
   productId     String
-  variantCode   String    @unique
+  variantCode       String    @unique
+  variantSignature  String    @default("")
   barcode       String?
   attributes    Json      @default("{}")
   purchasePrice Float?    @default(0)

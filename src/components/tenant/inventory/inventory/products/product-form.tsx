@@ -1,7 +1,7 @@
 // components/inventory/ProductForm.tsx
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,6 +78,11 @@ import { CategoryForm } from "../../catalogs/category/category-form";
 import { toast } from "sonner";
 import { MediaPicker } from "./ui/MeidaPicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/tooltip";
+import { Brand } from "@/src/types/brand/type.brand";
+import { Model } from "@/src/types/model/type.model";
+import { Category } from "@/src/types/category/type.category";
+import { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 
 const initialData: ProductFormData = {
   name: "",
@@ -98,6 +103,15 @@ interface ProductFormProps {
   initialValues?: Partial<ProductFormData>;
   onSubmit: (data: ProductFormData) => boolean | void | Promise<boolean | void>;
   onCreated?: () => void;
+  initialCatalogs?: {
+    brands: Brand[];
+    models: Model[];
+    categories: Category[];
+  };
+  initialAttributes?: {
+    attributeTypes: AttributeType[];
+    attributeValues: AttributeValue[];
+  };
 }
 
 const getInitialFormData = (
@@ -113,6 +127,8 @@ export function ProductForm({
   initialValues,
   onSubmit,
   onCreated,
+  initialCatalogs,
+  initialAttributes,
 }: ProductFormProps) {
   const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
   const attributeValues = useAttributeValueStore(
@@ -134,8 +150,28 @@ export function ProductForm({
   const addModel = useModelStore((state) => state.addModel);
   const addCategory = useCategoryStore((state) => state.addCategory);
 
+  const didInitAttributes = useRef(false);
+  const didInitCatalogs = useRef(false);
+
   useEffect(() => {
     let isMounted = true;
+
+    if (initialAttributes && !didInitAttributes.current) {
+      didInitAttributes.current = true;
+      setAttributeTypes(initialAttributes.attributeTypes);
+      setAttributeValues(initialAttributes.attributeValues);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    if (didInitAttributes.current) {
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    didInitAttributes.current = true;
 
     const loadAttributes = async () => {
       const [typesResult, valuesResult] = await Promise.all([
@@ -159,10 +195,28 @@ export function ProductForm({
     return () => {
       isMounted = false;
     };
-  }, [setAttributeTypes, setAttributeValues]);
+  }, [initialAttributes, setAttributeTypes, setAttributeValues]);
 
   useEffect(() => {
     let isMounted = true;
+
+    if (initialCatalogs && !didInitCatalogs.current) {
+      didInitCatalogs.current = true;
+      setBrands(initialCatalogs.brands);
+      setModels(initialCatalogs.models);
+      setCategories(initialCatalogs.categories);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    if (didInitCatalogs.current) {
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    didInitCatalogs.current = true;
 
     const loadCatalogs = async () => {
       const [brandsResult, modelsResult, categoriesResult] = await Promise.all([
@@ -189,7 +243,7 @@ export function ProductForm({
     return () => {
       isMounted = false;
     };
-  }, [setBrands, setCategories, setModels]);
+  }, [initialCatalogs, setBrands, setCategories, setModels]);
 
   const handleCreateBrand = async (
     data: Parameters<typeof createBrandAction>[0],

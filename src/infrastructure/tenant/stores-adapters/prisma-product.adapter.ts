@@ -141,19 +141,30 @@ export class PrismaProductAdapter implements ProductRepository {
     });
   }
 
+  private buildSignatureFromAttributes(attrs: Record<string, string>): string {
+    return Object.entries(attrs)
+      .map(([k, val]) => `${k}:${val}`)
+      .join("|");
+  }
+
   async getVariantsByProductId(productId: string): Promise<ProductVariant[]> {
     const variants = await this.prisma.productVariant.findMany({
       where: { productId },
     });
     return variants.map(
-      (v: any) =>
-        ({
+      (v: any) => {
+        const attrs = (v.attributes as Record<string, string>) || {};
+        return {
           ...v,
           image: (v.image as string[]) || [],
-          attributes: (v.attributes as Record<string, string>) || {},
+          attributes: attrs,
+          variantSignature: v.variantSignature || this.buildSignatureFromAttributes(attrs),
           rentUnit: this.mapFromPrismaRentUnit(v.rentUnit),
           purchasePrice: v.purchasePrice ?? 0,
-        }) as unknown as ProductVariant,
+          priceSell: v.priceSell ?? 0,
+          priceRent: v.priceRent ?? 0,
+        } as unknown as ProductVariant;
+      },
     );
   }
 
@@ -162,14 +173,19 @@ export class PrismaProductAdapter implements ProductRepository {
       where: { tenantId },
     });
     return variants.map(
-      (v: any) =>
-        ({
+      (v: any) => {
+        const attrs = (v.attributes as Record<string, string>) || {};
+        return {
           ...v,
           image: (v.image as string[]) || [],
-          attributes: (v.attributes as Record<string, string>) || {},
+          attributes: attrs,
+          variantSignature: v.variantSignature || this.buildSignatureFromAttributes(attrs),
           rentUnit: this.mapFromPrismaRentUnit(v.rentUnit),
           purchasePrice: v.purchasePrice ?? 0,
-        }) as unknown as ProductVariant,
+          priceSell: v.priceSell ?? 0,
+          priceRent: v.priceRent ?? 0,
+        } as unknown as ProductVariant;
+      },
     );
   }
 
@@ -177,10 +193,16 @@ export class PrismaProductAdapter implements ProductRepository {
     variantId: string,
     updates: Partial<ProductVariant>,
   ): Promise<void> {
+    // Build variantSignature from attributes if attributes are being updated
+    const signature = updates.attributes
+      ? this.buildSignatureFromAttributes(updates.attributes as Record<string, string>)
+      : undefined;
+
     await this.prisma.productVariant.update({
       where: { id: variantId },
       data: {
         variantCode: updates.variantCode,
+        variantSignature: signature,
         barcode: updates.barcode,
         attributes: updates.attributes as any,
         purchasePrice: updates.purchasePrice,

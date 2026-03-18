@@ -7128,6 +7128,7 @@ export const ProductVariantScalarFieldEnum = {
   tenantId: 'tenantId',
   productId: 'productId',
   variantCode: 'variantCode',
+  variantSignature: 'variantSignature',
   barcode: 'barcode',
   attributes: 'attributes',
   purchasePrice: 'purchasePrice',

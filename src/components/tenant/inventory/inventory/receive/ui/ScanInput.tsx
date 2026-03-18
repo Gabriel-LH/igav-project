@@ -16,7 +16,7 @@ import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 
 interface ScanInputProps {
   onScan: (code: string) => void;
-  isScanning: boolean;
+  isScanning: boolean; // visual indicator only, does NOT block input
   lastScannedCode?: string;
   lastScanStatus?: "success" | "error";
   disabled?: boolean;
@@ -36,7 +36,7 @@ export const ScanInput: React.FC<ScanInputProps> = ({
   const [manualCode, setManualCode] = useState("");
   const [cameraOpen, setCameraOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isDisabled = disabled || isScanning;
+  const isDisabled = disabled; // isScanning no longer blocks — optimistic flow
 
   const handleScan = useCallback(
     (code: string) => {
@@ -56,13 +56,12 @@ export const ScanInput: React.FC<ScanInputProps> = ({
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isDisabled) return;
+    if (disabled) return; // only truly disabled blocks, not isScanning
     if (manualCode.trim()) {
       handleScan(manualCode.trim());
       setManualCode("");
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
+      // Re-focus immediately for rapid manual entry
+      inputRef.current?.focus();
     }
   };
 
@@ -88,7 +87,9 @@ export const ScanInput: React.FC<ScanInputProps> = ({
                 Escaneo rápido
               </p>
               <p className="text-xs text-muted-foreground">
-                Usa pistola o ingresa código manualmente
+                {scanMode === "single"
+                  ? "Modo individual: cada escaneo suma +1 unidad"
+                  : "Modo lote: un escaneo asigna la cantidad completa esperada"}
               </p>
             </div>
 
@@ -128,7 +129,7 @@ export const ScanInput: React.FC<ScanInputProps> = ({
                 className="h-8 text-xs px-3"
                 onClick={() => onScanModeChange("batch")}
               >
-                Cantidad (Lote)
+                Lote completo
               </Button>
             </div>
           </div>
@@ -138,7 +139,7 @@ export const ScanInput: React.FC<ScanInputProps> = ({
               <Input
                 ref={inputRef}
                 type="text"
-                placeholder="Ingresa código manualmente..."
+                placeholder="Usa un escáner o ingresa código manualmente aquí..."
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
                 disabled={isDisabled}

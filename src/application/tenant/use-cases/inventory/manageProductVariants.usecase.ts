@@ -53,3 +53,11 @@ export class UpdateVariantUseCase {
     });
   }
 }
+
+export class CreateVariantUseCase {
+  constructor(private productRepo: ProductRepository) { }
+
+  async execute(input: { variants: any[] }): Promise<void> {
+    await this.productRepo.createVariants(input.variants);
+  }
+}

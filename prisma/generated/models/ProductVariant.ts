@@ -43,6 +43,7 @@ export type ProductVariantMinAggregateOutputType = {
   tenantId: string | null
   productId: string | null
   variantCode: string | null
+  variantSignature: string | null
   barcode: string | null
   purchasePrice: number | null
   priceSell: number | null
@@ -58,6 +59,7 @@ export type ProductVariantMaxAggregateOutputType = {
   tenantId: string | null
   productId: string | null
   variantCode: string | null
+  variantSignature: string | null
   barcode: string | null
   purchasePrice: number | null
   priceSell: number | null
@@ -73,6 +75,7 @@ export type ProductVariantCountAggregateOutputType = {
   tenantId: number
   productId: number
   variantCode: number
+  variantSignature: number
   barcode: number
   attributes: number
   purchasePrice: number
@@ -104,6 +107,7 @@ export type ProductVariantMinAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
+  variantSignature?: true
   barcode?: true
   purchasePrice?: true
   priceSell?: true
@@ -119,6 +123,7 @@ export type ProductVariantMaxAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
+  variantSignature?: true
   barcode?: true
   purchasePrice?: true
   priceSell?: true
@@ -134,6 +139,7 @@ export type ProductVariantCountAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
+  variantSignature?: true
   barcode?: true
   attributes?: true
   purchasePrice?: true
@@ -238,6 +244,7 @@ export type ProductVariantGroupByOutputType = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature: string
   barcode: string | null
   attributes: runtime.JsonValue
   purchasePrice: number | null
@@ -278,6 +285,7 @@ export type ProductVariantWhereInput = {
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
   purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
@@ -305,6 +313,7 @@ export type ProductVariantOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -335,6 +344,7 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
   purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
@@ -362,6 +372,7 @@ export type ProductVariantOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -387,6 +398,7 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   productId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
+  variantSignature?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonWithAggregatesFilter<"ProductVariant">
   purchasePrice?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
@@ -402,6 +414,7 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
 export type ProductVariantCreateInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -429,6 +442,7 @@ export type ProductVariantUncheckedCreateInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -452,6 +466,7 @@ export type ProductVariantUncheckedCreateInput = {
 export type ProductVariantUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -479,6 +494,7 @@ export type ProductVariantUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -504,6 +520,7 @@ export type ProductVariantCreateManyInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -519,6 +536,7 @@ export type ProductVariantCreateManyInput = {
 export type ProductVariantUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -536,6 +554,7 @@ export type ProductVariantUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -563,6 +582,7 @@ export type ProductVariantCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
@@ -586,6 +606,7 @@ export type ProductVariantMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
@@ -601,6 +622,7 @@ export type ProductVariantMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
@@ -841,6 +863,7 @@ export type ProductVariantUpdateOneWithoutInventoryMovementsNestedInput = {
 export type ProductVariantCreateWithoutProductInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -866,6 +889,7 @@ export type ProductVariantUncheckedCreateWithoutProductInput = {
   id?: string
   tenantId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -920,6 +944,7 @@ export type ProductVariantScalarWhereInput = {
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
   purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
@@ -935,6 +960,7 @@ export type ProductVariantScalarWhereInput = {
 export type ProductVariantCreateWithoutInventoryItemsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -961,6 +987,7 @@ export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -999,6 +1026,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutInventoryItemsInput = {
 export type ProductVariantUpdateWithoutInventoryItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1025,6 +1053,7 @@ export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1047,6 +1076,7 @@ export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
 export type ProductVariantCreateWithoutPriceHistoriesInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1073,6 +1103,7 @@ export type ProductVariantUncheckedCreateWithoutPriceHistoriesInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1111,6 +1142,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutPriceHistoriesInput = {
 export type ProductVariantUpdateWithoutPriceHistoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1137,6 +1169,7 @@ export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1159,6 +1192,7 @@ export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
 export type ProductVariantCreateWithoutStockLotsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1185,6 +1219,7 @@ export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1223,6 +1258,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutStockLotsInput = {
 export type ProductVariantUpdateWithoutStockLotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1249,6 +1285,7 @@ export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1271,6 +1308,7 @@ export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
 export type ProductVariantCreateWithoutRentalItemsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1297,6 +1335,7 @@ export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1335,6 +1374,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutRentalItemsInput = {
 export type ProductVariantUpdateWithoutRentalItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1361,6 +1401,7 @@ export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1383,6 +1424,7 @@ export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
 export type ProductVariantCreateWithoutReservationItemsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1409,6 +1451,7 @@ export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1447,6 +1490,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutReservationItemsInput = {
 export type ProductVariantUpdateWithoutReservationItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1473,6 +1517,7 @@ export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1495,6 +1540,7 @@ export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
 export type ProductVariantCreateWithoutSaleItemsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1521,6 +1567,7 @@ export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1559,6 +1606,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutSaleItemsInput = {
 export type ProductVariantUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1585,6 +1633,7 @@ export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1607,6 +1656,7 @@ export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
 export type ProductVariantCreateWithoutTenantInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1632,6 +1682,7 @@ export type ProductVariantUncheckedCreateWithoutTenantInput = {
   id?: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1681,6 +1732,7 @@ export type ProductVariantUpdateManyWithWhereWithoutTenantInput = {
 export type ProductVariantCreateWithoutTransferItemsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1707,6 +1759,7 @@ export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1745,6 +1798,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutTransferItemsInput = {
 export type ProductVariantUpdateWithoutTransferItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1771,6 +1825,7 @@ export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1793,6 +1848,7 @@ export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
 export type ProductVariantCreateWithoutInventoryMovementsInput = {
   id?: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1819,6 +1875,7 @@ export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
   tenantId: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1857,6 +1914,7 @@ export type ProductVariantUpdateToOneWithWhereWithoutInventoryMovementsInput = {
 export type ProductVariantUpdateWithoutInventoryMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1883,6 +1941,7 @@ export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1906,6 +1965,7 @@ export type ProductVariantCreateManyProductInput = {
   id?: string
   tenantId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -1921,6 +1981,7 @@ export type ProductVariantCreateManyProductInput = {
 export type ProductVariantUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1946,6 +2007,7 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1970,6 +2032,7 @@ export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1986,6 +2049,7 @@ export type ProductVariantCreateManyTenantInput = {
   id?: string
   productId: string
   variantCode: string
+  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: number | null
@@ -2001,6 +2065,7 @@ export type ProductVariantCreateManyTenantInput = {
 export type ProductVariantUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2026,6 +2091,7 @@ export type ProductVariantUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2050,6 +2116,7 @@ export type ProductVariantUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2161,6 +2228,7 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
+  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
   purchasePrice?: boolean
@@ -2189,6 +2257,7 @@ export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
+  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
   purchasePrice?: boolean
@@ -2208,6 +2277,7 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
+  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
   purchasePrice?: boolean
@@ -2227,6 +2297,7 @@ export type ProductVariantSelectScalar = {
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
+  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
   purchasePrice?: boolean
@@ -2239,7 +2310,7 @@ export type ProductVariantSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "barcode" | "attributes" | "purchasePrice" | "priceSell" | "priceRent" | "rentUnit" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "variantSignature" | "barcode" | "attributes" | "purchasePrice" | "priceSell" | "priceRent" | "rentUnit" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -2281,6 +2352,7 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
     tenantId: string
     productId: string
     variantCode: string
+    variantSignature: string
     barcode: string | null
     attributes: runtime.JsonValue
     purchasePrice: number | null
@@ -2728,6 +2800,7 @@ export interface ProductVariantFieldRefs {
   readonly tenantId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly productId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly variantCode: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly variantSignature: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly barcode: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly attributes: Prisma.FieldRef<"ProductVariant", 'Json'>
   readonly purchasePrice: Prisma.FieldRef<"ProductVariant", 'Float'>

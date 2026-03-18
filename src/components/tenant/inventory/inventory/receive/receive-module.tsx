@@ -1,5 +1,5 @@
 "use client"
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ReceiveStats } from "./ui/ReceiveStats";
 import { PendingItemsList } from "./ui/PendingItemsList";
 import { ActivityLog } from "./ui/ActivityLog";
@@ -9,7 +9,7 @@ import { WrongBranchModal } from "./ui/WronBranchModal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { CheckCircle, Store, XCircle } from "lucide-react";
+import { CheckCircle, Loader2, Store, XCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,10 @@ import {
 } from "@/src/app/(tenant)/tenant/actions/stock.actions";
 import { Product } from "@/src/types/product/type.product";
 import { ProductVariant } from "@/src/types/product/type.productVariant";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { toast } from "sonner";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type ReceiveStockLine = {
   id: string;
@@ -46,21 +50,11 @@ type ReceiveSerializedLine = {
   variantName: string;
   variantCode: string;
   destinationBranch: string;
-  serialItems: Array<{
-    id: string;
-    serialCode: string;
-  }>;
+  serialItems: Array<{ id: string; serialCode: string }>;
   image?: string;
 };
 
 type ReceiveLine = ReceiveStockLine | ReceiveSerializedLine;
-
-const MOCK_BRANCHES = [
-  { id: "branch-1", name: "Sucursal Miraflores" },
-  { id: "branch-2", name: "Sucursal San Isidro" },
-  { id: "branch-3", name: "Sucursal Surco" },
-];
-
 
 interface Activity {
   id: string;
@@ -70,36 +64,53 @@ interface Activity {
   timestamp: Date;
 }
 
+// ─── Module-level cache ───────────────────────────────────────────────────────
+
+let cachedProducts: Product[] | null = null;
+let cachedVariants: ProductVariant[] | null = null;
+let productsPromise: Promise<Awaited<ReturnType<typeof getProductsAction>>> | null = null;
+const lastPendingLoadByBranch = new Map<string, number>();
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const ReceiveModule: React.FC = () => {
-  // Estados principales
+  // ── Pending lines from server (loaded once, refreshed after commit) ──────
   const [receiveLines, setReceiveLines] = useState<ReceiveLine[]>([]);
-  const [receivedSerialIds, setReceivedSerialIds] = useState<Set<string>>(
-    new Set(),
-  );
-  const [receivedStockCounts, setReceivedStockCounts] = useState<
-    Record<string, number>
-  >({});
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCommitting, setIsCommitting] = useState(false);
+
+  // ── LOCAL scan accumulator — 100% in-memory, zero server calls ───────────
+  // stockCounts: { [lotId]: localCount }
+  const [localStockCounts, setLocalStockCounts] = useState<Record<string, number>>({});
+  // serialIds: set of serial IDs scanned locally
+  const [localSerialIds, setLocalSerialIds] = useState<Set<string>>(new Set());
+
+  // ── Committed counts (already saved to server) ───────────────────────────
+  // Kept separate so we can show "committed" vs "staged" state per row
+  const [committedStockCounts, setCommittedStockCounts] = useState<Record<string, number>>({});
+  const [committedSerialIds, setCommittedSerialIds] = useState<Set<string>>(new Set());
+
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [lastScannedCode, setLastScannedCode] = useState<string>();
   const [lastScanStatus, setLastScanStatus] = useState<"success" | "error">();
+
+  // ── Branch / global store ─────────────────────────────────────────────────
   const storeBranches = useBranchStore((state) => state.branches);
   const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
-  const setSelectedBranchId = useBranchStore(
-    (state) => state.setSelectedBranchId,
-  );
+  const setSelectedBranchId = useBranchStore((state) => state.setSelectedBranchId);
   const canUseGlobal = useBranchStore((state) => state.canUseGlobal);
-  const branches = storeBranches.length > 0 ? storeBranches : MOCK_BRANCHES;
+  const products = useInventoryStore((state) => state.products);
+  const productVariants = useInventoryStore((state) => state.productVariants);
+  const setProducts = useInventoryStore((state) => state.setProducts);
+  const setProductVariants = useInventoryStore((state) => state.setProductVariants);
+
+  const branches = storeBranches;
   const branchOptions = useMemo(
-    () =>
-      canUseGlobal
-        ? [{ id: GLOBAL_BRANCH_ID, name: "Global" }, ...branches]
-        : branches,
+    () => canUseGlobal ? [{ id: GLOBAL_BRANCH_ID, name: "Global" }, ...branches] : branches,
     [canUseGlobal, branches],
   );
 
-  // Estados para modales
+  // ── Modals ────────────────────────────────────────────────────────────────
   const [closeModalOpen, setCloseModalOpen] = useState(false);
   const [wrongBranchModalOpen, setWrongBranchModalOpen] = useState(false);
   const [pendingError, setPendingError] = useState<{
@@ -114,64 +125,69 @@ export const ReceiveModule: React.FC = () => {
   const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
 
   const effectiveBranchId = selectedBranchId || branches[0]?.id || "";
-
-
   const isGlobal = canUseGlobal && selectedBranchId === GLOBAL_BRANCH_ID;
 
   const currentBranch = useMemo(() => {
     if (isGlobal) return "Global";
-    return (
-      branchOptions.find((branch) => branch.id === effectiveBranchId)?.name ??
-      "Sucursal"
-    );
+    return branchOptions.find((b) => b.id === effectiveBranchId)?.name ?? "Sucursal";
   }, [branchOptions, effectiveBranchId, isGlobal]);
 
-  // Cálculos
+  // ── Derived counts ────────────────────────────────────────────────────────
+
+  // Combined = committed + local (not yet committed)
+  const combinedStockCounts = useMemo(() => {
+    const result: Record<string, number> = { ...committedStockCounts };
+    for (const [id, count] of Object.entries(localStockCounts)) {
+      result[id] = (result[id] ?? 0) + count;
+    }
+    return result;
+  }, [committedStockCounts, localStockCounts]);
+
+  const combinedSerialIds = useMemo(() => {
+    const result = new Set(committedSerialIds);
+    for (const id of localSerialIds) result.add(id);
+    return result;
+  }, [committedSerialIds, localSerialIds]);
+
   const totalExpected = useMemo(() => {
     return receiveLines.reduce((total, line) => {
-      if (line.type === "stock") {
-        return total + line.quantityExpected;
-      }
+      if (line.type === "stock") return total + line.quantityExpected;
       return total + line.serialItems.length;
     }, 0);
   }, [receiveLines]);
 
   const scannedCount = useMemo(() => {
-    const stockCount = Object.values(receivedStockCounts).reduce(
-      (sum, value) => sum + value,
-      0,
-    );
-    return stockCount + receivedSerialIds.size;
-  }, [receivedSerialIds, receivedStockCounts]);
+    const stockCount = Object.values(combinedStockCounts).reduce((s, v) => s + v, 0);
+    return stockCount + combinedSerialIds.size;
+  }, [combinedStockCounts, combinedSerialIds]);
 
-  const progressTotalExpected = useMemo(() => {
-    // El total de la sesión es lo que falta actualmente + lo que ya escaneamos
-    // Esto evita que el total disminuya a medida que recibimos cosas
-    return totalExpected + scannedCount;
-  }, [totalExpected, scannedCount]);
+  // Staged = locally scanned but NOT yet committed
+  const stagedCount = useMemo(() => {
+    const stockCount = Object.values(localStockCounts).reduce((s, v) => s + v, 0);
+    return stockCount + localSerialIds.size;
+  }, [localStockCounts, localSerialIds]);
+
+  // Session total: never goes below what we've seen (prevents bar shrinking)
+  const sessionTotalRef = useRef(0);
+  const rawTotal = totalExpected + scannedCount;
+  if (rawTotal > sessionTotalRef.current) sessionTotalRef.current = rawTotal;
+  const progressTotalExpected = sessionTotalRef.current;
 
   const pendingCount = Math.max(totalExpected, 0);
   const allSelected = totalExpected === 0 && scannedCount > 0;
 
-  // Función para agregar actividad
-  const addActivity = useCallback((
-    type: Activity["type"],
-    message: string,
-    itemCode?: string,
-  ) => {
-    const newActivity: Activity = {
-      id: Date.now().toString(),
-      type,
-      message,
-      itemCode,
-      timestamp: new Date(),
-    };
-    setActivities((prev) => [newActivity, ...prev].slice(0, 50)); // Mantener últimas 50
+  // ── Activity ──────────────────────────────────────────────────────────────
+  const addActivity = useCallback((type: Activity["type"], message: string, itemCode?: string) => {
+    setActivities((prev) => [
+      { id: Date.now().toString(), type, message, itemCode, timestamp: new Date() },
+      ...prev,
+    ].slice(0, 50));
   }, []);
 
-  const branchNameById = useMemo(() => {
-    return new Map(branches.map((branch) => [branch.id, branch.name]));
-  }, [branches]);
+  const branchNameById = useMemo(
+    () => new Map(branches.map((b) => [b.id, b.name])),
+    [branches],
+  );
 
   const formatVariantName = useCallback((variant?: ProductVariant) => {
     if (!variant) return "Variante";
@@ -180,589 +196,453 @@ export const ReceiveModule: React.FC = () => {
     return variant.variantCode;
   }, []);
 
-  const loadPending = useCallback(async () => {
-    if (!effectiveBranchId || isGlobal) {
-      setReceiveLines([]);
-      return;
+  // ── Data loading ──────────────────────────────────────────────────────────
+  const loadProducts = useCallback(async (): Promise<{ products: Product[]; variants: ProductVariant[] }> => {
+    if (cachedProducts && cachedVariants) return { products: cachedProducts, variants: cachedVariants };
+    if (products.length > 0 && productVariants.length > 0) {
+      cachedProducts = products; cachedVariants = productVariants;
+      return { products, variants: productVariants };
     }
+    if (!productsPromise) productsPromise = getProductsAction();
+    const result = await productsPromise;
+    if (result?.success && result.data) {
+      cachedProducts = result.data.products;
+      cachedVariants = result.data.variants;
+      setProducts(result.data.products);
+      setProductVariants(result.data.variants);
+      return { products: result.data.products, variants: result.data.variants };
+    }
+    return { products: [], variants: [] };
+  }, [productVariants, products, setProductVariants, setProducts]);
 
+  const loadPending = useCallback(async () => {
+    if (!effectiveBranchId || isGlobal) { setReceiveLines([]); return; }
     setIsLoading(true);
     const [pendingResult, productsResult] = await Promise.all([
       listReceivePendingAction({ branchId: effectiveBranchId }),
-      getProductsAction(),
+      loadProducts(),
     ]);
 
     if (!pendingResult.success || !pendingResult.data) {
-      addActivity(
-        "error",
-        pendingResult.error || "No se pudo cargar pendientes de recepción",
-      );
+      addActivity("error", pendingResult.error || "No se pudo cargar pendientes");
       setReceiveLines([]);
       setIsLoading(false);
       return;
     }
 
-    const products: Product[] = productsResult.success
-      ? productsResult.data?.products ?? []
-      : [];
-    const variants: ProductVariant[] = productsResult.success
-      ? productsResult.data?.variants ?? []
-      : [];
+    const prods: Product[] = productsResult.products ?? [];
+    const vars: ProductVariant[] = productsResult.variants ?? [];
+    const productMap = new Map(prods.map((p) => [p.id, p]));
+    const variantMap = new Map(vars.map((v) => [v.id, v]));
 
-    const productMap = new Map(products.map((p) => [p.id, p]));
-    const variantMap = new Map(variants.map((v) => [v.id, v]));
-
-    const stockLines: ReceiveLine[] = pendingResult.data.stockLots.map(
-      (lot) => {
-        const product = productMap.get(lot.productId);
-        const variant = variantMap.get(lot.variantId);
-        const branchName =
-          branchNameById.get(lot.branchId) || lot.branchId;
-        const scanCodes = [
-          lot.barcode,
-          variant?.barcode,
-          lot.id,
-          variant?.variantCode,
-        ].filter(Boolean) as string[];
-
-        return {
-          id: lot.id,
-          type: "stock",
-          productName: product?.name || lot.productId,
-          variantName: formatVariantName(variant),
-          variantCode: variant?.variantCode || lot.variantId,
-          destinationBranch: branchName,
-          quantityExpected: lot.quantity,
-          scanCodes,
-        };
-      },
-    );
+    const stockLines: ReceiveLine[] = pendingResult.data.stockLots.map((lot) => {
+      const product = productMap.get(lot.productId);
+      const variant = variantMap.get(lot.variantId);
+      return {
+        id: lot.id,
+        type: "stock" as const,
+        productName: product?.name || lot.productId,
+        variantName: formatVariantName(variant),
+        variantCode: variant?.variantCode || lot.variantId,
+        destinationBranch: branchNameById.get(lot.branchId) || lot.branchId,
+        quantityExpected: lot.quantity,
+        scanCodes: [lot.barcode, variant?.barcode, lot.id, variant?.variantCode].filter(Boolean) as string[],
+      };
+    });
 
     const serializedMap = new Map<string, ReceiveSerializedLine>();
     pendingResult.data.serializedItems.forEach((item) => {
       const product = productMap.get(item.productId);
       const variant = variantMap.get(item.variantId);
-      const branchName =
-        branchNameById.get(item.branchId) || item.branchId;
       const key = `${item.variantId}:${item.branchId}`;
-
       if (!serializedMap.has(key)) {
         serializedMap.set(key, {
-          id: `serial-${key}`,
-          type: "serialized",
+          id: `serial-${key}`, type: "serialized",
           productName: product?.name || item.productId,
           variantName: formatVariantName(variant),
           variantCode: variant?.variantCode || item.variantId,
-          destinationBranch: branchName,
+          destinationBranch: branchNameById.get(item.branchId) || item.branchId,
           serialItems: [],
         });
       }
-
-      serializedMap.get(key)!.serialItems.push({
-        id: item.id,
-        serialCode: item.serialCode,
-      });
+      serializedMap.get(key)!.serialItems.push({ id: item.id, serialCode: item.serialCode });
     });
 
     setReceiveLines([...stockLines, ...Array.from(serializedMap.values())]);
     setIsLoading(false);
-  }, [
-    addActivity,
-    branchNameById,
-    effectiveBranchId,
-    formatVariantName,
-    isGlobal,
-  ]);
+  }, [addActivity, branchNameById, effectiveBranchId, formatVariantName, isGlobal, loadProducts]);
 
-  // 1. Efecto de guardado automático en sessionStorage
+  // ── Session storage ───────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === "undefined" || !effectiveBranchId) return;
-    
-    const sessionKey = `receive_session_${effectiveBranchId}`;
-    const sessionData = {
-      serialIds: Array.from(receivedSerialIds),
-      stockCounts: receivedStockCounts,
-    };
-    sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
-  }, [receivedSerialIds, receivedStockCounts, effectiveBranchId]);
+    const key = `receive_local_${effectiveBranchId}`;
+    sessionStorage.setItem(key, JSON.stringify({
+      localStockCounts,
+      localSerialIds: Array.from(localSerialIds),
+      committedStockCounts,
+      committedSerialIds: Array.from(committedSerialIds),
+    }));
+  }, [localStockCounts, localSerialIds, committedStockCounts, committedSerialIds, effectiveBranchId]);
 
-  // 2. Cargar estado inicial desde sessionStorage (solo en el cliente)
   useEffect(() => {
     if (typeof window === "undefined" || !effectiveBranchId) return;
-    
-    const sessionKey = `receive_session_${effectiveBranchId}`;
-    const saved = sessionStorage.getItem(sessionKey);
-    
+    const key = `receive_local_${effectiveBranchId}`;
+    const saved = sessionStorage.getItem(key);
     if (saved) {
       try {
-        const { serialIds, stockCounts } = JSON.parse(saved);
-        setReceivedSerialIds(new Set(serialIds));
-        setReceivedStockCounts(stockCounts);
-      } catch (e) {
-        console.error("Error parsing receive session", e);
-      }
+        const { localStockCounts: lsc, localSerialIds: lsi, committedStockCounts: csc, committedSerialIds: csi } = JSON.parse(saved);
+        setLocalStockCounts(lsc ?? {});
+        setLocalSerialIds(new Set(lsi ?? []));
+        setCommittedStockCounts(csc ?? {});
+        setCommittedSerialIds(new Set(csi ?? []));
+      } catch { /* ignore */ }
     } else {
-      setReceivedSerialIds(new Set());
-      setReceivedStockCounts({});
+      setLocalStockCounts({});
+      setLocalSerialIds(new Set());
+      setCommittedStockCounts({});
+      setCommittedSerialIds(new Set());
     }
-    
-    loadPending();
+    const lastLoadAt = lastPendingLoadByBranch.get(effectiveBranchId) ?? 0;
+    if (Date.now() - lastLoadAt > 2000) {
+      lastPendingLoadByBranch.set(effectiveBranchId, Date.now());
+      sessionTotalRef.current = 0;
+      loadPending();
+    }
   }, [effectiveBranchId, loadPending]);
 
-  // Manejar escaneo
-  const handleScan = async (code: string) => {
-    if (isScanning || isGlobal || !effectiveBranchId) return;
-    setIsScanning(true);
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LOCAL SCAN — zero server calls, instant UI update
+  // ═══════════════════════════════════════════════════════════════════════════
+  const handleScan = useCallback((code: string) => {
+    if (isGlobal || !effectiveBranchId) return;
+    const normalized = code.trim();
+    if (!normalized) return;
 
-    try {
-      const normalized = code.trim();
+    // --- SERIALIZED ---
+    const serialMatch = receiveLines
+      .filter((line): line is ReceiveSerializedLine => line.type === "serialized")
+      .flatMap((line) => line.serialItems.map((serial) => ({ line, serial })))
+      .find((e) => e.serial.serialCode === normalized);
 
-      const serialMatch = receiveLines
-        .filter((line): line is ReceiveSerializedLine => line.type === "serialized")
-        .flatMap((line) =>
-          line.serialItems.map((serial) => ({
-            line,
-            serial,
-          })),
-        )
-        .find((entry) => entry.serial.serialCode === normalized);
-
-      if (serialMatch) {
-        if (receivedSerialIds.has(serialMatch.serial.id)) {
-          setLastScanStatus("error");
-          addActivity(
-            "warning",
-            `Item ya escaneado: ${serialMatch.line.productName}`,
-            normalized,
-          );
-          return;
-        }
-
-        if (serialMatch.line.destinationBranch !== currentBranch) {
-          setPendingError({
-            kind: "serial",
-            itemCode: normalized,
-            expectedBranch: serialMatch.line.destinationBranch,
-            currentBranch,
-            serialId: serialMatch.serial.id,
-          });
-          setWrongBranchModalOpen(true);
-          setLastScannedCode(normalized);
-          setLastScanStatus("error");
-          return;
-        }
-
-        const updateResult = await markReceiveAvailableAction({
-          type: "serialized",
-          itemId: serialMatch.serial.id,
-        });
-
-        if (!updateResult.success) {
-          setLastScanStatus("error");
-          addActivity(
-            "error",
-            updateResult.error || "No se pudo actualizar el serializado",
-            normalized,
-          );
-          return;
-        }
-
-        setReceivedSerialIds((prev) => new Set(prev).add(serialMatch.serial.id));
-        setLastScannedCode(normalized);
-        setLastScanStatus("success");
-        addActivity(
-          "success",
-          `Item serializado disponible: ${serialMatch.line.productName}`,
-          normalized,
-        );
-        // loadPending() se encargará de refrescar la data del servidor en segundo plano
-        // pero nuestro setReceivedSerialIds mantiene la UI correcta.
-        loadPending();
-        return;
-      }
-
-      const stockMatch = receiveLines.find(
-        (line): line is ReceiveStockLine =>
-          line.type === "stock" &&
-          line.scanCodes.some((scanCode) => scanCode === normalized),
-      );
-
-      if (!stockMatch) {
+    if (serialMatch) {
+      const alreadyDone = combinedSerialIds.has(serialMatch.serial.id);
+      if (alreadyDone) {
         setLastScanStatus("error");
-        addActivity("error", `Código no encontrado: ${normalized}`, normalized);
+        addActivity("warning", `Item ya escaneado: ${serialMatch.line.productName}`, normalized);
         return;
       }
-
-      const currentCount = receivedStockCounts[stockMatch.id] ?? 0;
-      if (currentCount >= stockMatch.quantityExpected) {
-        setLastScanStatus("error");
-        addActivity(
-          "warning",
-          `Cantidad completa para ${stockMatch.productName}`,
-          normalized,
-        );
-        return;
-      }
-
-      if (stockMatch.destinationBranch !== currentBranch) {
-        setPendingError({
-          kind: "stock",
-          itemCode: normalized,
-          expectedBranch: stockMatch.destinationBranch,
-          currentBranch,
-          stockId: stockMatch.id,
-        });
+      if (serialMatch.line.destinationBranch !== currentBranch) {
+        setPendingError({ kind: "serial", itemCode: normalized, expectedBranch: serialMatch.line.destinationBranch, currentBranch, serialId: serialMatch.serial.id });
         setWrongBranchModalOpen(true);
-        setLastScannedCode(normalized);
-        setLastScanStatus("error");
+        setLastScannedCode(normalized); setLastScanStatus("error");
         return;
       }
-
+      // ✅ 100% LOCAL — no server call
       if (scanMode === "batch") {
-        setActiveBatchId(stockMatch.id);
-        setLastScannedCode(normalized);
-        setLastScanStatus("success");
-        addActivity("info", `Ingrese cantidad para: ${stockMatch.productName}`, normalized);
+        // Batch mode for serialized: stage ALL pending serials from this group at once
+        const parentLine = serialMatch.line;
+        const toStage = parentLine.serialItems.filter((s) => !combinedSerialIds.has(s.id));
+        if (toStage.length === 0) {
+          setLastScanStatus("error");
+          addActivity("warning", `Todos los ítems ya escaneados: ${parentLine.productName}`, normalized);
+          return;
+        }
+        setLocalSerialIds((prev) => new Set([...prev, ...toStage.map((s) => s.id)]));
+        setLastScannedCode(normalized); setLastScanStatus("success");
+        setActiveBatchId(parentLine.id);
+        addActivity("success", `✔ Lote serializado completo: ${parentLine.productName} — ${toStage.length} ítem(s)`, normalized);
         return;
       }
+      setLocalSerialIds((prev) => new Set(prev).add(serialMatch.serial.id));
+      setLastScannedCode(normalized); setLastScanStatus("success");
+      addActivity("success", `✔ ${serialMatch.line.productName} · ${serialMatch.serial.serialCode}`, normalized);
+      return;
+    }
 
-      const updateResult = await receiveStockQuantityAction({
-        stockId: stockMatch.id,
-        quantity: 1,
-      });
+    // --- STOCK ---
+    const stockMatch = receiveLines.find(
+      (line): line is ReceiveStockLine =>
+        line.type === "stock" && line.scanCodes.some((c) => c === normalized),
+    );
 
-      if (!updateResult.success) {
+    if (!stockMatch) {
+      setLastScanStatus("error");
+      addActivity("error", `Código no encontrado: ${normalized}`, normalized);
+      return;
+    }
+
+    const currentCount = combinedStockCounts[stockMatch.id] ?? 0;
+    if (currentCount >= stockMatch.quantityExpected) {
+      setLastScanStatus("error");
+      addActivity("warning", `Cantidad completa: ${stockMatch.productName}`, normalized);
+      return;
+    }
+
+    if (stockMatch.destinationBranch !== currentBranch) {
+      setPendingError({ kind: "stock", itemCode: normalized, expectedBranch: stockMatch.destinationBranch, currentBranch, stockId: stockMatch.id });
+      setWrongBranchModalOpen(true);
+      setLastScannedCode(normalized); setLastScanStatus("error");
+      return;
+    }
+
+    if (scanMode === "batch") {
+      // Batch mode: auto-stage ALL remaining expected units for this lot at once
+      const remaining = stockMatch.quantityExpected - currentCount;
+      if (remaining <= 0) {
         setLastScanStatus("error");
-        addActivity(
-          "error",
-          updateResult.error || "No se pudo actualizar el stock",
-          normalized,
-        );
+        addActivity("warning", `Cantidad completa: ${stockMatch.productName}`, normalized);
         return;
       }
-
-      const nextCount = currentCount + 1;
-      setReceivedStockCounts((prev) => ({
-        ...prev,
-        [stockMatch.id]: nextCount,
-      }));
-      setLastScannedCode(normalized);
-      setLastScanStatus("success");
+      setLocalStockCounts((prev) => ({ ...prev, [stockMatch.id]: (prev[stockMatch.id] ?? 0) + remaining }));
+      setLastScannedCode(normalized); setLastScanStatus("success");
+      setActiveBatchId(stockMatch.id); // highlight row
       addActivity(
         "success",
-        `Stock recibido: ${stockMatch.productName}`,
+        `✔ Lote completo: ${stockMatch.productName} — ${remaining} unidad(es) staged (${currentCount + remaining}/${stockMatch.quantityExpected})`,
         normalized,
       );
-      loadPending();
-    } finally {
-      setIsScanning(false);
-    }
-  };
-
-  const handleToggleSerial = (serialId: string) => {
-    const serialEntry = receiveLines
-      .filter((line): line is ReceiveSerializedLine => line.type === "serialized")
-      .flatMap((line) =>
-        line.serialItems.map((serial) => ({
-          line,
-          serial,
-        })),
-      )
-      .find((entry) => entry.serial.id === serialId);
-
-    if (!serialEntry) return;
-
-    if (receivedSerialIds.has(serialId)) {
-      addActivity(
-        "info",
-        `Item ya está disponible: ${serialEntry.line.productName}`,
-        serialEntry.serial.serialCode,
-      );
       return;
     }
 
-    markReceiveAvailableAction({
-      type: "serialized",
-      itemId: serialId,
-    }).then((result) => {
-      if (!result.success) {
-        addActivity(
-          "error",
-          result.error || "No se pudo actualizar el serializado",
-          serialEntry.serial.serialCode,
-        );
-        return;
-      }
+    // ✅ 100% LOCAL — no server call (single mode: +1 per scan)
+    setLocalStockCounts((prev) => ({ ...prev, [stockMatch.id]: (prev[stockMatch.id] ?? 0) + 1 }));
+    setLastScannedCode(normalized); setLastScanStatus("success");
 
-      setReceivedSerialIds((prev) => new Set(prev).add(serialId));
-      addActivity(
-        "success",
-        `Item marcado manualmente: ${serialEntry.line.productName}`,
-        serialEntry.serial.serialCode,
-      );
-      loadPending();
-    });
-  };
-
-  const handleReceiveStockQuantity = (
-    stockId: string,
-    quantity: number,
-  ) => {
-    const line = receiveLines.find(
-      (item): item is ReceiveStockLine =>
-        item.type === "stock" && item.id === stockId,
+    const newTotal = currentCount + 1;
+    const isComplete = newTotal >= stockMatch.quantityExpected;
+    addActivity(
+      "success",
+      `${isComplete ? "✅ Completo" : "✔"} ${stockMatch.productName}  ${newTotal}/${stockMatch.quantityExpected}`,
+      normalized,
     );
+  }, [
+    isGlobal, effectiveBranchId, receiveLines, combinedSerialIds,
+    combinedStockCounts, currentBranch, scanMode, addActivity,
+  ]);
+
+  // Accumulate: adds to existing local count (used by Marcar todo button and scan)
+  const handleAddLocalStock = useCallback((stockId: string, quantity: number) => {
+    const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
+    if (!line) return;
+    const current = combinedStockCounts[stockId] ?? 0;
+    const maxAdd = line.quantityExpected - current;
+    const toAdd = Math.min(Math.max(quantity, 0), maxAdd);
+    if (toAdd <= 0) return;
+    setLocalStockCounts((prev) => ({ ...prev, [stockId]: (prev[stockId] ?? 0) + toAdd }));
+    addActivity("success", `✔ ${line.productName}  ${current + toAdd}/${line.quantityExpected}`, line.variantCode);
+  }, [receiveLines, combinedStockCounts, addActivity]);
+
+  // Replace: sets the local count to an explicit value (used by inline qty input)
+  const handleSetLocalStock = useCallback((stockId: string, quantity: number) => {
+    const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
+    if (!line) return;
+    const committedCount = (combinedStockCounts[stockId] ?? 0) - (localStockCounts[stockId] ?? 0);
+    const maxAllowed = line.quantityExpected - Math.max(committedCount, 0);
+    const clamped = Math.max(0, Math.min(quantity, maxAllowed));
+    setLocalStockCounts((prev) => ({ ...prev, [stockId]: clamped }));
+  }, [receiveLines, combinedStockCounts, localStockCounts]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BATCH COMMIT — sends everything staged to the server in one shot
+  // ═══════════════════════════════════════════════════════════════════════════
+  const commitAll = useCallback(async () => {
+    const hasStock = Object.keys(localStockCounts).some((id) => (localStockCounts[id] ?? 0) > 0);
+    const hasSerial = localSerialIds.size > 0;
+    if (!hasStock && !hasSerial) {
+      toast.info("No hay nada por confirmar");
+      return;
+    }
+
+    setIsCommitting(true);
+    try {
+      const results = await Promise.allSettled([
+        ...Object.entries(localStockCounts)
+          .filter(([, qty]) => qty > 0)
+          .map(([stockId, quantity]) =>
+            receiveStockQuantityAction({ stockId, quantity }).then((r) => ({ stockId, quantity, ok: r.success, error: r.error })),
+          ),
+        ...Array.from(localSerialIds).map((itemId) =>
+          markReceiveAvailableAction({ type: "serialized", itemId }).then((r) => ({ itemId, ok: r.success, error: r.error })),
+        ),
+      ]);
+
+      let successCount = 0; let errorCount = 0;
+      const newCommittedStock = { ...committedStockCounts };
+      const newCommittedSerials = new Set(committedSerialIds);
+
+      results.forEach((result) => {
+        if (result.status === "fulfilled") {
+          const val = result.value as any;
+          if (val.ok) {
+            successCount++;
+            if ("stockId" in val) {
+              newCommittedStock[val.stockId] = (newCommittedStock[val.stockId] ?? 0) + val.quantity;
+            } else {
+              newCommittedSerials.add(val.itemId);
+            }
+          } else {
+            errorCount++;
+            addActivity("error", val.error || "Error al confirmar ítem");
+          }
+        } else {
+          errorCount++;
+        }
+      });
+
+      // Move confirmed items from local to committed
+      setCommittedStockCounts(newCommittedStock);
+      setCommittedSerialIds(newCommittedSerials);
+      setLocalStockCounts({});
+      setLocalSerialIds(new Set());
+
+      if (successCount > 0) addActivity("success", `✅ ${successCount} ítem(s) confirmados al servidor`);
+      if (errorCount > 0) toast.error(`${errorCount} ítem(s) fallaron al confirmar`);
+      else toast.success(`${successCount} ítem(s) recibidos correctamente`);
+
+      // Refresh pending list once after commit (only once)
+      sessionTotalRef.current = 0;
+      await loadPending();
+    } finally {
+      setIsCommitting(false);
+    }
+  }, [localStockCounts, localSerialIds, committedStockCounts, committedSerialIds, addActivity, loadPending]);
+
+  // Commit a single line (per-row confirm button)
+  const commitLine = useCallback(async (lineId: string) => {
+    const line = receiveLines.find((l) => l.id === lineId);
     if (!line) return;
 
-    const current = receivedStockCounts[stockId] ?? 0;
-    const next = Math.min(
-      Math.max(current + quantity, 0),
-      line.quantityExpected,
-    );
-    if (next === current || quantity <= 0) {
-      return;
-    }
-
-    const registerActivity = () => {
-      addActivity(
-        "success",
-        `Stock recibido: ${line.productName}`,
-        line.variantCode,
-      );
-    };
-
-    receiveStockQuantityAction({
-      stockId: line.id,
-      quantity: next - current,
-    }).then((result) => {
-      if (!result.success) {
-        addActivity(
-          "error",
-          result.error || "No se pudo actualizar el stock",
-          line.variantCode,
+    setIsCommitting(true);
+    try {
+      if (line.type === "stock") {
+        const qty = localStockCounts[lineId] ?? 0;
+        if (qty <= 0) { toast.info("Sin cambios por confirmar en esta línea"); return; }
+        const result = await receiveStockQuantityAction({ stockId: lineId, quantity: qty });
+        if (!result.success) { addActivity("error", result.error || "Error al confirmar", lineId); return; }
+        setCommittedStockCounts((prev) => ({ ...prev, [lineId]: (prev[lineId] ?? 0) + qty }));
+        setLocalStockCounts((prev) => { const n = { ...prev }; delete n[lineId]; return n; });
+        addActivity("success", `✅ ${line.productName} — ${qty} unidad(es) confirmadas`, lineId);
+      } else {
+        const pendingSerials = line.serialItems.filter((s) => localSerialIds.has(s.id));
+        if (pendingSerials.length === 0) { toast.info("Sin serializados por confirmar en esta línea"); return; }
+        const results = await Promise.allSettled(
+          pendingSerials.map((s) => markReceiveAvailableAction({ type: "serialized", itemId: s.id })),
         );
-        return;
+        const confirmed = new Set(committedSerialIds);
+        const remaining = new Set(localSerialIds);
+        results.forEach((r, i) => {
+          if (r.status === "fulfilled" && r.value.success) {
+            confirmed.add(pendingSerials[i].id);
+            remaining.delete(pendingSerials[i].id);
+          }
+        });
+        setCommittedSerialIds(confirmed);
+        setLocalSerialIds(remaining);
+        addActivity("success", `✅ ${line.productName} — ${pendingSerials.length} ítems confirmados`, lineId);
       }
-      setReceivedStockCounts((prev) => ({
-        ...prev,
-        [stockId]: next,
-      }));
-      registerActivity();
-      loadPending();
-    });
-  };
+      sessionTotalRef.current = 0;
+      await loadPending();
+    } finally {
+      setIsCommitting(false);
+    }
+  }, [receiveLines, localStockCounts, localSerialIds, committedSerialIds, addActivity, loadPending]);
 
-  // Manejar seleccionar todos
-  const handleSelectAll = () => {
+  // ───────────────────────────────────────────────────────────────────────────
+  const handleToggleSerial = useCallback((serialId: string) => {
+    const alreadyDone = combinedSerialIds.has(serialId);
+    if (alreadyDone) { addActivity("info", "Item ya marcado"); return; }
+    setLocalSerialIds((prev) => new Set(prev).add(serialId));
+  }, [combinedSerialIds, addActivity]);
+
+  const handleSelectAll = useCallback(() => {
     if (allSelected) {
-      setReceivedSerialIds(new Set());
-      setReceivedStockCounts({});
+      setLocalStockCounts({});
+      setLocalSerialIds(new Set());
+      setCommittedStockCounts({});
+      setCommittedSerialIds(new Set());
       addActivity("info", "Todos los items desmarcados");
       return;
     }
 
-    const serialIds = receiveLines
-      .filter((line): line is ReceiveSerializedLine => line.type === "serialized")
-      .flatMap((line) => line.serialItems.map((item) => item.id));
-    const stockLines = receiveLines.filter(
-      (line): line is ReceiveStockLine => line.type === "stock",
-    );
+    const newStockCounts: Record<string, number> = {};
+    const newSerialIds = new Set<string>();
 
-    Promise.all([
-      ...serialIds.map((id) =>
-        markReceiveAvailableAction({ type: "serialized", itemId: id }),
-      ),
-      ...stockLines.map((line) =>
-        receiveStockQuantityAction({
-          stockId: line.id,
-          quantity: line.quantityExpected,
-        }),
-      ),
-    ]).then((results) => {
-      const hasErrors = results.some((res) => !res.success);
-      if (hasErrors) {
-        addActivity(
-          "error",
-          "Algunos items no pudieron marcarse como disponibles",
-        );
-        return;
+    receiveLines.forEach((line) => {
+      if (line.type === "stock") {
+        const alreadyCommitted = committedStockCounts[line.id] ?? 0;
+        const remaining = line.quantityExpected - alreadyCommitted;
+        if (remaining > 0) newStockCounts[line.id] = (localStockCounts[line.id] ?? 0) + remaining;
+      } else {
+        line.serialItems.forEach((s) => {
+          if (!committedSerialIds.has(s.id)) newSerialIds.add(s.id);
+        });
       }
-
-      const allSerials = new Set(serialIds);
-      const allStockCounts = stockLines.reduce<Record<string, number>>(
-        (acc, line) => {
-          acc[line.id] = line.quantityExpected;
-          return acc;
-        },
-        {},
-      );
-
-      setReceivedSerialIds(allSerials);
-      setReceivedStockCounts(allStockCounts);
-      addActivity("success", "Todos los items marcados como recibidos");
-      loadPending();
     });
-  };
 
-  // Manejar cierre de recepción
+    setLocalStockCounts((prev) => ({ ...prev, ...newStockCounts }));
+    setLocalSerialIds((prev) => new Set([...prev, ...newSerialIds]));
+    addActivity("info", "Todos los items marcados (sin confirmar aún)");
+  }, [allSelected, receiveLines, committedStockCounts, committedSerialIds, localStockCounts, addActivity]);
+
   const handleCloseAssignment = (action: "mark-lost" | "keep-transit") => {
-    if (action === "mark-lost") {
-      // Marcar pendientes como perdidos
-      receiveLines.forEach((line) => {
-        if (line.type === "stock") {
-          const received = receivedStockCounts[line.id] ?? 0;
-          if (received < line.quantityExpected) {
-            addActivity(
-              "warning",
-              `Stock marcado como perdido: ${line.productName}`,
-              line.variantCode,
-            );
-          }
-          return;
+    receiveLines.forEach((line) => {
+      if (line.type === "stock") {
+        const received = combinedStockCounts[line.id] ?? 0;
+        if (received < line.quantityExpected) {
+          addActivity(action === "mark-lost" ? "warning" : "info",
+            `${action === "mark-lost" ? "Perdido" : "En tránsito"}: ${line.productName}`, line.variantCode);
         }
-
+      } else {
         line.serialItems.forEach((item) => {
-          if (!receivedSerialIds.has(item.id)) {
-            addActivity(
-              "warning",
-              `Item marcado como perdido: ${line.productName}`,
-              item.serialCode,
-            );
+          if (!combinedSerialIds.has(item.id)) {
+            addActivity(action === "mark-lost" ? "warning" : "info",
+              `${action === "mark-lost" ? "Perdido" : "En tránsito"}: ${line.productName}`, item.serialCode);
           }
         });
-      });
-    } else {
-      // Mantener en tránsito
-      receiveLines.forEach((line) => {
-        if (line.type === "stock") {
-          const received = receivedStockCounts[line.id] ?? 0;
-          if (received < line.quantityExpected) {
-            addActivity(
-              "info",
-              `Stock mantenido en tránsito: ${line.productName}`,
-              line.variantCode,
-            );
-          }
-          return;
-        }
-
-        line.serialItems.forEach((item) => {
-          if (!receivedSerialIds.has(item.id)) {
-            addActivity(
-              "info",
-              `Item mantenido en tránsito: ${line.productName}`,
-              item.serialCode,
-            );
-          }
-        });
-      });
-    }
-
-    // Aquí iría la llamada a la API
-    console.log("Cerrando recepción con acción:", action);
+      }
+    });
+    console.log("Cerrando recepción:", action);
   };
 
-  // Manejar decisión de sucursal equivocada
-  const handleWrongBranchDecision = async (
-    action: "reassign" | "report",
-  ) => {
+  const handleWrongBranchDecision = async (action: "reassign" | "report") => {
     if (!pendingError) return;
-
     if (action === "reassign") {
       if (pendingError.kind === "serial" && pendingError.serialId) {
-        const updateResult = await markReceiveAvailableAction({
-          type: "serialized",
-          itemId: pendingError.serialId,
-        });
-
-        if (!updateResult.success) {
-          addActivity(
-            "error",
-            updateResult.error || "No se pudo actualizar el serializado",
-            pendingError.itemCode,
-          );
-          setPendingError(null);
-          return;
-        }
-
-        setReceivedSerialIds((prev) =>
-          new Set(prev).add(pendingError.serialId!),
-        );
+        setLocalSerialIds((prev) => new Set(prev).add(pendingError.serialId!));
       }
-
       if (pendingError.kind === "stock" && pendingError.stockId) {
-        const line = receiveLines.find(
-          (item): item is ReceiveStockLine =>
-            item.type === "stock" && item.id === pendingError.stockId,
-        );
+        const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === pendingError.stockId);
         if (line) {
-          const current = receivedStockCounts[line.id] ?? 0;
-          const next = Math.min(current + 1, line.quantityExpected);
-          const updateResult = await receiveStockQuantityAction({
-            stockId: line.id,
-            quantity: 1,
-          });
-
-          if (!updateResult.success) {
-            addActivity(
-              "error",
-              updateResult.error || "No se pudo actualizar el stock",
-              pendingError.itemCode,
-            );
-            setPendingError(null);
-            return;
+          const current = combinedStockCounts[line.id] ?? 0;
+          if (current < line.quantityExpected) {
+            setLocalStockCounts((prev) => ({ ...prev, [line.id]: (prev[line.id] ?? 0) + 1 }));
           }
-
-          setReceivedStockCounts((prev) => ({
-            ...prev,
-            [line.id]: next,
-          }));
-          loadPending();
         }
       }
-
-      addActivity(
-        "warning",
-        `Item reasignado de ${pendingError.expectedBranch} a ${pendingError.currentBranch}`,
-        pendingError.itemCode,
-      );
+      addActivity("warning", `Reasignado de ${pendingError.expectedBranch} a ${pendingError.currentBranch}`, pendingError.itemCode);
     } else {
-      // Reportar error
-      addActivity(
-        "error",
-        `Error de envío reportado (esperado: ${pendingError.expectedBranch})`,
-        pendingError.itemCode,
-      );
+      addActivity("error", `Error reportado (esperado: ${pendingError.expectedBranch})`, pendingError.itemCode);
     }
-
     setPendingError(null);
   };
 
+  // ─── Render ──────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Selector de sucursal */}
+      {/* Sucursal */}
       <Card className="p-4">
         <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
           <div>
             <p className="text-sm font-semibold flex items-center gap-2">
-              <Store className="h-4 w-4" />
-              Sucursal de recepción
+              <Store className="h-4 w-4" />Sucursal de recepción
             </p>
-            <p className="text-xs text-muted-foreground">
-              Se usa para validar el stock que llega en tránsito
-            </p>
+            <p className="text-xs text-muted-foreground">Valida el stock en tránsito</p>
           </div>
           <div className="w-full md:w-[260px]">
             <Select value={effectiveBranchId} onValueChange={setSelectedBranchId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar sucursal" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Seleccionar sucursal" /></SelectTrigger>
               <SelectContent>
-                {branchOptions.map((branch) => (
-                  <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
+                {branchOptions.map((b) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -776,10 +656,10 @@ export const ReceiveModule: React.FC = () => {
         pendingCount={totalExpected}
       />
 
-      {/* Scan Input */}
+      {/* Scanner */}
       <ScanInput
         onScan={handleScan}
-        isScanning={isScanning}
+        isScanning={false}
         disabled={isGlobal || !effectiveBranchId || isLoading}
         lastScannedCode={lastScannedCode}
         lastScanStatus={lastScanStatus}
@@ -787,7 +667,7 @@ export const ReceiveModule: React.FC = () => {
         onScanModeChange={setScanMode}
       />
 
-      {/* Tabs principales */}
+      {/* Tabs */}
       <Tabs defaultValue="pending" className="space-y-4">
         <TabsList>
           <TabsTrigger value="pending">Por Recibir</TabsTrigger>
@@ -797,13 +677,18 @@ export const ReceiveModule: React.FC = () => {
         <TabsContent value="pending">
           <PendingItemsList
             lines={receiveLines}
-            receivedSerialIds={receivedSerialIds}
-            receivedStockCounts={receivedStockCounts}
+            receivedSerialIds={combinedSerialIds}
+            receivedStockCounts={combinedStockCounts}
+            localStockCounts={localStockCounts}
+            localSerialIds={localSerialIds}
             onToggleSerial={handleToggleSerial}
-            onReceiveStockQuantity={handleReceiveStockQuantity}
+            onReceiveStockQuantity={handleAddLocalStock}
+            onSetLocalStock={handleSetLocalStock}
             onSelectAll={handleSelectAll}
+            onCommitLine={commitLine}
             activeBatchId={activeBatchId}
             onClearBatchId={() => setActiveBatchId(null)}
+            isCommitting={isCommitting}
           />
         </TabsContent>
 
@@ -812,25 +697,39 @@ export const ReceiveModule: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Botones de acción */}
+      {/* Footer actions */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="text-sm">
-                <span className="font-bold">{scannedCount}</span> asignados
-              </span>
+              <span className="text-sm"><span className="font-bold">{scannedCount}</span> recibidos</span>
             </div>
             <div className="flex items-center space-x-2">
               <XCircle className="h-5 w-5 text-orange-600" />
-              <span className="text-sm">
-                <span className="font-bold">{pendingCount}</span> pendientes
-              </span>
+              <span className="text-sm"><span className="font-bold">{pendingCount}</span> pendientes</span>
             </div>
+            {stagedCount > 0 && (
+              <div className="flex items-center space-x-2 text-amber-600">
+                <span className="text-sm font-medium">
+                  <span className="font-bold">{stagedCount}</span> escaneados sin confirmar
+                </span>
+              </div>
+            )}
           </div>
 
-          <div className="space-x-2">
+          <div className="flex items-center gap-2">
+            {stagedCount > 0 && (
+              <Button
+                onClick={commitAll}
+                disabled={isCommitting}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                {isCommitting
+                  ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Confirmando...</>
+                  : <>Confirmar todo ({stagedCount})</>}
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => setCloseModalOpen(true)}
@@ -843,14 +742,12 @@ export const ReceiveModule: React.FC = () => {
         </div>
       </Card>
 
-      {/* Modales */}
       <CloseReceiveModal
         open={closeModalOpen}
         onOpenChange={setCloseModalOpen}
         pendingCount={pendingCount}
         onConfirm={handleCloseAssignment}
       />
-
       <WrongBranchModal
         open={wrongBranchModalOpen}
         onOpenChange={setWrongBranchModalOpen}
