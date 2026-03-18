@@ -20,17 +20,16 @@ import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
-import { OperationType } from "@/src/utils/status-type/OperationType";
 import {
   getAvailabilityByAttributes,
   getTotalStock,
 } from "@/src/utils/reservation/checkAvailability";
 import { endOfDay, startOfDay } from "date-fns";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import z from "zod";
 import { productSchema } from "@/src/types/product/type.product";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
@@ -51,17 +50,15 @@ export function ReservationModal({
 }: ReservationModalProps) {
   const [open, setOpen] = React.useState(false);
 
-  const businessRules = BUSINESS_RULES_MOCK;
-
   const [assignedStockIds, setAssignedStockIds] = React.useState<string[]>([]);
 
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [dateRange, setDateRange] = React.useState<any>(undefined);
   const [pickupTime, setPickupTime] = React.useState<string>(
-    businessRules.openHours.open,
+    MOCK_BRANCH_CONFIG.openHours.open,
   );
   const [returnTime, setReturnTime] = React.useState<string>(
-    businessRules.openHours.close,
+    MOCK_BRANCH_CONFIG.openHours.close,
   );
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");

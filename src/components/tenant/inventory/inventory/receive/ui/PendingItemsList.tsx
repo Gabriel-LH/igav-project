@@ -33,6 +33,7 @@ import {
   Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ReceiveStockLine {
   id: string;
@@ -95,6 +96,8 @@ interface PendingItemsListProps {
   onToggleSerial: (serialId: string) => void;
   onReceiveStockQuantity: (stockId: string, quantity: number) => void;
   onSelectAll: () => void;
+  activeBatchId: string | null;
+  onClearBatchId: () => void;
 }
 
 export const PendingItemsList: React.FC<PendingItemsListProps> = ({
@@ -104,11 +107,24 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
   onToggleSerial,
   onReceiveStockQuantity,
   onSelectAll,
+  activeBatchId,
+  onClearBatchId,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [stockInputs, setStockInputs] = useState<Record<string, number>>({});
+
+  // Efecto para enfocar el input si hay un batch activo
+  React.useEffect(() => {
+    if (activeBatchId) {
+      const element = document.getElementById(`input-qty-${activeBatchId}`);
+      if (element) {
+        (element as HTMLInputElement).focus();
+        (element as HTMLInputElement).select();
+      }
+    }
+  }, [activeBatchId]);
 
   const groupedRows = useMemo<ReceiveGroupRow[]>(() => {
     return lines.map((line) => {
@@ -121,13 +137,14 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           variantName: line.variantName,
           variantCode: line.variantCode,
           destinationBranch: line.destinationBranch,
-          totalExpected: line.quantityExpected,
+          // La cantidad esperada es sumada a lo ya recibido en sesión para mantener el denominador constante
+          totalExpected: line.quantityExpected + (receivedStockCounts[line.id] ?? 0),
           totalReceived: receivedStockCounts[line.id] ?? 0,
           image: line.image,
         };
       }
 
-      const totalReceived = line.serialItems.filter((item) =>
+      const receivedSerialsTotal = line.serialItems.filter((item) =>
         receivedSerialIds.has(item.id),
       ).length;
 
@@ -140,7 +157,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
         variantCode: line.variantCode,
         destinationBranch: line.destinationBranch,
         totalExpected: line.serialItems.length,
-        totalReceived,
+        totalReceived: receivedSerialsTotal,
         image: line.image,
         subRows: line.serialItems.map((serial) => ({
           rowType: "serial",
@@ -162,7 +179,8 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
 
     return groupedRows
       .map((group) => {
-        const groupText = `${group.productName} ${group.variantName} ${group.variantCode} ${group.destinationBranch}`.toLowerCase();
+        const groupText =
+          `${group.productName} ${group.variantName} ${group.variantCode} ${group.destinationBranch}`.toLowerCase();
         if (groupText.includes(normalized)) {
           return group;
         }
@@ -247,10 +265,12 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           return (
             <div className="flex items-center gap-3">
               {original.image ? (
-                <img
+                <Image
                   src={original.image}
                   alt={original.productName}
-                  className="h-10 w-10 rounded object-cover"
+                  width={40}
+                  height={40}
+                  className="rounded object-cover"
                 />
               ) : (
                 <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
@@ -266,7 +286,8 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                   variant="secondary"
                   className={cn(
                     "text-[10px] uppercase",
-                    original.itemType === "serialized" && "bg-blue-50 text-blue-700",
+                    original.itemType === "serialized" &&
+                      "bg-blue-50 text-blue-700",
                   )}
                 >
                   {original.itemType === "serialized" ? "Serializado" : "Stock"}
@@ -283,7 +304,9 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           if (row.original.rowType === "serial") {
             return <span className="text-xs text-muted-foreground">-</span>;
           }
-          return <Badge variant="outline">{row.original.destinationBranch}</Badge>;
+          return (
+            <Badge variant="outline">{row.original.destinationBranch}</Badge>
+          );
         },
       },
       {
@@ -365,6 +388,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           return (
             <div className="flex flex-wrap items-center gap-2">
               <Input
+                id={`input-qty-${row.original.id}`}
                 type="number"
                 min={1}
                 max={remaining}
@@ -377,10 +401,24 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                   );
                   setStockInputs((prev) => ({
                     ...prev,
-                    [row.original.id]: nextValue,
+                    [row.original.id!]: nextValue,
                   }));
                 }}
-                className="w-20 h-8"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && canReceive) {
+                    onReceiveStockQuantity(row.original.id!, inputValue);
+                    setStockInputs((prev) => ({
+                      ...prev,
+                      [row.original.id!]: 1,
+                    }));
+                    onClearBatchId();
+                  }
+                }}
+                className={cn(
+                  "w-20 h-8",
+                  activeBatchId === row.original.id &&
+                    "ring-2 ring-primary ring-offset-2",
+                )}
               />
               <Button
                 variant="outline"
@@ -388,11 +426,12 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                 className="h-8 w-8"
                 disabled={!canReceive}
                 onClick={() => {
-                  onReceiveStockQuantity(row.original.id, inputValue);
+                  onReceiveStockQuantity(row.original.id!, inputValue);
                   setStockInputs((prev) => ({
                     ...prev,
-                    [row.original.id]: 1,
+                    [row.original.id!]: 1,
                   }));
+                  onClearBatchId();
                 }}
               >
                 <Plus className="h-4 w-4" />
@@ -401,7 +440,10 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                 variant="outline"
                 size="sm"
                 disabled={!canReceive}
-                onClick={() => onReceiveStockQuantity(row.original.id, remaining)}
+                onClick={() => {
+                  onReceiveStockQuantity(row.original.id!, remaining);
+                  onClearBatchId();
+                }}
               >
                 Recibir todo
               </Button>
@@ -410,7 +452,14 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
         },
       },
     ],
-    [onReceiveStockQuantity, onToggleSerial, receivedSerialIds, stockInputs],
+    [
+      onReceiveStockQuantity,
+      onToggleSerial,
+      receivedSerialIds,
+      stockInputs,
+      activeBatchId,
+      onClearBatchId,
+    ],
   );
 
   const table = useReactTable({
@@ -480,18 +529,27 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                       row.original.rowType === "group" &&
                         row.original.itemType === "serialized" &&
                         "bg-muted/40",
+                      row.original.rowType === "group" &&
+                        activeBatchId === row.original.id &&
+                        "bg-primary/5 transition-colors border-l-4 border-l-primary",
                     )}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     No hay productos pendientes.
                   </TableCell>
                 </TableRow>

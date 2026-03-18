@@ -34,7 +34,48 @@ export class ReceiveStockQuantityUseCase {
       throw new Error("Cantidad supera el stock en tránsito");
     }
 
+    // 1. Buscar si ya existe un lote disponible IDÉNTICO para consolidar
+    // (Mismo tenant, producto, variante, sucursal, lote, vencimiento, condición, etc.)
+    const existingAvailableLot = await this.stockRepo.findAvailableLotLike(lot);
+
+    if (existingAvailableLot) {
+      // Caso A: CONSOLIDAR en lote existente
+      const updatedAvailable = await this.stockRepo.updateStockLotQuantity(
+        existingAvailableLot.id,
+        existingAvailableLot.quantity + input.quantity,
+      );
+
+      let remainingLot: StockLot | undefined;
+      if (input.quantity === lot.quantity) {
+        // Recepción completa -> Elimanamos el lote de tránsito original
+        await this.stockRepo.deleteStockLot(lot.id);
+      } else {
+        // Recepción parcial -> Descontamos del de tránsito
+        remainingLot = await this.stockRepo.updateStockLotQuantity(
+          lot.id,
+          lot.quantity - input.quantity,
+        );
+      }
+
+      await this.stockRepo.addStockMovement({
+        tenantId: lot.tenantId,
+        stockLotId: updatedAvailable.id,
+        type: input.quantity === lot.quantity ? "recepcion_disponible" : "recepcion_transito",
+        quantity: input.quantity,
+        reason: input.quantity === lot.quantity ? "Recepción completa (Consolidada)" : "Recepción parcial (Consolidada)",
+        changedBy: input.changedBy,
+      });
+
+      return {
+        mode: input.quantity === lot.quantity ? "complete" : "partial",
+        availableLot: updatedAvailable,
+        remainingLot,
+      };
+    }
+
+    // Caso B: NO EXISTE lote idéntico disponible
     if (input.quantity === lot.quantity) {
+      // Recepción completa: Simplemente cambiamos el estado del lote actual
       const updated = await this.stockRepo.updateStockLotStatus(
         lot.id,
         "disponible",
@@ -50,27 +91,21 @@ export class ReceiveStockQuantityUseCase {
       return { mode: "complete", availableLot: updated };
     }
 
-    const availableLot =
-      (await this.stockRepo.findAvailableLotLike(lot)) ||
-      (await this.stockRepo.addStockLot({
-        tenantId: lot.tenantId,
-        productId: lot.productId,
-        variantId: lot.variantId,
-        branchId: lot.branchId,
-        quantity: 0,
-        barcode: lot.barcode,
-        expirationDate: lot.expirationDate,
-        lotNumber: lot.lotNumber,
-        isForRent: lot.isForRent,
-        isForSale: lot.isForSale,
-        condition: lot.condition,
-        status: "disponible",
-      }));
-
-    const updatedAvailable = await this.stockRepo.updateStockLotQuantity(
-      availableLot.id,
-      availableLot.quantity + input.quantity,
-    );
+    // Recepción parcial: Crear nuevo lote disponible y descontar del original
+    const newAvailableLot = await this.stockRepo.addStockLot({
+      tenantId: lot.tenantId,
+      productId: lot.productId,
+      variantId: lot.variantId,
+      branchId: lot.branchId,
+      quantity: input.quantity,
+      barcode: lot.barcode,
+      expirationDate: lot.expirationDate,
+      lotNumber: lot.lotNumber,
+      isForRent: lot.isForRent,
+      isForSale: lot.isForSale,
+      condition: lot.condition,
+      status: "disponible",
+    });
 
     const remainingLot = await this.stockRepo.updateStockLotQuantity(
       lot.id,
@@ -79,7 +114,7 @@ export class ReceiveStockQuantityUseCase {
 
     await this.stockRepo.addStockMovement({
       tenantId: lot.tenantId,
-      stockLotId: updatedAvailable.id,
+      stockLotId: newAvailableLot.id,
       type: "recepcion_transito",
       quantity: input.quantity,
       reason: "Recepción parcial",
@@ -88,7 +123,7 @@ export class ReceiveStockQuantityUseCase {
 
     return {
       mode: "partial",
-      availableLot: updatedAvailable,
+      availableLot: newAvailableLot,
       remainingLot,
     };
   }

@@ -31,7 +31,7 @@ import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { TimePicker } from "./TimePicker";
@@ -64,8 +64,6 @@ export function DirectTransactionModal({
   const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
-
-  const businessRules = BUSINESS_RULES_MOCK;
 
   // --------------------
   // Estados base
@@ -117,10 +115,10 @@ export function DirectTransactionModal({
     React.useState<GuaranteeType>("dinero");
 
   const [pickupTime, setPickupTime] = React.useState(
-    businessRules.openHours.open,
+    MOCK_BRANCH_CONFIG.openHours.open,
   );
   const [returnTime, setReturnTime] = React.useState(
-    businessRules.openHours.close,
+    MOCK_BRANCH_CONFIG.openHours.close,
   );
 
   const sellerId = USER_MOCK[0].id;

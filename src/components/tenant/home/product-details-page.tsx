@@ -24,10 +24,9 @@ import {
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { USER_MOCK } from "@/src/mocks/mock.user";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig"; 
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
@@ -301,7 +300,7 @@ export function ProductDetailsPage({
         ? getEstimatedTransferTime(
             branchId,
             currentBranchId,
-            BUSINESS_RULES_MOCK,
+            MOCK_BRANCH_CONFIG,
           )
         : 0;
 

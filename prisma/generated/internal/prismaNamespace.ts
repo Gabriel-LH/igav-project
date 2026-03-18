@@ -7221,6 +7221,7 @@ export const StockMovementScalarFieldEnum = {
   tenantId: 'tenantId',
   stockLotId: 'stockLotId',
   type: 'type',
+  quantity: 'quantity',
   reason: 'reason',
   operationId: 'operationId',
   changedBy: 'changedBy',

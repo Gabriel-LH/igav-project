@@ -110,8 +110,12 @@ export const ReceiveModule: React.FC = () => {
     stockId?: string;
     serialId?: string;
   } | null>(null);
+  const [scanMode, setScanMode] = useState<"single" | "batch">("single");
+  const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
 
   const effectiveBranchId = selectedBranchId || branches[0]?.id || "";
+
+
   const isGlobal = canUseGlobal && selectedBranchId === GLOBAL_BRANCH_ID;
 
   const currentBranch = useMemo(() => {
@@ -140,8 +144,14 @@ export const ReceiveModule: React.FC = () => {
     return stockCount + receivedSerialIds.size;
   }, [receivedSerialIds, receivedStockCounts]);
 
-  const pendingCount = Math.max(totalExpected - scannedCount, 0);
-  const allSelected = totalExpected > 0 && scannedCount === totalExpected;
+  const progressTotalExpected = useMemo(() => {
+    // El total de la sesión es lo que falta actualmente + lo que ya escaneamos
+    // Esto evita que el total disminuya a medida que recibimos cosas
+    return totalExpected + scannedCount;
+  }, [totalExpected, scannedCount]);
+
+  const pendingCount = Math.max(totalExpected, 0);
+  const allSelected = totalExpected === 0 && scannedCount > 0;
 
   // Función para agregar actividad
   const addActivity = useCallback((
@@ -173,8 +183,6 @@ export const ReceiveModule: React.FC = () => {
   const loadPending = useCallback(async () => {
     if (!effectiveBranchId || isGlobal) {
       setReceiveLines([]);
-      setReceivedSerialIds(new Set());
-      setReceivedStockCounts({});
       return;
     }
 
@@ -257,8 +265,6 @@ export const ReceiveModule: React.FC = () => {
     });
 
     setReceiveLines([...stockLines, ...Array.from(serializedMap.values())]);
-    setReceivedSerialIds(new Set());
-    setReceivedStockCounts({});
     setIsLoading(false);
   }, [
     addActivity,
@@ -268,9 +274,40 @@ export const ReceiveModule: React.FC = () => {
     isGlobal,
   ]);
 
+  // 1. Efecto de guardado automático en sessionStorage
   useEffect(() => {
+    if (typeof window === "undefined" || !effectiveBranchId) return;
+    
+    const sessionKey = `receive_session_${effectiveBranchId}`;
+    const sessionData = {
+      serialIds: Array.from(receivedSerialIds),
+      stockCounts: receivedStockCounts,
+    };
+    sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+  }, [receivedSerialIds, receivedStockCounts, effectiveBranchId]);
+
+  // 2. Cargar estado inicial desde sessionStorage (solo en el cliente)
+  useEffect(() => {
+    if (typeof window === "undefined" || !effectiveBranchId) return;
+    
+    const sessionKey = `receive_session_${effectiveBranchId}`;
+    const saved = sessionStorage.getItem(sessionKey);
+    
+    if (saved) {
+      try {
+        const { serialIds, stockCounts } = JSON.parse(saved);
+        setReceivedSerialIds(new Set(serialIds));
+        setReceivedStockCounts(stockCounts);
+      } catch (e) {
+        console.error("Error parsing receive session", e);
+      }
+    } else {
+      setReceivedSerialIds(new Set());
+      setReceivedStockCounts({});
+    }
+    
     loadPending();
-  }, [loadPending]);
+  }, [effectiveBranchId, loadPending]);
 
   // Manejar escaneo
   const handleScan = async (code: string) => {
@@ -338,6 +375,8 @@ export const ReceiveModule: React.FC = () => {
           `Item serializado disponible: ${serialMatch.line.productName}`,
           normalized,
         );
+        // loadPending() se encargará de refrescar la data del servidor en segundo plano
+        // pero nuestro setReceivedSerialIds mantiene la UI correcta.
         loadPending();
         return;
       }
@@ -376,6 +415,14 @@ export const ReceiveModule: React.FC = () => {
         setWrongBranchModalOpen(true);
         setLastScannedCode(normalized);
         setLastScanStatus("error");
+        return;
+      }
+
+      if (scanMode === "batch") {
+        setActiveBatchId(stockMatch.id);
+        setLastScannedCode(normalized);
+        setLastScanStatus("success");
+        addActivity("info", `Ingrese cantidad para: ${stockMatch.productName}`, normalized);
         return;
       }
 
@@ -724,9 +771,9 @@ export const ReceiveModule: React.FC = () => {
 
       {/* Stats */}
       <ReceiveStats
-        totalExpected={totalExpected}
+        totalExpected={progressTotalExpected}
         scannedCount={scannedCount}
-        pendingCount={pendingCount}
+        pendingCount={totalExpected}
       />
 
       {/* Scan Input */}
@@ -736,6 +783,8 @@ export const ReceiveModule: React.FC = () => {
         disabled={isGlobal || !effectiveBranchId || isLoading}
         lastScannedCode={lastScannedCode}
         lastScanStatus={lastScanStatus}
+        scanMode={scanMode}
+        onScanModeChange={setScanMode}
       />
 
       {/* Tabs principales */}
@@ -753,6 +802,8 @@ export const ReceiveModule: React.FC = () => {
             onToggleSerial={handleToggleSerial}
             onReceiveStockQuantity={handleReceiveStockQuantity}
             onSelectAll={handleSelectAll}
+            activeBatchId={activeBatchId}
+            onClearBatchId={() => setActiveBatchId(null)}
           />
         </TabsContent>
 

@@ -219,6 +219,12 @@ export class PrismaStockAdapter implements StockRepository {
     } as unknown as StockLot;
   }
 
+  async deleteStockLot(stockLotId: string): Promise<void> {
+    await this.prisma.stockLot.delete({
+      where: { id: stockLotId },
+    });
+  }
+
   async updateInventoryItemStatus(
     itemId: string,
     status: InventoryItem["status"],

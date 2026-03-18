@@ -25,6 +25,16 @@ import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import Autoplay from "embla-carousel-autoplay";
+import React from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Truck } from "lucide-react";
 
 interface Props {
   product: z.infer<typeof productSchema>;
@@ -180,6 +190,10 @@ export function CatalogProductCard({ product }: Props) {
       )
     : MOCK_TENANT_CONFIG.defaultTransferTime;
 
+  const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true }),
+  );
+
   return (
     <>
       <div className="group border rounded-xl relative overflow-hidden">
@@ -212,7 +226,7 @@ export function CatalogProductCard({ product }: Props) {
             ) : hasRemote ? (
               <Badge className="bg-blue-500/90 text-white border-none text-[8px] uppercase animate-pulse w-fit">
                 Disponible para traslado (Llega en {days}{" "}
-                {days === 1 ? "día" : "días"}) 🚚
+                {days === 1 ? "día" : "días"}) <Truck className="w-4 h-4"/>
               </Badge>
             ) : (
               <Badge
@@ -223,16 +237,33 @@ export function CatalogProductCard({ product }: Props) {
               </Badge>
             )}
           </div>
-
-          <div className="relative bg-transparent group  rounded-t-xl">
-            <div className="relative bg-transparent aspect-square">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                priority
-                className="object-contain bg-transparent transition-transform duration-700 ease-in-out group-hover:scale-110"
-              />
+          <div className="relative bg-transparent group rounded-xl overflow-hidden">
+            <div className="relative w-full bg-transparent">
+              <Carousel
+                plugins={[plugin.current]}
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {product.image.map((imageUrl, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative w-full h-[265px]">
+                        <Image
+                          src={imageUrl}
+                          alt={product.name}
+                          fill
+                          sizes="100vw"
+                          priority={index === 0}
+                          className="object-contain bg-transparent"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
             </div>
           </div>
         </div>
@@ -375,7 +406,7 @@ export function CatalogProductCard({ product }: Props) {
 
         <CardFooter className="p-4 pt-0">
           <Link
-            href={`/product-details/${encodeURIComponent(product.id)}`}
+            href={`/tenant/product-details/${encodeURIComponent(product.id)}`}
             className="w-full"
           >
             <Badge className="w-full justify-center py-2 cursor-pointer hover:opacity-90">

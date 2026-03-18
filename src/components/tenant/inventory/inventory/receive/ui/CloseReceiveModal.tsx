@@ -33,47 +33,44 @@ export const CloseReceiveModal: React.FC<CloseAssignmentModalProps> = ({
             <AlertCircle className="h-5 w-5 text-orange-600" />
             <span>Faltan {pendingCount} items por recibir</span>
           </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-4 pt-4">
-            <p>
-              Hay {pendingCount} productos que no han sido escaneados. ¿Qué
-              deseas hacer con ellos?
-            </p>
-
-            <div className="grid gap-2">
-              <Button
-                variant="outline"
-                className="justify-start h-auto p-3"
-                onClick={() => {
-                  onConfirm("mark-lost");
-                  onOpenChange(false);
-                }}
-              >
-                <div className="text-left">
-                  <p className="font-medium">Marcar como perdidos</p>
-                  <p className="text-xs text-muted-foreground">
-                    Los items se marcarán como perdidos en el inventario
-                  </p>
-                </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="justify-start h-auto p-3"
-                onClick={() => {
-                  onConfirm("keep-transit");
-                  onOpenChange(false);
-                }}
-              >
-                <div className="text-left">
-                  <p className="font-medium">Mantener en tránsito</p>
-                  <p className="text-xs text-muted-foreground">
-                    Los items seguirán pendientes para próxima recepción
-                  </p>
-                </div>
-              </Button>
-            </div>
-          </AlertDialogDescription>
         </AlertDialogHeader>
+        <AlertDialogDescription className="space-y-4">
+          Hay {pendingCount} productos que no han sido escaneados. ¿Qué deseas
+          hacer con ellos?
+          <div className="grid gap-2 pt-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-3"
+              onClick={() => {
+                onConfirm("mark-lost");
+                onOpenChange(false);
+              }}
+            >
+              <div className="text-left">
+                <p className="font-medium">Marcar como perdidos</p>
+                <p className="text-xs text-muted-foreground">
+                  Los items se marcarán como perdidos en el inventario
+                </p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-3"
+              onClick={() => {
+                onConfirm("keep-transit");
+                onOpenChange(false);
+              }}
+            >
+              <div className="text-left">
+                <p className="font-medium">Mantener en tránsito</p>
+                <p className="text-xs text-muted-foreground">
+                  Los items seguirán pendientes para próxima recepción
+                </p>
+              </div>
+            </Button>
+          </div>
+        </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
         </AlertDialogFooter>

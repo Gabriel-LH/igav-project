@@ -3,8 +3,8 @@ export interface ProductFormData {
   // === PASO 1: INFO BASE ===
   name: string;
   baseSku: string;
-  modelId: string;
-  brandId: string;
+  modelId?: string;
+  brandId?: string;
   categoryId: string;
   description: string;
   image?: string[];

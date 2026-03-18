@@ -20,6 +20,8 @@ interface ScanInputProps {
   lastScannedCode?: string;
   lastScanStatus?: "success" | "error";
   disabled?: boolean;
+  scanMode: "single" | "batch";
+  onScanModeChange: (mode: "single" | "batch") => void;
 }
 
 export const ScanInput: React.FC<ScanInputProps> = ({
@@ -28,6 +30,8 @@ export const ScanInput: React.FC<ScanInputProps> = ({
   lastScannedCode,
   lastScanStatus,
   disabled = false,
+  scanMode,
+  onScanModeChange,
 }) => {
   const [manualCode, setManualCode] = useState("");
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -56,6 +60,9 @@ export const ScanInput: React.FC<ScanInputProps> = ({
     if (manualCode.trim()) {
       handleScan(manualCode.trim());
       setManualCode("");
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
     }
   };
 
@@ -102,6 +109,28 @@ export const ScanInput: React.FC<ScanInputProps> = ({
                 ) : null}
               </div>
             )}
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">Modo:</span>
+              <Button
+                type="button"
+                variant={scanMode === "single" ? "default" : "outline"}
+                size="sm"
+                className="h-8 text-xs px-3"
+                onClick={() => onScanModeChange("single")}
+              >
+                Individual (+1)
+              </Button>
+              <Button
+                type="button"
+                variant={scanMode === "batch" ? "default" : "outline"}
+                size="sm"
+                className="h-8 text-xs px-3"
+                onClick={() => onScanModeChange("batch")}
+              >
+                Cantidad (Lote)
+              </Button>
+            </div>
           </div>
 
           <form onSubmit={handleManualSubmit} className="flex flex-wrap gap-2">

@@ -437,6 +437,8 @@ export type PlanModuleKey = (typeof PlanModuleKey)[keyof typeof PlanModuleKey]
 
 export const StockMovementType = {
   stock_inicial: 'stock_inicial',
+  recepcion_transito: 'recepcion_transito',
+  recepcion_disponible: 'recepcion_disponible',
   salida_alquiler: 'salida_alquiler',
   retorno_alquiler: 'retorno_alquiler',
   vendido: 'vendido',

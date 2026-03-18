@@ -1,7 +1,7 @@
 import { Label } from "@/components/label";
 import { ReservationCalendar } from "./ReservationCalendar";
 import { CustomerSelector } from "./CustomerSelector";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { PriceSummary } from "./PriceSummary";
 import { Input } from "@/components/input";
 import {
@@ -61,7 +61,7 @@ export function ReservationFormContent({
   setUseCredit,
   balance,
 }: any) {
-  const businessRules = BUSINESS_RULES_MOCK;
+ 
   const { getSizeById, getColorById } = useAttributeStore();
 
   const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
@@ -173,7 +173,7 @@ export function ReservationFormContent({
                 currentBranchId={currentBranchId}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                rules={businessRules}
+                rules={MOCK_BRANCH_CONFIG}
                 productId={item.id}
                 variantId={variantId}
                 quantity={quantity}
@@ -216,7 +216,7 @@ export function ReservationFormContent({
                 currentBranchId={currentBranchId}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                rules={businessRules}
+                rules={MOCK_BRANCH_CONFIG}
                 productId={item.id}
                 variantId={variantId}
                 type={operationType}
@@ -244,7 +244,7 @@ export function ReservationFormContent({
                   getEstimatedTransferTime(
                     originBranchId,
                     currentBranchId,
-                    businessRules,
+                    MOCK_BRANCH_CONFIG,
                   ) + 1,
                 ),
                 "dd/MM/yy",
