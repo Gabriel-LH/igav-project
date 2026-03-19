@@ -1,34 +1,41 @@
-// components/inventory/QRCodeDisplay.tsx (versión defensiva máxima)
 "use client";
 
 import { useEffect, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
+import type { Options } from "qr-code-styling/lib/types";
 
 interface QRCodeDisplayProps {
   value: string;
   title: string;
+  sizePx?: number;
 }
 
-const CART_LOGO = `<svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    className="lucide lucide-shopping-cart-icon lucide-shopping-cart"
-  >
-    <circle cx="8" cy="21" r="1" />
-    <circle cx="19" cy="21" r="1" />
-    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-  </svg>`;
+export const INDUSTRIAL_QR_OPTIONS = {
+  qrOptions: {
+    errorCorrectionLevel: "M",
+    typeNumber: 0 as const,
+    mode: "Byte",
+  },
+  dotsOptions: {
+    color: "#000000" as const,
+    type: "square",
+  },
+  backgroundOptions: {
+    color: "#ffffff" as const,
+  },
+  cornersSquareOptions: {
+    type: "square",
+  },
+  cornersDotOptions: {
+    type: "square",
+  },
+} satisfies Partial<Options>;
 
-const cartLogoSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(CART_LOGO)}`;
-
-export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
+export function QRCodeDisplay({
+  value,
+  title,
+  sizePx = 192,
+}: QRCodeDisplayProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -36,31 +43,16 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
     let isMounted = true;
 
     const generateQR = async () => {
+      setIsReady(false);
+
       try {
+        const margin = Math.max(10, Math.round(sizePx * 0.06));
         const qrInstance = new QRCodeStyling({
-          width: 128,
-          height: 128,
+          width: sizePx,
+          height: sizePx,
           data: value,
-          image: cartLogoSvgDataUrl,
-          dotsOptions: {
-            color: "#000000",
-            type: "rounded",
-          },
-          backgroundOptions: {
-            color: "#ffffff",
-          },
-          cornersSquareOptions: {
-            type: "extra-rounded",
-          },
-          cornersDotOptions: {
-            type: "dot",
-          },
-          imageOptions: {
-            crossOrigin: "anonymous",
-            margin: 2,
-            imageSize: 0.4,
-            hideBackgroundDots: true,
-          },
+          margin,
+          ...INDUSTRIAL_QR_OPTIONS,
         });
 
         const blob = await qrInstance.getRawData("png");
@@ -84,13 +76,16 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
     return () => {
       isMounted = false;
     };
-  }, [value]);
+  }, [sizePx, value]);
 
   return (
-    <div className="flex flex-col items-center gap-2 p-1">
-      <div className="w-[128px] h-[128px] flex items-center justify-center bg-white border rounded shadow-sm">
+    <div className="flex flex-col items-center">
+      <div
+        className="flex items-center justify-center bg-white border rounded-sm"
+        style={{ width: sizePx, height: sizePx }}
+      >
         {!isReady || !qrDataUrl ? (
-          <div className="w-full h-full bg-muted animate-pulse rounded" />
+          <div className="w-full h-full bg-muted animate-pulse rounded-sm" />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -102,8 +97,8 @@ export function QRCodeDisplay({ value, title }: QRCodeDisplayProps) {
       </div>
 
       <div className="text-center w-full min-w-0">
-        <p className="font-bold text-[10px] uppercase truncate">{title}</p>
-        <code className="text-[8px] font-mono text-muted-foreground block truncate">
+        <p className="font-semibold text-[10px] uppercase truncate">{title}</p>
+        <code className="text-[9px] font-mono text-muted-foreground block truncate">
           {value}
         </code>
       </div>

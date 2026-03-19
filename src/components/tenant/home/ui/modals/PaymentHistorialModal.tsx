@@ -14,7 +14,7 @@ import { Payment } from "../../../../../types/payments/type.payments";
 import { USER_MOCK } from "../../../../../mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { Badge } from "@/components/badge";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/button";
 import { AddPaymentForm } from "../forms/AddPaymentForm";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
@@ -70,12 +70,12 @@ export function PaymentHistoryModal({
   const resolvedCreditAmount = calculatedIsCredit ? creditAmount : 0;
   const currentUser = USER_MOCK[0];
 
-  const buildTicketHtml = (payment: Payment) =>
-    buildPaymentTicketHtml(payment, currentUser, customerName);
+  const buildTicketHtml = useCallback((payment: Payment) =>
+    buildPaymentTicketHtml(payment, currentUser, customerName));
 
   const fullHistoryTicket = useMemo(
     () => payments.map(buildTicketHtml).join(""),
-    [payments],
+    [buildTicketHtml, payments],
   );
 
   return (
