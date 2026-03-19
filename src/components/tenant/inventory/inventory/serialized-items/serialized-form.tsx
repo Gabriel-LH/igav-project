@@ -1039,6 +1039,7 @@ export function SerializedItemForm({
             : batches.rent.manualCodes
         }
         productName={selectedProduct?.name || ""}
+        variantName={selectedVariant?.name || ""}
         branchName={selectedBranch?.name || "Sucursal no seleccionada"}
       />
 
@@ -1054,6 +1055,7 @@ export function SerializedItemForm({
             : batches.sale.manualCodes
         }
         productName={selectedProduct?.name || ""}
+        variantName={selectedVariant?.name || ""}
         branchName={selectedBranch?.name || "Sucursal no seleccionada"}
       />
     </form>

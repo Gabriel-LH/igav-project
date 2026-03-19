@@ -20,6 +20,7 @@ interface BatchQRModalProps {
   type: "RENT" | "SALE";
   codes: string[];
   productName: string;
+  variantName?: string;
   branchName: string;
 }
 
@@ -31,9 +32,9 @@ type QrSizeOption = {
 };
 
 const QR_SIZE_OPTIONS: QrSizeOption[] = [
-  { label: "25 mm", mm: 25, px: 140, exportPx: 420 },
-  { label: "30 mm", mm: 30, px: 168, exportPx: 512 },
-  { label: "40 mm", mm: 40, px: 220, exportPx: 680 },
+  { label: "25 mm", mm: 25, px: 140, exportPx: 840 },
+  { label: "30 mm", mm: 30, px: 168, exportPx: 1024 },
+  { label: "40 mm", mm: 40, px: 220, exportPx: 1280 },
 ];
 
 const sanitizeFilePart = (text: string) =>
@@ -51,6 +52,7 @@ export function BatchQRModal({
   type,
   codes,
   productName,
+  variantName,
   branchName,
 }: BatchQRModalProps) {
   const [selectedSizeMm, setSelectedSizeMm] = useState<number>(30);
@@ -77,7 +79,8 @@ export function BatchQRModal({
     `${safeBranch}-${safeType}-${safeProduct}-${codes.length}qr-${selectedSize.mm}mm`;
 
   const buildSvgBlob = async (code: string) => {
-    const margin = Math.max(18, Math.round(selectedSize.exportPx * 0.06));
+    // Minimalist padding for QR to maximize scannability
+    const margin = 2;
     const qrInstance = new QRCodeStyling({
       width: selectedSize.exportPx,
       height: selectedSize.exportPx,
@@ -104,7 +107,8 @@ export function BatchQRModal({
   };
 
   const buildPngBlob = async (code: string) => {
-    const margin = Math.max(18, Math.round(selectedSize.exportPx * 0.06));
+    // Minimalist padding for QR to maximize scannability
+    const margin = 2;
     const qrInstance = new QRCodeStyling({
       width: selectedSize.exportPx,
       height: selectedSize.exportPx,
@@ -148,32 +152,78 @@ export function BatchQRModal({
   };
 
   const handleDownloadPdf = async () => {
-    const pdfDoc = await PDFDocument.create();
-    const pageSizeInPoints = (selectedSize.mm * 72) / 25.4;
+    try {
+      const { StandardFonts, rgb } = await import("pdf-lib");
+      const pdfDoc = await PDFDocument.create();
+      const pageSizeInPoints = (selectedSize.mm * 72) / 25.4;
 
-    for (const code of codes) {
-      const pngBlob = await buildPngBlob(code);
-      if (!pngBlob) continue;
+      const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-      const pngBytes = await pngBlob.arrayBuffer();
-      const pngImage = await pdfDoc.embedPng(pngBytes);
-      const page = pdfDoc.addPage([pageSizeInPoints, pageSizeInPoints]);
+      for (const [index, code] of codes.entries()) {
+        const pngBlob = await buildPngBlob(code);
+        if (!pngBlob) continue;
 
-      page.drawImage(pngImage, {
-        x: 0,
-        y: 0,
-        width: pageSizeInPoints,
-        height: pageSizeInPoints,
-      });
+        const pngBytes = await pngBlob.arrayBuffer();
+        const pngImage = await pdfDoc.embedPng(pngBytes);
+        const page = pdfDoc.addPage([pageSizeInPoints, pageSizeInPoints]);
+
+        // Dibujamos el QR dejando margen arriba (título) y abajo (código)
+        // Usamos un 75% del tamaño para el QR, dejando espacio
+        const qrSize = pageSizeInPoints * 0.75;
+        const xOffset = (pageSizeInPoints - qrSize) / 2;
+        const yOffset = (pageSizeInPoints - qrSize) / 2; // Dibujamos centrado
+
+        page.drawImage(pngImage, {
+          x: xOffset,
+          y: yOffset,
+          width: qrSize,
+          height: qrSize,
+        });
+
+        const titleText = variantName
+          ? `${productName.toUpperCase()} - ${variantName.toUpperCase()}`
+          : productName.toUpperCase();
+
+        const codeText = code;
+
+        const isSmall = selectedSize.mm === 25;
+        const titleFontSize = isSmall ? 4 : 5.5;
+        const codeFontSize = isSmall ? 3.5 : 4.5;
+
+        const wTitle = fontBold.widthOfTextAtSize(titleText, titleFontSize);
+        const wCode = fontRegular.widthOfTextAtSize(codeText, codeFontSize);
+
+        // Texto Arriba
+        page.drawText(titleText, {
+          x: (pageSizeInPoints - wTitle) / 2,
+          y: pageSizeInPoints - 6,
+          size: titleFontSize,
+          font: fontBold,
+          color: rgb(0, 0, 0),
+        });
+
+        // Código Crudo Abajo
+        page.drawText(codeText, {
+          x: (pageSizeInPoints - wCode) / 2,
+          y: 4,
+          size: codeFontSize,
+          font: fontRegular,
+          color: rgb(0.2, 0.2, 0.2),
+        });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      const pdfBuffer = pdfBytes.buffer.slice(
+        pdfBytes.byteOffset,
+        pdfBytes.byteOffset + pdfBytes.byteLength,
+      );
+      const pdfBlob = new Blob([pdfBuffer], { type: "application/pdf" });
+      downloadBlob(pdfBlob, `${buildBatchBaseName()}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Error al generar PDF del Lote QR.");
     }
-
-    const pdfBytes = await pdfDoc.save();
-    const pdfBuffer = pdfBytes.buffer.slice(
-      pdfBytes.byteOffset,
-      pdfBytes.byteOffset + pdfBytes.byteLength,
-    );
-    const pdfBlob = new Blob([pdfBuffer], { type: "application/pdf" });
-    downloadBlob(pdfBlob, `${buildBatchBaseName()}.pdf`);
   };
 
   const downloadSvgLabel =
@@ -231,10 +281,21 @@ export function BatchQRModal({
               width: var(--qr-size-mm) !important;
               height: var(--qr-size-mm) !important;
             }
-            .print-meta {
-              margin-top: 1.5mm;
+            .print-meta-top {
+              margin-bottom: 0mm;
               font-size: 7pt !important;
-              line-height: 1.15;
+              font-weight: 700;
+              text-transform: uppercase;
+              text-align: center;
+              line-height: 1.1;
+            }
+            .print-meta-bottom {
+              margin-top: 0mm;
+              font-size: 6pt !important;
+              font-family: monospace;
+              text-align: center;
+              line-height: 1.1;
+              color: #444;
             }
             .no-print {
               display: none !important;
@@ -315,16 +376,9 @@ export function BatchQRModal({
                   <div className="print-qr-box">
                     <QRCodeDisplay
                       value={code}
-                      title={`${branchName} ${type}-${index + 1}`}
+                      title={`${productName} - ${variantName}`}
                       sizePx={selectedSize.px}
                     />
-                  </div>
-                  <div className="text-center text-[11px] text-muted-foreground mt-1 print-meta">
-                    <p className="font-medium text-foreground">
-                      {branchName} | {type}
-                    </p>
-                    <p>{productName}</p>
-                    <p>{selectedSize.mm} mm</p>
                   </div>
                 </div>
               ))}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Product } from "@/src/types/product/type.product";
@@ -255,7 +255,7 @@ export function ProductTable({
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium">
-                            ${variant.purchasePrice || 0}
+                            {formatCurrency(variant.purchasePrice || 0)}
                           </span>
                           <Button
                             variant="ghost"

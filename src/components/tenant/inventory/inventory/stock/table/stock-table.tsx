@@ -1,4 +1,4 @@
-﻿// components/inventory/StockTable.tsx
+// components/inventory/StockTable.tsx
 "use client";
 
 import { useState } from "react";
@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
+import { BatchBarcodeModal } from "../../barcode/BatchBarcodeModal";
 import {
   Barcode,
   Eye,
@@ -59,6 +60,7 @@ export function StockTable({ stockList, onDelete }: StockTableProps) {
   const [copiedBarcode, setCopiedBarcode] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
+  const [selectedBarcodeItem, setSelectedBarcodeItem] = useState<StockListItem | null>(null);
 
   const copyBarcode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -170,56 +172,15 @@ export function StockTable({ stockList, onDelete }: StockTableProps) {
                     </code>
 
                     {/* Ver/Imprimir Barcode */}
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          title="Ver cÃ³digo de barras"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                          <DialogTitle className="flex items-center gap-2">
-                            <Barcode className="w-5 h-5" />
-                            {item.variantCode}
-                          </DialogTitle>
-                        </DialogHeader>
-                        <div className="flex flex-col items-center gap-4 py-4">
-                          <BarcodeDisplay
-                            value={item.barcode}
-                            title={item.productName}
-                          />
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              className="gap-2"
-                              onClick={() => copyBarcode(item.barcode)}
-                            >
-                              {copiedBarcode === item.barcode ? (
-                                <>
-                                  <Check className="w-4 h-4" /> Copiado
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-4 h-4" /> Copiar
-                                </>
-                              )}
-                            </Button>
-                            <Button
-                              className="gap-2"
-                              onClick={() => window.print()}
-                            >
-                              <Printer className="w-4 h-4" />
-                              Imprimir
-                            </Button>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      title="Ver código de barras"
+                      onClick={() => setSelectedBarcodeItem(item)}
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </Button>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -309,6 +270,19 @@ export function StockTable({ stockList, onDelete }: StockTableProps) {
           </div>
         </div>
       </div>
+
+      {selectedBarcodeItem && (
+        <BatchBarcodeModal
+          isOpen={!!selectedBarcodeItem}
+          onClose={() => setSelectedBarcodeItem(null)}
+          barcode={selectedBarcodeItem.barcode}
+          productName={selectedBarcodeItem.productName}
+          variantCode={selectedBarcodeItem.variantCode}
+          variantName={selectedBarcodeItem.variantName}
+          branchName={selectedBarcodeItem.branchName}
+          quantity={selectedBarcodeItem.quantity}
+        />
+      )}
     </div>
   );
 }

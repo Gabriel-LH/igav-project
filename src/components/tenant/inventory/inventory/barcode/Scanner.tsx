@@ -63,50 +63,70 @@ export function BarcodeScanner({
   const scanBufferRef = useRef("");
   const lastKeyTimeRef = useRef(0);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const isDetectingRef = useRef(false);
+  const lastDetectTsRef = useRef(0);
 
   const [isScanning, setIsScanning] = useState(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState("");
-  const [isPolyfillLoading, setIsPolyfillLoading] = useState(false);
-  const [polyfillReady, setPolyfillReady] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
-  const [videoElementReady, setVideoElementReady] = useState(false);
+  const [isFallbackLoading, setIsFallbackLoading] = useState(false);
+  const [fallbackReady, setFallbackReady] = useState(false);
 
   const nativeAvailable = useMemo(() => {
     return typeof window !== "undefined" && "BarcodeDetector" in window;
   }, []);
 
   const detectorAvailable = useMemo(() => {
-    return nativeAvailable || polyfillReady;
-  }, [nativeAvailable, polyfillReady]);
+    return nativeAvailable || fallbackReady;
+  }, [nativeAvailable, fallbackReady]);
 
-  // Cargar polyfill
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (nativeAvailable) {
-      console.log("Usando BarcodeDetector nativo");
-      return;
+  const zbarScanRef = useRef<((imageData: ImageData) => Promise<any[]>) | null>(
+    null,
+  );
+  const fallbackCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const loadFallbackDetector = useCallback(async () => {
+    if (typeof window === "undefined") return false;
+    if (nativeAvailable || fallbackReady || isFallbackLoading) return false;
+
+    console.log("Cargando fallback (zbar-wasm)...");
+    setIsFallbackLoading(true);
+    setScannerError(null);
+
+    try {
+      const url = "https://esm.sh/@undecaf/zbar-wasm@0.11.0";
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error - carga dinámica desde CDN en runtime
+      const module = await import(/* webpackIgnore: true */ url);
+      const scanImageData =
+        module?.scanImageData ?? module?.default?.scanImageData ?? module?.default;
+
+      if (typeof scanImageData !== "function") {
+        throw new Error("API de zbar-wasm no encontrada");
+      }
+
+      zbarScanRef.current = scanImageData;
+      setFallbackReady(true);
+      console.log("✅ Fallback zbar-wasm listo");
+      return true;
+    } catch (err) {
+      console.error("Error cargando fallback:", err);
+      setScannerError(
+        "No se pudo cargar el escáner alternativo. Usa ingreso manual.",
+      );
+      return false;
+    } finally {
+      setIsFallbackLoading(false);
     }
+  }, [fallbackReady, isFallbackLoading, nativeAvailable]);
 
-    console.log("Cargando polyfill...");
-    setIsPolyfillLoading(true);
-
-    import("@preflower/barcode-detector-polyfill")
-      .then((module) => {
-        if (typeof window !== "undefined" && module.BarcodeDetectorPolyfill) {
-          (window as any).BarcodeDetector = module.BarcodeDetectorPolyfill;
-          console.log("✅ Polyfill listo");
-          setPolyfillReady(true);
-        }
-        setIsPolyfillLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error cargando polyfill:", err);
-        setScannerError("No se pudo cargar el escáner");
-        setIsPolyfillLoading(false);
-      });
-  }, [nativeAvailable]);
+  useEffect(() => {
+    if (!nativeAvailable) {
+      void loadFallbackDetector();
+    }
+  }, [loadFallbackDetector, nativeAvailable]);
 
   const hasCamera = useMemo(() => {
     if (typeof navigator === "undefined") return false;
@@ -209,11 +229,28 @@ export function BarcodeScanner({
     try {
       console.log("Solicitando acceso a cámara...");
 
+      if (typeof window !== "undefined" && !window.isSecureContext) {
+        setScannerError(
+          "La cámara requiere HTTPS o localhost para funcionar.",
+        );
+        return false;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: "environment" },
-          width: { ideal: 640 },
-          height: { ideal: 480 },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          zoom: { ideal: 2 },
+          focusMode: "continuous" as const,
+          exposureMode: "continuous" as const,
+          whiteBalanceMode: "continuous" as const,
+          advanced: [
+            { focusMode: "continuous" as const },
+            { exposureMode: "continuous" as const },
+            { whiteBalanceMode: "continuous" as const },
+            { zoom: 2 },
+          ],
         },
         audio: false,
       });
@@ -290,8 +327,90 @@ export function BarcodeScanner({
 
       // Inicializar detector
       const BarcodeDetectorCtor = (window as any).BarcodeDetector;
-      detectorRef.current = new BarcodeDetectorCtor({ formats });
-      console.log("Detector inicializado");
+      if (BarcodeDetectorCtor) {
+        detectorRef.current = new BarcodeDetectorCtor({ formats });
+        console.log("Detector nativo inicializado");
+      } else if (zbarScanRef.current) {
+        detectorRef.current = {
+          __type: "zbar",
+          detect: async (videoEl: HTMLVideoElement) => {
+            if (!zbarScanRef.current) return [];
+
+            const width = videoEl.videoWidth;
+            const height = videoEl.videoHeight;
+            if (!width || !height) return [];
+
+            const canvas =
+              fallbackCanvasRef.current ?? document.createElement("canvas");
+            fallbackCanvasRef.current = canvas;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return [];
+
+            const runScan = async (
+              sx: number,
+              sy: number,
+              sw: number,
+              sh: number,
+              dw: number = sw,
+              dh: number = sh,
+              useFilter: boolean = false,
+            ) => {
+              canvas.width = dw;
+              canvas.height = dh;
+              ctx.imageSmoothingEnabled = false;
+              ctx.filter = useFilter ? "grayscale(1) contrast(1.4)" : "none";
+              ctx.drawImage(videoEl, sx, sy, sw, sh, 0, 0, dw, dh);
+              ctx.filter = "none";
+              const imageData = ctx.getImageData(0, 0, dw, dh);
+              const symbols = await zbarScanRef.current!(imageData);
+              if (!symbols || symbols.length === 0) return [];
+              return symbols
+                .map((symbol: any) => {
+                  const rawValue =
+                    symbol?.data ??
+                    symbol?.decode ??
+                    symbol?.rawValue ??
+                    symbol?.text;
+                  const format = symbol?.type
+                    ? String(symbol.type)
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "_")
+                    : undefined;
+                  return { rawValue, format } satisfies DetectedCode;
+                })
+                .filter((code: DetectedCode) => !!code.rawValue);
+            };
+
+            // 1) Escaneo full frame (QR y barras)
+            const full = await runScan(0, 0, width, height, width, height, true);
+            if (full.length > 0) return full;
+
+            // 2) Escaneo franja central amplia (mejora 1D)
+            const stripHeight = Math.max(220, Math.floor(height * 0.6));
+            const stripY = Math.floor((height - stripHeight) / 2);
+            const strip = await runScan(
+              0,
+              stripY,
+              width,
+              stripHeight,
+              width,
+              stripHeight,
+              true,
+            );
+            if (strip.length > 0) return strip;
+
+            // 3) Escaneo downscale full frame (mejora rendimiento y detección)
+            const dw = 640;
+            const dh = Math.max(360, Math.round((height / width) * dw));
+            return await runScan(0, 0, width, height, dw, dh, true);
+          },
+        };
+        console.log("Detector fallback (zbar-wasm) inicializado");
+      } else {
+        setScannerError("Detector no disponible");
+        stopCamera();
+        return;
+      }
 
       // Loop de escaneo
       const scanLoop = async () => {
@@ -301,7 +420,17 @@ export function BarcodeScanner({
 
         try {
           if (videoRef.current.readyState >= 2 && !videoRef.current.paused) {
+            const now = Date.now();
+            if (isDetectingRef.current || now - lastDetectTsRef.current < 250) {
+              rafRef.current = requestAnimationFrame(scanLoop);
+              return;
+            }
+
+            isDetectingRef.current = true;
+            lastDetectTsRef.current = now;
+
             const results = await detectorRef.current.detect(videoRef.current);
+            isDetectingRef.current = false;
 
             if (results && results.length > 0) {
               const value = results[0].rawValue?.trim();
@@ -313,6 +442,7 @@ export function BarcodeScanner({
             }
           }
         } catch (error) {
+          isDetectingRef.current = false;
           // Error normal en detección, ignorar
         }
 
@@ -396,7 +526,7 @@ export function BarcodeScanner({
   }, [stopCamera]);
 
   const cameraButtonEnabled =
-    detectorAvailable && hasCamera && !isPolyfillLoading && !isInitializing;
+    detectorAvailable && hasCamera && !isFallbackLoading && !isInitializing;
 
   return (
     <div className="space-y-4">
@@ -406,30 +536,71 @@ export function BarcodeScanner({
           isScanning ? "border-green-500 bg-green-50" : "border-muted",
         )}
       >
-        {isScanning ? (
-          <div className="space-y-2 p-2">
-            <div className="relative w-full h-44 bg-black rounded-md overflow-hidden">
-              <video
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-cover"
-                playsInline
-                muted
-                autoPlay
-              />
-
-              {/* Overlay de escaneo */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-32 h-32 border-2 border-green-500 rounded-lg animate-pulse opacity-50" />
-              </div>
-
-              {/* Indicador de estado */}
-              {!cameraReady && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                </div>
+        <div className="space-y-2 p-2">
+          <div className="relative w-full h-44 bg-black rounded-md overflow-hidden">
+            <video
+              ref={videoRef}
+              className={cn(
+                "absolute inset-0 w-full h-full object-cover transition-opacity",
+                isScanning ? "opacity-100" : "opacity-0",
               )}
-            </div>
+              playsInline
+              muted
+              autoPlay
+            />
 
+            {isScanning && (
+              <>
+                {/* Overlay de escaneo */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[85%] h-32 border-2 border-green-500 rounded-md animate-pulse opacity-60" />
+                </div>
+
+                {/* Indicador de estado */}
+                {!cameraReady && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  </div>
+                )}
+              </>
+            )}
+
+            {!isScanning && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground px-3">
+                <ScanLine className="w-10 h-10 mx-auto mb-2" />
+                <p className="text-sm mb-2 text-center">
+                  Inicia cámara para escanear QR / barras
+                </p>
+                <Button
+                  size="sm"
+                  onClick={startCamera}
+                  type="button"
+                  className="gap-2"
+                  disabled={!cameraButtonEnabled}
+                >
+                  {isInitializing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4" />
+                  )}
+                  {isInitializing ? "Iniciando..." : "Iniciar cámara"}
+                </Button>
+
+                {isFallbackLoading && (
+                  <p className="text-[11px] mt-2 text-blue-600">
+                    Cargando escáner compatible...
+                  </p>
+                )}
+                {!detectorAvailable && !isFallbackLoading && (
+                  <p className="text-[11px] mt-2 text-amber-600">
+                    Usa ingreso manual
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {isScanning && (
             <div className="flex items-center justify-between px-1">
               <p className="text-xs text-green-700 font-medium flex items-center gap-1">
                 <ScanLine className="w-3 h-3" />
@@ -448,40 +619,8 @@ export function BarcodeScanner({
                 Detener
               </Button>
             </div>
-          </div>
-        ) : (
-          <div className="text-center text-muted-foreground h-40 flex flex-col items-center justify-center px-3">
-            <ScanLine className="w-10 h-10 mx-auto mb-2" />
-            <p className="text-sm mb-2">
-              Inicia cámara para escanear QR / barras
-            </p>
-            <Button
-              size="sm"
-              onClick={startCamera}
-              type="button"
-              className="gap-2"
-              disabled={!cameraButtonEnabled}
-            >
-              {isInitializing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Camera className="w-4 h-4" />
-              )}
-              {isInitializing ? "Iniciando..." : "Iniciar cámara"}
-            </Button>
-
-            {isPolyfillLoading && (
-              <p className="text-[11px] mt-2 text-blue-600">
-                Cargando escáner compatible...
-              </p>
-            )}
-            {!detectorAvailable && !isPolyfillLoading && (
-              <p className="text-[11px] mt-2 text-amber-600">
-                Usa ingreso manual
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {scannerError && (

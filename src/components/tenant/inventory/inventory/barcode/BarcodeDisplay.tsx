@@ -66,15 +66,12 @@ export function BarcodeDisplay({
   const isValid = /^\d{13}$/.test(value) && isValidEAN13(value);
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg border">
+    <div className="flex flex-col items-center px-4 py-2 rounded-lg border">
       {title && <h4 className="font-semibold text-lg">{title}</h4>}
 
-      <svg ref={svgRef} className="w-full max-w-[300px]" />
+      <svg ref={svgRef} className="w-full " />
 
       <div className="text-center">
-        <div className="text-lg font-mono font-bold tracking-wider">
-          {value}
-        </div>
         <div className="text-xs text-muted-foreground mt-1">
           {isValid ? "EAN-13 válido" : "CODE128 (no EAN)"}
           {value.includes("NaN") && (
