@@ -127,7 +127,6 @@ export function BatchBarcodeModal({
     try {
       const pdfDoc = await PDFDocument.create();
       const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-      const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
       // mm to pts (1mm = 2.83465pt)
       const widthPt = currentConfig.mmW * 2.83465;
@@ -154,16 +153,18 @@ export function BatchBarcodeModal({
       const pngImage = await pdfDoc.embedPng(pngUrl);
 
       // Calcular escala para encajar la imagen sin que desborde el ancho o el alto
-      const maxWidth = widthPt - 2; 
+      const maxWidth = widthPt - 2;
       const maxHeight = currentConfig.showText ? heightPt - 15 : heightPt - 2;
-      
+
       const scaleX = maxWidth / pngImage.width;
       const scaleY = maxHeight / pngImage.height;
       const scale = Math.min(scaleX, scaleY, 0.9); // Menos restricción para maximizar tamaño
 
       const scaledDims = pngImage.scale(scale);
       const xOffset = (widthPt - scaledDims.width) / 2;
-      const yOffset = currentConfig.showText ? (heightPt - scaledDims.height) / 2 - 4 : (heightPt - scaledDims.height) / 2;
+      const yOffset = currentConfig.showText
+        ? (heightPt - scaledDims.height) / 2 - 4
+        : (heightPt - scaledDims.height) / 2;
 
       page.drawImage(pngImage, {
         x: xOffset,
@@ -174,7 +175,11 @@ export function BatchBarcodeModal({
 
       if (currentConfig.showText) {
         // Título Arriba: NOMBRE PRODUCTO - VARIANTE
-        const titleText = `${productName.toUpperCase()} - ${variantName.toUpperCase()}`.substring(0, 40);
+        const titleText =
+          `${productName.toUpperCase()} - ${variantName.toUpperCase()}`.substring(
+            0,
+            40,
+          );
         const titleSize = currentConfig.mmW <= 50 ? 5.5 : 8;
         const titleW = fontBold.widthOfTextAtSize(titleText, titleSize);
         page.drawText(titleText, {
@@ -197,7 +202,6 @@ export function BatchBarcodeModal({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
     } catch (err) {
       console.error("Error al generar PDF", err);
       alert("Hubo un error al generar el PDF de la etiqueta.");
@@ -239,16 +243,16 @@ export function BatchBarcodeModal({
           }
         `}</style>
 
-        <div className="flex items-center justify-between p-6 border-b no-print">
+        <div className="flex items-center justify-between p-3 border-b no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-primary/10 text-primary">
               <BarcodeIcon className="w-5 h-5" />
             </div>
             <div>
-              <DialogTitle className="text-xl">
+              <DialogTitle className="text-sm">
                 Etiqueta de Código de Barras
               </DialogTitle>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Impresión para{" "}
                 <span className="font-semibold text-foreground">
                   {quantity} unidades
@@ -259,13 +263,15 @@ export function BatchBarcodeModal({
           </div>
         </div>
 
-        <div className="flex flex-col  flex-1 overflow-hidden no-print">
+        <div className="flex flex-col flex-1 overflow-hidden no-print">
           {/* Configuración */}
-          <div className="w-full flex justify-between px-4 bg-muted/10 space-y-6 overflow-y-auto">
-            <div className="space-y-3">
+          <div className="flex w-full md:flex-row flex-col  justify-between items-center px-4 bg-muted/10 overflow-y-auto">
+            <div>
               <Label className="text-sm font-semibold">
-                Tamaño de Etiqueta
+                Tamaño de Etiqueta:
               </Label>
+            </div>
+            <div>
               <Select
                 value={size}
                 onValueChange={(val: LabelSize) => setSize(val)}
@@ -285,17 +291,6 @@ export function BatchBarcodeModal({
                   </SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-xs text-muted-foreground mb-2">
-                Información de etiqueta:
-              </p>
-              <div className="text-sm font-medium">{productName}</div>
-              <div className="text-xs text-muted-foreground">{branchName}</div>
-              <Badge variant="outline" className="mt-2 block w-fit">
-                x{quantity} Unidades
-              </Badge>
             </div>
           </div>
 
@@ -320,12 +315,12 @@ export function BatchBarcodeModal({
           </div>
         </div>
 
-        <DialogFooter className="p-6 border-t bg-background no-print gap-3 flex-wrap sm:justify-end">
-          <div className="flex flex-1 w-full sm:w-auto gap-2">
+        <DialogFooter className="p-2 w-full border-t bg-background no-print gap-3 ">
+          <div className="grid grid-cols-2 w-full md:grid-cols-4 gap-2">
             <Button
               variant="outline"
               onClick={handleDownloadSVG}
-              className="gap-2 flex-1 sm:flex-none h-10"
+              className="text-xs flex-1 sm:flex-none h-10"
               title="Descargar imagen vectorial"
             >
               <Download className="w-4 h-4" />
@@ -334,27 +329,29 @@ export function BatchBarcodeModal({
             <Button
               variant="outline"
               onClick={handleDownloadPDF}
-              className="gap-2 flex-1 sm:flex-none h-10"
+              className="text-xs flex-1 sm:flex-none h-10"
               title="Descargar documento PDF"
             >
               <FileText className="w-4 h-4" />
               PDF (<span className="text-[10px]">x{quantity}</span>)
             </Button>
             <Button
+              variant="outline"
               onClick={handlePrint}
-              className="gap-2 flex-1 sm:flex-none h-10 bg-black text-white hover:bg-black/80"
+              className="text-xs flex-1 sm:flex-none h-10"
             >
               <Printer className="w-4 h-4" />
               Imprimir (<span className="text-[10px]">x{quantity}</span>)
             </Button>
+
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="text-xs flex-1 sm:flex-none h-10"
+            >
+              Cerrar
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="min-w-[100px] hidden sm:flex"
-          >
-            Cerrar
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

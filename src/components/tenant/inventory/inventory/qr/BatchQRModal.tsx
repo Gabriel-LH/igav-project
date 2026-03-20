@@ -315,8 +315,8 @@ export function BatchQRModal({
               <PackageCheck className="w-5 h-5" />
             </div>
             <div>
-              <DialogTitle className="text-xl">{title}</DialogTitle>
-              <p className="text-sm text-muted-foreground">
+              <DialogTitle className="text-sm">{title}</DialogTitle>
+              <p className="text-xs text-muted-foreground">
                 Sucursal:{" "}
                 <span className="font-semibold text-foreground">
                   {branchName}
@@ -392,7 +392,7 @@ export function BatchQRModal({
         </div>
 
         <DialogFooter className="p-6 border-t bg-background no-print gap-3 w-full">
-          <div className="grid grid-cols-4 gap-2 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
             <Button
               variant="outline"
               onClick={handleDownloadAll}

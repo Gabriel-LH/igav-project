@@ -246,15 +246,18 @@ export const ReceiveModule: React.FC = () => {
         variantCode: variant?.variantCode || lot.variantId,
         destinationBranch: branchNameById.get(lot.branchId) || lot.branchId,
         quantityExpected: lot.quantity,
+        image: variant?.image || product?.image || "",
         scanCodes: [lot.barcode, variant?.barcode, lot.id, variant?.variantCode].filter(Boolean) as string[],
       };
     });
+
 
     const serializedMap = new Map<string, ReceiveSerializedLine>();
     pendingResult.data.serializedItems.forEach((item) => {
       const product = productMap.get(item.productId);
       const variant = variantMap.get(item.variantId);
       const key = `${item.variantId}:${item.branchId}`;
+      const image = variant?.image || product?.image || "";
       if (!serializedMap.has(key)) {
         serializedMap.set(key, {
           id: `serial-${key}`, type: "serialized",
@@ -262,6 +265,7 @@ export const ReceiveModule: React.FC = () => {
           variantName: formatVariantName(variant),
           variantCode: variant?.variantCode || item.variantId,
           destinationBranch: branchNameById.get(item.branchId) || item.branchId,
+          image,
           serialItems: [],
         });
       }
@@ -412,7 +416,7 @@ export const ReceiveModule: React.FC = () => {
     const isComplete = newTotal >= stockMatch.quantityExpected;
     addActivity(
       "success",
-      `${isComplete ? "✅ Completo" : "✔"} ${stockMatch.productName}  ${newTotal}/${stockMatch.quantityExpected}`,
+      `${isComplete ? "Completo" : "✔"} ${stockMatch.productName}  ${newTotal}/${stockMatch.quantityExpected}`,
       normalized,
     );
   }, [
@@ -495,7 +499,7 @@ export const ReceiveModule: React.FC = () => {
       setLocalStockCounts({});
       setLocalSerialIds(new Set());
 
-      if (successCount > 0) addActivity("success", `✅ ${successCount} ítem(s) confirmados al servidor`);
+      if (successCount > 0) addActivity("success", `${successCount} ítem(s) confirmados al servidor`);
       if (errorCount > 0) toast.error(`${errorCount} ítem(s) fallaron al confirmar`);
       else toast.success(`${successCount} ítem(s) recibidos correctamente`);
 
@@ -521,7 +525,7 @@ export const ReceiveModule: React.FC = () => {
         if (!result.success) { addActivity("error", result.error || "Error al confirmar", lineId); return; }
         setCommittedStockCounts((prev) => ({ ...prev, [lineId]: (prev[lineId] ?? 0) + qty }));
         setLocalStockCounts((prev) => { const n = { ...prev }; delete n[lineId]; return n; });
-        addActivity("success", `✅ ${line.productName} — ${qty} unidad(es) confirmadas`, lineId);
+        addActivity("success", `${line.productName} — ${qty} unidad(es) confirmadas`, lineId);
       } else {
         const pendingSerials = line.serialItems.filter((s) => localSerialIds.has(s.id));
         if (pendingSerials.length === 0) { toast.info("Sin serializados por confirmar en esta línea"); return; }
@@ -538,7 +542,7 @@ export const ReceiveModule: React.FC = () => {
         });
         setCommittedSerialIds(confirmed);
         setLocalSerialIds(remaining);
-        addActivity("success", `✅ ${line.productName} — ${pendingSerials.length} ítems confirmados`, lineId);
+        addActivity("success", `${line.productName} — ${pendingSerials.length} ítems confirmados`, lineId);
       }
       sessionTotalRef.current = 0;
       await loadPending();

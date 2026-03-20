@@ -33,6 +33,7 @@ import {
   Plus,
   Upload,
   Loader,
+  Hourglass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -140,6 +141,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
     }
   }, [activeBatchId]);
 
+
   const groupedRows = useMemo<ReceiveGroupRow[]>(() => {
     return lines.map((line) => {
       if (line.type === "stock") {
@@ -244,7 +246,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                   {original.isCommitted ? (
                     <Badge variant="outline" className="text-[10px] border-green-300 text-green-700">✓ Confirmado</Badge>
                   ) : original.isLocal ? (
-                    <Badge variant="outline" className="text-[10px] border-amber-400 text-amber-700">⏳ Por confirmar</Badge>
+                    <Badge variant="outline" className="text-[10px] border-amber-400 text-amber-700"><Hourglass className="text-white"/> Por confirmar</Badge>
                   ) : (
                     <Badge variant="outline" className="text-[10px]">Pendiente</Badge>
                   )}
@@ -256,8 +258,9 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
 
           return (
             <div className="flex items-center gap-3">
-              {original.image ? (
-                <Image src={original.image} alt={original.productName} width={40} height={40} className="rounded object-cover" />
+              {original.image  ? (
+                
+                <Image src={original.image[0]} alt={original.productName} width={40} height={40} className="rounded object-cover" />
               ) : (
                 <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
                   <Package className="h-5 w-5 text-muted-foreground" />
@@ -302,7 +305,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           }
 
           const { totalExpected, totalReceived, localCount, committedCount } = row.original;
-          const progress = totalExpected > 0 ? (totalReceived / totalExpected) * 100 : 0;
+          // const progress = totalExpected > 0 ? (totalReceived / totalExpected) * 100 : 0;
           const isComplete = totalReceived >= totalExpected && totalExpected > 0;
 
           return (
@@ -311,7 +314,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                 <span className={cn("font-mono font-semibold", isComplete && "text-green-600")}>{totalReceived}</span>
                 <span className="text-muted-foreground">/ {totalExpected}</span>
                 {localCount > 0 && (
-                  <span className="text-[11px] text-amber-600 font-medium">({committedCount}✓ + {localCount}<Loader className="inline mb-0.5" strokeWidth={3} size={12}/>)</span>
+                  <span className="text-[11px] text-amber-600 font-medium">({committedCount}✓ + {localCount}<Hourglass className="inline mb-0.5" strokeWidth={3} size={10}/>)</span>
                 )}
               </div>
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
@@ -410,7 +413,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
         },
       },
     ],
-    [onReceiveStockQuantity, onSetLocalStock, onToggleSerial, onCommitLine, activeBatchId, onClearBatchId, isCommitting],
+    [onReceiveStockQuantity, onSetLocalStock, onToggleSerial, onCommitLine, activeBatchId, isCommitting],
   );
 
   const table = useReactTable({

@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "rymportatiles.com.pe",
       },
+      {
+        protocol: "https",
+        hostname: "assets.adidas.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media.falabella.com",
+      },
     ],
   },
 };
