@@ -5,10 +5,10 @@ export interface ReservationRepository {
   addReservation(
     reservation: Reservation,
     reservationItems: ReservationItem[],
-  ): void;
-  updateStatus(id: string, newStatus: string, itemStatus: string): void;
-  updateReservationItemStatus(itemId: string, status: string): void;
-  getReservationItems(): ReservationItem[];
-  getReservationById(id: string): Reservation | undefined;
-  cancelReservation(id: string): void;
+  ): Promise<void>;
+  updateStatus(id: string, newStatus: string, itemStatus: string): Promise<void>;
+  updateReservationItemStatus(itemId: string, status: string): Promise<void>;
+  getReservationItems(): Promise<ReservationItem[]>;
+  getReservationById(id: string): Promise<Reservation | undefined>;
+  cancelReservation(id: string): Promise<void>;
 }

@@ -13,6 +13,7 @@ export interface AssignStockInput {
   isForRent: boolean;
   isForSale: boolean;
   condition?: "Nuevo" | "Usado" | "Vintage";
+  status?: "en_transito" | "disponible";
 }
 
 export class AssignStockUseCase {
@@ -35,7 +36,7 @@ export class AssignStockUseCase {
       isForRent: input.isForRent,
       isForSale: input.isForSale,
       condition: input.condition || "Nuevo",
-      status: "en_transito", // Default initial status as requested
+      status: input.status || "en_transito",
     });
   }
 }

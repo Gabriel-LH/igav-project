@@ -1,18 +1,20 @@
 import { create } from "zustand";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
+import { Client } from "@/src/types/clients/type.client";
 
-// Definimos el tipo de un solo cliente basado en el primer elemento del mock
-type Customer = typeof CLIENTS_MOCK[0];
+type Customer = Client;
 
 interface CustomerStore {
-  customers: typeof CLIENTS_MOCK;
+  customers: Customer[];
+  setCustomers: (customers: Customer[]) => void;
   addCustomer: (customer: Customer) => void;
   getCustomerById: (id: string) => Customer | undefined;
   updateCustomer: (id: string, data: Partial<Customer>) => void;
 }
 
 export const useCustomerStore = create<CustomerStore>((set, get) => ({
-  customers: CLIENTS_MOCK,
+  customers: [],
+
+  setCustomers: (customers) => set({ customers }),
 
   addCustomer: (customer) => 
     set((state) => ({ customers: [...state.customers, customer] })),

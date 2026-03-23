@@ -10,5 +10,5 @@ export interface LoyaltyRepository {
       | "bonus_referral",
     operationId?: string,
     description?: string,
-  ): void;
+  ): Promise<void>;
 }

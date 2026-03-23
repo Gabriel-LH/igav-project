@@ -1,4 +1,5 @@
 import { Client } from "../types/clients/type.client";
+import { Coupon } from "../types/coupon/type.coupon";
 
 // Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface ClientTableRow {
@@ -15,6 +16,7 @@ export interface ClientTableRow {
   zipCode?: string;
 
   referralCode: string;
+  activeCouponCode?: string;
 
   // Dinero real a favor del cliente (por devoluciones o vueltos)
   walletBalance: number;
@@ -28,7 +30,30 @@ export interface ClientTableRow {
   status: "active" | "inactive" | "suspended" | "blocked";
 }
 
-export const mapClientToTable = (customers: Client[]): ClientTableRow[] => {
+const getActiveCouponCode = (
+  customerId: string,
+  couponsByClientId: Map<string, Coupon[]>,
+) => {
+  const coupons = couponsByClientId.get(customerId) ?? [];
+  const activeCoupon = coupons.find((coupon) => coupon.status === "available");
+
+  return activeCoupon?.code;
+};
+
+export const mapClientToTable = (
+  customers: Client[],
+  coupons: Coupon[] = [],
+): ClientTableRow[] => {
+  const couponsByClientId = coupons.reduce<Map<string, Coupon[]>>(
+    (accumulator, coupon) => {
+      const current = accumulator.get(coupon.assignedToClientId) ?? [];
+      current.push(coupon);
+      accumulator.set(coupon.assignedToClientId, current);
+      return accumulator;
+    },
+    new Map<string, Coupon[]>(),
+  );
+
   return customers.map((customer) => {
     const searchContent = [
       customer.id,
@@ -60,6 +85,7 @@ export const mapClientToTable = (customers: Client[]): ClientTableRow[] => {
       status: customer.status,
       searchContent,
       referralCode: customer.referralCode,
+      activeCouponCode: getActiveCouponCode(customer.id, couponsByClientId),
     };
   });
 };

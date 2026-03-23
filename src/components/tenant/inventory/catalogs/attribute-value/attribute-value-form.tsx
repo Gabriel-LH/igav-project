@@ -44,7 +44,6 @@ interface AttributeValueFormProps {
   attributeTypes: AttributeType[]; // Lista de tipos disponibles
   defaultAttributeTypeId?: string;
   onSubmit: (data: AttributeValueFormData) => void;
-  trigger?: React.ReactNode;
   compact?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -57,7 +56,6 @@ export function AttributeValueForm({
   onSubmit,
   open,
   onOpenChange,
-  trigger,
   compact = false,
 }: AttributeValueFormProps) {
 
@@ -84,6 +82,19 @@ export function AttributeValueForm({
       isActive: true,
     },
   });
+
+  useEffect(() => {
+    form.reset(
+      initialData || {
+        code: "",
+        value: "",
+        attributeTypeId: defaultAttributeTypeId || "",
+        hexColor: "",
+        isActive: true,
+      },
+    );
+    setUserModifiedCode(false);
+  }, [defaultAttributeTypeId, form, initialData, open]);
 
   useEffect(() => {
     if (!initialData && defaultAttributeTypeId) {
@@ -134,14 +145,7 @@ export function AttributeValueForm({
       title={isEditing ? "Editar Valor de Atributo" : "Nuevo Valor de Atributo"}
       description="Define un valor específico para un tipo de atributo existente."
       maxWidth="md"
-      trigger={
-        trigger || (
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Crear Valor de Atributo
-          </Button>
-        )
-      }
+  
     >
       <Form {...form}>
         <form onSubmit={(e) => { e.stopPropagation(); form.handleSubmit(handleSubmit)(e); }} className="space-y-6">

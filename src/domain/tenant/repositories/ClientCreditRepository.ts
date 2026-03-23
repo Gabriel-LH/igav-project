@@ -4,5 +4,5 @@ export interface ClientCreditRepository {
     amount: number,
     reason: string,
     referenceId?: string,
-  ): void;
+  ): Promise<void>;
 }

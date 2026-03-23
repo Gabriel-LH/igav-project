@@ -37,7 +37,6 @@ import {
   Wrench,
   RefreshCw,
   Calendar,
-  FileWarning,
   Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -118,11 +117,12 @@ export function SerializedItemForm({
     text: string;
   } | null>(null);
 
-  useEffect(() => {
-    if (initialBranchId && !formData.branchId) {
-      setFormData((prev) => ({ ...prev, branchId: initialBranchId }));
-    }
-  }, [initialBranchId, formData.branchId]);
+  // useEffect(() => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     branchId: initialBranchId || prev.branchId,
+  //   }));
+  // }, [initialBranchId]);
 
   const selectedProduct = availableProducts.find(
     (p) => p.id === formData.productId,
@@ -179,6 +179,8 @@ export function SerializedItemForm({
     setScanMessage({ type: "error", text: "Código no encontrado" });
   };
 
+  console.log("status", formData.status);
+
   const processSubmission = (submissionType: "all" | "rent" | "sale") => {
     if (!selectedProduct || !selectedVariant || !formData.branchId) return;
 
@@ -222,7 +224,7 @@ export function SerializedItemForm({
     if (submissionType === "all") {
       setFormData({
         condition: "Nuevo",
-        status: "en_transito",
+        status: formData.status || "disponible",
         damageNotes: "",
       });
       setBatches({

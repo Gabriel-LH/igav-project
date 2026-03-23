@@ -11,14 +11,14 @@ export class ProcessReferralUseCase {
     private loyaltyRepo: LoyaltyRepository,
   ) {}
 
-  execute(
+  async execute(
     customerId: string,
     tenantId: string | null,
     trigger: "first_purchase" | "first_rental" | "account_creation",
-  ): void {
+  ): Promise<void> {
     if (!tenantId || tenantId === "UNKNOWN_TENANT") return;
 
-    const rewardedReferral = this.referralRepo.processReferrals(
+    const rewardedReferral = await this.referralRepo.processReferrals(
       customerId,
       tenantId,
       trigger,
@@ -44,9 +44,9 @@ export class ProcessReferralUseCase {
           expiresAt: null,
           usedAt: null,
         };
-        this.couponRepo.addCoupon(coupon);
+        await this.couponRepo.addCoupon(coupon);
       } else if (mockReferralProgram.rewardType === "loyalty_points") {
-        this.loyaltyRepo.addPoints(
+        await this.loyaltyRepo.addPoints(
           rewardedReferral.referrerClientId,
           mockReferralProgram.rewardValue,
           "bonus_referral",

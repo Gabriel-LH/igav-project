@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ProductFilters } from "./home-product-filter";
 import { CatalogProductCard } from "./catalog-product-card";
@@ -10,6 +10,7 @@ import {
   BubbleChatSearchIcon,
   Calendar03Icon,
   CleanIcon,
+  Loading03Icon,
   SearchRemoveIcon,
   ToolsIcon,
 } from "@hugeicons/core-free-icons";
@@ -21,24 +22,88 @@ import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useBranchStore } from "@/src/store/useBranchStore";
-import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { toast } from "sonner";
+import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import type { Product } from "@/src/types/product/type.product";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
+import type { Category } from "@/src/types/category/type.category";
+import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 
-export function ProductGrid() {
-  const { products, productVariants, inventoryItems, stockLots } = useInventoryStore();
-  const { selectedBranchId } = useInventorySync();
+interface ProductGridProps {
+  categories: Category[];
+  attributeTypes: AttributeType[];
+  attributeValues: AttributeValue[];
+}
+
+export function ProductGrid({
+  categories,
+  attributeTypes,
+  attributeValues,
+}: ProductGridProps) {
+  const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
   const router = useRouter();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [stockLots, setStockLots] = useState<StockLot[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("catalog");
-
-  const showReserved = viewMode === "reserved";
   const query = searchQuery.toLowerCase();
+  const stockLotsWithExtendedStatus = stockLots as Array<
+    StockLot & { status: string }
+  >;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInventory = async () => {
+      if (!selectedBranchId) {
+        setProducts([]);
+        setProductVariants([]);
+        setInventoryItems([]);
+        setStockLots([]);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const result = await getBranchInventoryAction(selectedBranchId);
+        if (cancelled) return;
+
+        if (!result.success || !result.data) {
+          toast.error(result.error || "No se pudo cargar el inventario");
+          return;
+        }
+
+        setProducts(result.data.products as Product[]);
+        setProductVariants(result.data.variants as ProductVariant[]);
+        setInventoryItems(result.data.inventoryItems as InventoryItem[]);
+        setStockLots(result.data.stockLots as StockLot[]);
+      } catch {
+        if (!cancelled) toast.error("Error de red");
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    loadInventory();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedBranchId]);
+
+
 
   useBarcodeScanner({
     onScan: (code) => {
@@ -65,30 +130,9 @@ export function ProductGrid() {
     },
   });
 
-  // --- 1. LÓGICA DE CATÁLOGO (PRODUCTOS DISPONIBLES) ---
+  // --- 1. LÓGICA DE CATÁLOGO ---
   const filteredCatalog = useMemo(() => {
     return products.filter((product) => {
-      // Stock total del producto en esta sucursal (combinando seriales y lotes)
-      let isAvailable = true;
-      if (product.is_serial) {
-        isAvailable = inventoryItems.some(
-          (i) =>
-            String(i.productId) === String(product.id) &&
-            i.branchId === selectedBranchId &&
-            i.status === "disponible",
-        );
-      } else {
-        isAvailable = stockLots.some(
-          (l) =>
-            String(l.productId) === String(product.id) &&
-            l.branchId === selectedBranchId &&
-            l.status === "disponible" &&
-            l.quantity > 0,
-        );
-      }
-
-      if (!isAvailable) return false;
-
       const matchesSearch =
         product.name.toLowerCase().includes(query) ||
         product.baseSku.toLowerCase().includes(query);
@@ -101,11 +145,8 @@ export function ProductGrid() {
     });
   }, [
     products,
-    inventoryItems,
-    stockLots,
     query,
     activeTab,
-    selectedBranchId,
   ]);
 
   const { reservations } = useReservationStore();
@@ -141,30 +182,30 @@ export function ProductGrid() {
       ...inventoryItems.filter(
         (i) =>
           i.branchId === selectedBranchId &&
-          (i.status as any) === "en_lavanderia",
+          i.status === "en_lavanderia",
       ),
-      ...stockLots.filter(
+      ...stockLotsWithExtendedStatus.filter(
         (l) =>
           l.branchId === selectedBranchId &&
-          (l.status as any) === "en_lavanderia",
+          (l.status as unknown as string) === "en_lavanderia",
       ),
     ];
-  }, [inventoryItems, stockLots, selectedBranchId]);
+  }, [inventoryItems, selectedBranchId, stockLotsWithExtendedStatus]);
 
   const filteredMaintenance = useMemo(() => {
     return [
       ...inventoryItems.filter(
         (i) =>
           i.branchId === selectedBranchId &&
-          (i.status as any) === "en_mantenimiento",
+          i.status === "en_mantenimiento",
       ),
-      ...stockLots.filter(
+      ...stockLotsWithExtendedStatus.filter(
         (l) =>
           l.branchId === selectedBranchId &&
-          (l.status as any) === "en_mantenimiento",
+          (l.status as unknown as string) === "en_mantenimiento",
       ),
     ];
-  }, [inventoryItems, stockLots, selectedBranchId]);
+  }, [inventoryItems, selectedBranchId, stockLotsWithExtendedStatus]);
 
   // Decidir qué lista mostrar
   const displayList = useMemo(() => {
@@ -205,30 +246,46 @@ export function ProductGrid() {
             <ReservationProductCard key={res.id} reservation={res} />
           ))}
 
-        {viewMode === "catalog" &&
+        {isLoading && viewMode === "catalog" && (
+          <div className="col-span-full py-10 flex flex-col items-center justify-center text-muted-foreground">
+            <HugeiconsIcon icon={Loading03Icon} className="w-8 h-8 mb-2 animate-spin" />
+            <p className="text-sm animate-pulse font-semibold">Cargando catálogo...</p>
+          </div>
+        )}
+
+        {!isLoading && viewMode === "catalog" &&
           filteredCatalog.map((prod) => (
-            <CatalogProductCard key={prod.id} product={prod} />
+            <CatalogProductCard 
+              key={prod.id} 
+              product={prod}
+              inventoryItems={inventoryItems}
+              stockLots={stockLots}
+              allVariants={productVariants}
+              categories={categories}
+              attributeTypes={attributeTypes}
+              attributeValues={attributeValues}
+            />
           ))}
 
         {viewMode === "laundry" &&
-          filteredLaundry.map((item: any) => (
+          filteredLaundry.map((item) => (
             <LaundryActionCard
-              key={item.serialCode || item.variantCode}
-              item={item}
+              key={item.id}
+              item={item as unknown as InventoryItem}
             />
           ))}
 
         {viewMode === "maintenance" &&
-          filteredMaintenance.map((item: any) => (
+          filteredMaintenance.map((item) => (
             <MaintenanceActionCard
-              key={item.serialCode || item.variantCode}
-              item={item}
+              key={item.id}
+              item={item as unknown as InventoryItem}
             />
           ))}
       </div>
 
       {/* Estado Vacío */}
-      {displayList.length === 0 && (
+      {!isLoading && displayList.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-500">
           <div className="bg-muted rounded-full p-6 mb-4">
             <HugeiconsIcon

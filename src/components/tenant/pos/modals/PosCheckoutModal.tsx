@@ -19,7 +19,7 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
-import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
@@ -408,7 +408,8 @@ export function PosCheckoutModal({
           },
         };
 
-        await makeProcessTransaction().execute(saleDTO);
+        const res = await processTransactionAction(saleDTO);
+        if(!res.success) throw new Error(res.error);
       }
 
       if (alquilerItems.length > 0) {
@@ -442,7 +443,8 @@ export function PosCheckoutModal({
           },
         };
 
-        await makeProcessTransaction().execute(rentalDTO);
+        const res = await processTransactionAction(rentalDTO);
+        if(!res.success) throw new Error(res.error);
       }
 
       if (usePoints && pointsConsumed > 0) {

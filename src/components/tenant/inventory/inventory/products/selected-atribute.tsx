@@ -72,8 +72,13 @@ export function VariantAttributeSelector({
 }: VariantAttributeSelectorProps) {
   const [openTypePopover, setOpenTypePopover] = useState(false);
   const [openValuePopover, setOpenValuePopover] = useState<string | null>(null);
-  const addAttributeType = useAttributeTypeStore((state) => state.addAttributeType);
-  const addAttributeValue = useAttributeValueStore((state) => state.addAttributeValue);
+  const [openValueFormId, setOpenValueFormId] = useState<string | null>(null);
+  const addAttributeType = useAttributeTypeStore(
+    (state) => state.addAttributeType,
+  );
+  const addAttributeValue = useAttributeValueStore(
+    (state) => state.addAttributeValue,
+  );
 
   // Memoizar tipos de variante para evitar recálculos
   const variantTypes = useMemo(() => {
@@ -233,7 +238,9 @@ export function VariantAttributeSelector({
         onChange(
           selectedAttributes.map((attr) => {
             if (attr.attributeId !== attributeTypeId) return attr;
-            const exists = attr.values.some((v) => v.valueId === result.data!.id);
+            const exists = attr.values.some(
+              (v) => v.valueId === result.data!.id,
+            );
             if (exists) return attr;
             return {
               ...attr,
@@ -493,18 +500,26 @@ export function VariantAttributeSelector({
                       </PopoverContent>
                     </Popover>
 
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setOpenValueFormId(attr.attributeId)}
+                    >
+                      <Plus />
+                      Crear
+                    </Button>
+
                     <AttributeValueForm
                       attributeTypes={attributeTypes}
                       defaultAttributeTypeId={attr.attributeId}
-                      onSubmit={(data) =>
-                        handleCreateAttributeValue(attr.attributeId, data)
-                      }
+                      onSubmit={(data) => {
+                        handleCreateAttributeValue(attr.attributeId, data);
+                        setOpenValueFormId(null);
+                      }}
                       compact
-                      trigger={
-                        <Button variant="outline">
-                          <Plus />
-                          Crear
-                        </Button>
+                      open={openValueFormId === attr.attributeId}
+                      onOpenChange={(open) =>
+                        setOpenValueFormId(open ? attr.attributeId : null)
                       }
                     />
                   </div>

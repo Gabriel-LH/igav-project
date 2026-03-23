@@ -49,6 +49,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Plus,
 } from "lucide-react";
 import {
   AttributeValue,
@@ -74,7 +75,9 @@ export function AttributeValuesTable({
 }: AttributeValuesTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [open, setOpen] = useState(false);
+  const [editingValue, setEditingValue] = useState<AttributeValue | undefined>();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // Filtrar por tipo de atributo
   const filteredData = useMemo(() => {
@@ -161,19 +164,15 @@ export function AttributeValuesTable({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <AttributeValueForm
-                initialData={value}
-                attributeTypes={attributeTypes}
-                onSubmit={(data) => onUpdate(value.id, data)}
-                open={open}
-                onOpenChange={setOpen}
-                trigger={
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Editar
-                  </DropdownMenuItem>
-                }
-              />
+              <DropdownMenuItem
+                onClick={() => {
+                  setEditingValue(value);
+                  setIsEditOpen(true);
+                }}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => onDelete(value.id)}
@@ -231,12 +230,36 @@ export function AttributeValuesTable({
             </SelectContent>
           </Select>
         </div>
-
-        <AttributeValueForm
-          attributeTypes={attributeTypes}
-          onSubmit={onCreate}
-        />
+        <Button onClick={() => setIsCreateOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Crear Valor de Atributo
+        </Button>
       </div>
+
+      <AttributeValueForm
+        attributeTypes={attributeTypes}
+        onSubmit={onCreate}
+        open={isCreateOpen}
+        onOpenChange={(open) => {
+          setIsCreateOpen(open);
+        }}
+      />
+
+      <AttributeValueForm
+        initialData={editingValue}
+        attributeTypes={attributeTypes}
+        onSubmit={(formData) => {
+          if (!editingValue) return;
+          onUpdate(editingValue.id, formData);
+        }}
+        open={isEditOpen}
+        onOpenChange={(open) => {
+          setIsEditOpen(open);
+          if (!open) {
+            setEditingValue(undefined);
+          }
+        }}
+      />
 
       {/* Tabla */}
       <div className="rounded-md border">

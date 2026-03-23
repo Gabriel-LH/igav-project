@@ -2,7 +2,7 @@ import { Reservation } from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem"; 
 import { RentalFromReservationDTO } from "@/src/application/dtos/RentalFromReservationDTO"; 
 import { SaleFromReservationDTO } from "@/src/application/dtos/SaleFromReservationDTO";
-import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory"; 
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions"; 
 import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository"; 
 import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { GuaranteeRepository } from "@/src/domain/tenant/repositories/GuaranteeRepository";
@@ -116,7 +116,9 @@ export class ConvertReservationUseCase {
       }
 
       // Transacción
-      const result = await makeProcessTransaction().execute(rentalDTO);
+      const res = await processTransactionAction(rentalDTO);
+      if(!res.success) throw new Error(res.error);
+      const result = res.data;
 
       // Movimiento físico
       input.reservationItems.forEach((item) => {
@@ -167,7 +169,9 @@ export class ConvertReservationUseCase {
         notes: input.notes,
       };
 
-      const result = await makeProcessTransaction().execute(saleDTO);
+      const res = await processTransactionAction(saleDTO);
+      if(!res.success) throw new Error(res.error);
+      const result = res.data;
 
       this.reservationRepo.updateStatus(reservation.id, "venta", "convertida");
 

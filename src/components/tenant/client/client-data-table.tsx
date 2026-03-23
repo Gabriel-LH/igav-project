@@ -49,15 +49,18 @@ import { UserPlus2 } from "lucide-react";
 import { clientAllSchema } from "./tables/type/type.all";
 import { ClientsActiveTable } from "./tables/all-table/all-client-table";
 import { columnsClientAll } from "./tables/all-table/column-all-table";
+import { Client } from "@/src/types/clients/type.client";
 
 export function ClientDataTable({
   dataClientActive,
   dataClientInactive,
   dataClientAll,
+  onClientCreated,
 }: {
   dataClientActive: z.infer<typeof clientActiveSchema>[];
   dataClientInactive: z.infer<typeof clientInactiveSchema>[];
   dataClientAll: z.infer<typeof clientAllSchema>[];
+  onClientCreated?: (client: Client) => void;
 }) {
   const [activeTab, setActiveTab] = React.useState("active");
   const [rowSelection, setRowSelection] = React.useState({});
@@ -72,6 +75,13 @@ export function ClientDataTable({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const getSearchContent = <TData,>(row: Row<TData>) => {
+    const original = row.original as Record<string, unknown>;
+    return typeof original.searchContent === "string"
+      ? original.searchContent
+      : "";
+  };
 
   const COLUMN_LABELS_ES: Record<string, string> = {
     nameCustomer: "Cliente",
@@ -102,11 +112,12 @@ export function ClientDataTable({
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (
       row: Row<TData>,
-      columnId: string,
+      _columnId: string,
       filterValue: string,
     ) => {
-      const searchContent = (row.original as any).searchContent as string;
-      return searchContent?.toLowerCase().includes(filterValue.toLowerCase());
+      return getSearchContent(row)
+        .toLowerCase()
+        .includes(filterValue.toLowerCase());
     },
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -189,7 +200,7 @@ export function ClientDataTable({
 
           {/* DERECHA */}
           <div className="flex items-center gap-2 flex-wrap">
-            <CreateClientModal>
+            <CreateClientModal onCreated={onClientCreated}>
               <Button size="sm" className="h-10 gap-2">
                 <UserPlus2 className="size-4" />
                 <span className="hidden xl:inline text-xs">Crear cliente</span>

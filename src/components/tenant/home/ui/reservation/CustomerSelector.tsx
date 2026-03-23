@@ -17,18 +17,43 @@ import { Label } from "@/components/label";
 import React from "react";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { CreateClientModal } from "@/src/components/tenant/client/ui/modals/CreateClientModal";
+import { getClientsAction } from "@/src/app/(tenant)/tenant/actions/client.actions";
+import { toast } from "sonner";
+import { Client } from "@/src/types/clients/type.client";
 
 export function CustomerSelector({
   selected,
   onSelect,
 }: {
-  selected: any;
-  onSelect: (client: any) => void;
+  selected?: Client | null;
+  onSelect: (client: Client) => void;
 }) {
-  const { customers } = useCustomerStore();
+  const { customers, setCustomers } = useCustomerStore();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [search, setSearch] = React.useState("");
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const loadClients = async () => {
+      const result = await getClientsAction();
+      if (cancelled) return;
+
+      if (!result.success || !result.data) {
+        toast.error(result.error || "No se pudieron cargar los clientes");
+        return;
+      }
+
+      setCustomers(result.data);
+    };
+
+    loadClients();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setCustomers]);
 
   return (
     <div>

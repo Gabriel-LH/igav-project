@@ -1,7 +1,11 @@
 import { Coupon } from "../../../types/coupon/type.coupon";
 
 export interface CouponRepository {
-  addCoupon(coupon: Coupon): void;
-  getCouponsByTenant(tenantId: string): Coupon[];
-  getCouponByCode(code: string): Coupon | undefined;
+  addCoupon(coupon: Coupon): Promise<void>;
+  getCouponsByTenant(tenantId: string): Promise<Coupon[]>;
+  getCouponByCode(code: string): Promise<Coupon | undefined>;
+  getCouponsByClientIds(
+    tenantId: string,
+    clientIds: string[],
+  ): Promise<Coupon[]>;
 }

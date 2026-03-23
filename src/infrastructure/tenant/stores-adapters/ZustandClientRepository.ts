@@ -3,21 +3,21 @@ import { useCustomerStore } from "../../../store/useCustomerStore";
 import { Client } from "../../../types/clients/type.client";
 
 export class ZustandClientRepository implements ClientRepository {
-  addClient(client: Client): void {
+  async addClient(client: Client): Promise<void> {
     useCustomerStore.getState().addCustomer(client);
   }
 
-  getClientById(id: string): Client | undefined {
+  async getClientById(id: string): Promise<Client | undefined> {
     return useCustomerStore.getState().getCustomerById(id);
   }
 
-  getClientByReferralCode(code: string): Client | undefined {
+  async getClientByReferralCode(code: string): Promise<Client | undefined> {
     return useCustomerStore
       .getState()
       .customers.find((c) => c.referralCode === code);
   }
 
-  getAllClients(): Client[] {
+  async getAllClients(): Promise<Client[]> {
     return useCustomerStore.getState().customers;
   }
 }

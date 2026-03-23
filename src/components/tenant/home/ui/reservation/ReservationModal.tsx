@@ -13,7 +13,7 @@ import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
-import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
@@ -30,6 +30,7 @@ import { productSchema } from "@/src/types/product/type.product";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
@@ -38,6 +39,13 @@ interface ReservationModalProps {
   currentBranchId: string;
   originBranchId: string;
   onSuccess?: () => void;
+  selectedVariant?: ProductVariant;
+  displayAttributes?: Array<{
+    keyName: string;
+    name: string;
+    hex?: string;
+    isColor: boolean;
+  }>;
 }
 
 export function ReservationModal({
@@ -47,6 +55,8 @@ export function ReservationModal({
   currentBranchId,
   originBranchId,
   onSuccess,
+  selectedVariant: selectedVariantProp,
+  displayAttributes = [],
 }: ReservationModalProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -99,7 +109,7 @@ export function ReservationModal({
         if (operationType === "venta") {
           return s.isForSale === true && s.status === "disponible";
         } else {
-          return s.isForRent === true;
+          return s.isForRent === true && s.status === "disponible";
         }
       });
     } else {
@@ -112,12 +122,7 @@ export function ReservationModal({
         if (operationType === "venta") {
           return s.isForSale === true && s.status === "disponible";
         } else {
-          return (
-            s.isForRent === true &&
-            (s.status as any) !== "vendido" &&
-            (s.status as any) !== "vendido_pendiente_entrega" &&
-            (s as any).quantity > 0
-          );
+          return s.isForRent === true && s.status === "disponible" && (s as any).quantity > 0;
         }
       });
     }
@@ -165,14 +170,16 @@ export function ReservationModal({
     s.getBalance(selectedCustomer?.id),
   );
 
-  const selectedVariant = useMemo(
-    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
-    [variantId],
+  const resolvedVariant = useMemo(
+    () =>
+      selectedVariantProp ||
+      PRODUCT_VARIANTS_MOCK.find((variant) => variant.id === variantId),
+    [selectedVariantProp, variantId],
   );
-  const priceSell = selectedVariant?.priceSell || 0;
-  const priceRent = selectedVariant?.priceRent || 0;
+  const priceSell = resolvedVariant?.priceSell || 0;
+  const priceRent = resolvedVariant?.priceRent || 0;
   const rentUnit =
-    (selectedVariant?.rentUnit as "día" | "evento" | undefined) || "día";
+    (resolvedVariant?.rentUnit as "día" | "evento" | undefined) || "día";
 
   const { days, totalOperacion, isVenta, isEvent } = usePriceCalculation({
     operationType,
@@ -208,7 +215,7 @@ export function ReservationModal({
   const overpayment =
     realPaidAmount > totalOperacion ? realPaidAmount - totalOperacion : 0;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedCustomer || !dateRange?.from) {
       return toast.error("Faltan datos obligatorios (Fecha o Cliente)");
     }
@@ -304,7 +311,8 @@ export function ReservationModal({
     console.log("newReservation", newReservation);
 
     try {
-      makeProcessTransaction().execute(newReservation);
+      const res = await processTransactionAction(newReservation);
+      if(!res.success) throw new Error(res.error);
 
       if (overpayment > 0 && !keepAsCredit) {
         toast.info(
@@ -364,6 +372,8 @@ export function ReservationModal({
           <ReservationFormContent
             item={item}
             variantId={variantId}
+            selectedVariant={resolvedVariant}
+            displayAttributes={displayAttributes}
             originBranchId={originBranchId}
             currentBranchId={currentBranchId}
             dateRange={dateRange}

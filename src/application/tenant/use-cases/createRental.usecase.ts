@@ -17,11 +17,11 @@ export class CreateRentalUseCase {
     private inventoryRepo: InventoryRepository,
   ) {}
 
-  execute(
+  async execute(
     dto: RentalDTO | RentalFromReservationDTO,
     operationId: string,
     tenantId: string,
-  ): any {
+  ): Promise<any> {
     const now = new Date();
     const fromReservation =
       "reservationId" in dto && Array.isArray((dto as any).reservationItems);
@@ -49,21 +49,21 @@ export class CreateRentalUseCase {
         createdAt: now,
       });
 
-      this.guaranteeRepo.addGuarantee(guaranteeData);
+      await this.guaranteeRepo.addGuarantee(guaranteeData);
     }
 
     if (fromReservation) {
-      this.reservationRepo.updateStatus(
+      await this.reservationRepo.updateStatus(
         (dto as RentalFromReservationDTO).reservationId,
         "alquiler",
         "convertida",
       );
-      (dto as RentalFromReservationDTO).reservationItems.forEach((item) => {
-        this.reservationRepo.updateReservationItemStatus(
+      for (const item of (dto as RentalFromReservationDTO).reservationItems) {
+        await this.reservationRepo.updateReservationItemStatus(
           item.reservationItemId,
           "convertida",
         );
-      });
+      }
     }
 
     const rental = rentalSchema.parse({
@@ -87,7 +87,7 @@ export class CreateRentalUseCase {
     let rentalItems: any[] = [];
 
     if (fromReservation) {
-      const reservationItemsData = this.reservationRepo.getReservationItems();
+      const reservationItemsData = await this.reservationRepo.getReservationItems();
       rentalItems = rentalItemSchema.array().parse(
         (dto as RentalFromReservationDTO).reservationItems.map((item) => {
           const reservationItem = reservationItemsData.find(
@@ -139,23 +139,23 @@ export class CreateRentalUseCase {
       );
     }
 
-    this.rentalRepo.addRental(rental, rentalItems);
+    await this.rentalRepo.addRental(rental, rentalItems);
 
     const finalRentalStockStatus =
       dto.status === "reservado_fisico" ? "reservado_fisico" : "alquilado";
 
-    rentalItems.forEach((item) => {
-      if (this.inventoryRepo.isSerial(item.stockId)) {
-        this.inventoryRepo.updateItemStatus(
+    for (const item of rentalItems) {
+      if (await this.inventoryRepo.isSerial(item.stockId)) {
+        await this.inventoryRepo.updateItemStatus(
           item.stockId,
           finalRentalStockStatus as InventoryItemStatus,
           dto.branchId,
           dto.sellerId,
         );
       } else {
-        this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+        await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
       }
-    });
+    }
 
     return { rental, guaranteeData };
   }

@@ -4,13 +4,14 @@ import { paymentSchema } from "../../../types/payments/type.payments";
 export class ProcessInitialPaymentUseCase {
   constructor(private paymentRepo: PaymentRepository) {}
 
-  execute(params: {
+  async execute(params: {
     downPayment: number;
     paymentMethod: string;
     operationId: string;
     branchId: string;
     sellerId: string;
-  }): void {
+    tenantId: string;
+  }): Promise<void> {
     if (params.downPayment <= 0) return;
 
     const now = new Date();
@@ -25,8 +26,11 @@ export class ProcessInitialPaymentUseCase {
       status: "posted",
       category: "payment",
       date: now,
+      createdAt: now,
+      updatedAt: now,
+      tenantId: params.tenantId,
     });
 
-    this.paymentRepo.addPayment(paymentData);
+    await this.paymentRepo.addPayment(paymentData);
   }
 }

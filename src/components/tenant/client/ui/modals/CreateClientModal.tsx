@@ -17,10 +17,7 @@ import { Label } from "@/components/label";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Client } from "@/src/types/clients/type.client";
-import { CreateClientUseCase } from "@/src/application/tenant/use-cases/client/createClient.usecase";
-import { ZustandClientRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandClientRepository";
-import { ZustandReferralRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReferralRepository";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { createClientAction } from "@/src/app/(tenant)/tenant/actions/client.actions";
 
 // 1️⃣ Schema de validación Zod
 const createClientSchema = z.object({
@@ -73,34 +70,34 @@ export function CreateClientModal({
   }, [defaultValues?.dni]);
 
   // 3️⃣ Handler submit
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const result = createClientSchema.safeParse(values);
     if (!result.success) {
-      const fieldErrors: any = {};
+      const fieldErrors: Partial<Record<keyof CreateClientValues, string>> = {};
       result.error.issues.forEach((err) => {
-        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+        const field = err.path[0];
+        if (typeof field === "string" && field in values) {
+          fieldErrors[field as keyof CreateClientValues] = err.message;
+        }
       });
       setErrors(fieldErrors);
       toast.error("Corrige los errores antes de continuar");
       return;
     }
 
-    // Instanciar dependencias y Use Case
-    const clientRepo = new ZustandClientRepository();
-    const referralRepo = new ZustandReferralRepository();
-    const createClientUC = new CreateClientUseCase(clientRepo, referralRepo);
-
-    // Obtener tenantId del usuario actual (mock)
-    const tenantId = (USER_MOCK[0] as any).tenantId || "UNKNOWN_TENANT";
-
-    const newClient = createClientUC.execute({
+    const response = await createClientAction({
       ...result.data,
       usedReferralCode: result.data.referralCode,
-      tenantId,
     });
 
-    setErrors({});
+    if (!response.success || !response.data) {
+      toast.error(response.error || "No se pudo crear el cliente");
+      return;
+    }
 
+    const newClient = response.data;
+
+    setErrors({});
     setOpen(false);
 
     onCreated?.(newClient);

@@ -7,6 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import React from "react";
+import type { Category } from "@/src/types/category/type.category";
+import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
@@ -20,10 +32,9 @@ import {
   Layers,
   Clock,
   CheckCircle2,
+  Loader,
 } from "lucide-react";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig"; 
@@ -32,38 +43,110 @@ import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { cn } from "@/lib/utils";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
+import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import type { Product } from "@/src/types/product/type.product";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
+import { toast } from "sonner";
 
 interface ProductDetailsPageProps {
   lookup: string;
   initialVariantId?: string;
+  categories: Category[];
+  attributeTypes: AttributeType[];
+  attributeValues: AttributeValue[];
 }
+
+export type DisplayAttributeValue = {
+  keyName: string;
+  name: string;
+  hex?: string;
+  isColor: boolean;
+};
 
 interface VariantChoice {
   id: string;
   label: string;
-  colorName: string;
-  colorHex?: string;
-  sizeLabel: string;
   priceRent?: number;
   priceSell?: number;
   rentUnit?: string;
+  image?: string[];
+  allAttributes: DisplayAttributeValue[];
 }
 
 export function ProductDetailsPage({
   lookup,
   initialVariantId,
+  categories,
+  attributeTypes,
+  attributeValues,
 }: ProductDetailsPageProps) {
   const router = useRouter();
-  const { products, productVariants, inventoryItems, stockLots } =
-    useInventoryStore();
-  const { getCategoryById, getModelById, getColorById, getSizeById, colors } =
-    useAttributeStore();
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId);
+  const branches = useBranchStore((s) => s.branches);
+  const setProductsInStore = useInventoryStore((s) => s.setProducts);
+  const setVariantsInStore = useInventoryStore((s) => s.setProductVariants);
+  const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
+  const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
+  const { getModelById } = useAttributeStore();
   const { promotions } = usePromotionStore();
-  const currentBranchId = USER_MOCK[0].branchId!;
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [stockLots, setStockLots] = useState<StockLot[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true }),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    
+    async function fetchInventory() {
+      if (!currentBranchId) return;
+      setIsLoading(true);
+      try {
+        const result = await getBranchInventoryAction(currentBranchId);
+        if (!cancelled && result.success && result.data) {
+          setProducts(result.data.products as Product[]);
+          setProductVariants(result.data.variants as ProductVariant[]);
+          setInventoryItems(result.data.inventoryItems as InventoryItem[]);
+          setStockLots(result.data.stockLots as StockLot[]);
+          setProductsInStore(result.data.products as Product[]);
+          setVariantsInStore(result.data.variants as ProductVariant[]);
+          setInventoryItemsInStore(result.data.inventoryItems as InventoryItem[]);
+          setStockLotsInStore(result.data.stockLots as StockLot[]);
+        }
+      } catch (error) {
+        toast.error("Error al cargar el inventario", {
+          description: error as string,
+        });
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    fetchInventory();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    currentBranchId,
+    setInventoryItemsInStore,
+    setProductsInStore,
+    setStockLotsInStore,
+    setVariantsInStore,
+  ]);
 
   useEffect(() => {
     const promotionRepo = new ZustandPromotionRepository();
@@ -105,34 +188,57 @@ export function ProductDetailsPage({
 
   const variantChoices = useMemo<VariantChoice[]>(() => {
     return availableVariants.map((variant) => {
-      const rawColor = variant.attributes?.color || "";
-      const rawSize = variant.attributes?.size || "";
+      const resolvedAttributes: DisplayAttributeValue[] = [];
 
-      const colorById = getColorById(rawColor);
-      const colorByName = colors.find(
-        (color) => color.name.toLowerCase() === String(rawColor).toLowerCase(),
-      );
-      const colorLabel =
-        colorById?.name || colorByName?.name || rawColor || "Sin color";
-      const colorHex = colorById?.hex || colorByName?.hex || undefined;
-      const sizeLabel = getSizeById(rawSize)?.name || rawSize || "Única";
+      Object.keys(variant.attributes || {}).forEach((candidateKey) => {
+        const normalizedKey = candidateKey.trim().toLowerCase();
+        const matchingType = attributeTypes.find(
+          (type) =>
+            type.name.trim().toLowerCase() === normalizedKey ||
+            type.code.trim().toLowerCase() === normalizedKey,
+        );
 
-      const attributeLabel = Object.values(variant.attributes || {})
-        .filter(Boolean)
-        .join(" / ");
+        const rawValue = variant.attributes?.[candidateKey];
+        if (!rawValue) return;
+
+        const normalizedValue = String(rawValue).trim().toLowerCase();
+        const matchingAttributeValue = attributeValues.find((value) => {
+          if (matchingType && value.attributeTypeId !== matchingType.id) {
+            return false;
+          }
+          return (
+            value.id === rawValue ||
+            value.value.trim().toLowerCase() === normalizedValue ||
+            value.code.trim().toLowerCase() === normalizedValue
+          );
+        });
+
+        const resolvedName = matchingAttributeValue?.value || String(rawValue);
+        const resolvedHex = matchingAttributeValue?.hexColor || undefined;
+        const isColor =
+          matchingType?.inputType === "color" || Boolean(resolvedHex);
+
+        resolvedAttributes.push({
+          keyName: matchingType?.name || candidateKey,
+          name: resolvedName,
+          hex: resolvedHex,
+          isColor,
+        });
+      });
+
+      const attributeLabel = resolvedAttributes.map(a => a.name).join(" / ");
 
       return {
         id: variant.id,
         label: attributeLabel || variant.variantCode,
-        colorName: colorLabel,
-        colorHex,
-        sizeLabel,
         priceRent: variant.priceRent,
         priceSell: variant.priceSell,
         rentUnit: variant.rentUnit,
+        image: variant.image,
+        allAttributes: resolvedAttributes,
       };
     });
-  }, [availableVariants, colors, getColorById, getSizeById]);
+  }, [availableVariants, attributeTypes, attributeValues]);
 
   const [variantOverrideId, setVariantOverrideId] = useState<string | null>(
     null,
@@ -292,7 +398,7 @@ export function ProductDetailsPage({
     });
 
     return Array.from(map.entries()).map(([branchId, qty]) => {
-      const branch = MOCK_BRANCHES.find(
+      const branch = branches.find(
         (branchItem) => branchItem.id === branchId,
       );
       const isLocal = branchId === currentBranchId;
@@ -312,7 +418,7 @@ export function ProductDetailsPage({
         transferDays,
       };
     });
-  }, [currentBranchId, stockEntries]);
+  }, [currentBranchId, stockEntries, branches]);
 
   const remoteWithStock = branchRows.find((row) => !row.isLocal && row.qty > 0);
   const canReserve = stockEntries.some(
@@ -322,6 +428,14 @@ export function ProductDetailsPage({
   const selectedImage = selectedVariantRaw?.image || product?.image;
 
   if (!product || !resolution) {
+     if (isLoading) {
+    return (
+      <div className="min-h-screen bg-muted/30 p-6 flex flex-col items-center justify-center">
+        <Loader className="w-16 h-16 animate-spin" />
+        <p className="mt-4 text-muted-foreground animate-pulse">Cargando producto...</p>
+      </div>
+    );
+  }
     return (
       <div className="min-h-screen bg-muted/30 p-6">
         <Button
@@ -345,15 +459,14 @@ export function ProductDetailsPage({
     );
   }
 
-  const categoryName = product.categoryId
-    ? getCategoryById(product.categoryId)?.name || "General"
-    : "General";
+  const categoryName =
+    categories.find((c) => c.id === product?.categoryId)?.name || "General";
+  
   const modelName = product.modelId ? getModelById(product.modelId)?.name : "";
-
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header - z-40 para estar por debajo del header principal de la app */}
-      <div className="sticky top-8 z-40 bg-background/80 backdrop-blur-md border-b">
+      <div className="sticky top-9 z-40 bg-background/55 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Button
             variant="ghost"
@@ -385,14 +498,36 @@ export function ProductDetailsPage({
             {/* Imagen del producto */}
             <Card className="overflow-hidden">
               <div className="relative aspect-square bg-muted">
-                {selectedImage ? (
-                  <Image
-                    src={selectedImage}
-                    alt={product.name}
-                    fill
-                    className="object-contain"
-                    priority
-                  />
+                {selectedImage && selectedImage.length > 0 ? (
+                  <Carousel
+                    plugins={[plugin.current]}
+                    onMouseEnter={plugin.current.stop}
+                    onMouseLeave={plugin.current.reset}
+                    className="w-full h-full"
+                  >
+                    <CarouselContent className="h-full">
+                      {selectedImage.map((imageUrl: string, index: number) => (
+                        <CarouselItem
+                          key={index}
+                          className="h-full relative aspect-square"
+                        >
+                          <Image
+                            src={imageUrl}
+                            alt={product.name}
+                            fill
+                            className="object-contain"
+                            priority={index === 0}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {selectedImage.length > 1 && (
+                      <>
+                        <CarouselPrevious className="left-2" />
+                        <CarouselNext className="right-2" />
+                      </>
+                    )}
+                  </Carousel>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                     <Box className="w-16 h-16 opacity-30" />
@@ -514,19 +649,25 @@ export function ProductDetailsPage({
                                 : "hover:border-primary/40 bg-background",
                             )}
                           >
-                            <div className="flex items-center gap-2 mb-1">
-                              {variant.colorHex && (
-                                <span
-                                  className="h-3 w-3 rounded-full border border-white/50"
-                                  style={{ backgroundColor: variant.colorHex }}
-                                />
+                            <div className="flex flex-col items-start gap-1">
+                              <div className="flex items-center gap-2">
+                                {variant.allAttributes[0]?.isColor && (
+                                  <span
+                                    className="h-3 w-3 shrink-0 rounded-full border border-black/10 shadow-sm"
+                                    style={{
+                                      backgroundColor: variant.allAttributes[0].hex || "#CCCCCC",
+                                    }}
+                                  />
+                                )}
+                                <span className="font-medium text-sm line-clamp-1">
+                                  {variant.allAttributes[0]?.name || variant.label}
+                                </span>
+                              </div>
+                              {variant.allAttributes[1] && (
+                                <div className="text-xs opacity-90 line-clamp-1">
+                                  {variant.allAttributes[1].name}
+                                </div>
                               )}
-                              <span className="font-medium text-sm">
-                                {variant.colorName}
-                              </span>
-                            </div>
-                            <div className="text-xs opacity-90">
-                              {variant.sizeLabel}
                             </div>
                           </button>
                         );
@@ -538,29 +679,29 @@ export function ProductDetailsPage({
                   {/* Detalle de variante seleccionada */}
                   {selectedVariant && (
                     <div className="mt-4 p-3 bg-muted/50 rounded-lg space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Variante</span>
-                        <span className="font-medium">
+                      <div className="flex items-center justify-between text-sm py-1 border-b border-border/50">
+                        <span className="text-muted-foreground font-medium">Variante</span>
+                        <span className="font-medium text-right">
                           {selectedVariant.label}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Color</span>
-                        <div className="flex items-center gap-2">
-                          {selectedVariant.colorHex && (
-                            <span
-                              className="h-3 w-3 rounded-full border"
-                              style={{
-                                backgroundColor: selectedVariant.colorHex,
-                              }}
-                            />
-                          )}
-                          <span>{selectedVariant.colorName}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Talla</span>
-                        <span>{selectedVariant.sizeLabel}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1">
+                        {selectedVariant.allAttributes.map((attr, idx) => (
+                          <div key={idx} className="flex items-center justify-between text-sm bg-background/50 px-2 py-1.5 rounded-md border">
+                            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">{attr.keyName}</span>
+                            {attr.isColor ? (
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="h-3 w-3 rounded-full border border-black/10 shadow-sm"
+                                  style={{ backgroundColor: attr.hex || "#CCCCCC" }}
+                                />
+                                <span className="font-semibold text-xs">{attr.name}</span>
+                              </div>
+                            ) : (
+                              <span className="font-semibold text-xs">{attr.name}</span>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -640,6 +781,35 @@ export function ProductDetailsPage({
                 </CardContent>
               </Card>
             </div>
+
+            {/* Características */}
+            {selectedVariant && selectedVariant.allAttributes.length > 0 && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Layers className="w-4 h-4 text-muted-foreground" />
+                    <h3 className="font-semibold">Características</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {selectedVariant.allAttributes.map((attr, idx) => (
+                      <div key={idx} className="flex flex-col gap-1 p-3 bg-muted/40 rounded-lg border">
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{attr.keyName}</span>
+                        <div className="flex items-center gap-2">
+                          {attr.isColor && (
+                            <span
+                              className="h-4 w-4 shrink-0 rounded-full border border-black/10 shadow-sm"
+                              style={{ backgroundColor: attr.hex || "#CCCCCC" }}
+                            />
+                          )}
+                          <span className="font-medium text-sm leading-tight">{attr.name}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Disponibilidad por sucursal */}
             <Card>
@@ -814,6 +984,8 @@ export function ProductDetailsPage({
                     <DirectTransactionModal
                       item={product}
                       variantId={selectedVariantId}
+                      selectedVariant={selectedVariantRaw}
+                      displayAttributes={selectedVariant?.allAttributes}
                       type="alquiler"
                       currentBranchId={currentBranchId}
                     >
@@ -839,6 +1011,8 @@ export function ProductDetailsPage({
                     <DirectTransactionModal
                       item={product}
                       variantId={selectedVariantId}
+                      selectedVariant={selectedVariantRaw}
+                      displayAttributes={selectedVariant?.allAttributes}
                       type="venta"
                       currentBranchId={currentBranchId}
                     >
@@ -861,10 +1035,12 @@ export function ProductDetailsPage({
                     </DirectTransactionModal>
                   </FeatureGuard>
 
-                  <FeatureGuard feature="reservations">
+                  <>
                     <ReservationModal
                       item={product}
                       variantId={selectedVariantId}
+                      selectedVariant={selectedVariantRaw}
+                      displayAttributes={selectedVariant?.allAttributes}
                       currentBranchId={currentBranchId}
                       originBranchId={
                         remoteWithStock?.branchId || currentBranchId
@@ -887,7 +1063,7 @@ export function ProductDetailsPage({
                         </div>
                       </Button>
                     </ReservationModal>
-                  </FeatureGuard>
+                  </>
                 </div>
               </CardContent>
             </Card>

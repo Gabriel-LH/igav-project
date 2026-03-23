@@ -3,17 +3,34 @@ import { useCouponStore } from "../../../store/useCouponStore";
 import { Coupon } from "../../../types/coupon/type.coupon";
 
 export class ZustandCouponRepository implements CouponRepository {
-  addCoupon(coupon: Coupon): void {
+  async addCoupon(coupon: Coupon): Promise<void> {
     useCouponStore.getState().addCoupon(coupon);
   }
 
-  getCouponsByTenant(tenantId: string): Coupon[] {
+  async getCouponsByTenant(tenantId: string): Promise<Coupon[]> {
     return useCouponStore
       .getState()
       .coupons.filter((c) => c.tenantId === tenantId);
   }
 
-  getCouponByCode(code: string): Coupon | undefined {
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
     return useCouponStore.getState().coupons.find((c) => c.code === code);
+  }
+
+  async getCouponsByClientIds(
+    tenantId: string,
+    clientIds: string[],
+  ): Promise<Coupon[]> {
+    if (clientIds.length === 0) {
+      return [];
+    }
+
+    return useCouponStore
+      .getState()
+      .coupons.filter(
+        (coupon) =>
+          coupon.tenantId === tenantId &&
+          clientIds.includes(coupon.assignedToClientId),
+      );
   }
 }

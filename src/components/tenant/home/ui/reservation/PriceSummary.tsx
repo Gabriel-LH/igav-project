@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 import { ReservationPaymentSummary } from "./ReservationPaymentSummary";
 
 export function PriceSummary({
-  item,
   startDate,
   endDate,
   operationType,
+  priceSell,
   priceRent,
+  rentUnit,
   quantity,
   amountPaid,
   setAmountPaid,
@@ -23,19 +24,19 @@ export function PriceSummary({
   const { isVenta, isEvent, days, totalOperacion, totalHoy, pending } =
     usePriceCalculation({
       operationType,
-      priceSell: item.price_sell,
+      priceSell,
       priceRent,
       quantity,
       startDate,
       endDate,
-      rentUnit: item.rent_unit,
+      rentUnit,
       receivedAmount: Number(downPayment) || 0,
     });
 
   return (
     <div className="space-y-4">
       <PriceBreakdownBase
-        unitPrice={priceRent}
+        unitPrice={isVenta ? priceSell : priceRent}
         quantity={quantity}
         days={!isVenta ? days : undefined}
         isEvent={isEvent}

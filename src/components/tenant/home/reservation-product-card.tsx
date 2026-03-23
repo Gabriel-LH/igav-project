@@ -95,7 +95,7 @@ export function ReservationProductCard({ reservation }: Props) {
             >
               <div className="relative">
                 <Image
-                  src={productInfo?.image ?? ""}
+                  src={productInfo?.image[0] ?? ""}
                   alt="Product"
                   width={40}
                   height={40}

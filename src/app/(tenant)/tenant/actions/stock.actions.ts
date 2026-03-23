@@ -189,3 +189,55 @@ export async function receiveStockQuantityAction(
     };
   }
 }
+
+export async function deleteStockLotAction(id: string) {
+  try {
+    const { tenantId } = await requireTenantMembership();
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const stockRepo = new PrismaStockAdapter();
+    // Verify it belongs to this tenant before deleting
+    const lot = await stockRepo.getLotById(id);
+    if (!lot || lot.tenantId !== tenantId) {
+      throw new Error("Lote no encontrado o sin permisos");
+    }
+
+    await stockRepo.deleteStockLot(id);
+
+    revalidatePath("/tenant/inventory/inventory/stock");
+    revalidatePath("/tenant/inventory/inventory/products");
+    return { success: true };
+  } catch (error) {
+    console.error("Error al eliminar lote de stock:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al eliminar lote",
+    };
+  }
+}
+
+export async function deleteInventoryItemAction(id: string) {
+  try {
+    const { tenantId } = await requireTenantMembership();
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const stockRepo = new PrismaStockAdapter();
+    await stockRepo.deleteInventoryItem(id);
+
+    revalidatePath("/tenant/inventory/inventory/serialized-items");
+    revalidatePath("/tenant/inventory/inventory/products");
+    return { success: true };
+  } catch (error) {
+    console.error("Error al eliminar item serializado:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al eliminar item serializado",
+    };
+  }
+}

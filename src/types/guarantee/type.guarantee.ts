@@ -3,6 +3,7 @@ import { guaranteeStatusHistorySchema } from "./type.guaranteeStatusHistory";
 
 export const guaranteeSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
   operationId: z.string(), // Conecta con la venta/alquiler
   branchId: z.string(), // Dónde está físicamente el objeto/dinero
 

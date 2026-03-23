@@ -2,64 +2,41 @@
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useRentalStore } from "@/src/store/useRentalStore";
-import {
-  startOfDay,
-  endOfDay,
-  areIntervalsOverlapping,
-  addDays,
-} from "date-fns";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
+import { startOfDay, endOfDay, areIntervalsOverlapping } from "date-fns";
 
-// Tipo de operación para TypeScript
 export type OpType = "venta" | "alquiler";
 
-// =========================================================================
-// HELPER 1: Contar Stock Físico (DINÁMICO)
-// =========================================================================
 export function getTotalStock(
   productId: string,
   variantId: string,
   type: OpType,
 ) {
   const { products, inventoryItems, stockLots } = useInventoryStore.getState();
-  const product = products.find((p) => String(p.id) === String(productId));
+  const product = products.find((productItem) => String(productItem.id) === String(productId));
 
   if (!product) return 0;
 
   if (product.is_serial) {
-    // Caso Seriados: contamos items individuales
     return inventoryItems.filter(
-      (s) =>
-        String(s.productId) === String(productId) &&
-        s.variantId === variantId &&
-        s.status !== "retirado" &&
-        s.status !== "vendido" &&
-        s.status !== "vendido_pendiente_entrega" &&
-        (type === "venta"
-          ? s.isForSale === true && s.status === "disponible"
-          : s.isForRent === true),
+      (item) =>
+        String(item.productId) === String(productId) &&
+        item.variantId === variantId &&
+        item.status === "disponible" &&
+        (type === "venta" ? item.isForSale === true : item.isForRent === true),
     ).length;
-  } else {
-    // Caso Lotes: sumamos propiedad quantity
-    return stockLots
-      .filter(
-        (s) =>
-          String(s.productId) === String(productId) &&
-          s.variantId === variantId &&
-          s.status !== ("retirado" as any) &&
-          s.status !== ("vendido" as any) &&
-          s.status !== ("vendido_pendiente_entrega" as any) &&
-          (type === "venta"
-            ? s.isForSale === true && s.status === "disponible"
-            : s.isForRent === true),
-      )
-      .reduce((acc, s) => acc + s.quantity, 0);
   }
+
+  return stockLots
+    .filter(
+      (lot) =>
+        String(lot.productId) === String(productId) &&
+        lot.variantId === variantId &&
+        lot.status === "disponible" &&
+        (type === "venta" ? lot.isForSale === true : lot.isForRent === true),
+    )
+    .reduce((acc, lot) => acc + lot.quantity, 0);
 }
 
-// =========================================================================
-// HELPER 2: Genera todos los intervalos ocupados
-// =========================================================================
 function getAllOccupiedIntervals(
   productId: string,
   variantId: string,
@@ -67,113 +44,57 @@ function getAllOccupiedIntervals(
 ) {
   const { reservations, reservationItems } = useReservationStore.getState();
   const { rentals, rentalItems } = useRentalStore.getState();
-  const { products, inventoryItems, stockLots } = useInventoryStore.getState();
-
-  const rules = BUSINESS_RULES_MOCK;
-  const bufferDays =
-    (rules.daysInLaundry || 0) + (rules.daysInMaintenance || 0);
 
   const occupiedList: { start: Date; end: Date; quantity: number }[] = [];
 
-  if (type === "venta") {
-    // Asumiremos que los stocks están separados (Sale vs Rent).
-    return [];
-  }
+  if (type === "venta") return [];
 
-  // 1. RESERVAS CONFIRMADAS
-  const activeReservationItems = reservationItems.filter(
-    (item) =>
-      String(item.productId) === String(productId) &&
-      item.variantId === variantId &&
-      item.itemStatus === "confirmada",
-  );
+  reservationItems
+    .filter(
+      (item) =>
+        String(item.productId) === String(productId) &&
+        item.variantId === variantId &&
+        item.itemStatus === "confirmada",
+    )
+    .forEach((item) => {
+      const parent = reservations.find((reservation) => reservation.id === item.reservationId);
+      if (!parent) return;
 
-  activeReservationItems.forEach((item) => {
-    const parent = reservations.find((r) => r.id === item.reservationId);
-    if (parent) {
       occupiedList.push({
         start: startOfDay(new Date(parent.startDate)),
-        end: endOfDay(addDays(new Date(parent.endDate), bufferDays)),
+        end: endOfDay(new Date(parent.endDate)),
         quantity: item.quantity || 1,
       });
-    }
-  });
+    });
 
-  // 2. ALQUILERES ACTIVOS
-  const activeRentalItems = rentalItems.filter(
-    (item) =>
-      String(item.productId) === String(productId) &&
-      item.variantId === variantId &&
-      item.itemStatus === "alquilado",
-  );
+  const rentalMap = new Map(rentals.map((rental) => [rental.id, rental]));
 
-  const rentalMap = new Map(rentals.map((r) => [r.id, r]));
-
-  activeRentalItems.forEach((item) => {
-    const parent = rentalMap.get(item.rentalId);
-
-    if (
-      parent &&
-      ["alquilado", "atrasado", "reservado_fisico"].includes(parent.status)
-    ) {
-      occupiedList.push({
-        start: startOfDay(parent.outDate),
-        end: endOfDay(
-          addDays(
-            parent.actualReturnDate ?? parent.expectedReturnDate,
-            bufferDays,
+  rentalItems
+    .filter(
+      (item) =>
+        String(item.productId) === String(productId) &&
+        item.variantId === variantId &&
+        item.itemStatus === "alquilado",
+    )
+    .forEach((item) => {
+      const parent = rentalMap.get(item.rentalId);
+      if (
+        parent &&
+        ["alquilado", "atrasado", "reservado_fisico"].includes(parent.status)
+      ) {
+        occupiedList.push({
+          start: startOfDay(new Date(parent.outDate)),
+          end: endOfDay(
+            new Date(parent.actualReturnDate ?? parent.expectedReturnDate),
           ),
-        ),
-        quantity: item.quantity,
-      });
-    }
-  });
-
-  // 3. MANTENIMIENTO
-  const product = products.find((p) => String(p.id) === String(productId));
-  if (product) {
-    if (product.is_serial) {
-      inventoryItems
-        .filter(
-          (s) =>
-            String(s.productId) === String(productId) &&
-            s.variantId === variantId &&
-            (s.status === "en_lavanderia" || s.status === "en_mantenimiento") &&
-            s.isForRent === true,
-        )
-        .forEach(() => {
-          occupiedList.push({
-            start: startOfDay(new Date()),
-            end: endOfDay(addDays(new Date(), bufferDays)),
-            quantity: 1,
-          });
+          quantity: item.quantity,
         });
-    } else {
-      stockLots
-        .filter(
-          (s) =>
-            String(s.productId) === String(productId) &&
-            s.variantId === variantId &&
-            ((s.status as any) === "en_lavanderia" ||
-              (s.status as any) === "en_mantenimiento") &&
-            s.isForRent === true,
-        )
-        .forEach((lot) => {
-          occupiedList.push({
-            start: startOfDay(new Date()),
-            end: endOfDay(addDays(new Date(), bufferDays)),
-            quantity: lot.quantity,
-          });
-        });
-    }
-  }
+      }
+    });
 
   return occupiedList;
 }
 
-// =========================================================================
-// FUNCIÓN PÚBLICA 1: Validación puntual
-// =========================================================================
 export function getAvailabilityByAttributes(
   productId: string,
   variantId: string,
@@ -182,7 +103,6 @@ export function getAvailabilityByAttributes(
   type: OpType,
 ) {
   const totalCount = getTotalStock(productId, variantId, type);
-
   const occupiedIntervals = getAllOccupiedIntervals(productId, variantId, type);
 
   const requestedInterval = {
@@ -202,24 +122,22 @@ export function getAvailabilityByAttributes(
     committedCount: conflictingCount,
     availableCount,
     reason:
-      availableCount > 0 ? "Disponible" : `Stock insuficiente para ${type}.`,
+      availableCount > 0
+        ? "Disponible"
+        : "Stock insuficiente. Solo se considera stock actualmente disponible.",
   };
 }
 
-// =========================================================================
-// FUNCIÓN PÚBLICA 2: Datos para el Calendario
-// =========================================================================
 export function getReservationDataByAttributes(
   productId: string,
   variantId: string,
   type: OpType = "alquiler",
 ) {
   const totalPhysicalStock = getTotalStock(productId, variantId, type);
-  const activeReservations = getAllOccupiedIntervals(
-    productId,
-    variantId,
-    type,
-  );
+  const activeReservations = getAllOccupiedIntervals(productId, variantId, type);
 
-  return { totalPhysicalStock, activeReservations };
+  return {
+    totalPhysicalStock,
+    activeReservations,
+  };
 }

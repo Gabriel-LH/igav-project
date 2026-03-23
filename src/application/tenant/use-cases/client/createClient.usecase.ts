@@ -13,6 +13,7 @@ export interface CreateClientDTO {
   city: string;
   usedReferralCode?: string;
   tenantId: string;
+  actorUserId?: string;
 }
 
 export class CreateClientUseCase {
@@ -21,8 +22,8 @@ export class CreateClientUseCase {
     private referralRepo: ReferralRepository,
   ) {}
 
-  execute(data: CreateClientDTO): Client {
-    const clients = this.clientRepo.getAllClients();
+  async execute(data: CreateClientDTO): Promise<Client> {
+    const clients = await this.clientRepo.getAllClients();
     const existingCodes = new Set(clients.map((c) => c.referralCode));
 
     // Generar código único
@@ -31,7 +32,7 @@ export class CreateClientUseCase {
     let referredByClientId = null;
 
     if (data.usedReferralCode) {
-      const referrer = this.clientRepo.getClientByReferralCode(
+      const referrer = await this.clientRepo.getClientByReferralCode(
         data.usedReferralCode,
       );
       if (referrer) {
@@ -55,6 +56,8 @@ export class CreateClientUseCase {
       loyaltyPoints: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+      createdBy: data.actorUserId,
+      updatedBy: data.actorUserId,
       status: "active",
       type: "individual",
       referralCode: referralCode,
@@ -65,10 +68,10 @@ export class CreateClientUseCase {
       deleteReason: null,
     };
 
-    this.clientRepo.addClient(newClient);
+    await this.clientRepo.addClient(newClient);
 
     if (referredByClientId) {
-      this.referralRepo.addReferral({
+      await this.referralRepo.addReferral({
         id: "REF-" + crypto.randomUUID(),
         tenantId: data.tenantId,
         referrerClientId: referredByClientId,

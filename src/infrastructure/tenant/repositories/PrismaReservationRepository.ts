@@ -1,0 +1,93 @@
+import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
+import { Reservation } from "@/src/types/reservation/type.reservation";
+import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
+import { PrismaClient, Prisma } from "@/prisma/generated/client";
+
+export class PrismaReservationRepository implements ReservationRepository {
+  constructor(
+    private readonly prisma: PrismaClient | Prisma.TransactionClient,
+  ) {}
+
+  async addReservation(
+    reservation: Reservation,
+    reservationItems: ReservationItem[],
+  ): Promise<void> {
+    await this.prisma.reservation.create({
+      data: {
+        id: reservation.id,
+        tenantId: reservation.tenantId,
+        operationId: reservation.operationId,
+        branchId: reservation.branchId,
+        customerId: reservation.customerId,
+        operationType: reservation.operationType as any,
+        startDate: reservation.startDate,
+        endDate: reservation.endDate,
+        hour: reservation.hour,
+        status: reservation.status as any,
+        // notes: reservation.notes || "", // Doesn't exist in Reservation model
+        createdAt: reservation.createdAt,
+        updatedAt: reservation.updatedAt,
+        items: {
+          create: reservationItems.map((item) => ({
+            id: item.id,
+            tenantId: item.tenantId || reservation.tenantId,
+            operationId: item.operationId,
+            productId: item.productId,
+            variantId: item.variantId,
+            stockId: item.stockId || null,
+            quantity: item.quantity || 1,
+            priceAtMoment: item.priceAtMoment,
+            discountAmount: item.discountAmount,
+            discountReason: item.discountReason,
+            itemStatus: item.itemStatus as any,
+            notes: item.notes || "",
+          })),
+        },
+      },
+    });
+  }
+
+  async updateStatus(
+    id: string,
+    newStatus: string,
+    itemStatus: string,
+  ): Promise<void> {
+    await this.prisma.reservation.update({
+      where: { id },
+      data: {
+        status: newStatus as any,
+        reservationItems: {
+          updateMany: {
+            where: { reservationId: id },
+            data: { itemStatus: itemStatus as any },
+          },
+        },
+      },
+    });
+  }
+
+  async updateReservationItemStatus(
+    itemId: string,
+    status: string,
+  ): Promise<void> {
+    await this.prisma.reservationItem.update({
+      where: { id: itemId },
+      data: { itemStatus: status as any },
+    });
+  }
+
+  async getReservationItems(): Promise<ReservationItem[]> {
+    const items = await this.prisma.reservationItem.findMany();
+    return items as unknown as ReservationItem[];
+  }
+
+  async getReservationById(id: string): Promise<Reservation | undefined> {
+    const res = await this.prisma.reservation.findUnique({ where: { id } });
+    if (!res) return undefined;
+    return res as unknown as Reservation;
+  }
+
+  async cancelReservation(id: string): Promise<void> {
+    await this.updateStatus(id, "cancelada", "cancelada");
+  }
+}

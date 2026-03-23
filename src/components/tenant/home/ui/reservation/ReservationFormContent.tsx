@@ -26,7 +26,7 @@ import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
-import { useAttributeStore } from "@/src/store/useAttributeStore";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
 
 export function ReservationFormContent({
   item,
@@ -60,17 +60,19 @@ export function ReservationFormContent({
   useCredit,
   setUseCredit,
   balance,
+  selectedVariant,
+  displayAttributes = [],
 }: any) {
- 
-  const { getSizeById, getColorById } = useAttributeStore();
-
-  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
+  const variant: ProductVariant | undefined =
+    selectedVariant || PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
   const sizeName =
-    getSizeById(variant?.attributes?.size || "")?.name ||
-    variant?.attributes?.size;
+    displayAttributes.find((attr: any) =>
+      ["size", "talla"].includes(attr.keyName.trim().toLowerCase()),
+    )?.name || variant?.attributes?.size;
   const colorName =
-    getColorById(variant?.attributes?.color || "")?.name ||
-    variant?.attributes?.color;
+    displayAttributes.find(
+      (attr: any) => attr.keyName.trim().toLowerCase() === "color",
+    )?.name || variant?.attributes?.color;
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -120,7 +122,7 @@ export function ReservationFormContent({
         <div className="flex-1">
           <h4 className="text-sm font-bold uppercase">{item.name}</h4>
           <p className="text-[10px] text-muted-foreground">
-            Color: {colorName} | SKU: {item.sku}
+            Color: {colorName || "N/A"} | SKU: {item.baseSku}
           </p>
         </div>
         <div className="w-20">
@@ -301,7 +303,9 @@ export function ReservationFormContent({
           operationType={operationType}
           startDate={dateRange.from}
           endDate={dateRange.to || dateRange.from}
-          priceRent={item.price_rent}
+          priceSell={variant?.priceSell || 0}
+          priceRent={variant?.priceRent || 0}
+          rentUnit={variant?.rentUnit}
           quantity={quantity}
           downPayment={downPayment}
           setDownPayment={setDownPayment}

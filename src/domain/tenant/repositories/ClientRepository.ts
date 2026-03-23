@@ -1,8 +1,8 @@
 import { Client } from "../../../types/clients/type.client";
 
 export interface ClientRepository {
-  addClient(client: Client): void;
-  getClientById(id: string): Client | undefined;
-  getClientByReferralCode(code: string): Client | undefined;
-  getAllClients(): Client[];
+  addClient(client: Client): Promise<void>;
+  getClientById(id: string): Promise<Client | undefined>;
+  getClientByReferralCode(code: string): Promise<Client | undefined>;
+  getAllClients(): Promise<Client[]>;
 }

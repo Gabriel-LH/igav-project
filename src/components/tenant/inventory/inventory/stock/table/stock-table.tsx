@@ -10,13 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { Label } from "@/components/ui/label";
@@ -27,15 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BarcodeDisplay } from "../../barcode/BarcodeDisplay";
+
 import { BatchBarcodeModal } from "../../barcode/BatchBarcodeModal";
 import {
   Barcode,
   Eye,
   Trash2,
-  Copy,
-  Check,
-  Printer,
+
   Hash,
   ChevronLeft,
   ChevronRight,

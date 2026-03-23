@@ -11,6 +11,7 @@ export interface AssignSerializedItemsInput {
   isForSale: boolean;
   condition?: "Nuevo" | "Usado" | "Vintage";
   damageNotes?: string;
+  status?: "en_transito" | "disponible" | "alquilado" | "vendido";
 }
 
 export class AssignSerializedItemsUseCase {
@@ -30,7 +31,7 @@ export class AssignSerializedItemsUseCase {
       isForRent: input.isForRent,
       isForSale: input.isForSale,
       condition: input.condition || "Nuevo",
-      status: "en_transito", // Default initial status
+      status: input.status || "en_transito",
       damageNotes: input.damageNotes,
     }));
 

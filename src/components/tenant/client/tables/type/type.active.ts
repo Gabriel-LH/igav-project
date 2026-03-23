@@ -19,6 +19,7 @@ export const clientActiveSchema = z.object({
   // Puntos acumulados por compras (gamificación)
   loyaltyPoints: z.number().int().default(0),
   referralCode: z.string().optional(),
+  activeCouponCode: z.string().optional(),
 
   createdAt: z.date(),
   updatedAt: z.date(),

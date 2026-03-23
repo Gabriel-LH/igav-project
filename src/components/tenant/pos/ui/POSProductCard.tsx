@@ -1,12 +1,14 @@
 "use client";
 
-import { Product } from "@/src/types/product/type.product";
 import { useCartStore } from "@/src/store/useCartStore";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { Eye, ShoppingBag } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Truck, Eye } from "lucide-react";
+import Image from "next/image";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
@@ -20,22 +22,31 @@ import {
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useRouter } from "next/navigation";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { z } from "zod";
+import { productSchema } from "@/src/types/product/type.product";
 
 interface PosProductCardProps {
-  product: Product;
+  product: z.infer<typeof productSchema>;
+  inventoryItems: InventoryItem[];
+  stockLots: StockLot[];
+  allVariants: ProductVariant[];
 }
 
 function VariantSelector({
   product,
   type,
   onClose,
+  inventoryItems,
+  stockLots,
+  allVariants,
 }: {
-  product: Product;
+  product: z.infer<typeof productSchema>;
   type: "venta" | "alquiler";
   onClose: () => void;
+  inventoryItems: InventoryItem[];
+  stockLots: StockLot[];
+  allVariants: ProductVariant[];
 }) {
-  const { inventoryItems, stockLots, productVariants: allVariants } =
-    useInventoryStore();
   const { addItem, items } = useCartStore();
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
 
@@ -131,8 +142,7 @@ function VariantSelector({
                 className="flex items-center justify-between gap-1 text-xs rounded-lg shadow-sm hover:scale-105 transition-transform"
               >
                 <span>
-                  Talla: {v.attributes?.size || "Única"} - Color:{" "}
-                  {v.attributes?.color || "Único"}
+                  {v.variantSignature?.replace(/\|/g, " - ") || "Única"}
                 </span>
                 <Badge
                   variant={remainingQty > 0 ? "secondary" : "destructive"}
@@ -149,10 +159,9 @@ function VariantSelector({
   );
 }
 
-export function PosProductCard({ product }: PosProductCardProps) {
+export function PosProductCard({ product, inventoryItems, stockLots, allVariants }: PosProductCardProps) {
   const router = useRouter();
   const { addItem, items } = useCartStore();
-  const { inventoryItems, stockLots, productVariants: allVariants } = useInventoryStore();
   const { getModelById, getCategoryById } = useAttributeStore();
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
 
@@ -260,7 +269,7 @@ export function PosProductCard({ product }: PosProductCardProps) {
       <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border shadow-lg hover:shadow-2xl transition-all duration-300 h-full">
         <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl">
           {product.image ? (
-            <img
+            <Image
               src={product.image[0]}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -434,19 +443,26 @@ export function PosProductCard({ product }: PosProductCardProps) {
       </div>
 
       <Dialog open={selectorOpen} onOpenChange={setSelectorOpen}>
-        <DialogContent className="max-w-[350px]">
-          <DialogHeader>
-            <DialogTitle>Seleccionar variante ({operationType})</DialogTitle>
-            <DialogDescription>
-              Selecciona la variante del producto que deseas agregar al carrito.
-            </DialogDescription>
-          </DialogHeader>
-          <VariantSelector
-            product={product}
-            type={operationType}
-            onClose={() => setSelectorOpen(false)}
-          />
-        </DialogContent>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+                Seleccionar Variante - {product.name}
+              </DialogTitle>
+              <DialogDescription>
+                Por favor, elige la variante específica que deseas añadir al
+                carrito para la {operationType}.
+              </DialogDescription>
+            </DialogHeader>
+
+            <VariantSelector
+              product={product}
+              type={operationType}
+              onClose={() => setSelectorOpen(false)}
+              inventoryItems={inventoryItems}
+              stockLots={stockLots}
+              allVariants={allVariants}
+            />
+          </DialogContent>
       </Dialog>
     </>
   );

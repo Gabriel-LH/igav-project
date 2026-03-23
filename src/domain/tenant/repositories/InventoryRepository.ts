@@ -10,28 +10,28 @@ export interface InventoryRepository {
     status: InventoryItemStatus | string,
     branchId?: string,
     sellerId?: string,
-  ): void;
-  decreaseLotQuantity(stockId: string, quantity: number): void;
-  increaseLotQuantity(stockId: string, quantity: number): void;
-  isSerial(stockId: string): boolean;
-  getTenantIdByProductId(productId: string): string | null;
-  getTenantIdByStockId(stockId: string): string | null;
-  getProducts(): Product[];
-  getProductVariants(): ProductVariant[];
-  getInventoryItems(): InventoryItem[];
-  getStockLots(): StockLot[];
-  getInventoryItemById(id: string): InventoryItem | undefined;
-  getStockLotByIdOrVariant(idOrVariant: string): StockLot | undefined;
-  addProduct(product: Product): void;
-  updateProduct(productId: string, updates: Partial<Product>): void;
-  softDeleteProduct(productId: string, deletedBy?: string): void;
-  addProductVariants(variants: ProductVariant[]): void;
+  ): Promise<void>;
+  decreaseLotQuantity(stockId: string, quantity: number): Promise<void>;
+  increaseLotQuantity(stockId: string, quantity: number): Promise<void>;
+  isSerial(stockId: string): Promise<boolean>;
+  getTenantIdByProductId(productId: string): Promise<string | null>;
+  getTenantIdByStockId(stockId: string): Promise<string | null>;
+  getProducts(): Promise<Product[]>;
+  getProductVariants(): Promise<ProductVariant[]>;
+  getInventoryItems(): Promise<InventoryItem[]>;
+  getStockLots(): Promise<StockLot[]>;
+  getInventoryItemById(id: string): Promise<InventoryItem | undefined>;
+  getStockLotByIdOrVariant(idOrVariant: string): Promise<StockLot | undefined>;
+  addProduct(product: Product): Promise<void>;
+  updateProduct(productId: string, updates: Partial<Product>): Promise<void>;
+  softDeleteProduct(productId: string, deletedBy?: string): Promise<void>;
+  addProductVariants(variants: ProductVariant[]): Promise<void>;
   updateProductVariant(
     variantId: string,
     updates: Partial<ProductVariant>,
-  ): void;
-  addStockLot(stockLot: StockLot): void;
-  removeStockLot(stockLotId: string): void;
-  addInventoryItems(items: InventoryItem[]): void;
-  removeInventoryItem(itemId: string): void;
+  ): Promise<void>;
+  addStockLot(stockLot: StockLot): Promise<void>;
+  removeStockLot(stockLotId: string): Promise<void>;
+  addInventoryItems(items: InventoryItem[]): Promise<void>;
+  removeInventoryItem(itemId: string): Promise<void>;
 }

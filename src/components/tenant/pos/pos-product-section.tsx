@@ -3,14 +3,68 @@
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { IconSearch } from "@tabler/icons-react";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useEffect } from "react";
 import { PosProductCard } from "./ui/POSProductCard";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ToolsIcon } from "@hugeicons/core-free-icons";
+import type { Product } from "@/src/types/product/type.product";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
 
 export function PosProductSection() {
-  const { products, inventoryItems, stockLots } = useInventoryStore();
   const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
+  
+  const [products, setProducts] = useState<Product[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [stockLots, setStockLots] = useState<StockLot[]>([]);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInventory = async () => {
+      if (!selectedBranchId) {
+        setProducts([]);
+        setProductVariants([]);
+        setInventoryItems([]);
+        setStockLots([]);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const result = await getBranchInventoryAction(selectedBranchId);
+        if (cancelled) return;
+
+        if (!result.success || !result.data) {
+          toast.error(result.error || "No se pudo cargar el inventario");
+          return;
+        }
+
+        setProducts(result.data.products as Product[]);
+        setProductVariants(result.data.variants as ProductVariant[]);
+        setInventoryItems(result.data.inventoryItems as InventoryItem[]);
+        setStockLots(result.data.stockLots as StockLot[]);
+      } catch (error) {
+        if (!cancelled) toast.error("Error de red");
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    loadInventory();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedBranchId]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return products;
@@ -19,31 +73,12 @@ export function PosProductSection() {
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.baseSku.toLowerCase().includes(q) ||
-        p.categoryId.toLowerCase().includes(q),
+        (p.categoryId?.toLowerCase() || "").includes(q),
     );
   }, [products, search]);
 
-  const availableProducts = useMemo(() => {
-    if (!selectedBranchId) return [];
-    return filtered.filter((product) => {
-      if (product.is_serial) {
-        return inventoryItems.some(
-          (item) =>
-            item.productId === product.id &&
-            item.branchId === selectedBranchId &&
-            item.status === "disponible",
-        );
-      }
-
-      return stockLots.some(
-        (lot) =>
-          lot.productId === product.id &&
-          lot.branchId === selectedBranchId &&
-          lot.status === "disponible" &&
-          lot.quantity > 0,
-      );
-    });
-  }, [filtered, inventoryItems, stockLots, selectedBranchId]);
+  // The POSProductCard already handles grey-out states for out-of-stock items,
+  // so we show all active products matching the search query.
 
   return (
     <div className="flex flex-col h-full">
@@ -63,14 +98,25 @@ export function PosProductSection() {
 
       {/* Grid de Productos */}
       <div className="flex-1 overflow-y-auto p-4">
-        {availableProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10 text-muted-foreground animate-pulse">
+            <HugeiconsIcon icon={ToolsIcon} className="w-8 h-8 mb-2 animate-spin" />
+            <p className="text-sm font-semibold">Cargando catálogo...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center text-muted-foreground py-10 text-sm">
             No se encontraron productos
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
-            {availableProducts.map((product) => (
-              <PosProductCard key={product.id} product={product} />
+            {filtered.map((product) => (
+              <PosProductCard 
+                key={product.id} 
+                product={product as any} 
+                inventoryItems={inventoryItems}
+                stockLots={stockLots}
+                allVariants={productVariants}
+              />
             ))}
           </div>
         )}

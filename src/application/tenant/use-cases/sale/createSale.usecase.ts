@@ -13,13 +13,13 @@ export class CreateSaleUseCase {
     private reservationRepo: ReservationRepository,
   ) {}
 
-  execute(
+  async execute(
     dto: SaleDTO | SaleFromReservationDTO,
     operationId: string,
     tenantId: string,
     totalAmount: number,
     paymentMethod: string,
-  ): any {
+  ): Promise<any> {
     const now = new Date();
     const fromReservation =
       "reservationId" in dto && Array.isArray((dto as any).reservationItems);
@@ -47,7 +47,20 @@ export class CreateSaleUseCase {
     let saleItems: any[] = [];
 
     if (fromReservation) {
-      const reservationItemsData = this.reservationRepo.getReservationItems();
+      const reservationItemsData = await this.reservationRepo.getReservationItems();
+      
+      await this.reservationRepo.updateStatus(
+        (dto as SaleFromReservationDTO).reservationId,
+        "venta",
+        "convertida",
+      );
+      for (const item of (dto as SaleFromReservationDTO).reservationItems) {
+        await this.reservationRepo.updateReservationItemStatus(
+          item.reservationItemId,
+          "convertida",
+        );
+      }
+
       saleItems = (dto as SaleFromReservationDTO).reservationItems.map(
         (item) => {
           const reservationItem = reservationItemsData.find(
@@ -88,10 +101,10 @@ export class CreateSaleUseCase {
       }));
     }
 
-    this.saleRepo.addSale(specificData, saleItems);
+    await this.saleRepo.addSale(specificData, saleItems);
 
     // Stock management
-    saleItems.forEach((item) => {
+    for (const item of saleItems) {
       let finalStockStatus: InventoryItemStatus | string = "vendido";
 
       switch (dto.status) {
@@ -107,8 +120,8 @@ export class CreateSaleUseCase {
           break;
       }
 
-      if (this.inventoryRepo.isSerial(item.stockId)) {
-        this.inventoryRepo.updateItemStatus(
+      if (await this.inventoryRepo.isSerial(item.stockId)) {
+        await this.inventoryRepo.updateItemStatus(
           item.stockId,
           finalStockStatus,
           dto.branchId,
@@ -119,10 +132,10 @@ export class CreateSaleUseCase {
           finalStockStatus === "vendido" ||
           finalStockStatus === "vendido_pendiente_entrega"
         ) {
-          this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+          await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
         }
       }
-    });
+    }
 
     return specificData;
   }

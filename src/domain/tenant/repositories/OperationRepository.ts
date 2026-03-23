@@ -1,8 +1,8 @@
 import { Operation } from "../../../types/operation/type.operations";
 
 export interface OperationRepository {
-  addOperation(operation: Operation): void;
-  getOperationById(id: string): Operation | null;
-  getOperations(): Operation[];
-  updateOperationStatus(id: string, status: string): void;
+  addOperation(operation: Operation): Promise<void>;
+  getOperationById(id: string): Promise<Operation | null>;
+  getOperations(): Promise<Operation[]>;
+  updateOperationStatus(id: string, status: string): Promise<void>;
 }

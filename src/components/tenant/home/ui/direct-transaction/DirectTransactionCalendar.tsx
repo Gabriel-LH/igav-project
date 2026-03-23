@@ -7,7 +7,7 @@ import {
   isWithinInterval,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Info } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import {
   getReservationDataByAttributes,
   OpType,
-  getTotalStock,
 } from "@/src/utils/reservation/checkAvailability";
 import { useMemo } from "react";
 import { CartItem } from "@/src/types/cart/type.cart";
@@ -28,15 +27,15 @@ interface DirectCalendarProps {
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
   selectedDate: Date | undefined;
   onSelect: (date: Date | undefined) => void;
-  mode: "pickup" | "return"; // pickup: restringido a 3 días, return: libre a futuro
-  minDate?: Date; // Para la devolución, la fecha mínima es el día de recojo
+  mode: "pickup" | "return"; 
+  minDate?: Date; 
   label?: string;
   type?: OpType;
   maxDays?: number;
   productId?: string;
   variantId?: string;
   quantity?: number;
-  cartItems?: CartItem[]; // 👈 Nuevo: Para validación colectiva en el POS
+  cartItems?: CartItem[]; 
 }
 
 export function DirectTransactionCalendar({
@@ -55,79 +54,65 @@ export function DirectTransactionCalendar({
 }: DirectCalendarProps) {
   const today = new Date();
 
-  // 1. OBTENER DATOS DE DISPONIBILIDAD (Para uno o varios productos)
+  // 1. OBTENER DATOS DE DISPONIBILIDAD DINÁMICA
+  // El 'totalPhysicalStock' aquí ya viene filtrado sin los ítems en lavandería/mantenimiento
   const availabilityData = useMemo(() => {
-    // Caso A: Usamos el carrito (POS)
     if (cartItems && cartItems.length > 0) {
       return cartItems.map((item) => ({
         id: item.product.id,
         quantity: item.quantity,
-        data: getReservationDataByAttributes(
-          item.product.id,
-          item.variantId || "",
-          type,
-        ),
+        data: getReservationDataByAttributes(item.product.id, item.variantId || "", type),
       }));
     }
 
-    // Caso B: Un solo producto (DirectTransactionModal)
     if (productId && variantId) {
-      return [
-        {
-          id: productId,
-          quantity: quantity || 1,
-          data: getReservationDataByAttributes(productId, variantId, type),
-        },
-      ];
+      return [{
+        id: productId,
+        quantity: quantity || 1,
+        data: getReservationDataByAttributes(productId, variantId, type),
+      }];
     }
-
     return [];
   }, [productId, variantId, type, cartItems, quantity]);
 
-  // 2. FUNCIÓN PARA SABER SI UN DÍA ESTÁ LLENO (Basado en la colección de disponibilidad)
+  // 2. CÁLCULO DE DISPONIBILIDAD (Sin buffers estáticos)
   const isDayFull = (date: Date) => {
     if (availabilityData.length === 0) return false;
 
-    // Un día está lleno si AL MENOS UN producto del set no cabe
     return availabilityData.some(({ quantity: requestedQty, data }) => {
       const { totalPhysicalStock, activeReservations } = data;
 
+      // Si el stock físico es 0 (ej: todos en mantenimiento), el día está bloqueado
       if (totalPhysicalStock === 0) return true;
 
       const reservedAtThisTime = activeReservations
         .filter((r) => isWithinInterval(date, { start: r.start, end: r.end }))
         .reduce((sum, r) => sum + (r.quantity || 1), 0);
 
+      // Bloquea si las reservas futuras + el pedido actual superan el stock "hábil"
       return reservedAtThisTime + requestedQty > totalPhysicalStock;
     });
   };
 
-  // 3. REGLA DE PICKUP (Apartado Físico: Máximo 2 días)
-  const maxPickupDate = addDays(today, maxDays || 2);
-
-  // 4. LÓGICA FINAL DE BLOQUEO
+  // 3. LÓGICA DE BLOQUEO DE CALENDARIO
   const isDisabled = (date: Date) => {
     const day = startOfDay(date);
 
-    // A. Bloqueo por Reglas de Negocio (Tiempos)
-    let isRestrictedByRules = false;
-
+    // A. Reglas Temporales (Pick-up inmediato o fechas mínimas)
     if (mode === "pickup") {
-      isRestrictedByRules =
-        day < startOfDay(today) || day > endOfDay(maxPickupDate);
+      const maxPickupDate = addDays(today, maxDays || 2);
+      if (day < startOfDay(today) || day > endOfDay(maxPickupDate)) return true;
     } else {
       const referenceDate = minDate ? startOfDay(minDate) : startOfDay(today);
-      isRestrictedByRules = day < referenceDate;
+      if (day < referenceDate) return true;
     }
 
-    // B. Bloqueo por Disponibilidad (Stock agotado en el conjunto de productos)
-    const isRestrictedByStock = !isRestrictedByRules && isDayFull(day);
-
-    return isRestrictedByRules || isRestrictedByStock;
+    // B. Disponibilidad Física (Basada en el Pool Real)
+    return isDayFull(day);
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -157,6 +142,16 @@ export function DirectTransactionCalendar({
           />
         </PopoverContent>
       </Popover>
+
+      {/* 4. INDICADOR DE STOCK REAL (Opcional: ayuda al vendedor a entender por qué hay bloqueos) */}
+      {mode === "pickup" && availabilityData.length > 0 && (
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground bg-muted/30 p-2 rounded-md">
+          <Info className="w-3 h-3 text-amber-500" />
+          <span>
+            Stock físico disponible hoy: {availabilityData[0].data.totalPhysicalStock} unidades.
+          </span>
+        </div>
+      )}
     </div>
   );
 }

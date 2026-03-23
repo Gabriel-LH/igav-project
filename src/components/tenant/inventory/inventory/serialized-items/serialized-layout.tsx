@@ -11,7 +11,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AddToListIcon, ListViewIcon } from "@hugeicons/core-free-icons";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { getProductsAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
-import { assignSerializedAction, listSerializedItemsAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
+import { assignSerializedAction, listSerializedItemsAction, deleteInventoryItemAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
+import { DeleteConfirmModal } from "../ui/DeleteConfirmModal";
 import { toast } from "sonner";
 import { GLOBAL_BRANCH_ID, useBranchStore } from "@/src/store/useBranchStore";
 import { Branch } from "@/src/types/branch/type.branch";
@@ -30,6 +31,8 @@ export function SerializedLayout({
   const [activeTab, setActiveTab] = useState("form");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { setProducts, setProductVariants, setInventoryItems, inventoryItems } = useInventoryStore();
   const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
@@ -76,6 +79,7 @@ export function SerializedLayout({
         isForSale: formData.isForSale,
         condition: formData.condition,
         damageNotes: formData.damageNotes,
+        status: formData.status as "en_transito" | "disponible",
       });
 
       if (result.success) {
@@ -115,8 +119,25 @@ export function SerializedLayout({
   }, [formattedItems, isGlobal, selectedBranchId]);
 
   const handleDelete = (id: string) => {
-    console.log("Delete item:", id);
-    toast.info("Funcionalidad de eliminar item en desarrollo");
+    const item = formattedItems.find((i) => i.id === id);
+    setDeleteTarget({
+      id,
+      name: item ? `${item.productName} — Serial: ${item.serialCode}` : id,
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    const result = await deleteInventoryItemAction(deleteTarget.id);
+    setIsDeleting(false);
+    if (result.success) {
+      toast.success("Item serializado eliminado correctamente");
+      setDeleteTarget(null);
+      fetchData();
+    } else {
+      toast.error((result as any).error || "Error al eliminar el item");
+    }
   };
 
   return (
@@ -175,6 +196,14 @@ export function SerializedLayout({
           )}
         </TabsContent>
       </Tabs>
+
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+        itemName={deleteTarget?.name}
+      />
     </div>
   );
 }

@@ -18,7 +18,7 @@ import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
-import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
@@ -384,8 +384,10 @@ export function PosReservationModal({
       };
 
       try {
-        makeProcessTransaction().execute(saleDTO);
-        makeProcessTransaction().execute(rentalDTO);
+        const resSell = await processTransactionAction(saleDTO);
+        if (!resSell.success) throw new Error(resSell.error);
+        const resRent = await processTransactionAction(rentalDTO);
+        if (!resRent.success) throw new Error(resRent.error);
         toast.success(`Dos reservas creadas (Venta + Alquiler)`);
       } catch (err) {
         console.error(err);
@@ -428,7 +430,8 @@ export function PosReservationModal({
       };
 
       try {
-        makeProcessTransaction().execute(newReservation);
+        const result = await processTransactionAction(newReservation);
+        if (!result.success) throw new Error(result.error);
         toast.success(
           `Reserva de ${operationType} creada. Adelanto: ${formatCurrency(totalDP)}`,
         );

@@ -5,6 +5,7 @@ import { paymentSchema } from "../payments/type.payments";
 export const operationSchema = z
   .object({
     id: z.string(),
+    tenantId: z.string(),
     referenceCode: z.string(),
     branchId: z.string(),
     sellerId: z.string(),

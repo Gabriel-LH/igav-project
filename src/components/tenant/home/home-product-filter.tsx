@@ -5,9 +5,18 @@ import { Icon, Search, WashingMachine, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CleanIcon, ToolsIcon, WashingMachineIcon } from "@hugeicons/core-free-icons";
+import { ToolsIcon, WashingMachineIcon } from "@hugeicons/core-free-icons";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { iron } from "@lucide/lab";
+
+interface Props {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  viewMode: string;
+  setViewMode: (mode: string) => void;
+}
 
 export function ProductFilters({
   activeTab,
@@ -16,7 +25,7 @@ export function ProductFilters({
   setSearchQuery,
   viewMode,
   setViewMode,
-}: any) {
+}: Props) {
   const isMobile = useIsMobile();
   return (
     <>

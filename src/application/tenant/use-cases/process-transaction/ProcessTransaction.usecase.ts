@@ -31,6 +31,7 @@ export class ProcessTransactionUseCase {
         dto,
         financials.totalAmount,
         financials.initialNetPaid,
+        tenantId,
       );
       const operationId = String(operation.id);
 
@@ -49,6 +50,7 @@ export class ProcessTransactionUseCase {
         operationId,
         branchId: dto.branchId,
         sellerId: dto.sellerId,
+        tenantId,
       });
 
       const strategy = this.transactionStrategies.find((s) =>

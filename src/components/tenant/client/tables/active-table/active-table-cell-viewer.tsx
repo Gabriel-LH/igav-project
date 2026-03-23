@@ -14,9 +14,6 @@ import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { z } from "zod";
 import { clientActiveSchema } from "../type/type.active";
-import { useCouponStore } from "@/src/store/useCouponStore";
-import { useTenantStore } from "@/src/store/useTenantStore";
-import { useMemo } from "react";
 
 export function TableCellViewerActive({
   item,
@@ -24,18 +21,6 @@ export function TableCellViewerActive({
   item: z.infer<typeof clientActiveSchema>;
 }) {
   const isMobile = useIsMobile();
-  const allCoupons = useCouponStore((s) => s.coupons);
-  const activeTenantId = useTenantStore((s) => s.activeTenant.id);
-
-  // TODO: Use activeTenantId correctly in table contexts instead of hardcoded later
-  const activeCoupon = useMemo(() => {
-    return allCoupons.find(
-      (c) =>
-        c.tenantId === activeTenantId &&
-        c.assignedToClientId === item.id &&
-        c.status === "available",
-    );
-  }, [allCoupons, item.id, activeTenantId]);
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -104,10 +89,10 @@ export function TableCellViewerActive({
                 <Label htmlFor="coupon">Codigo de Cupon Activo</Label>
                 <Input
                   id="coupon"
-                  defaultValue={activeCoupon ? activeCoupon.code : "N/A"}
+                  defaultValue={item.activeCouponCode ?? "N/A"}
                   readOnly
                   className={
-                    activeCoupon
+                    item.activeCouponCode
                       ? "text-orange-600 font-bold"
                       : "text-muted-foreground"
                   }

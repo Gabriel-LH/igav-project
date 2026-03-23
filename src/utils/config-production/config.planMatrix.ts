@@ -50,6 +50,7 @@ const TIER_CONFIG: Record<PlanTier, TierConfig> = {
     features: [
       "sales",
       "rentals",
+      "reservations",
       "inventory",
       "products",
       "inventoryItems",
@@ -74,6 +75,7 @@ const TIER_CONFIG: Record<PlanTier, TierConfig> = {
     features: [
       "sales",
       "rentals",
+      "reservations",
       "inventory",
       "products",
       "inventoryItems",
@@ -105,6 +107,7 @@ const TIER_CONFIG: Record<PlanTier, TierConfig> = {
     features: [
       "sales",
       "rentals",
+      "reservations",
       "inventory",
       "products",
       "inventoryItems",

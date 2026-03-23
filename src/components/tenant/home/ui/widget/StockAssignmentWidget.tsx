@@ -17,6 +17,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useBranchStore } from "@/src/store/useBranchStore";
 import { OpType } from "@/src/utils/reservation/checkAvailability";
 import { toast } from "sonner";
 
@@ -48,6 +49,7 @@ export function StockAssignmentWidget({
   readOnly = false,
 }: StockAssignmentWidgetProps) {
   const { inventoryItems, stockLots } = useInventoryStore();
+  const branches = useBranchStore((state) => state.branches);
 
   const lastEmittedIdsRef = useRef<string>("");
 
@@ -58,6 +60,9 @@ export function StockAssignmentWidget({
     });
     return init;
   });
+
+  const getBranchName = (branchId: string) =>
+    branches.find((branch) => branch.id === branchId)?.name || branchId;
 
   // 1. Filtrar candidatos VÁLIDOS
   const validCandidates = useMemo(() => {
@@ -74,13 +79,7 @@ export function StockAssignmentWidget({
         if (!isBaseMatch) return false;
         if (operationType === "venta" && !i.isForSale) return false;
         if (operationType === "alquiler" && !i.isForRent) return false;
-
-        if (isImmediate && i.status !== "disponible") return false;
-
-        return (
-          i.status === "disponible" ||
-          (!isImmediate && operationType === "alquiler")
-        );
+        return i.status === "disponible";
       });
     } else {
       return stockLots.filter((l) => {
@@ -93,18 +92,18 @@ export function StockAssignmentWidget({
         if (!isBaseMatch) return false;
         if (operationType === "venta" && !l.isForSale) return false;
         if (operationType === "alquiler" && !l.isForRent) return false;
-
-        if (isImmediate && (l.status !== "disponible" || l.quantity <= 0))
-          return false;
-
-        return (
-          (l.status === "disponible" ||
-            (!isImmediate && operationType === "alquiler")) &&
-          l.quantity > 0
-        );
+        return l.status === "disponible" && l.quantity > 0;
       });
     }
-  }, [inventoryItems, stockLots, productId, isSerial]);
+  }, [
+    inventoryItems,
+    stockLots,
+    productId,
+    isSerial,
+    dateRange,
+    variantId,
+    operationType,
+  ]);
 
   // 2. Notificar al padre
   useEffect(() => {
@@ -204,7 +203,7 @@ export function StockAssignmentWidget({
                   }
                 >
                   {l.variantId} (Disp: {l.quantity}) -{" "}
-                  {MOCK_BRANCHES.find((b) => b.id === l.branchId)?.name}
+                  {getBranchName(l.branchId)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -286,11 +285,7 @@ export function StockAssignmentWidget({
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] text-muted-foreground">
-                        {
-                          MOCK_BRANCHES.find(
-                            (b) => b.id === selectedItem.branchId,
-                          )?.name
-                        }
+                        {getBranchName(selectedItem.branchId)}
                       </span>
                       {selectedItem.condition &&
                         selectedItem.condition !== "Nuevo" && (
@@ -342,10 +337,7 @@ export function StockAssignmentWidget({
                         return (
                           <SelectItem key={i.id} value={i.id} disabled={isUsed}>
                             {i.serialCode} - {i.status} (
-                            {
-                              MOCK_BRANCHES.find((b) => b.id === i.branchId)
-                                ?.name
-                            }
+                            {getBranchName(i.branchId)}
                             )
                           </SelectItem>
                         );

@@ -28,6 +28,8 @@ export const stockLotSchema = z.object({
       "discontinuado",
       "alquilado",
       "vendido",
+      "retirado",
+      "vendido_pendiente_entrega",
     ])
     .default("en_transito"),
 

@@ -75,6 +75,11 @@ export interface StockRepository {
   deleteStockLot(id: string): Promise<void>;
 
   /**
+   * Deletes a serialized inventory item by id
+   */
+  deleteInventoryItem(id: string): Promise<void>;
+
+  /**
    * Updates serialized item status
    */
   updateInventoryItemStatus(

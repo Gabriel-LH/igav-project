@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 
 import { PriceBreakdownBase } from "@/src/components/tenant/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "./CashPaymentSummary";
-import { makeProcessTransaction } from "@/src/infrastructure/tenant/factories/processTransaction.factory";
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 // ... placeholder, will search first ...
 import { DialogDescription } from "@/components/ui/dialog";
@@ -39,7 +39,6 @@ import { setHours, setMinutes } from "date-fns";
 import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
-import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "@/src/components/tenant/pos/ui/UsePointsComponent";
 import { UseCouponComponent } from "@/src/components/tenant/pos/ui/UseCouponComponent";
@@ -48,6 +47,26 @@ import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import type { Product } from "@/src/types/product/type.product";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+
+interface DisplayAttributeValue {
+  keyName: string;
+  name: string;
+  hex?: string;
+  isColor: boolean;
+}
+
+interface DirectTransactionModalProps {
+  item: Product;
+  variantId: string;
+  children: React.ReactNode;
+  currentBranchId: string;
+  type: "venta" | "alquiler";
+  onSuccess?: () => void;
+  selectedVariant?: ProductVariant;
+  displayAttributes?: DisplayAttributeValue[];
+}
 
 export function DirectTransactionModal({
   item,
@@ -56,7 +75,9 @@ export function DirectTransactionModal({
   currentBranchId,
   type,
   onSuccess,
-}: any) {
+  selectedVariant,
+  displayAttributes = [],
+}: DirectTransactionModalProps) {
   const [open, setOpen] = React.useState(false);
 
   // 1. Creamos referencias para "disparar" los clics
@@ -128,8 +149,6 @@ export function DirectTransactionModal({
   // --------------------
   const { inventoryItems, stockLots } = useInventoryStore();
 
-  const { getSizeById, getColorById } = useAttributeStore();
-
   // 2️⃣ Paso 2: Filtramos localmente usando useMemo
   const validStockCandidates = useMemo(() => {
     const productId = String(item.id);
@@ -147,6 +166,7 @@ export function DirectTransactionModal({
         (s) =>
           String(s.productId) === productId &&
           s.variantId === variantId &&
+          s.status === "disponible" &&
           s.quantity > 0 &&
           (type === "venta" ? s.isForSale : s.isForRent),
       );
@@ -154,15 +174,18 @@ export function DirectTransactionModal({
   }, [inventoryItems, stockLots, item.id, item.is_serial, variantId, type]);
 
   const variant = useMemo(
-    () => PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
-    [variantId],
+    () =>
+      selectedVariant || PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
+    [selectedVariant, variantId],
   );
   const colorName =
-    getColorById(variant?.attributes?.color || "")?.name ||
-    variant?.attributes?.color;
+    displayAttributes.find(
+      (attr) => attr.keyName.trim().toLowerCase() === "color",
+    )?.name || variant?.attributes?.color;
   const sizeName =
-    getSizeById(variant?.attributes?.size || "")?.name ||
-    variant?.attributes?.size;
+    displayAttributes.find((attr) =>
+      ["size", "talla"].includes(attr.keyName.trim().toLowerCase()),
+    )?.name || variant?.attributes?.size;
 
   // 3. Seleccionamos el mejor candidato
   const selectedStockId = (validStockCandidates[0] as any)?.id;
@@ -197,9 +220,9 @@ export function DirectTransactionModal({
 
   const bestPromo = useMemo(() => {
     const defaultPrice =
-      type === "venta" ? item.price_sell || 0 : item.price_rent || 0;
+      type === "venta" ? variant?.priceSell || 0 : variant?.priceRent || 0;
     return calculateBestPromotionForProduct(item, defaultPrice, activePromos);
-  }, [activePromos, item, type]);
+  }, [activePromos, item, type, variant]);
 
   const originalPriceSell = variant?.priceSell || 0;
   const originalPriceRent = variant?.priceRent || 0;
@@ -281,7 +304,7 @@ export function DirectTransactionModal({
     return true;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!validateTransaction()) return;
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
     if (!hasStock || !selectedStockId)
@@ -371,7 +394,9 @@ export function DirectTransactionModal({
         updatedAt: new Date(),
       };
 
-      makeProcessTransaction().execute(rentalData);
+      try {
+        const res = await processTransactionAction(rentalData);
+        if(!res.success) throw new Error(res.error);
       if (rentalData.status === "alquilado") {
         toast.success("Alquiler realizado correctamente");
       } else {
@@ -379,6 +404,9 @@ export function DirectTransactionModal({
       }
       setOpen(false);
       onSuccess?.();
+      } catch (err: any) {
+        toast.error(err.message || "Error procesando alquiler");
+      }
     }
 
     if (type === "venta") {
@@ -413,7 +441,9 @@ export function DirectTransactionModal({
         updatedAt: new Date(),
       };
 
-      makeProcessTransaction().execute(saleData);
+      try {
+        const res = await processTransactionAction(saleData);
+        if(!res.success) throw new Error(res.error);
       if (!checklist.deliverAfter) {
         toast.success("Venta realizada correctamente");
       } else {
@@ -421,6 +451,9 @@ export function DirectTransactionModal({
       }
       setOpen(false);
       onSuccess?.();
+      } catch (err: any) {
+        toast.error(err.message || "Error procesando venta");
+      }
     }
   };
 
@@ -455,7 +488,7 @@ export function DirectTransactionModal({
             <div className="flex-1">
               <h4 className="text-sm font-bold uppercase">{item.name}</h4>
               <p className="text-[10px] text-muted-foreground">
-                Color: {colorName} | SKU: {item.sku}
+                Color: {colorName || "N/A"} | SKU: {item.baseSku}
               </p>
             </div>
             <div className="w-20">

@@ -10,7 +10,7 @@ export class CreateReservationUseCase {
     private inventoryRepo: InventoryRepository,
   ) {}
 
-  execute(dto: ReservationDTO, operationId: string, totalAmount: number): any {
+  async execute(dto: ReservationDTO, operationId: string, totalAmount: number): Promise<any> {
     const now = new Date();
     const totalUnits = dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0);
 
@@ -52,15 +52,15 @@ export class CreateReservationUseCase {
       })),
     );
 
-    this.reservationRepo.addReservation(reservation, reservationItems);
+    await this.reservationRepo.addReservation(reservation, reservationItems);
 
-    reservationItems.forEach((item) => {
+    for (const item of reservationItems) {
       if (item.stockId) {
-        if (this.inventoryRepo.isSerial(item.stockId)) {
-          this.inventoryRepo.updateItemStatus(item.stockId, "reservado");
+        if (await this.inventoryRepo.isSerial(item.stockId)) {
+          await this.inventoryRepo.updateItemStatus(item.stockId, "reservado");
         }
       }
-    });
+    }
 
     return reservation;
   }

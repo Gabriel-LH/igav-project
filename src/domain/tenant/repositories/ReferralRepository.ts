@@ -5,6 +5,6 @@ export interface ReferralRepository {
     customerId: string,
     tenantId: string,
     trigger: "first_purchase" | "first_rental" | "account_creation",
-  ): Referral | undefined;
-  addReferral(referral: Referral): void;
+  ): Promise<Referral | undefined>;
+  addReferral(referral: Referral): Promise<void>;
 }

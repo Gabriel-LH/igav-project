@@ -12,7 +12,8 @@ import { AddToListIcon, ListViewIcon } from "@hugeicons/core-free-icons";
 import { Branch } from "@/src/types/branch/type.branch";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { getProductsAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
-import { assignStockAction, listStockLotsAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
+import { assignStockAction, listStockLotsAction, deleteStockLotAction } from "@/src/app/(tenant)/tenant/actions/stock.actions";
+import { DeleteConfirmModal } from "../ui/DeleteConfirmModal";
 import { toast } from "sonner";
 import { GLOBAL_BRANCH_ID, useBranchStore } from "@/src/store/useBranchStore";
 
@@ -30,6 +31,8 @@ export function StockLayout({
   const [activeTab, setActiveTab] = useState("form");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { setProducts, setProductVariants, setStockLots, stockLots } = useInventoryStore();
   const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
@@ -77,6 +80,7 @@ export function StockLayout({
         isForRent: formData.isForRent,
         isForSale: formData.isForSale,
         condition: formData.condition,
+        status: formData.status as "en_transito" | "disponible",
       });
 
       if (result.success) {
@@ -120,8 +124,25 @@ export function StockLayout({
   }, [formattedStockLots, isGlobal, selectedBranchId]);
 
   const handleDelete = (id: string) => {
-    console.log("Delete lot:", id);
-    toast.info("Funcionalidad de eliminar lote en desarrollo");
+    const lot = formattedStockLots.find((l) => l.id === id);
+    setDeleteTarget({
+      id,
+      name: lot ? `${lot.productName} — ${lot.quantity} un. (${lot.branchName})` : id,
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    const result = await deleteStockLotAction(deleteTarget.id);
+    setIsDeleting(false);
+    if (result.success) {
+      toast.success("Lote eliminado correctamente");
+      setDeleteTarget(null);
+      fetchData();
+    } else {
+      toast.error((result as any).error || "Error al eliminar el lote");
+    }
   };
 
   return (
@@ -178,6 +199,14 @@ export function StockLayout({
           )}
         </TabsContent>
       </Tabs>
+
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+        itemName={deleteTarget?.name}
+      />
     </div>
   );
 }

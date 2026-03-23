@@ -9,9 +9,9 @@ import { generateOperationReference } from "../../../utils/operation/generateOpe
 export class CreateOperationUseCase {
   constructor(private operationRepo: OperationRepository) {}
 
-  execute(dto: any, totalAmount: number, initialNetPaid: number): Operation {
+  async execute(dto: any, totalAmount: number, initialNetPaid: number, tenantId: string): Promise<Operation> {
     const now = new Date();
-    const operations = this.operationRepo.getOperations();
+    const operations = await this.operationRepo.getOperations();
 
     const todayString = now.toISOString().split("T")[0];
     const todayOperationsByType = operations.filter(
@@ -29,6 +29,7 @@ export class CreateOperationUseCase {
 
     const operationData = operationSchema.parse({
       id: crypto.randomUUID(),
+      tenantId,
       referenceCode,
       branchId: dto.branchId,
       sellerId: dto.sellerId,
@@ -41,7 +42,7 @@ export class CreateOperationUseCase {
       createdAt: now,
     });
 
-    this.operationRepo.addOperation(operationData);
+    await this.operationRepo.addOperation(operationData);
 
     return operationData;
   }

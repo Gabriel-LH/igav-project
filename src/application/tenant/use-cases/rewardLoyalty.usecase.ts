@@ -3,19 +3,19 @@ import { LoyaltyRepository } from "../../../domain/tenant/repositories/LoyaltyRe
 export class RewardLoyaltyUseCase {
   constructor(private loyaltyRepo: LoyaltyRepository) {}
 
-  execute(
+  async execute(
     downPayment: number,
     totalAmount: number,
     customerId: string,
     operationType: string,
     operationId: string,
-  ): void {
+  ): Promise<void> {
     const actualPaidForPoints = Math.min(downPayment, totalAmount);
 
     if (actualPaidForPoints > 0) {
       const pointsEarned = Math.floor(actualPaidForPoints / 10);
       if (pointsEarned > 0) {
-        this.loyaltyRepo.addPoints(
+        await this.loyaltyRepo.addPoints(
           customerId,
           pointsEarned,
           "earned_purchase",
