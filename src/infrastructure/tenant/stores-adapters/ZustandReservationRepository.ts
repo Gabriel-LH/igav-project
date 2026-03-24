@@ -4,36 +4,47 @@ import { ReservationItem } from "../../../types/reservation/type.reservationItem
 import { useReservationStore } from "../../../store/useReservationStore";
 
 export class ZustandReservationRepository implements ReservationRepository {
-  addReservation(
+  async addReservation(
     reservation: Reservation,
     reservationItems: ReservationItem[],
-  ): void {
+  ): Promise<void> {
     useReservationStore
       .getState()
       .addReservation(reservation, reservationItems);
   }
 
-  updateStatus(id: string, newStatus: string, itemStatus: string): void {
+  async getReservations(): Promise<Reservation[]> {
+    return useReservationStore.getState().reservations;
+  }
+
+  async updateStatus(
+    id: string,
+    newStatus: string,
+    itemStatus: string,
+  ): Promise<void> {
     useReservationStore
       .getState()
       .updateStatus(id, newStatus as any, itemStatus as any);
   }
 
-  updateReservationItemStatus(itemId: string, status: string): void {
+  async updateReservationItemStatus(
+    itemId: string,
+    status: string,
+  ): Promise<void> {
     useReservationStore
       .getState()
       .updateReservationItemStatus(itemId, status as any);
   }
 
-  getReservationItems(): ReservationItem[] {
+  async getReservationItems(): Promise<ReservationItem[]> {
     return useReservationStore.getState().reservationItems;
   }
 
-  getReservationById(id: string): Reservation | undefined {
+  async getReservationById(id: string): Promise<Reservation | undefined> {
     return useReservationStore.getState().reservations.find((r) => r.id === id);
   }
 
-  cancelReservation(id: string): void {
+  async cancelReservation(id: string): Promise<void> {
     useReservationStore.getState().cancelReservation(id);
   }
 }

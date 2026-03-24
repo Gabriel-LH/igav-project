@@ -13,6 +13,9 @@ export class ProcessInitialPaymentUseCase {
     tenantId: string;
   }): Promise<void> {
     if (params.downPayment <= 0) return;
+    if (!params.tenantId) {
+      throw new Error("tenantId es obligatorio para registrar pagos");
+    }
 
     const now = new Date();
     const paymentData = paymentSchema.parse({
@@ -27,7 +30,6 @@ export class ProcessInitialPaymentUseCase {
       category: "payment",
       date: now,
       createdAt: now,
-      updatedAt: now,
       tenantId: params.tenantId,
     });
 

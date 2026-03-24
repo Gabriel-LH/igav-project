@@ -24,15 +24,18 @@ import { z } from "zod";
 import { productSchema } from "../../../types/product/type.product";
 import { Label } from "@/components/label";
 import { cn } from "@/lib/utils";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
+import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
 
 export function DetailsProductViewer({
   item,
@@ -40,13 +43,13 @@ export function DetailsProductViewer({
   item: z.infer<typeof productSchema>;
 }) {
   const isMobile = useIsMobile();
-  const user = USER_MOCK;
-  const currentBranchId = user[0].branchId!;
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId);
+  const { branches } = useBranchStore();
   const { getSizeById, getColorById, getCategoryById } = useAttributeStore();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { inventoryItems, stockLots, productVariants: allVariants } = useInventoryStore();
 
   // 1. OBTENER TODAS LAS VARIANTES DE ESTE PRODUCTO (Global)
   const allProductStock = useMemo(() => {
@@ -67,26 +70,26 @@ export function DetailsProductViewer({
   const availableSizes = useMemo(() => {
     const sizes = allProductStock
       .map((s) => {
-        const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+        const variant = allVariants.find((v) => v.id === s.variantId);
         return variant?.attributes?.size || null;
       })
       .filter((s) => s !== null);
     return Array.from(new Set(sizes));
-  }, [allProductStock]);
+  }, [allProductStock, allVariants]);
 
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || null);
 
   // 3. COLORES DISPONIBLES PARA LA TALLA SELECCIONADA
   const colorsForSelectedSize = useMemo(() => {
     const stockInSize = allProductStock.filter((s) => {
-      const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+      const variant = allVariants.find((v) => v.id === s.variantId);
       return variant?.attributes?.size === selectedSize;
     });
 
     return Array.from(
       new Map(
         stockInSize.map((s) => {
-          const variant = PRODUCT_VARIANTS_MOCK.find(
+          const variant = allVariants.find(
             (v) => v.id === s.variantId,
           );
           const colorId = variant?.attributes?.color || "";
@@ -102,7 +105,7 @@ export function DetailsProductViewer({
         }),
       ).values(),
     );
-  }, [selectedSize, allProductStock, getColorById]);
+  }, [selectedSize, allProductStock, getColorById, allVariants]);
 
   const [selectedColor, setSelectedColor] = useState(
     colorsForSelectedSize[0] || null,
@@ -122,26 +125,26 @@ export function DetailsProductViewer({
   // 5. CÁLCULO DE STOCK (Local vs Global)
   const variantLocations = useMemo(() => {
     return allProductStock.filter((s) => {
-      const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === s.variantId);
+      const variant = allVariants.find((v) => v.id === s.variantId);
       return (
         variant?.attributes?.size === selectedSize &&
         variant?.attributes?.color === selectedColor?.id
       );
     });
-  }, [allProductStock, selectedSize, selectedColor]);
+  }, [allProductStock, selectedSize, selectedColor, allVariants]);
 
   const localStock = useMemo(
     () =>
       variantLocations
         .filter((l) => l.branchId === currentBranchId)
-        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+        .reduce((acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1), 0),
     [variantLocations, currentBranchId],
   );
 
   const totalStockCombo = useMemo(
     () =>
       variantLocations.reduce(
-        (acc, curr: any) => acc + (curr.quantity ?? 1),
+        (acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1),
         0,
       ),
     [variantLocations],
@@ -151,7 +154,7 @@ export function DetailsProductViewer({
     () =>
       variantLocations
         .filter((l) => l.branchId === currentBranchId && l.isForSale)
-        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+        .reduce((acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1), 0),
     [variantLocations, currentBranchId],
   );
 
@@ -159,7 +162,7 @@ export function DetailsProductViewer({
     () =>
       variantLocations
         .filter((l) => l.branchId === currentBranchId && l.isForRent)
-        .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+        .reduce((acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1), 0),
     [variantLocations, currentBranchId],
   );
 
@@ -178,7 +181,7 @@ export function DetailsProductViewer({
         getEstimatedTransferTime(
           s.branchId,
           currentBranchId!,
-          BUSINESS_RULES_MOCK,
+          MOCK_BRANCH_CONFIG,
         ),
       ),
     );
@@ -188,15 +191,15 @@ export function DetailsProductViewer({
 
   const totalGlobalStock = useMemo(
     () =>
-      allProductStock.reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0),
+      allProductStock.reduce((acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1), 0),
     [allProductStock],
   );
 
   const productVariants = useMemo(
-    () => PRODUCT_VARIANTS_MOCK.filter((v) => v.productId === item.id),
-    [item.id],
+    () => allVariants.filter((v: ProductVariant) => v.productId === item.id),
+    [item.id, allVariants],
   );
-  const defaultVariant = productVariants[0] || ({} as any);
+  const defaultVariant = productVariants[0] || ({} as ProductVariant);
   const priceRent = defaultVariant.priceRent || 0;
   const priceSell = defaultVariant.priceSell || 0;
   const rentUnit = defaultVariant.rentUnit || "unidad";
@@ -238,7 +241,7 @@ export function DetailsProductViewer({
 
         <div className="flex px-4 py-2">
           {item.categoryId
-            ? getCategoryById(item.categoryId)?.name || "General"
+            ? getCategoryById("", item.categoryId)?.name || "General"
             : "General"}
         </div>
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">
@@ -275,7 +278,7 @@ export function DetailsProductViewer({
                 const isSelected = selectedColor?.id === color.id;
                 const totalStockThisColor = allProductStock
                   .filter((s) => {
-                    const variant = PRODUCT_VARIANTS_MOCK.find(
+                    const variant = allVariants.find(
                       (v) => v.id === s.variantId,
                     );
                     return (
@@ -283,7 +286,7 @@ export function DetailsProductViewer({
                       variant?.attributes?.color === color.id
                     );
                   })
-                  .reduce((acc, curr: any) => acc + (curr.quantity ?? 1), 0);
+                  .reduce((acc, curr: InventoryItem | StockLot) => acc + (('quantity' in curr ? curr.quantity : 1) ?? 1), 0);
 
                 const hasGlobalStock = totalStockThisColor > 0;
 
@@ -387,21 +390,24 @@ export function DetailsProductViewer({
               </div>
 
               {Array.from(
-                variantLocations.reduce((acc, curr: any) => {
+                variantLocations.reduce((acc, curr: { branchId: string; quantity?: number }) => {
                   const branchId = curr.branchId;
                   const currentQty = acc.get(branchId) || 0;
                   acc.set(branchId, currentQty + (curr.quantity ?? 1));
                   return acc;
                 }, new Map<string, number>()),
               ).map(([branchId, quantity]) => {
-                const branch = MOCK_BRANCHES.find((b) => b.id === branchId);
+                const bId = branchId as string;
+                const qtyVal = quantity as number;
+                void qtyVal;
+                const branch = branches.find((b) => b.id === bId);
                 const branchName = branch?.name || "Sucursal";
-                const isLocal = branchId === currentBranchId;
+                const isLocal = bId === currentBranchId;
                 const transferTime = !isLocal
                   ? getEstimatedTransferTime(
-                      branchId,
+                      bId,
                       currentBranchId!,
-                      BUSINESS_RULES_MOCK,
+                      MOCK_BRANCH_CONFIG,
                     )
                   : 0;
 
@@ -475,7 +481,7 @@ export function DetailsProductViewer({
                   Condición
                 </p>
                 <p className="text-sm font-bold capitalize">
-                  {(variantLocations[0] as any)?.condition || "Excelente"}
+                  {"Excelente"}
                 </p>
               </div>
               <div>

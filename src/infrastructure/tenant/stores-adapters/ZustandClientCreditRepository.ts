@@ -2,12 +2,12 @@ import { ClientCreditRepository } from "../../../domain/tenant/repositories/Clie
 import { useClientCreditStore } from "../../../store/useClientCreditStore";
 
 export class ZustandClientCreditRepository implements ClientCreditRepository {
-  addCredit(
+  async addCredit(
     customerId: string,
     amount: number,
     reason: string,
     referenceId?: string,
-  ): void {
+  ): Promise<void> {
     const newCredit = {
       id: crypto.randomUUID(),
       amount,

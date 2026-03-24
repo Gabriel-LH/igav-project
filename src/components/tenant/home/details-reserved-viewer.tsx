@@ -11,7 +11,6 @@ import {
   DrawerTrigger,
 } from "@/components/drawer";
 import { Separator } from "@/components/separator";
-import { z } from "zod";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar03Icon,
@@ -23,11 +22,11 @@ import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
 import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/badge";
-import { reservationSchema } from "@/src/types/reservation/type.reservation";
+import { Reservation } from "@/src/types/reservation/type.reservation";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { Payment } from "@/src/types/payments/type.payments";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { authClient } from "@/src/lib/auth-client";
+import { useBranchStore } from "@/src/store/useBranchStore";
 import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
@@ -35,7 +34,6 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
-import { RegisterPaymentInput } from "@/src/application/tenant/use-cases/registerPayment.usecase";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { Label } from "@/components/label";
@@ -43,39 +41,41 @@ import { RescheduleModal } from "./ui/modals/RescheduleModal";
 import { CancelReservationModal } from "./ui/modals/CancelReservationModal";
 import { GuaranteeSection } from "./ui/reservation/GuaranteeSection";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { ConvertReservationUseCase } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
+import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
-import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget"; // Tu widget actualizado
-import { useAttributeStore } from "@/src/store/useAttributeStore";
-import { ZustandReservationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReservationRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
-import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
-import { ZustandClientCreditRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandClientCreditRepository";
-import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
-import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
-import { RewardLoyaltyUseCase } from "@/src/application/tenant/use-cases/rewardLoyalty.usecase";
-import { RegisterPaymentUseCase } from "@/src/application/tenant/use-cases/registerPayment.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
-import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
+import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget";
+import { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import { AttributeValue } from "@/src/types/attributes/type.attribute-value";
+import {
+  convertReservationAction,
+  cancelReservationAction,
+  rescheduleReservationAction,
+} from "@/src/app/(tenant)/tenant/actions/reservation.actions";
+import { registerPaymentAction } from "@/src/app/(tenant)/tenant/actions/payment.actions";
 
 export function DetailsReservedViewer({
   reservation: activeRes,
+  attributeTypes,
+  attributeValues,
+  onRefresh,
 }: {
-  reservation?: z.infer<typeof reservationSchema>;
+  reservation?: Reservation;
+  attributeTypes: AttributeType[];
+  attributeValues: AttributeValue[];
+  onRefresh: () => void;
 }) {
   const isMobile = useIsMobile();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const currentUser = USER_MOCK[0];
+  
+  const { data: session } = authClient.useSession();
+  const currentUser = session?.user;
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
 
-  const { products } = useInventoryStore();
-  const { reservationItems, cancelReservation, rearrangeReservation } =
-    useReservationStore();
+  const { products, productVariants } = useInventoryStore();
+  const { reservationItems } = useReservationStore();
   const { payments: globalPayments } = usePaymentStore();
   const { operations } = useOperationStore();
   const { customers } = useCustomerStore();
@@ -95,14 +95,12 @@ export function DetailsReservedViewer({
     [reservationItems, activeRes?.id],
   );
 
-  // 2. Inicializar selección con lo que ya viene guardado (para ventas ya asignadas)
+  // 2. Inicializar selección con lo que ya viene guardado
   const [selectedStocks, setSelectedStocks] = useState<Record<string, string>>(
     () => {
       const initialSelections: Record<string, string> = {};
       activeResItems.forEach((item) => {
         if (item.stockId) {
-          // Rellenamos todos los slots de este item con el stockId guardado
-          // (Si es serial quantity=1, si es lote quantity=N)
           for (let i = 0; i < item.quantity; i++) {
             initialSelections[`${item.id}-${i}`] = item.stockId;
           }
@@ -116,11 +114,9 @@ export function DetailsReservedViewer({
 
   const operation = operations.find((op) => op.id === activeRes?.operationId);
   const currentClient = customers.find((c) => c.id === activeRes?.customerId);
-  const seller = USER_MOCK[0];
+  const seller = currentUser;
+  const { branches } = useBranchStore();
 
-  const { colors, sizes } = useAttributeStore();
-
-  // Agrupamos items por "clave compuesta" para mostrarlos juntos
   const groupedItems = useMemo(() => {
     const groups: Record<
       string,
@@ -139,7 +135,6 @@ export function DetailsReservedViewer({
     return Object.values(groups);
   }, [activeResItems]);
 
-  // Cálculos Financieros
   const allPaymentsForThisOp = useMemo(
     () =>
       globalPayments.filter(
@@ -159,19 +154,17 @@ export function DetailsReservedViewer({
     totalCalculated,
   );
 
-  // Validación de Entrega
   const totalUnitsNeeded = activeResItems.reduce(
     (acc, item) => acc + item.quantity,
     0,
   );
   const totalUnitsAssigned = Object.keys(selectedStocks).length;
-  // Solo exigimos asignación completa si NO es un simple "Pendiente de Recojo" diferido
   const allItemsAssigned = totalUnitsAssigned >= totalUnitsNeeded;
 
   const isReadyToDeliver =
     (balance === 0 || isCredit) &&
     checklist.limpieza &&
-    (activeRes?.operationType === "venta" ? true : checklist.garantia) && // Venta no exige garantía física
+    (activeRes?.operationType === "venta" ? true : checklist.garantia) && 
     allItemsAssigned;
 
   const handleDeliver = async (deliverImmediately: boolean) => {
@@ -183,25 +176,11 @@ export function DetailsReservedViewer({
     }
 
     try {
-      setChecklist({ limpieza: false, garantia: false });
-      setIsDrawerOpen(false);
-
-      // Instanciar repositorios y el Use Case
-      const reservationRepo = new ZustandReservationRepository();
-      const inventoryRepo = new ZustandInventoryRepository();
-      const guaranteeRepo = new ZustandGuaranteeRepository();
-
-      const convertUseCase = new ConvertReservationUseCase(
-        reservationRepo,
-        inventoryRepo,
-        guaranteeRepo,
-      );
-
-      await convertUseCase.execute({
-        reservation: activeRes as any,
+      const result = await convertReservationAction({
+        reservation: activeRes as Reservation,
         reservationItems: activeResItems,
         selectedStocks,
-        sellerId: currentUser.id,
+        sellerId: currentUser?.id || "",
         totalCalculated,
         downPayment: 0,
         totalPaid,
@@ -211,11 +190,25 @@ export function DetailsReservedViewer({
         shouldDeliverImmediately: deliverImmediately,
       });
 
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setChecklist({ limpieza: false, garantia: false });
+      setIsDrawerOpen(false);
+      onRefresh();
+
       const ticketHtml = buildDeliveryTicketHtml(
-        seller,
-        activeRes,
+        seller as { id: string; name?: string },
+        activeRes as Reservation,
         currentClient!,
-        activeResItems,
+        activeResItems.map(item => {
+          const product = products.find(p => p.id === item.productId);
+          return {
+            ...item,
+            productName: product?.name || "Producto",
+          };
+        }),
         guaranteeType,
         guarantee,
       );
@@ -226,74 +219,71 @@ export function DetailsReservedViewer({
           ? "¡Venta finalizada!"
           : "¡Alquiler entregado!",
       );
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error("Error al procesar la operación");
+      const errorMessage = error instanceof Error ? error.message : "Error al procesar la operación";
+      toast.error(errorMessage);
     }
   };
 
-  const handleAddPayment = (data: any): Payment => {
-    // 1. Instanciar los repositorios
-    const operationRepo = new ZustandOperationRepository();
-    const paymentRepo = new ZustandPaymentRepository();
-    const saleRepo = new ZustandSaleRepository();
-    const rentalRepo = new ZustandRentalRepository();
-    const clientCreditRepo = new ZustandClientCreditRepository();
-    const loyaltyRepo = new ZustandLoyaltyRepository();
+  const handleAddPayment = async (data: { amount: number; paymentMethod: string }): Promise<Payment> => {
+    try {
+      const result = await registerPaymentAction({
+        operationId: operation?.id || "",
+        amount: data.amount,
+        method: data.paymentMethod as PaymentMethodType,
+        userId: currentUser?.id || "",
+      });
 
-    // 2. Instanciar casos de uso
-    const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
-    const rewardLoyaltyUC = new RewardLoyaltyUseCase(loyaltyRepo);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
-    const registerPaymentUC = new RegisterPaymentUseCase(
-      operationRepo,
-      paymentRepo,
-      saleRepo,
-      rentalRepo,
-      addClientCreditUC,
-      rewardLoyaltyUC,
-    );
-
-    return registerPaymentUC.execute({
-      operationId: operation?.id || "",
-      amount: data.amount,
-      method: data.paymentMethod,
-      receivedAmount: data.receivedAmount,
-      userId: currentUser.id,
-    }) as unknown as Payment; // Cast to match expected React component signature if needed
+      onRefresh();
+      toast.success("Pago registrado correctamente");
+      return result.data as Payment;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Error al registrar pago";
+      toast.error(errorMessage);
+      throw error;
+    }
   };
 
-  const handleConfirmReschedule = (newStartDate: Date, newEndDate: Date) => {
-    if (!activeRes) return;
-    rearrangeReservation(activeRes.id, newStartDate, newEndDate);
-    toast.success("Reserva reagendada");
-    setIsRescheduleOpen(false);
-    setIsDrawerOpen(false);
-  };
-
-  const handleConfirmCancel = () => {
+  const handleConfirmReschedule = async (newStartDate: Date, newEndDate: Date) => {
     if (!activeRes) return;
     try {
-      const cancelUseCase = new CancelReservationUseCase(
-        new ZustandReservationRepository(),
-        new ZustandPaymentRepository(),
-        new ZustandOperationRepository(),
-      );
-      cancelUseCase.execute(
-        activeRes.id,
-        "Cancelado por el usuario",
-        USER_MOCK[0].id,
-      );
+      const result = await rescheduleReservationAction(activeRes.id, newStartDate, newEndDate);
+      if (!result.success) throw new Error(result.error);
+      
+      toast.success("Reserva reagendada");
+      onRefresh();
+      setIsRescheduleOpen(false);
+      setIsDrawerOpen(false);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Error al reagendar";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!activeRes) return;
+    try {
+      const result = await cancelReservationAction(activeRes.id, "Cancelado por el usuario");
+      if (!result.success) throw new Error(result.error);
+      
       toast.success("Reserva anulada");
+      onRefresh();
       setIsCancelOpen(false);
       setIsDrawerOpen(false);
-    } catch (error) {
-      toast.error("Error al anular la reserva");
+    } catch (error: unknown) {
+      console.error("Error al anular reserva:", error);
+      const errorMessage = error instanceof Error ? error.message : "No se pudo anular la reserva";
+      toast.error(errorMessage);
     }
   };
 
   const sedeName =
-    MOCK_BRANCHES.find((b) => b.id === activeRes?.branchId)?.name ||
+    branches.find((b) => b.id === activeRes?.branchId)?.name ||
     "Sede central";
 
   const cliente = customers.find((c) => c.id === activeRes?.customerId);
@@ -325,7 +315,6 @@ export function DetailsReservedViewer({
               </div>
             </div>
             <DrawerDescription>
-              {/* NUEVO: Información de Sede */}
               <Badge className="w-fit bg-card text-amber-400 border- text-sm">
                 Sede: {sedeName}
               </Badge>
@@ -333,7 +322,6 @@ export function DetailsReservedViewer({
           </DrawerHeader>
 
           <div className="px-6 py-2 space-y-6 overflow-y-auto">
-            {/* 1. EL "CUÁNDO" */}
             <div className="bg-card border rounded-xl overflow-hidden mt-4">
               <div className="bg-muted/50 px-4 py-1 border-b">
                 <span className="text-[10px] font-bold uppercase text-muted-foreground">
@@ -403,7 +391,6 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
-            {/* 2. ESTADO FINANCIERO ACTUALIZADO */}
             <div className="px-4 py-3 border rounded-xl bg-card space-y-4">
               <div className="flex justify-between items-center">
                 <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
@@ -429,7 +416,6 @@ export function DetailsReservedViewer({
                   </p>
                 </div>
                 <div className="text-right">
-                  {/* Lógica de color dinámica: Naranja si debe, Azul si es saldo a favor, Verde si está saldado */}
                   <p
                     className={`text-xl font-black ${
                       isCredit
@@ -451,7 +437,6 @@ export function DetailsReservedViewer({
                 </div>
               </div>
 
-              {/* Pequeño indicador visual del total real del contrato */}
               <div className="pt-2 border-t border-dashed flex justify-between text-[10px] text-muted-foreground">
                 <span>Valor total del servicio:</span>
                 <span className="font-bold">
@@ -460,7 +445,6 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
-            {/* 3. DATOS DEL CLIENTE */}
             <div className="px-4 py-1 border rounded-xl bg-card space-y-3">
               <span className="text-xs font-bold text-muted-foreground uppercase">
                 Cliente Responsable
@@ -481,38 +465,77 @@ export function DetailsReservedViewer({
               </div>
             </div>
 
-            {/* SECCIÓN 3: ASIGNACIÓN DE STOCK (WIDGET HÍBRIDO) */}
             <div className="flex flex-col gap-4">
               {groupedItems.map((group) => {
-                // Tomamos el primer item como referencia para datos comunes (foto, nombre)
                 const refItem = group.items[0];
                 const prod = products.find(
-                  (p) => p.id.toString() === refItem.productId,
+                  (p) => String(p.id) === String(refItem.productId),
                 );
                 const isSerial = prod?.is_serial ?? true;
 
-                // Aplanamos todos los stockIds que ya tengan estos items para pasarlos al widget
                 const allInitialSelections = group.items.flatMap((i) => {
                   if (i.stockId) return Array(i.quantity).fill(i.stockId);
                   return [];
                 });
 
-                const variant = PRODUCT_VARIANTS_MOCK.find(
-                  (v) => v.id === refItem.variantId,
+                const variant = productVariants.find(
+                  (v) => String(v.id) === String(refItem.variantId),
                 );
-                const sizeName = variant?.attributes?.size || "Única";
-                const colorName = variant?.attributes?.color || "Único";
+
+                const getAttributeDisplay = (key: string) => {
+                  const normalizedKey = key.toLowerCase();
+                  const matchingType = attributeTypes.find(
+                    (t) =>
+                      t.name.toLowerCase() === normalizedKey ||
+                      t.code.toLowerCase() === normalizedKey,
+                  );
+
+                  const attrNameMatch =
+                    matchingType?.name.toLowerCase() || normalizedKey;
+                  const variantAttrKeys = Object.keys(
+                    variant?.attributes || {},
+                  );
+                  const actualKey = variantAttrKeys.find(
+                    (k) => k.toLowerCase() === attrNameMatch,
+                  );
+
+                  const rawValue = actualKey
+                    ? variant?.attributes?.[actualKey]
+                    : undefined;
+
+                  if (!rawValue) return null;
+
+                  const matchingValue = attributeValues.find(
+                    (v: AttributeValue) => {
+                      if (
+                        matchingType &&
+                        v.attributeTypeId !== matchingType.id
+                      )
+                        return false;
+                      return (
+                        v.id === rawValue ||
+                        v.value.toLowerCase() ===
+                          String(rawValue).toLowerCase() ||
+                        v.code.toLowerCase() === String(rawValue).toLowerCase()
+                      );
+                    },
+                  );
+
+                  return matchingValue?.value || String(rawValue);
+                };
+
+                const sizeName =
+                  getAttributeDisplay("size") ||
+                  getAttributeDisplay("talla") ||
+                  "Única";
+                const colorName = getAttributeDisplay("color") || "Único";
 
                 return (
                   <div
                     key={`${refItem.id}-group`}
                     className="p-3 border rounded-xl bg-card shadow-sm"
                   >
-                    {/* HEADER ÚNICO */}
                     <div className="flex mb-3 items-start gap-3">
-                      <div className="h-12 w-10 rounded overflow-hidden bg-muted">
-                        {/* ... Imagen ... */}
-                      </div>
                       <div className="flex-1 pl-3">
                         <p className="text-sm font-bold">{prod?.name}</p>
                         <div className="flex gap-2 mt-1">
@@ -531,11 +554,10 @@ export function DetailsReservedViewer({
                       </div>
                     </div>
 
-                    {/* UN SOLO WIDGET QUE MANEJA LOS N SELECTS */}
                     <StockAssignmentWidget
                       productId={refItem.productId}
                       variantId={refItem.variantId}
-                      quantity={group.totalQty} // 👈 Cantidad total del grupo
+                      quantity={group.totalQty}
                       operationType={activeRes?.operationType || "alquiler"}
                       dateRange={{
                         from: activeRes?.startDate || new Date(),
@@ -545,22 +567,15 @@ export function DetailsReservedViewer({
                       isSerial={isSerial}
                       initialSelections={allInitialSelections}
                       readOnly={allInitialSelections.length > 0}
-                      onAssignmentChange={(selectedIds) => {
-                        // AQUÍ VIENE LA MAGIA DE LA DISTRIBUCIÓN
-                        // El widget nos devuelve un array de IDs [ID1, ID2, ID3...]
-                        // Tenemos que repartirlos entre los items originales del grupo para actualizar el estado padre
-
+                      onAssignmentChange={(selectedIds: string[]) => {
                         setSelectedStocks((prev) => {
                           const newState = { ...prev };
                           let idIndex = 0;
 
                           group.items.forEach((item) => {
-                            // Para este item específico, ¿cuántos IDs necesita?
-                            // (Si item.quantity es 1, toma 1. Si es lote de 5, toma 5 iguales)
                             for (let q = 0; q < item.quantity; q++) {
                               const assignedId = selectedIds[idIndex];
                               if (assignedId) {
-                                // Usamos la clave única basada en el ID real del item en base de datos
                                 newState[`${item.id}-${q}`] = assignedId;
                               }
                               idIndex++;
@@ -575,7 +590,7 @@ export function DetailsReservedViewer({
                 );
               })}
             </div>
-            {/* 3. SECCIÓN DE GARANTÍA (Solo para alquiler) */}
+
             {activeRes?.operationType === "alquiler" && (
               <div className="space-y-3">
                 <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
@@ -590,7 +605,6 @@ export function DetailsReservedViewer({
               </div>
             )}
 
-            {/* 4. CHECKLIST DE SALIDA (Corregido con el balance real) */}
             <div className="space-y-3">
               <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
                 Checklist de salida
@@ -600,7 +614,7 @@ export function DetailsReservedViewer({
                   <FieldGroup>
                     <Field orientation="horizontal">
                       <Checkbox
-                        id="credit-check"
+                        id="limpieza-check"
                         checked={checklist.limpieza}
                         onCheckedChange={(checked) =>
                           setChecklist({
@@ -610,7 +624,7 @@ export function DetailsReservedViewer({
                         }
                       />
                       <Label
-                        htmlFor="credit-check"
+                        htmlFor="limpieza-check"
                         className="text-[11px] font-medium text-blue-400"
                       >
                         El producto esta revisado y desinfectado
@@ -619,7 +633,7 @@ export function DetailsReservedViewer({
                   </FieldGroup>
                 </Label>
 
-                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
+                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/30 transition-colors">
                   <FieldGroup>
                     <Field orientation="horizontal">
                       <Checkbox
@@ -633,14 +647,14 @@ export function DetailsReservedViewer({
                         }
                       />
                       <Label
-                        htmlFor="credit-check"
+                        htmlFor="garantia-check"
                         className="text-[11px] font-medium text-blue-400"
                       >
                         DNI o Garantía física en resguardo
                       </Label>
                     </Field>
                   </FieldGroup>
-                </label>
+                </Label>
               </div>
             </div>
           </div>
@@ -648,7 +662,6 @@ export function DetailsReservedViewer({
           <DrawerFooter className="border-t bg-muted/20">
             <div className="flex flex-col gap-2">
               <Button
-                // El botón se deshabilita si NO está listo para entregar
                 disabled={!isReadyToDeliver}
                 onClick={() => {
                   handleDeliver(true);
@@ -659,7 +672,7 @@ export function DetailsReservedViewer({
                     : "bg-slate-400 cursor-not-allowed opacity-70"
                 }`}
               >
-                <HugeiconsIcon icon={CheckmarkBadge03Icon} strokeWidth={3} />
+                <HugeiconsIcon icon={CheckmarkBadge03Icon} strokeWidth={2} />
                 {balance > 0 && !isCredit
                   ? `FALTA COBRO: ${formatCurrency(balance)}`
                   : !isReadyToDeliver
@@ -669,7 +682,6 @@ export function DetailsReservedViewer({
                       : "CONFIRMAR ENTREGA Y SALIDA"}
               </Button>
 
-              {/* Botón 2: Acción Diferida (Pendiente de recoger) */}
               {activeRes?.operationType === "venta" && (
                 <Button
                   disabled={!isReadyToDeliver}
@@ -678,7 +690,7 @@ export function DetailsReservedViewer({
                   }}
                   className="w-full bg-amber-400 text-white hover:bg-amber-500 py-5"
                 >
-                  <HugeiconsIcon icon={Calendar03Icon} strokeWidth={3} />
+                  <HugeiconsIcon icon={Calendar03Icon} strokeWidth={2} />
                   <span className="text-[12px] font-black">
                     {balance > 0 && !isCredit ? "" : "PAGADO - "}
                     GUARDAR COMO PENDIENTE DE RECOJO
@@ -738,7 +750,6 @@ export function DetailsReservedViewer({
         onOpenChange={setIsHistoryOpen}
         payments={allPaymentsForThisOp}
         operationId={operation?.id || 0}
-        // Pasamos los valores ya calculados para evitar el "parpadeo" de los logs
         totalOperation={totalCalculated}
         calculatedBalance={balance}
         calculatedIsCredit={isCredit}

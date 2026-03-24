@@ -1,16 +1,18 @@
 import { create } from "zustand";
 import { Payment } from "../types/payments/type.payments"; // Ajusta la ruta
-import { PAYMENTS_MOCK } from "../mocks/mock.payment";
 
 interface PaymentStore {
   payments: Payment[];
+  setPayments: (payments: Payment[]) => void;
   addPayment: (payment: Payment) => void;
   getPaymentsByOperation: (operationId: string) => Payment[];
   updatePaymentStatus: (id: string, status: Payment["status"]) => void;
 }
 
 export const usePaymentStore = create<PaymentStore>((set, get) => ({
-  payments: PAYMENTS_MOCK,
+  payments: [],
+
+  setPayments: (payments: Payment[]) => set({ payments }),
 
   addPayment: (payment) =>
     set((state) => ({ payments: [...state.payments, payment] })),

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { paymentMethodSchema } from "../payments/type.paymetMethod";
+import { PaymentMethod, paymentMethodSchema } from "@/src/types/payments/type.paymentMethod";
 
 export const tenantConfigSchema = z.object({
   tenantId: z.string(),

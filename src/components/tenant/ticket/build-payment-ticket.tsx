@@ -14,8 +14,9 @@ export const buildPaymentTicketHtml = (
 ) => {
   const sign = payment.direction === "out" ? "-" : "+";
   const receivedBy =
-    currentUser.name ||
-    `${currentUser.firstName ?? ""} ${currentUser.lastName ?? ""}`.trim();
+    currentUser?.name ||
+    `${currentUser?.firstName ?? ""} ${currentUser?.lastName ?? ""}`.trim() ||
+    "Staff";
 
   return `
       <div style="width: 280px; font-family: monospace; font-size: 12px;">

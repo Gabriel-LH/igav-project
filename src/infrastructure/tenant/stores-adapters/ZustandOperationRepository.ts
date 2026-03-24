@@ -3,21 +3,29 @@ import { Operation } from "../../../types/operation/type.operations";
 import { useOperationStore } from "../../../store/useOperationStore";
 
 export class ZustandOperationRepository implements OperationRepository {
-  addOperation(operation: Operation): void {
+  async addOperation(operation: Operation): Promise<void> {
     useOperationStore.getState().addOperation(operation);
   }
 
-  getOperationById(id: string): Operation | null {
+  async getOperationById(id: string): Promise<Operation | null> {
     return (
       useOperationStore.getState().operations.find((o) => o.id === id) || null
     );
   }
 
-  getOperations(): Operation[] {
+  async getOperations(): Promise<Operation[]> {
     return useOperationStore.getState().operations;
   }
 
-  updateOperationStatus(id: string, status: string): void {
-    useOperationStore.getState().updateOperation(id, { status: status as any });
+  async getOperationsByTenant(tenantId: string): Promise<Operation[]> {
+    return useOperationStore
+      .getState()
+      .operations.filter((o) => o.tenantId === tenantId);
+  }
+
+  async updateOperationStatus(id: string, status: string): Promise<void> {
+    useOperationStore
+      .getState()
+      .updateOperation(id, { status: status as Operation["status"] });
   }
 }

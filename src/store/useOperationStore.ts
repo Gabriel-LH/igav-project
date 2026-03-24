@@ -1,17 +1,19 @@
 import { create } from "zustand";
 import { Operation } from "../types/operation/type.operations";
 import { OperationUpdate } from "../types/operation/type.operationUpdate";
-import { OPERATIONS_MOCK } from "../mocks/mock.operation";
 
 interface OperationStore {
   operations: Operation[];
+  setOperations: (ops: Operation[]) => void;
   addOperation: (operation: Operation) => void;
   getOperationById: (id: string) => Operation | undefined;
   updateOperation: (id: string, patch: OperationUpdate) => void;
 }
 
 export const useOperationStore = create<OperationStore>((set, get) => ({
-  operations: OPERATIONS_MOCK,
+  operations: [],
+
+  setOperations: (operations: Operation[]) => set({ operations }),
 
   addOperation: (operation: Operation) =>
     set((state) => ({ operations: [...state.operations, operation] })),

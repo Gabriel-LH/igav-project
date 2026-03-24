@@ -1,42 +1,21 @@
-import { create } from "zustand";
+import { useCategoryStore } from "./useCategoryStore";
+import { useModelStore } from "./useModelStore";
+import { useBrandStore } from "./useBrandStore";
 
-import { Color, COLORS_MOCK } from "../mocks/mock.color";
-import { Size, SIZES_MOCK } from "../mocks/mock.sizes";
-import { Model, MODELS_MOCK } from "../mocks/mock.model";
-import { Category } from "../types/category/type.category";
-import { CATEGORY_MOCKS } from "../mocks/mock.category";
+export const useAttributeStore = () => {
+  const { getCategoryById } = useCategoryStore();
+  const { getModelById } = useModelStore();
+  const { getBrandById } = useBrandStore();
 
-// Asumiendo que creaste el type Model anteriormente
-interface AttributeStore {
-  colors: Color[];
-  sizes: Size[];
-  models: Model[];
-  categories: Category[];
-
-  // Getters para obtener el objeto completo por ID (Muy útiles para la UI)
-  getColorById: (id: string) => Color | undefined;
-  getSizeById: (id: string) => Size | undefined;
-  getModelById: (id: string) => Model | undefined;
-  getCategoryById: (id: string) => Category | undefined;
-
-  // Acciones para el futuro (Admin panel)
-  addColor: (color: Color) => void;
-  addSize: (size: Size) => void;
-  // ... etc
-}
-
-export const useAttributeStore = create<AttributeStore>((set, get) => ({
-  // Inicializamos con los Mocks, pero luego podrías cargar de una API
-  colors: COLORS_MOCK,
-  sizes: SIZES_MOCK,
-  models: MODELS_MOCK,
-  categories: CATEGORY_MOCKS,
-
-  getColorById: (id) => get().colors.find((c) => c.id === id),
-  getSizeById: (id) => get().sizes.find((s) => s.id === id),
-  getModelById: (id) => get().models.find((m) => m.id === id),
-  getCategoryById: (id) => get().categories.find((cat) => cat.id === id),
-
-  addColor: (color) => set((state) => ({ colors: [...state.colors, color] })),
-  addSize: (size) => set((state) => ({ sizes: [...state.sizes, size] })),
-}));
+  // Helper for components that expect these in a single store
+  return {
+    getCategoryById,
+    getModelById,
+    getBrandById,
+    
+    // In this architecture, sizes/colors are AttributeValues filtered by type
+    // If the component expects simple lookups, we provide them here
+    getSizeById: (id: string) => ({ id, name: id }), // Placeholder if not unified
+    getColorById: (id: string) => ({ id, name: id, hex: "#CCCCCC" }), // Placeholder
+  };
+};

@@ -1,0 +1,109 @@
+"use server";
+
+import prisma from "@/src/lib/prisma";
+import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
+import { revalidatePath } from "next/cache";
+import { PrismaReservationRepository } from "@/src/infrastructure/tenant/repositories/PrismaReservationRepository";
+import { PrismaInventoryRepository } from "@/src/infrastructure/tenant/repositories/PrismaInventoryRepository";
+import { PrismaGuaranteeRepository } from "@/src/infrastructure/tenant/repositories/PrismaGuaranteeRepository";
+import { PrismaPaymentRepository } from "@/src/infrastructure/tenant/repositories/PrismaPaymentRepository";
+import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositories/PrismaOperationRepository";
+import { ConvertReservationUseCase, ConvertReservationInput } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
+import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
+
+export async function convertReservationAction(input: ConvertReservationInput) {
+  try {
+    const membership = await requireTenantMembership();
+    const { tenantId } = membership;
+
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const result = await prisma.$transaction(async (tx) => {
+      const reservationRepo = new PrismaReservationRepository(tx);
+      const inventoryRepo = new PrismaInventoryRepository(tx);
+      const guaranteeRepo = new PrismaGuaranteeRepository(tx);
+
+      const convertUseCase = new ConvertReservationUseCase(
+        reservationRepo,
+        inventoryRepo,
+        guaranteeRepo,
+      );
+
+      return await convertUseCase.execute(input);
+    });
+
+    revalidatePath("/tenant/home");
+    revalidatePath("/tenant/calendar");
+    
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error al convertir reserva:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido al convertir reserva",
+    };
+  }
+}
+
+export async function cancelReservationAction(reservationId: string, reason: string) {
+  try {
+    const membership = await requireTenantMembership();
+    const { tenantId, user } = membership;
+
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+    if (!user?.id) throw new Error("User ID es obligatorio");
+
+    const result = await prisma.$transaction(async (tx) => {
+      const reservationRepo = new PrismaReservationRepository(tx);
+      const paymentRepo = new PrismaPaymentRepository(tx);
+      const operationRepo = new PrismaOperationRepository(tx);
+
+      const cancelUseCase = new CancelReservationUseCase(
+        reservationRepo,
+        paymentRepo,
+        operationRepo,
+      );
+
+    const userId = user.id as string;
+    return await cancelUseCase.execute(reservationId, reason, userId);
+  });
+
+  revalidatePath("/tenant/home");
+  revalidatePath("/tenant/calendar");
+
+  return { success: true, data: result };
+} catch (error) {
+  console.error("Error al cancelar reserva:", error);
+  return {
+    success: false,
+    error: error instanceof Error ? error.message : "Error desconocido al cancelar reserva",
+  };
+}
+}
+
+export async function rescheduleReservationAction(reservationId: string, startDate: Date, endDate: Date) {
+try {
+  const membership = await requireTenantMembership();
+  const { tenantId } = membership;
+
+  if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+  // rearrangereservation ya existe en el dominio pero falta implementarlo en PrismaRepository si no está
+  // Por ahora usemos una actualización directa vía prisma
+  await prisma.reservation.update({
+      where: { id: reservationId },
+      data: { startDate, endDate }
+  });
+
+  revalidatePath("/tenant/home");
+  revalidatePath("/tenant/calendar");
+
+  return { success: true };
+} catch (error) {
+  console.error("Error al reprogramar reserva:", error);
+  return {
+    success: false,
+    error: error instanceof Error ? error.message : "Error desconocido al reprogramar reserva",
+  };
+}
+}

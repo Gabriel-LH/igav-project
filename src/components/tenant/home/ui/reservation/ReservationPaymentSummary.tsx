@@ -9,32 +9,49 @@ import {
   SelectValue,
 } from "@/components/select";
 import { Wallet, CreditCard, Smartphone, Banknote, HandCoins } from "lucide-react";
-import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType"; 
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
 interface Props {
   amountPaid: number | string;
   setAmountPaid: (v: string) => void;
   downPayment: number | string;
   setDownPayment: (v: string) => void;
-  paymentMethod: PaymentMethodType;
-  setPaymentMethod: (v: PaymentMethodType) => void;
+  paymentMethodId: string;
+  setPaymentMethodId: (v: string) => void;
+  paymentMethods: PaymentMethod[];
+  isCashPayment: boolean;
   keepAsCredit: boolean;
   setKeepAsCredit: (v: boolean) => void;
 }
+
+const getPaymentMethodIcon = (method: PaymentMethod) => {
+  const normalizedName = method.name.trim().toLowerCase();
+
+  if (method.type === "cash") return Wallet;
+  if (method.type === "card") return CreditCard;
+  if (normalizedName.includes("yape") || normalizedName.includes("plin")) {
+    return Smartphone;
+  }
+
+  return Banknote;
+};
+
 export function ReservationPaymentSummary({
   amountPaid,
   setAmountPaid,
   downPayment,
   setDownPayment,
-  paymentMethod,
-  setPaymentMethod,
+  paymentMethodId,
+  setPaymentMethodId,
+  paymentMethods,
+  isCashPayment,
   keepAsCredit,
   setKeepAsCredit,
 }: Props) {
   const changeAmount =
-    paymentMethod === "cash"
+    isCashPayment
       ? Math.max(Number(amountPaid) - Number(downPayment), 0)
       : 0;
 
@@ -65,28 +82,21 @@ export function ReservationPaymentSummary({
             Método de pago
           </Label>
           <Select
-            value={paymentMethod}
-            onValueChange={(val) => setPaymentMethod(val as PaymentMethodType)}
+            value={paymentMethodId}
+            onValueChange={setPaymentMethodId}
           >
             <SelectTrigger className="h-9 text-[11px] font-bold">
               <SelectValue placeholder="Seleccionar..." />
             </SelectTrigger>
             <SelectContent className="text-[11px]">
-              <SelectItem value="cash">
-                <Wallet className="w-3 h-3 mr-1 inline" /> Efectivo
-              </SelectItem>
-              <SelectItem value="card">
-                <CreditCard className="w-3 h-3 mr-1 inline" /> Tarjeta
-              </SelectItem>
-              <SelectItem value="yape">
-                <Smartphone className="w-3 h-3 mr-1 inline" /> Yape
-              </SelectItem>
-              <SelectItem value="plin">
-                <Smartphone className="w-3 h-3 mr-1 inline" /> Plin
-              </SelectItem>
-              <SelectItem value="transfer">
-                <Banknote className="w-3 h-3 mr-1 inline" /> Transferencia
-              </SelectItem>
+              {paymentMethods.map((method) => {
+                const Icon = getPaymentMethodIcon(method);
+                return (
+                  <SelectItem key={method.id} value={method.id}>
+                    <Icon className="w-3 h-3 mr-1 inline" /> {method.name}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -112,7 +122,7 @@ export function ReservationPaymentSummary({
           </div>
         </div>
         <div className="space-y-2">
-          {paymentMethod === "cash" && (
+          {isCashPayment && (
             <div className="flex flex-col justify-end gap-2 text-sm font-bold">
               <Label className="text-[10px] font-bold uppercase">
                 <HandCoins className="w-3 h-3" />
@@ -133,7 +143,7 @@ export function ReservationPaymentSummary({
       </div>
 
       <div className="w-full -mt-2">
-        {paymentMethod === "cash" && changeAmount > 0 && (
+        {isCashPayment && changeAmount > 0 && (
           <FieldGroup>
             <Field orientation="horizontal">
               <Checkbox

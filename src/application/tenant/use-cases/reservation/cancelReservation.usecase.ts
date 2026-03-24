@@ -1,6 +1,7 @@
 import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
 import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepository";
 import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
+import { Payment } from "@/src/types/payments/type.payments";
 
 export class CancelReservationUseCase {
   constructor(
@@ -9,21 +10,21 @@ export class CancelReservationUseCase {
     private operationRepo: OperationRepository,
   ) {}
 
-  execute(reservationId: string, reason: string, userId: string): void {
-    const reservation = this.reservationRepo.getReservationById(reservationId);
+  async execute(reservationId: string, reason: string, userId: string): Promise<void> {
+    const reservation = await this.reservationRepo.getReservationById(reservationId);
 
     if (!reservation) {
       throw new Error("Reserva no encontrada");
     }
 
-    this.reservationRepo.cancelReservation(reservationId);
+    await this.reservationRepo.cancelReservation(reservationId);
 
-    this.operationRepo.updateOperationStatus(
+    await this.operationRepo.updateOperationStatus(
       reservation.operationId,
       "cancelado",
     );
 
-    const payments = this.paymentRepo.getPaymentsByOperationId(
+    const payments = await this.paymentRepo.getPaymentsByOperationId(
       reservation.operationId,
     );
     const totalRefund = payments.reduce(
@@ -35,8 +36,9 @@ export class CancelReservationUseCase {
       const firstPaymentMethod =
         payments.find((p) => p.direction === "in")?.paymentMethodId || "cash";
 
-      this.paymentRepo.addPayment({
+      await this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
+        tenantId: reservation.tenantId,
         operationId: reservation.operationId,
         amount: totalRefund,
         paymentMethodId: firstPaymentMethod,
@@ -44,10 +46,11 @@ export class CancelReservationUseCase {
         status: "posted",
         category: "refund",
         date: new Date(),
+        createdAt: new Date(),
         notes: `Reembolso por anulación de reserva. Razón: ${reason || "N/A"}`,
         receivedById: userId,
         branchId: reservation.branchId,
-      } as any);
+      } as Payment);
     }
   }
 }

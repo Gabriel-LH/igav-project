@@ -2,6 +2,7 @@ import { RentalRepository } from "../../../domain/tenant/repositories/RentalRepo
 import { GuaranteeRepository } from "../../../domain/tenant/repositories/GuaranteeRepository";
 import { OperationRepository } from "../../../domain/tenant/repositories/OperationRepository";
 import { PaymentRepository } from "../../../domain/tenant/repositories/PaymentRepository";
+import { Payment } from "../../../types/payments/type.payments";
 
 export class CancelRentalUseCase {
   constructor(
@@ -31,7 +32,7 @@ export class CancelRentalUseCase {
     const payments = this.paymentRepo.getPaymentsByOperationId(
       rental.operationId,
     );
-    let totalRefund = payments.reduce(
+    const totalRefund = payments.reduce(
       (acc, p) => acc + (p.direction === "in" ? p.amount : -p.amount),
       0,
     );
@@ -42,6 +43,7 @@ export class CancelRentalUseCase {
 
       this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
+        tenantId: rental.tenantId,
         operationId: rental.operationId,
         amount: totalRefund,
         paymentMethodId: firstPaymentMethod,
@@ -49,10 +51,11 @@ export class CancelRentalUseCase {
         status: "posted",
         category: "refund",
         date: new Date(),
+        createdAt: new Date(),
         notes: `Reembolso por anulación de alquiler. Razón: ${reason || "N/A"}`,
         receivedById: userId,
         branchId: rental.branchId,
-      } as any);
+      } as Payment);
     }
   }
 }

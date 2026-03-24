@@ -12,9 +12,9 @@ export class PrismaOperationRepository implements OperationRepository {
       data: {
         id: operation.id,
         referenceCode: operation.referenceCode,
-        type: operation.type as any,
-        status: operation.status as any,
-        paymentStatus: operation.paymentStatus as any,
+        type: operation.type as Operation["type"],
+        status: operation.status as Operation["status"],
+        paymentStatus: operation.paymentStatus as Operation["paymentStatus"],
         subtotal: operation.subtotal || 0,
         discountAmount: operation.discountAmount || 0,
         totalAmount: operation.totalAmount,
@@ -35,17 +35,31 @@ export class PrismaOperationRepository implements OperationRepository {
     if (!op) return null;
     return {
       ...op,
-      type: op.type as any,
-      status: op.status as any,
-      paymentStatus: op.paymentStatus as any,
+      type: op.type as Operation["type"],
+      status: op.status as Operation["status"],
+      paymentStatus: op.paymentStatus as Operation["paymentStatus"],
       customerMode: op.customerId ? "registered" : "general", // Approximate reconstruct
     } as Operation;
   }
 
+  async getOperationsByTenant(tenantId: string): Promise<Operation[]> {
+    const ops = await this.prisma.operation.findMany({
+      where: { tenantId },
+    });
+
+    return ops.map(
+      (op) =>
+        ({
+          ...op,
+          type: op.type as Operation["type"],
+          status: op.status as Operation["status"],
+          paymentStatus: op.paymentStatus as Operation["paymentStatus"],
+        }) as Operation,
+    );
+  }
+
   async getOperations(): Promise<Operation[]> {
-    // Usually this requires tenantId, but the interface doesn't ask for it.
-    // For now we just return an empty array if not strictly needed in the backend sequence.
-    // In CreateOperationUseCase, it's used to calculate the sequence for the day.
+    // Keep this for daily sequence calculation (POS)
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -59,9 +73,9 @@ export class PrismaOperationRepository implements OperationRepository {
       (op) =>
         ({
           ...op,
-          type: op.type as any,
-          status: op.status as any,
-          paymentStatus: op.paymentStatus as any,
+          type: op.type as Operation["type"],
+          status: op.status as Operation["status"],
+          paymentStatus: op.paymentStatus as Operation["paymentStatus"],
         }) as Operation,
     );
   }
@@ -69,7 +83,7 @@ export class PrismaOperationRepository implements OperationRepository {
   async updateOperationStatus(id: string, status: string): Promise<void> {
     await this.prisma.operation.update({
       where: { id },
-      data: { status: status as any },
+      data: { status: status as Operation["status"] },
     });
   }
 }

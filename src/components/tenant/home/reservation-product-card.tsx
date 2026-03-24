@@ -1,32 +1,38 @@
-// src/components/home/reservation-product-card.tsx
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/badge";
 import Image from "next/image";
 import { DetailsReservedViewer } from "./details-reserved-viewer";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+
+import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
+import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 
 interface Props {
-  // Recibimos la reserva específica para que esta Card sea ÚNICA por reserva
   reservation: Reservation;
+  attributeTypes: AttributeType[];
+  attributeValues: AttributeValue[];
+  onRefresh: () => void;
 }
 
-export function ReservationProductCard({ reservation }: Props) {
+export function ReservationProductCard({
+  reservation,
+  attributeTypes,
+  attributeValues,
+  onRefresh,
+}: Props) {
   const { reservationItems } = useReservationStore();
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { products, productVariants } = useInventoryStore();
+  const { customers } = useCustomerStore();
 
   // 1. Buscamos el item exacto de esta reserva
   const specificItems = reservationItems.filter(
     (i) => i.reservationId === reservation.id,
   );
-  const specificClient = CLIENTS_MOCK.find(
-    (c) => c.id === reservation.customerId,
-  );
+  const specificClient = customers.find((c) => c.id === reservation.customerId);
 
   if (!specificItems.length) {
     return null;
@@ -78,15 +84,52 @@ export function ReservationProductCard({ reservation }: Props) {
             {} as Record<string, (typeof specificItems)[0]>,
           ),
         ).map((item) => {
-          const productInfo = PRODUCTS_MOCK.find(
-            (p) => p.id.toString() === item.productId,
+          const productInfo = products.find((p) => p.id === item.productId);
+
+          const variant = productVariants.find(
+            (v) => String(v.id) === String(item.variantId),
           );
 
-          const variant = PRODUCT_VARIANTS_MOCK.find(
-            (v) => v.id === item.variantId,
-          );
-          const sizeName = variant?.attributes?.size || "Única";
-          const colorName = variant?.attributes?.color || "Único";
+          // Lógica robusta de resolución de atributos
+          const getAttributeDisplay = (key: string) => {
+            const normalizedKey = key.toLowerCase();
+            const matchingType = attributeTypes.find(
+              (t) =>
+                t.name.toLowerCase() === normalizedKey ||
+                t.code.toLowerCase() === normalizedKey,
+            );
+
+            const attrNameMatch =
+              matchingType?.name.toLowerCase() || normalizedKey;
+            const variantAttrKeys = Object.keys(variant?.attributes || {});
+            const actualKey = variantAttrKeys.find(
+              (k) => k.toLowerCase() === attrNameMatch,
+            );
+
+            const rawValue = actualKey
+              ? variant?.attributes?.[actualKey]
+              : undefined;
+
+            if (!rawValue) return null;
+
+            const matchingValue = attributeValues.find((v: AttributeValue) => {
+              if (matchingType && v.attributeTypeId !== matchingType.id)
+                return false;
+              return (
+                v.id === rawValue ||
+                v.value.toLowerCase() === String(rawValue).toLowerCase() ||
+                v.code.toLowerCase() === String(rawValue).toLowerCase()
+              );
+            });
+
+            return matchingValue?.value || String(rawValue);
+          };
+
+          const sizeName =
+            getAttributeDisplay("size") ||
+            getAttributeDisplay("talla") ||
+            "Única";
+          const colorName = getAttributeDisplay("color") || "Único";
 
           return (
             <div
@@ -95,7 +138,7 @@ export function ReservationProductCard({ reservation }: Props) {
             >
               <div className="relative">
                 <Image
-                  src={productInfo?.image[0] ?? ""}
+                  src={(productInfo?.image && productInfo.image[0]) ?? ""}
                   alt="Product"
                   width={40}
                   height={40}
@@ -116,7 +159,7 @@ export function ReservationProductCard({ reservation }: Props) {
                 </div>
                 <div className="flex gap-2 items-center mt-1">
                   <span className="text-[10px] text-muted-foreground uppercase">
-                    Talla {sizeName}
+                    {sizeName}
                   </span>
 
                   <span className="md:text-[10px] text-[8px] text-muted-foreground font-medium uppercase">
@@ -134,10 +177,13 @@ export function ReservationProductCard({ reservation }: Props) {
         })}
       </div>
 
-      {/* FOOTER: Botón de acción */}
       <div className="pt-2">
-        {/* Pasamos el primer producto como referencia o ajustamos el viewer para recibir la reserva completa */}
-        <DetailsReservedViewer reservation={reservation} />
+        <DetailsReservedViewer
+          reservation={reservation}
+          attributeTypes={attributeTypes}
+          attributeValues={attributeValues}
+          onRefresh={onRefresh}
+        />
       </div>
     </Card>
   );

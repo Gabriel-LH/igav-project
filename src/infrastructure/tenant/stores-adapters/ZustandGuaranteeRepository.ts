@@ -3,19 +3,19 @@ import { Guarantee } from "../../../types/guarantee/type.guarantee";
 import { useGuaranteeStore } from "../../../store/useGuaranteeStore";
 
 export class ZustandGuaranteeRepository implements GuaranteeRepository {
-  addGuarantee(guarantee: Guarantee): void {
+  async addGuarantee(guarantee: Guarantee): Promise<void> {
     useGuaranteeStore.getState().addGuarantee(guarantee);
   }
 
-  updateGuaranteeStatus(id: string, status: string): void {
+  async updateGuaranteeStatus(id: string, status: string): Promise<void> {
     useGuaranteeStore.getState().updateGuaranteeStatus(id, status as any);
   }
 
-  updateGuarantee(id: string, data: Partial<Guarantee>): void {
+  async updateGuarantee(id: string, data: Partial<Guarantee>): Promise<void> {
     return useGuaranteeStore.getState().updateGuarantee({ id, ...data });
   }
 
-  releaseGuarantee(id: string): void {
+  async releaseGuarantee(id: string): Promise<void> {
     return useGuaranteeStore.getState().releaseGuarantee(id);
   }
 }

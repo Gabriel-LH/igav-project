@@ -47,6 +47,16 @@ export class PrismaRentalRepository implements RentalRepository {
     });
   }
 
+  async getRentals(): Promise<Rental[]> {
+    const rentals = await this.prisma.rental.findMany();
+    return rentals as unknown as Rental[];
+  }
+
+  async getRentalItems(): Promise<RentalItem[]> {
+    const items = await this.prisma.rentalItem.findMany();
+    return items as unknown as RentalItem[];
+  }
+
   async updateStatus(id: string, newStatus: string): Promise<void> {
     await this.prisma.rental.update({
       where: { id },

@@ -3,7 +3,7 @@ import { useLoyaltyStore } from "../../../store/useLoyaltyStore";
 import { useCustomerStore } from "../../../store/useCustomerStore";
 
 export class ZustandLoyaltyRepository implements LoyaltyRepository {
-  addPoints(
+  async addPoints(
     clientId: string,
     points: number,
     type:
@@ -14,7 +14,7 @@ export class ZustandLoyaltyRepository implements LoyaltyRepository {
       | "bonus_referral",
     operationId?: string,
     description?: string,
-  ): void {
+  ): Promise<void> {
     useLoyaltyStore.getState().addEntry({
       id: "LYL-" + crypto.randomUUID(),
       clientId,

@@ -23,10 +23,11 @@ import { toast } from "sonner";
 import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarCheckIn01Icon } from "@hugeicons/core-free-icons";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
 export function ReservationFormContent({
   item,
@@ -51,6 +52,8 @@ export function ReservationFormContent({
   setKeepAsCredit,
   paymentMethod,
   setPaymentMethod,
+  paymentMethods,
+  isCashPayment,
   operationType,
   setOperationType,
   notes,
@@ -63,8 +66,9 @@ export function ReservationFormContent({
   selectedVariant,
   displayAttributes = [],
 }: any) {
+  const { productVariants } = useInventoryStore();
   const variant: ProductVariant | undefined =
-    selectedVariant || PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
+    selectedVariant || productVariants.find((v) => v.id === variantId);
   const sizeName =
     displayAttributes.find((attr: any) =>
       ["size", "talla"].includes(attr.keyName.trim().toLowerCase()),
@@ -313,8 +317,10 @@ export function ReservationFormContent({
           setAmountPaid={setAmountPaid}
           keepAsCredit={keepAsCredit}
           setKeepAsCredit={setKeepAsCredit}
-          paymentMethod={paymentMethod}
-          setPaymentMethod={setPaymentMethod}
+          paymentMethodId={paymentMethod}
+          setPaymentMethodId={setPaymentMethod}
+          paymentMethods={paymentMethods as PaymentMethod[]}
+          isCashPayment={Boolean(isCashPayment)}
         />
       )}
 

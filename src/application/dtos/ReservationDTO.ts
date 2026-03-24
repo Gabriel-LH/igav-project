@@ -1,4 +1,3 @@
-import { PaymentMethodType } from "../../utils/status-type/PaymentMethodType";
 import { BaseOperation } from "./BaseOperation";
 
 export interface ReservationDTO extends BaseOperation {
@@ -29,7 +28,7 @@ export interface ReservationDTO extends BaseOperation {
     taxAmount?: number;
     totalAmount: number;
     receivedAmount: number;
-    paymentMethod: PaymentMethodType;
+    paymentMethod: string;
     keepAsCredit?: boolean;
   };
 }

@@ -17,7 +17,6 @@ import {
   SaleTag02Icon,
   Warning,
 } from "@hugeicons/core-free-icons";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Input } from "@/components/input";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
@@ -26,7 +25,10 @@ import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { PriceBreakdownBase } from "@/src/components/tenant/pricing/PriceBreakdownBase";
 import { CashPaymentSummary } from "./CashPaymentSummary";
 import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { getAvailablePaymentMethodsAction } from "@/src/app/(tenant)/tenant/actions/payment-method.actions";
+import { getAvailabilityCalendarDataAction } from "@/src/app/(tenant)/tenant/actions/availability.actions";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
+import { authClient } from "@/src/lib/auth-client";
 // ... placeholder, will search first ...
 import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
@@ -46,9 +48,13 @@ import { Coupon } from "@/src/types/coupon/type.coupon";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import type { Product } from "@/src/types/product/type.product";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
+import { useReservationStore } from "@/src/store/useReservationStore";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { Client } from "@/src/types/clients/type.client";
+import { StockLot } from "@/src/types/product/type.stockLote";
 
 interface DisplayAttributeValue {
   keyName: string;
@@ -79,6 +85,8 @@ export function DirectTransactionModal({
   displayAttributes = [],
 }: DirectTransactionModalProps) {
   const [open, setOpen] = React.useState(false);
+  const { data: session } = authClient.useSession();
+  const sellerId = session?.user?.id || "";
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -89,7 +97,7 @@ export function DirectTransactionModal({
   // --------------------
   // Estados base
   // --------------------
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = React.useState<Client | null>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
 
@@ -112,7 +120,7 @@ export function DirectTransactionModal({
   });
 
   // Fechas
-  const [dateRange, setDateRange] = React.useState<any>({
+  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>({
     from: new Date(),
     to: type === "alquiler" ? addDays(new Date(), 3) : new Date(),
   });
@@ -125,9 +133,10 @@ export function DirectTransactionModal({
   // --------------------
   // Estados financieros
   // --------------------
-  const [paymentMethod, setPaymentMethod] = React.useState<
-    "cash" | "card" | "transfer" | "yape" | "plin"
-  >("cash");
+  const [paymentMethods, setPaymentMethods] = React.useState<PaymentMethod[]>(
+    [],
+  );
+  const [paymentMethodId, setPaymentMethodId] = React.useState("");
 
   const [receivedAmount, setReceivedAmount] = React.useState<string>("");
 
@@ -141,13 +150,36 @@ export function DirectTransactionModal({
   const [returnTime, setReturnTime] = React.useState(
     MOCK_BRANCH_CONFIG.openHours.close,
   );
+  const setReservationData = useReservationStore((s) => s.setReservationData);
+  const setRentalData = useRentalStore((s) => s.setRentalData);
 
-  const sellerId = USER_MOCK[0].id;
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const loadPaymentMethods = async () => {
+      const result = await getAvailablePaymentMethodsAction();
+      if (cancelled) return;
+
+      if (!result.success || !result.data) {
+        toast.error(result.error || "No se pudieron cargar los métodos de pago");
+        return;
+      }
+
+      setPaymentMethods(result.data);
+      setPaymentMethodId((current) => current || result.data[0]?.id || "");
+    };
+
+    loadPaymentMethods();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // --------------------
   // Stock exacto
   // --------------------
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { inventoryItems, stockLots, productVariants } = useInventoryStore();
 
   // 2️⃣ Paso 2: Filtramos localmente usando useMemo
   const validStockCandidates = useMemo(() => {
@@ -175,8 +207,9 @@ export function DirectTransactionModal({
 
   const variant = useMemo(
     () =>
-      selectedVariant || PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId),
-    [selectedVariant, variantId],
+      selectedVariant ||
+      productVariants.find((v: ProductVariant) => v.id === variantId),
+    [selectedVariant, variantId, productVariants],
   );
   const colorName =
     displayAttributes.find(
@@ -188,12 +221,12 @@ export function DirectTransactionModal({
     )?.name || variant?.attributes?.size;
 
   // 3. Seleccionamos el mejor candidato
-  const selectedStockId = (validStockCandidates[0] as any)?.id;
+  const selectedStockId = validStockCandidates[0]?.id;
 
   const stockCount = useMemo(
     () =>
       validStockCandidates.reduce(
-        (acc, curr: any) => acc + (curr.quantity ?? 1),
+        (acc, curr) => acc + ((curr as StockLot).quantity ?? 1),
         0,
       ),
     [validStockCandidates],
@@ -242,7 +275,7 @@ export function DirectTransactionModal({
     startDate: withTime(dateRange.from, pickupTime),
     endDate:
       type === "alquiler" ? withTime(dateRange.to, returnTime) : undefined,
-    rentUnit: rentUnit,
+    rentUnit: rentUnit as "día" | "evento" | undefined,
     receivedAmount: Number(receivedAmount),
     guaranteeAmount: guaranteeType === "dinero" ? Number(guarantee) : 0,
   });
@@ -278,12 +311,18 @@ export function DirectTransactionModal({
     );
   }, [type, totalOperacionConDescuento, guaranteeType, guarantee]);
 
+  const selectedPaymentMethod = useMemo(
+    () => paymentMethods.find((method) => method.id === paymentMethodId),
+    [paymentMethodId, paymentMethods],
+  );
+  const isCashPayment = selectedPaymentMethod?.type === "cash";
+
   const changeAmount = useMemo(() => {
-    if (paymentMethod !== "cash") return 0;
+    if (!isCashPayment) return 0;
     if (Number(receivedAmount) <= 0) return 0;
     if (Number(receivedAmount) < totalACobrarHoy) return 0;
     return Number(receivedAmount) - totalACobrarHoy;
-  }, [receivedAmount, totalACobrarHoy, paymentMethod]);
+  }, [receivedAmount, totalACobrarHoy, isCashPayment]);
 
   const validateTransaction = () => {
     const check = getAvailabilityByAttributes(
@@ -307,12 +346,15 @@ export function DirectTransactionModal({
   const handleConfirm = async () => {
     if (!validateTransaction()) return;
     if (!selectedCustomer) return toast.error("Seleccione un cliente");
+    if (!paymentMethodId) {
+      return toast.error("Selecciona un método de pago válido");
+    }
     if (!hasStock || !selectedStockId)
       return toast.error(
         `Solo hay ${stockCount} unidades disponibles para ${type}.`,
       );
 
-    let transactionItems: any[] = [];
+    let transactionItems: (RentalDTO["items"][number] | SaleDTO["items"][number])[] = [];
 
     if (item.is_serial) {
       if (assignedStockIds.length !== quantity) {
@@ -336,7 +378,7 @@ export function DirectTransactionModal({
       });
     } else {
       let remainingQty = quantity;
-      for (const lot of validStockCandidates as any[]) {
+      for (const lot of validStockCandidates as StockLot[]) {
         if (remainingQty <= 0) break;
         const take = Math.min(remainingQty, lot.quantity);
         transactionItems.push({
@@ -356,7 +398,7 @@ export function DirectTransactionModal({
 
     const baseData = {
       customerId: selectedCustomer.id,
-      customerName: selectedCustomer.name,
+      customerName: selectedCustomer.firstName + " " + selectedCustomer.lastName,
       sellerId,
       branchId: currentBranchId,
       notes,
@@ -380,23 +422,31 @@ export function DirectTransactionModal({
           taxAmount: 0,
           totalAmount: Number(totalOperacionConDescuento),
           receivedAmount:
-            paymentMethod === "cash"
+            isCashPayment
               ? Number(receivedAmount)
               : Number(totalOperacionConDescuento) +
                 (guaranteeType === "dinero" ? Number(guarantee) : 0),
           keepAsCredit: false,
-          paymentMethod,
+          paymentMethod: paymentMethodId,
         },
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
         operationId: "",
-        items: transactionItems,
+        items: transactionItems as RentalDTO["items"],
         updatedAt: new Date(),
       };
 
       try {
-        const res = await processTransactionAction(rentalData);
+        const res = await processTransactionAction(rentalData as unknown as Record<string, unknown>);
         if(!res.success) throw new Error(res.error);
+      const availability = await getAvailabilityCalendarDataAction();
+      if (availability.success && availability.data) {
+        setReservationData(
+          availability.data.reservations,
+          availability.data.reservationItems,
+        );
+        setRentalData(availability.data.rentals, availability.data.rentalItems);
+      }
       if (rentalData.status === "alquilado") {
         toast.success("Alquiler realizado correctamente");
       } else {
@@ -404,8 +454,8 @@ export function DirectTransactionModal({
       }
       setOpen(false);
       onSuccess?.();
-      } catch (err: any) {
-        toast.error(err.message || "Error procesando alquiler");
+      } catch (err: unknown) {
+        toast.error((err as Error).message || "Error procesando alquiler");
       }
     }
 
@@ -413,10 +463,10 @@ export function DirectTransactionModal({
       const saleData: SaleDTO = {
         type: "venta",
         customerId: selectedCustomer.id,
-        customerName: selectedCustomer.name,
+        customerName: selectedCustomer.firstName + " " + selectedCustomer.lastName,
         sellerId,
         branchId: currentBranchId,
-        items: transactionItems,
+        items: transactionItems as SaleDTO["items"],
         financials: {
           subtotal: Number(totalOperacion),
           totalDiscount: Number(
@@ -425,11 +475,11 @@ export function DirectTransactionModal({
           taxAmount: 0,
           totalAmount: Number(totalOperacionConDescuento),
           receivedAmount:
-            paymentMethod === "cash"
+            isCashPayment
               ? Number(receivedAmount)
               : Number(totalOperacionConDescuento),
           keepAsCredit: false,
-          paymentMethod,
+          paymentMethod: paymentMethodId,
         },
         notes,
         status: !checklist.deliverAfter
@@ -442,8 +492,16 @@ export function DirectTransactionModal({
       };
 
       try {
-        const res = await processTransactionAction(saleData);
+        const res = await processTransactionAction(saleData as unknown as Record<string, unknown>);
         if(!res.success) throw new Error(res.error);
+      const availability = await getAvailabilityCalendarDataAction();
+      if (availability.success && availability.data) {
+        setReservationData(
+          availability.data.reservations,
+          availability.data.reservationItems,
+        );
+        setRentalData(availability.data.rentals, availability.data.rentalItems);
+      }
       if (!checklist.deliverAfter) {
         toast.success("Venta realizada correctamente");
       } else {
@@ -451,8 +509,8 @@ export function DirectTransactionModal({
       }
       setOpen(false);
       onSuccess?.();
-      } catch (err: any) {
-        toast.error(err.message || "Error procesando venta");
+      } catch (err: unknown) {
+        toast.error((err as Error).message || "Error procesando venta");
       }
     }
   };
@@ -576,8 +634,8 @@ export function DirectTransactionModal({
                 <DirectTransactionCalendar
                   triggerRef={pickupDateRef}
                   selectedDate={dateRange.from}
-                  onSelect={(date: any) =>
-                    setDateRange({ ...dateRange, from: date })
+                  onSelect={(date) =>
+                    setDateRange({ ...dateRange, from: date as Date })
                   }
                   mode="pickup"
                   productId={item.id}
@@ -609,8 +667,8 @@ export function DirectTransactionModal({
                     triggerRef={returnDateRef}
                     minDate={dateRange.from}
                     selectedDate={dateRange.to}
-                    onSelect={(date: any) =>
-                      setDateRange({ ...dateRange, to: date })
+                    onSelect={(date) =>
+                      setDateRange({ ...dateRange, to: date as Date })
                     }
                     mode="return"
                     type={type}
@@ -684,8 +742,10 @@ export function DirectTransactionModal({
             checklist={checklist}
             type={type}
             totalToPay={totalACobrarHoy}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
+            paymentMethodId={paymentMethodId}
+            setPaymentMethodId={setPaymentMethodId}
+            paymentMethods={paymentMethods}
+            isCashPayment={isCashPayment}
             receivedAmount={receivedAmount}
             setReceivedAmount={setReceivedAmount}
             changeAmount={changeAmount}

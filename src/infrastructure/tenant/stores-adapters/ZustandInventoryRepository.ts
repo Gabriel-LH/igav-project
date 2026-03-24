@@ -7,34 +7,34 @@ import { StockLot } from "../../../types/product/type.stockLote";
 import { InventoryItem } from "../../../types/product/type.inventoryItem";
 
 export class ZustandInventoryRepository implements InventoryRepository {
-  updateItemStatus(
+  async updateItemStatus(
     stockId: string,
     status: InventoryItemStatus | string,
     branchId?: string,
     sellerId?: string,
-  ): void {
+  ): Promise<void> {
     const store = useInventoryStore.getState();
     store.updateItemStatus(stockId, status as any, branchId, sellerId);
   }
 
-  decreaseLotQuantity(stockId: string, quantity: number): void {
+  async decreaseLotQuantity(stockId: string, quantity: number): Promise<void> {
     useInventoryStore.getState().decreaseLotQuantity(stockId, quantity);
   }
 
-  isSerial(stockId: string): boolean {
+  async isSerial(stockId: string): Promise<boolean> {
     return useInventoryStore
       .getState()
       .inventoryItems.some((i) => i.id === stockId);
   }
 
-  getTenantIdByProductId(productId: string): string | null {
+  async getTenantIdByProductId(productId: string): Promise<string | null> {
     const product = useInventoryStore
       .getState()
       .products.find((p) => p.id === productId);
     return product?.tenantId || null;
   }
 
-  getTenantIdByStockId(stockId: string): string | null {
+  async getTenantIdByStockId(stockId: string): Promise<string | null> {
     const store = useInventoryStore.getState();
     const serial = store.inventoryItems.find((s) => s.id === stockId);
     if (serial?.tenantId) return serial.tenantId;
@@ -47,27 +47,29 @@ export class ZustandInventoryRepository implements InventoryRepository {
     return null;
   }
 
-  getProducts(): Product[] {
+  async getProducts(): Promise<Product[]> {
     return useInventoryStore.getState().products;
   }
 
-  getProductVariants(): ProductVariant[] {
+  async getProductVariants(): Promise<ProductVariant[]> {
     return useInventoryStore.getState().productVariants;
   }
 
-  getInventoryItems(): InventoryItem[] {
+  async getInventoryItems(): Promise<InventoryItem[]> {
     return useInventoryStore.getState().inventoryItems;
   }
 
-  getStockLots(): StockLot[] {
+  async getStockLots(): Promise<StockLot[]> {
     return useInventoryStore.getState().stockLots;
   }
 
-  getInventoryItemById(id: string): InventoryItem | undefined {
+  async getInventoryItemById(id: string): Promise<InventoryItem | undefined> {
     return useInventoryStore.getState().inventoryItems.find((i) => i.id === id);
   }
 
-  getStockLotByIdOrVariant(idOrVariant: string): StockLot | undefined {
+  async getStockLotByIdOrVariant(
+    idOrVariant: string,
+  ): Promise<StockLot | undefined> {
     return useInventoryStore
       .getState()
       .stockLots.find(
@@ -75,11 +77,8 @@ export class ZustandInventoryRepository implements InventoryRepository {
       );
   }
 
-  increaseLotQuantity(stockId: string, quantity: number): void {
-    // NOTE: increase might not be implemented in the store, using decrease with negative for now if it is missing
-    // Let's assume there is an increase or we can implement it mapping to update.
+  async increaseLotQuantity(stockId: string, quantity: number): Promise<void> {
     const store = useInventoryStore.getState();
-    // Assuming there is a way or fallback to decrease negative
     if ((store as any).increaseLotQuantity) {
       (store as any).increaseLotQuantity(stockId, quantity);
     } else {
@@ -87,42 +86,45 @@ export class ZustandInventoryRepository implements InventoryRepository {
     }
   }
 
-  addProduct(product: Product): void {
+  async addProduct(product: Product): Promise<void> {
     useInventoryStore.getState().addProduct(product);
   }
 
-  updateProduct(productId: string, updates: Partial<Product>): void {
+  async updateProduct(
+    productId: string,
+    updates: Partial<Product>,
+  ): Promise<void> {
     useInventoryStore.getState().updateProduct(productId, updates);
   }
 
-  softDeleteProduct(productId: string, deletedBy?: string): void {
+  async softDeleteProduct(productId: string, deletedBy?: string): Promise<void> {
     useInventoryStore.getState().softDeleteProduct(productId, deletedBy);
   }
 
-  addProductVariants(variants: ProductVariant[]): void {
+  async addProductVariants(variants: ProductVariant[]): Promise<void> {
     useInventoryStore.getState().addProductVariants(variants);
   }
 
-  updateProductVariant(
+  async updateProductVariant(
     variantId: string,
     updates: Partial<ProductVariant>,
-  ): void {
+  ): Promise<void> {
     useInventoryStore.getState().updateProductVariant(variantId, updates);
   }
 
-  addStockLot(stockLot: StockLot): void {
+  async addStockLot(stockLot: StockLot): Promise<void> {
     useInventoryStore.getState().addStockLot(stockLot);
   }
 
-  removeStockLot(stockLotId: string): void {
+  async removeStockLot(stockLotId: string): Promise<void> {
     useInventoryStore.getState().removeStockLot(stockLotId);
   }
 
-  addInventoryItems(items: InventoryItem[]): void {
+  async addInventoryItems(items: InventoryItem[]): Promise<void> {
     useInventoryStore.getState().addInventoryItems(items);
   }
 
-  removeInventoryItem(itemId: string): void {
+  async removeInventoryItem(itemId: string): Promise<void> {
     useInventoryStore.getState().removeInventoryItem(itemId);
   }
 }

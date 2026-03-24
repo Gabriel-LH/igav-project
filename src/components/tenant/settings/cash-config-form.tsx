@@ -58,7 +58,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CashierIcon, Money01Icon, BankIcon } from "@hugeicons/core-free-icons";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
-import type { PaymentMethod } from "@/src/types/payments/type.paymetMethod";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
 const cashFormSchema = z.object({
   openingCashRequired: z.boolean(),

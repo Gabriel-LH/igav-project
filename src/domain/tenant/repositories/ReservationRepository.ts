@@ -6,6 +6,7 @@ export interface ReservationRepository {
     reservation: Reservation,
     reservationItems: ReservationItem[],
   ): Promise<void>;
+  getReservations(): Promise<Reservation[]>;
   updateStatus(id: string, newStatus: string, itemStatus: string): Promise<void>;
   updateReservationItemStatus(itemId: string, status: string): Promise<void>;
   getReservationItems(): Promise<ReservationItem[]>;

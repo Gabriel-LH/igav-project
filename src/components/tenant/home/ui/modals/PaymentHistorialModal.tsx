@@ -11,7 +11,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Payment } from "../../../../../types/payments/type.payments";
-import { USER_MOCK } from "../../../../../mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { Badge } from "@/components/badge";
 import { useCallback, useMemo, useState } from "react";
@@ -23,6 +22,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { buildPaymentTicketHtml } from "@/src/components/tenant/ticket/build-payment-ticket";
+import { authClient } from "@/src/lib/auth-client";
 
 interface PaymentHistoryModalProps {
   open: boolean;
@@ -33,12 +33,12 @@ interface PaymentHistoryModalProps {
   calculatedBalance: number;
   calculatedIsCredit: boolean;
   customerName: string;
-  onAddPayment: (paymentData: any) => Payment;
+  onAddPayment: (paymentData: any) => Promise<Payment>;
 }
 
-const formatUserName = (receivedById: string) => {
-  const user = USER_MOCK.find((currentUser) => currentUser.id === receivedById);
-  return user ? `${user.firstName} ${user.lastName}` : "Sin registros";
+const formatUserName = (receivedById: string, currentUserId?: string, currentUserName?: string) => {
+  if (currentUserId === receivedById) return currentUserName || "Yo";
+  return `Staff (${receivedById.slice(0, 4)})`;
 };
 
 export function PaymentHistoryModal({
@@ -68,10 +68,13 @@ export function PaymentHistoryModal({
   );
 
   const resolvedCreditAmount = calculatedIsCredit ? creditAmount : 0;
-  const currentUser = USER_MOCK[0];
+  const { data: session } = authClient.useSession();
+  const currentUser = session?.user;
 
   const buildTicketHtml = useCallback((payment: Payment) =>
-    buildPaymentTicketHtml(payment, currentUser, customerName));
+    buildPaymentTicketHtml(payment, currentUser as { id: string; name?: string }, customerName),
+    [currentUser, customerName]
+  );
 
   const fullHistoryTicket = useMemo(
     () => payments.map(buildTicketHtml).join(""),
@@ -99,8 +102,8 @@ export function PaymentHistoryModal({
               <AddPaymentForm
                 remainingBalance={calculatedBalance}
                 onCancel={() => setShowAddForm(false)}
-                onSave={(data) => {
-                  const createdPayment = onAddPayment(data);
+                onSave={async (data) => {
+                  const createdPayment = await onAddPayment(data);
                   setShowAddForm(false);
                   setConfirmPrintOpen(true);
                   setTicketToPrint(buildTicketHtml(createdPayment));
@@ -149,7 +152,7 @@ export function PaymentHistoryModal({
                             {payment.date.toLocaleDateString()}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
-                            {formatUserName(payment.receivedById)}
+                            {formatUserName(payment.receivedById, currentUser?.id, currentUser?.name)}
                           </p>
                         </td>
                         <td className="px-4 py-3">

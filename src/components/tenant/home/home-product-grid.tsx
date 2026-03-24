@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ProductFilters } from "./home-product-filter";
 import { CatalogProductCard } from "./catalog-product-card";
@@ -16,17 +16,17 @@ import {
 } from "@hugeicons/core-free-icons";
 
 // Mocks e IDs
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { HomeStats } from "./home-stats";
 import { LaundryActionCard } from "./laundry/laundry-card";
 import { MaintenanceActionCard } from "./maintance/maintance-card";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { toast } from "sonner";
 import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import { getAvailabilityCalendarDataAction } from "@/src/app/(tenant)/tenant/actions/availability.actions";
 import type { Product } from "@/src/types/product/type.product";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
@@ -34,6 +34,11 @@ import type { StockLot } from "@/src/types/product/type.stockLote";
 import type { Category } from "@/src/types/category/type.category";
 import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { getClientsAction } from "@/src/app/(tenant)/tenant/actions/client.actions";
+import { usePaymentStore } from "@/src/store/usePaymentStore";
+import { useOperationStore } from "@/src/store/useOperationStore";
 
 interface ProductGridProps {
   categories: Category[];
@@ -48,6 +53,16 @@ export function ProductGrid({
 }: ProductGridProps) {
   const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
   const router = useRouter();
+  const setReservationData = useReservationStore((s) => s.setReservationData);
+  const setRentalData = useRentalStore((s) => s.setRentalData);
+  const setOperations = useOperationStore((s) => s.setOperations);
+  const setPayments = usePaymentStore((s) => s.setPayments);
+  const setProductsInStore = useInventoryStore((s) => s.setProducts);
+  const setVariantsInStore = useInventoryStore((s) => s.setProductVariants);
+  const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
+  const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
+  const setCustomers = useCustomerStore((s) => s.setCustomers);
+  const customers = useCustomerStore((s) => s.customers);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
@@ -63,47 +78,86 @@ export function ProductGrid({
     StockLot & { status: string }
   >;
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadInventory = useCallback(async () => {
+    if (!selectedBranchId) {
+      setProducts([]);
+      setProductVariants([]);
+      setInventoryItems([]);
+      setStockLots([]);
+      setProductsInStore([]);
+      setVariantsInStore([]);
+      setInventoryItemsInStore([]);
+      setStockLotsInStore([]);
+      setIsLoading(false);
+      return;
+    }
 
-    const loadInventory = async () => {
-      if (!selectedBranchId) {
-        setProducts([]);
-        setProductVariants([]);
-        setInventoryItems([]);
-        setStockLots([]);
-        setIsLoading(false);
+    setIsLoading(true);
+    try {
+      const [inventoryResult, availabilityResult, clientsResult] = await Promise.all([
+        getBranchInventoryAction(selectedBranchId),
+        getAvailabilityCalendarDataAction(),
+        getClientsAction(),
+      ]);
+
+      if (!inventoryResult.success || !inventoryResult.data) {
+        toast.error(inventoryResult.error || "No se pudo cargar el inventario");
         return;
       }
 
-      setIsLoading(true);
-      try {
-        const result = await getBranchInventoryAction(selectedBranchId);
-        if (cancelled) return;
+      setProducts(inventoryResult.data.products as Product[]);
+      setProductVariants(inventoryResult.data.variants as ProductVariant[]);
+      setInventoryItems(inventoryResult.data.inventoryItems as InventoryItem[]);
+      setStockLots(inventoryResult.data.stockLots as StockLot[]);
+      setProductsInStore(inventoryResult.data.products as Product[]);
+      setVariantsInStore(inventoryResult.data.variants as ProductVariant[]);
+      setInventoryItemsInStore(
+        inventoryResult.data.inventoryItems as InventoryItem[],
+      );
+      setStockLotsInStore(inventoryResult.data.stockLots as StockLot[]);
 
-        if (!result.success || !result.data) {
-          toast.error(result.error || "No se pudo cargar el inventario");
-          return;
-        }
-
-        setProducts(result.data.products as Product[]);
-        setProductVariants(result.data.variants as ProductVariant[]);
-        setInventoryItems(result.data.inventoryItems as InventoryItem[]);
-        setStockLots(result.data.stockLots as StockLot[]);
-      } catch {
-        if (!cancelled) toast.error("Error de red");
-      } finally {
-        if (!cancelled) setIsLoading(false);
+      if (!availabilityResult.success || !availabilityResult.data) {
+        toast.error(
+          availabilityResult.error || "No se pudo cargar la disponibilidad",
+        );
+        return;
       }
-    };
 
+      setReservationData(
+        availabilityResult.data.reservations,
+        availabilityResult.data.reservationItems,
+      );
+      setRentalData(
+        availabilityResult.data.rentals,
+        availabilityResult.data.rentalItems,
+      );
+      setOperations(availabilityResult.data.operations);
+      setPayments(availabilityResult.data.payments);
+
+      if (clientsResult.success && clientsResult.data) {
+        setCustomers(clientsResult.data);
+      }
+    } catch {
+      toast.error("Error de red");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    selectedBranchId,
+    setInventoryItemsInStore,
+    setProductsInStore,
+    setRentalData,
+    setReservationData,
+    setStockLotsInStore,
+    setVariantsInStore,
+    setCustomers,
+    setOperations,
+    setPayments,
+  ]);
+
+  useEffect(() => {
     loadInventory();
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedBranchId]);
-
-
+  }, [loadInventory]);
 
   useBarcodeScanner({
     onScan: (code) => {
@@ -143,13 +197,9 @@ export function ProductGrid({
 
       return matchesSearch && matchesTab;
     });
-  }, [
-    products,
-    query,
-    activeTab,
-  ]);
+  }, [products, query, activeTab]);
 
-  const { reservations } = useReservationStore();
+  const { reservations, reservationItems } = useReservationStore();
 
   // --- 2. LÓGICA DE OPERACIONES (RESERVAS ACTIVAS) ---
   const filteredReservations = useMemo(() => {
@@ -161,21 +211,21 @@ export function ProductGrid({
         res.status === "confirmada" || res.status === "expirada";
       if (!isReadyForPickup) return false;
 
-      const client = CLIENTS_MOCK.find((c) => c.id === res.customerId);
+      const client = customers.find((c) => c.id === res.customerId);
       const matchesClient =
         `${client?.firstName} ${client?.lastName}`
           .toLowerCase()
           .includes(query) || client?.dni?.includes(query);
 
-      const resItems = reservations.filter((i) => i.id === res.id);
+      const resItems = reservationItems.filter((i) => i.reservationId === res.id);
       const matchesAnyProduct = resItems.some((item) => {
-        const p = PRODUCTS_MOCK.find((prod) => prod.id.toString() === item.id);
+        const p = products.find((prod) => prod.id === item.productId);
         return p?.name.toLowerCase().includes(query);
       });
 
       return matchesClient || matchesAnyProduct;
     });
-  }, [query, selectedBranchId, reservations]);
+  }, [query, selectedBranchId, reservations, customers, products, reservationItems]);
 
   const filteredLaundry = useMemo(() => {
     return [
@@ -243,7 +293,13 @@ export function ProductGrid({
       >
         {viewMode === "reserved" &&
           filteredReservations.map((res) => (
-            <ReservationProductCard key={res.id} reservation={res} />
+            <ReservationProductCard
+              key={res.id}
+              reservation={res}
+              attributeTypes={attributeTypes}
+              attributeValues={attributeValues}
+              onRefresh={loadInventory}
+            />
           ))}
 
         {isLoading && viewMode === "catalog" && (

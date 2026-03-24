@@ -1,6 +1,4 @@
-// utils/ticket/build-delivery-ticket.ts
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
-import { Guarantee } from "@/src/types/guarantee/type.guarantee";
+
 import { formatCurrency } from "@/src/utils/currency-format";
 
 export const buildDeliveryTicketHtml = (
@@ -14,11 +12,7 @@ export const buildDeliveryTicketHtml = (
 ) => {
   const productsList = items
     .map((item) => {
-      // BUSCAMOS EL PRODUCTO REAL EN EL MOCK
-      const productInfo = PRODUCTS_MOCK.find((p) => p.id === item.productId);
-      const productName = productInfo
-        ? productInfo.name
-        : "Producto no encontrado";
+      const productName = item.productName || "Producto";
 
       return `
         <div style="margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px;">
@@ -78,20 +72,20 @@ export const buildDeliveryTicketHtml = (
   </h2>
 
   <p style="margin: 4px 0 0 0; font-size: 10px; font-weight: bold;">
-    ${reservation.id}
+    ${reservation?.id || "N/A"}
   </p>
 </div>
 
       <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 5px 0; margin-bottom: 10px; font-size: 11px;">
         <p style="margin: 2px 0;"><strong>VENDEDOR:</strong>
-       ${seller.name} 
+       ${seller?.name || seller?.email || "Staff"} 
 
         <p style="margin: 2px 0;"><strong>CLIENTE:</strong>
         ${
-          client.firstName
-        } ${client.lastName}</p>
-        <p style="margin: 2px 0;"><strong>DNI:</strong> ${client.dni}</p>
-        <p style="margin: 2px 0;"><strong>TEL:</strong> ${client.phone}</p>
+          client?.firstName || ""
+        } ${client?.lastName || ""}</p>
+        <p style="margin: 2px 0;"><strong>DNI:</strong> ${client?.dni || "-"}</p>
+        <p style="margin: 2px 0;"><strong>TEL:</strong> ${client?.phone || "-"}</p>
       </div>
 
       <div style="margin-bottom: 10px; font-size: 11px;">
@@ -102,14 +96,14 @@ export const buildDeliveryTicketHtml = (
              : guarantee 
            : "FALTA GARANTÍA"
        }</p>
-        <p style="margin: 2px 0;"><strong>FECHA SALIDA:</strong> ${reservation.startDate.toLocaleDateString(
+        <p style="margin: 2px 0;"><strong>FECHA SALIDA:</strong> ${reservation?.startDate ? reservation.startDate.toLocaleDateString(
           "es-PE"
-        )}</p>
-        <p style="margin: 2px 0; color: #000;"><strong>DEVOLUCIÓN:</strong> <span style="font-size: 13px; font-weight: black;">${reservation.endDate.toLocaleDateString(
+        ) : "-"}</p>
+        <p style="margin: 2px 0; color: #000;"><strong>DEVOLUCIÓN:</strong> <span style="font-size: 13px; font-weight: black;">${reservation?.endDate ? reservation.endDate.toLocaleDateString(
           "es-PE"
-        )}</span></p>
+        ) : "-"}</span></p>
         <p style="margin: 2px 0;"><strong>HORA ENTREGA:</strong> ${
-          reservation.hour
+          reservation?.hour || "-"
         }</p>
       </div>
 

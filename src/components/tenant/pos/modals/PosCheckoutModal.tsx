@@ -46,6 +46,8 @@ import { Coupon } from "@/src/types/coupon/type.coupon";
 import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { useCouponStore } from "@/src/store/useCouponStore";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
+import { authClient } from "@/src/lib/auth-client";
+import { useBranchStore } from "@/src/store/useBranchStore";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -66,8 +68,10 @@ export function PosCheckoutModal({
     setGlobalTimes,
   } = useCartStore();
 
-  const sellerId = USER_MOCK[0].id;
-  const currentBranchId = USER_MOCK[0].branchId!;
+  const { data: session } = authClient.useSession();
+  const sellerId = session?.user?.id || "";
+  const currentBranchId = useBranchStore((s) => s.selectedBranchId) || "";
+  const { productVariants } = useInventoryStore();
 
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
@@ -133,7 +137,7 @@ export function PosCheckoutModal({
   const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
   const getMultiplier = (item: CartItem) => {
-    const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId);
+    const variant = productVariants.find((v) => v.id === item.variantId);
     return item.operationType === "alquiler" && variant?.rentUnit !== "evento"
       ? Math.max(differenceInDays(dateRange.to, dateRange.from), 1)
       : 1;
@@ -553,7 +557,7 @@ export function PosCheckoutModal({
                     differenceInDays(dateRange.to, dateRange.from),
                     1,
                   );
-                  const variant = PRODUCT_VARIANTS_MOCK.find(
+                  const variant = productVariants.find(
                     (v) => v.id === item.variantId,
                   );
                   const isEvent = variant?.rentUnit === "evento";

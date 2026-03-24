@@ -7,6 +7,10 @@ interface ReservationStore {
   // state
   reservations: Reservation[];
   reservationItems: ReservationItem[];
+  setReservationData: (
+    reservations: Reservation[],
+    reservationItems: ReservationItem[],
+  ) => void;
 
   // actions
   addReservation: (
@@ -40,6 +44,8 @@ export const useReservationStore = create<ReservationStore>((set) => ({
   // =========================
   reservations: [],
   reservationItems: [],
+  setReservationData: (reservations, reservationItems) =>
+    set({ reservations, reservationItems }),
 
   // =========================
   // ACTIONS

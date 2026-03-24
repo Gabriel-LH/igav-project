@@ -1,6 +1,12 @@
 import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepository";
 import { Payment } from "@/src/types/payments/type.payments";
-import { PrismaClient, Prisma } from "@/prisma/generated/client";
+import {
+  PaymentCategory,
+  PaymentDirection,
+  PaymentStatusLog,
+  Prisma,
+  PrismaClient,
+} from "@/prisma/generated/client";
 
 export class PrismaPaymentRepository implements PaymentRepository {
   constructor(
@@ -12,16 +18,14 @@ export class PrismaPaymentRepository implements PaymentRepository {
       data: {
         id: payment.id,
         amount: payment.amount,
-        direction: payment.direction as any,
-        status: payment.status as any,
-        category: payment.category as any,
+        direction: payment.direction as PaymentDirection,
+        status: payment.status as PaymentStatusLog,
+        category: payment.category as PaymentCategory,
         date: payment.date,
         createdAt: payment.createdAt,
-        // updatedAt: payment.updatedAt, // Doesn't exist in schema
-        // amountRefunded: payment.amountRefunded || 0, // Doesn't exist in schema
         notes: payment.notes || "",
-        reference: payment.referenceSource || "none", // referenceSource -> reference
-        originalPaymentId: payment.referenceSourceId || null, // referenceSourceId -> originalPaymentId
+        reference: payment.reference || null,
+        originalPaymentId: payment.originalPaymentId || null,
 
         tenantId: payment.tenantId || "",
         operationId: payment.operationId || "",
@@ -40,10 +44,22 @@ export class PrismaPaymentRepository implements PaymentRepository {
 
     return payments.map((p) => ({
       ...p,
-      direction: p.direction as any,
-      status: p.status as any,
-      category: p.category as any,
-      referenceSource: p.referenceSource as any,
+      direction: p.direction,
+      status: p.status,
+      category: p.category,
+    })) as Payment[];
+  }
+
+  async getPaymentsByTenant(tenantId: string): Promise<Payment[]> {
+    const payments = await this.prisma.payment.findMany({
+      where: { tenantId },
+    });
+
+    return payments.map((p) => ({
+      ...p,
+      direction: p.direction,
+      status: p.status,
+      category: p.category,
     })) as Payment[];
   }
 }

@@ -34,7 +34,6 @@ import {
   CheckCircle2,
   Loader,
 } from "lucide-react";
-import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig"; 
@@ -50,11 +49,15 @@ import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio
 import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import { getAvailabilityCalendarDataAction } from "@/src/app/(tenant)/tenant/actions/availability.actions";
 import type { Product } from "@/src/types/product/type.product";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
 import type { StockLot } from "@/src/types/product/type.stockLote";
 import { toast } from "sonner";
+import { useReservationStore } from "@/src/store/useReservationStore";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 
 interface ProductDetailsPageProps {
   lookup: string;
@@ -95,6 +98,8 @@ export function ProductDetailsPage({
   const setVariantsInStore = useInventoryStore((s) => s.setProductVariants);
   const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
   const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
+  const setReservationData = useReservationStore((s) => s.setReservationData);
+  const setRentalData = useRentalStore((s) => s.setRentalData);
   const { getModelById } = useAttributeStore();
   const { promotions } = usePromotionStore();
 
@@ -115,16 +120,35 @@ export function ProductDetailsPage({
       if (!currentBranchId) return;
       setIsLoading(true);
       try {
-        const result = await getBranchInventoryAction(currentBranchId);
-        if (!cancelled && result.success && result.data) {
-          setProducts(result.data.products as Product[]);
-          setProductVariants(result.data.variants as ProductVariant[]);
-          setInventoryItems(result.data.inventoryItems as InventoryItem[]);
-          setStockLots(result.data.stockLots as StockLot[]);
-          setProductsInStore(result.data.products as Product[]);
-          setVariantsInStore(result.data.variants as ProductVariant[]);
-          setInventoryItemsInStore(result.data.inventoryItems as InventoryItem[]);
-          setStockLotsInStore(result.data.stockLots as StockLot[]);
+        const [inventoryResult, availabilityResult] = await Promise.all([
+          getBranchInventoryAction(currentBranchId),
+          getAvailabilityCalendarDataAction(),
+        ]);
+
+        if (!cancelled && inventoryResult.success && inventoryResult.data) {
+          setProducts(inventoryResult.data.products as Product[]);
+          setProductVariants(inventoryResult.data.variants as ProductVariant[]);
+          setInventoryItems(
+            inventoryResult.data.inventoryItems as InventoryItem[],
+          );
+          setStockLots(inventoryResult.data.stockLots as StockLot[]);
+          setProductsInStore(inventoryResult.data.products as Product[]);
+          setVariantsInStore(inventoryResult.data.variants as ProductVariant[]);
+          setInventoryItemsInStore(
+            inventoryResult.data.inventoryItems as InventoryItem[],
+          );
+          setStockLotsInStore(inventoryResult.data.stockLots as StockLot[]);
+        }
+
+        if (!cancelled && availabilityResult.success && availabilityResult.data) {
+          setReservationData(
+            availabilityResult.data.reservations,
+            availabilityResult.data.reservationItems,
+          );
+          setRentalData(
+            availabilityResult.data.rentals,
+            availabilityResult.data.rentalItems,
+          );
         }
       } catch (error) {
         toast.error("Error al cargar el inventario", {
@@ -144,6 +168,8 @@ export function ProductDetailsPage({
     currentBranchId,
     setInventoryItemsInStore,
     setProductsInStore,
+    setRentalData,
+    setReservationData,
     setStockLotsInStore,
     setVariantsInStore,
   ]);

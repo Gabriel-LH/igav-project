@@ -17,7 +17,6 @@ export interface RegisterPaymentInput {
   operationId: string;
   amount: number;
   method: PaymentMethodType;
-  receivedAmount?: number;
   userId: string;
 }
 
@@ -31,20 +30,20 @@ export class RegisterPaymentUseCase {
     private rewardLoyaltyUseCase: RewardLoyaltyUseCase,
   ) {}
 
-  execute({
+  async execute({
     operationId,
     amount,
     method,
-    receivedAmount,
     userId,
-  }: RegisterPaymentInput): Payment {
+  }: RegisterPaymentInput): Promise<Payment> {
     const now = new Date();
-    const operation = this.operationRepo.getOperationById(operationId);
+    const operation = await this.operationRepo.getOperationById(operationId);
 
     if (!operation) throw new Error("Operacion no encontrada");
 
     const payment = paymentSchema.parse({
       id: `PAY-${crypto.randomUUID().slice(0, 8)}`,
+      tenantId: operation.tenantId,
       operationId,
       branchId: operation.branchId,
       receivedById: userId,
@@ -54,12 +53,13 @@ export class RegisterPaymentUseCase {
       status: "posted",
       category: "payment",
       date: now,
+      createdAt: now,
     });
 
-    this.paymentRepo.addPayment(payment);
+    await this.paymentRepo.addPayment(payment);
 
     const operationPayments =
-      this.paymentRepo.getPaymentsByOperationId(operationId);
+      await this.paymentRepo.getPaymentsByOperationId(operationId);
 
     const netPaid = getNetPostedAmount(operationPayments);
     const paymentStatus = calculateOperationPaymentStatus(
@@ -73,10 +73,10 @@ export class RegisterPaymentUseCase {
       operation.totalAmount,
     );
 
-    this.operationRepo.updateOperationStatus(operationId, paymentStatus);
+    await this.operationRepo.updateOperationStatus(operationId, paymentStatus);
 
     if (isCredit && creditAmount > 0) {
-      this.addClientCreditUseCase.execute(
+      await this.addClientCreditUseCase.execute(
         operation.customerId,
         creditAmount,
         "overpayment",
@@ -86,7 +86,7 @@ export class RegisterPaymentUseCase {
 
     if (amount > 0) {
       // NOTE: loyalty is rewarded using totalAmount here. The rewardLoyaltyUseCase divides by 10 inside the method
-      this.rewardLoyaltyUseCase.execute(
+      await this.rewardLoyaltyUseCase.execute(
         amount, // downPayment equivalent
         operation.totalAmount, // totalAmount
         operation.customerId, // customerId
@@ -96,10 +96,10 @@ export class RegisterPaymentUseCase {
     }
 
     if (operation.type === "venta" && balance === 0) {
-      const currentSale = this.saleRepo.getSaleByOperationId(operationId);
+      const currentSale = await this.saleRepo.getSaleByOperationId(operationId);
 
       if (currentSale && currentSale.status === "vendido_pendiente_entrega") {
-        this.saleRepo.updateSale(currentSale.id, {
+        await this.saleRepo.updateSale(currentSale.id, {
           status: "vendido",
           updatedAt: now,
           updatedBy: userId,
@@ -108,10 +108,10 @@ export class RegisterPaymentUseCase {
     }
 
     if (operation.type === "alquiler" && balance === 0) {
-      const currentRental = this.rentalRepo.getRentalByOperationId(operationId);
+      const currentRental = await this.rentalRepo.getRentalByOperationId(operationId);
 
       if (currentRental && currentRental.status === "reservado_fisico") {
-        this.rentalRepo.updateRental(currentRental.id, {
+        await this.rentalRepo.updateRental(currentRental.id, {
           status: "alquilado",
           updatedAt: now,
           updatedBy: userId,

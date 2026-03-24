@@ -4,16 +4,16 @@ import { SaleItem } from "../../../types/sales/type.saleItem";
 import { useSaleStore } from "../../../store/useSaleStore";
 
 export class ZustandSaleRepository implements SaleRepository {
-  addSale(sale: Sale, saleItems: SaleItem[]): void {
+  async addSale(sale: Sale, saleItems: SaleItem[]): Promise<void> {
     useSaleStore.getState().addSale(sale, saleItems);
   }
 
-  getSaleById(id: string): Sale | undefined {
+  async getSaleById(id: string): Promise<Sale | undefined> {
     return useSaleStore.getState().sales.find((s) => s.id === id);
   }
 
-  getSaleWithItems(id: string): { items: SaleItem[] } & Sale {
-    const sale = this.getSaleById(id);
+  async getSaleWithItems(id: string): Promise<{ items: SaleItem[] } & Sale> {
+    const sale = await this.getSaleById(id);
     if (!sale) throw new Error("Sale not found");
     const items = useSaleStore
       .getState()
@@ -21,17 +21,17 @@ export class ZustandSaleRepository implements SaleRepository {
     return { ...sale, items };
   }
 
-  getSaleByOperationId(operationId: string): Sale | undefined {
+  async getSaleByOperationId(operationId: string): Promise<Sale | undefined> {
     return useSaleStore
       .getState()
       .sales.find((s) => s.operationId === operationId);
   }
 
-  updateSale(id: string, data: Partial<Sale>): void {
+  async updateSale(id: string, data: Partial<Sale>): Promise<void> {
     useSaleStore.getState().updateSale(id, data);
   }
 
-  updateSaleItem(id: string, data: Partial<SaleItem>): void {
+  async updateSaleItem(id: string, data: Partial<SaleItem>): Promise<void> {
     const store = useSaleStore.getState();
     const items = store.saleItems.map((i) =>
       i.id === id ? { ...i, ...data } : i,

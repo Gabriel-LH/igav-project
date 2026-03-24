@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const paymentSchema = z.object({
   id: z.string(),
+  tenantId: z.string(),
 
   // Relación
   operationId: z.string(),

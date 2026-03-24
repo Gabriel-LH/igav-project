@@ -47,6 +47,11 @@ export class PrismaReservationRepository implements ReservationRepository {
     });
   }
 
+  async getReservations(): Promise<Reservation[]> {
+    const reservations = await this.prisma.reservation.findMany();
+    return reservations as unknown as Reservation[];
+  }
+
   async updateStatus(
     id: string,
     newStatus: string,

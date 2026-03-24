@@ -1,7 +1,10 @@
 import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
 import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
-import { reservationSchema } from "@/src/types/reservation/type.reservation";
+import {
+  Reservation,
+  reservationSchema,
+} from "@/src/types/reservation/type.reservation";
 import { reservationItemSchema } from "@/src/types/reservation/type.reservationItem";
 
 export class CreateReservationUseCase {
@@ -10,12 +13,18 @@ export class CreateReservationUseCase {
     private inventoryRepo: InventoryRepository,
   ) {}
 
-  async execute(dto: ReservationDTO, operationId: string, totalAmount: number): Promise<any> {
+  async execute(
+    dto: ReservationDTO,
+    operationId: string,
+    tenantId: string,
+    totalAmount: number,
+  ): Promise<Reservation> {
     const now = new Date();
     const totalUnits = dto.items.reduce((acc, i) => acc + (i.quantity || 1), 0);
 
     const reservation = reservationSchema.parse({
       id: `RES-${operationId}`,
+      tenantId,
       operationId,
       branchId: dto.branchId,
       customerId: dto.customerId,

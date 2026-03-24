@@ -14,14 +14,15 @@ export class ReservationTransactionStrategy implements ITransactionStrategy {
   }
 
   async execute(
-    dto: any,
+    dto: ReservationDTO,
     operationId: string,
-    _tenantId: string,
+    tenantId: string,
     financials: TransactionFinancials,
   ): Promise<TransactionStrategyResult> {
     const specificData = await this.createReservationUC.execute(
-      dto as ReservationDTO,
+      dto,
       operationId,
+      tenantId,
       financials.totalAmount,
     );
 

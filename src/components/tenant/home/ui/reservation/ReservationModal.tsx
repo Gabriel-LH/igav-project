@@ -14,12 +14,15 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
 import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { getAvailablePaymentMethodsAction } from "@/src/app/(tenant)/tenant/actions/payment-method.actions";
+import { getAvailabilityCalendarDataAction } from "@/src/app/(tenant)/tenant/actions/availability.actions";
+import { authClient } from "@/src/lib/auth-client";
+
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { useClientCreditStore } from "@/src/store/useClientCreditStore";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import {
   getAvailabilityByAttributes,
   getTotalStock,
@@ -28,9 +31,11 @@ import { endOfDay, startOfDay } from "date-fns";
 import z from "zod";
 import { productSchema } from "@/src/types/product/type.product";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
+import { useRentalStore } from "@/src/store/useRentalStore";
 
 interface ReservationModalProps {
   item: z.infer<typeof productSchema>;
@@ -78,20 +83,46 @@ export function ReservationModal({
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
-
-  const [paymentMethod, setPaymentMethod] =
-    React.useState<PaymentMethodType>("cash");
+  const [paymentMethods, setPaymentMethods] = React.useState<PaymentMethod[]>(
+    [],
+  );
+  const [paymentMethodId, setPaymentMethodId] = React.useState("");
 
   const [keepAsCredit, setKeepAsCredit] = React.useState(false);
   const [amountPaid, setAmountPaid] = React.useState("");
 
   const [useCredit, setUseCredit] = React.useState(false);
+  const setReservationData = useReservationStore((s) => s.setReservationData);
+  const setRentalData = useRentalStore((s) => s.setRentalData);
 
   const scrollRef = useScrollIndicator();
 
-  const sellerId = USER_MOCK[0].id;
+  const { data: session } = authClient.useSession();
+  const sellerId = session?.user?.id || "";
+  const { inventoryItems, stockLots, productVariants } = useInventoryStore();
 
-  const { inventoryItems, stockLots } = useInventoryStore();
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const loadPaymentMethods = async () => {
+      const result = await getAvailablePaymentMethodsAction();
+      if (cancelled) return;
+
+      if (!result.success || !result.data) {
+        toast.error(result.error || "No se pudieron cargar los métodos de pago");
+        return;
+      }
+
+      setPaymentMethods(result.data);
+      setPaymentMethodId((current) => current || result.data[0]?.id || "");
+    };
+
+    loadPaymentMethods();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   console.log("downPayment", downPayment);
 
@@ -173,8 +204,8 @@ export function ReservationModal({
   const resolvedVariant = useMemo(
     () =>
       selectedVariantProp ||
-      PRODUCT_VARIANTS_MOCK.find((variant) => variant.id === variantId),
-    [selectedVariantProp, variantId],
+      productVariants.find((variant) => variant.id === variantId),
+    [selectedVariantProp, variantId, productVariants],
   );
   const priceSell = resolvedVariant?.priceSell || 0;
   const priceRent = resolvedVariant?.priceRent || 0;
@@ -212,12 +243,20 @@ export function ReservationModal({
   }, [open, validStockCandidates]);
 
   const realPaidAmount = Number(amountPaid) || Number(downPayment);
+  const selectedPaymentMethod = useMemo(
+    () => paymentMethods.find((method) => method.id === paymentMethodId),
+    [paymentMethodId, paymentMethods],
+  );
+  const isCashPayment = selectedPaymentMethod?.type === "cash";
   const overpayment =
     realPaidAmount > totalOperacion ? realPaidAmount - totalOperacion : 0;
 
   const handleConfirm = async () => {
     if (!selectedCustomer || !dateRange?.from) {
       return toast.error("Faltan datos obligatorios (Fecha o Cliente)");
+    }
+    if (!paymentMethodId) {
+      return toast.error("Selecciona un método de pago válido");
     }
 
     if (operationType === "alquiler") {
@@ -293,7 +332,7 @@ export function ReservationModal({
         keepAsCredit,
         totalAmount: totalOperacion,
         downPayment: Number(downPayment),
-        paymentMethod,
+        paymentMethod: paymentMethodId,
         pendingAmount: Math.max(totalOperacion - Number(downPayment), 0),
       } as any,
       sellerId,
@@ -313,6 +352,15 @@ export function ReservationModal({
     try {
       const res = await processTransactionAction(newReservation);
       if(!res.success) throw new Error(res.error);
+
+      const availability = await getAvailabilityCalendarDataAction();
+      if (availability.success && availability.data) {
+        setReservationData(
+          availability.data.reservations,
+          availability.data.reservationItems,
+        );
+        setRentalData(availability.data.rentals, availability.data.rentalItems);
+      }
 
       if (overpayment > 0 && !keepAsCredit) {
         toast.info(
@@ -396,8 +444,10 @@ export function ReservationModal({
             setAmountPaid={setAmountPaid}
             keepAsCredit={keepAsCredit}
             setKeepAsCredit={setKeepAsCredit}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
+            paymentMethod={paymentMethodId}
+            setPaymentMethod={setPaymentMethodId}
+            paymentMethods={paymentMethods}
+            isCashPayment={isCashPayment}
             notes={notes}
             setNotes={setNotes}
             operationType={operationType}

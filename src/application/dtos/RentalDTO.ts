@@ -1,5 +1,4 @@
 import { GuaranteeType } from "../../utils/status-type/GuaranteeType";
-import { PaymentMethodType } from "../../utils/status-type/PaymentMethodType";
 import { BaseOperation } from "./BaseOperation";
 
 export interface RentalDTO extends BaseOperation {
@@ -39,7 +38,7 @@ export interface RentalDTO extends BaseOperation {
     totalAmount: number;
     keepAsCredit: boolean;
     receivedAmount: number;
-    paymentMethod: PaymentMethodType;
+    paymentMethod: string;
   };
   guarantee?: {
     type?: GuaranteeType | "por_cobrar";

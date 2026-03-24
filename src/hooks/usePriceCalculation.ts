@@ -7,7 +7,7 @@ interface UsePriceCalculationParams {
   quantity: number;
   startDate?: Date;
   endDate?: Date;
-  rentUnit?: "evento" | "día";
+  rentUnit?: "hora" | "día" | "semana" | "mes" | "evento";
   receivedAmount: number; // adelanto o pago
   guaranteeAmount?: number; // garantía en dinero
   availableCredit?: number; // 👈 NUEVO: Crédito del cliente

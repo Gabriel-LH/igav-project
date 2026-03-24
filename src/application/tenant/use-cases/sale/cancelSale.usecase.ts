@@ -5,6 +5,7 @@ import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepos
 import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
 import { differenceInHours } from "date-fns";
 import { SaleReversal } from "@/src/types/sales/type.saleReversal";
+import { Payment } from "@/src/types/payments/type.payments";
 
 export interface CancelSaleInput {
   saleId: string;
@@ -78,6 +79,7 @@ export class CancelSaleUseCase {
     payments.forEach((payment) => {
       this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
+        tenantId: sale.tenantId,
         operationId: sale.operationId,
         amount: payment.amount,
         paymentMethodId: payment.paymentMethodId,
@@ -85,10 +87,11 @@ export class CancelSaleUseCase {
         status: "posted",
         category: "correction",
         date: new Date(),
+        createdAt: new Date(),
         notes: `Anulación de venta: ${reason}`,
         receivedById: userId,
         branchId: sale.branchId,
-      } as any);
+      } as Payment);
     });
 
     this.operationRepo.updateOperationStatus(sale.operationId, "cancelado");

@@ -7,6 +7,7 @@ import { useRentalChargeStore } from "./useRentalChargeStore";
 interface RentalStore {
   rentals: Rental[];
   rentalItems: RentalItem[];
+  setRentalData: (rentals: Rental[], rentalItems: RentalItem[]) => void;
 
   addRental: (rental: Rental, items: RentalItem[]) => void;
 
@@ -27,6 +28,7 @@ interface RentalStore {
 export const useRentalStore = create<RentalStore>((set, get) => ({
   rentals: [],
   rentalItems: [],
+  setRentalData: (rentals, rentalItems) => set({ rentals, rentalItems }),
 
   addRental: (rental, items) =>
     set((state) => ({

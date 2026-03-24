@@ -3,6 +3,7 @@ import { usePriceCalculation } from "@/src/hooks/usePriceCalculation";
 import { PriceBreakdownBase } from "@/src/components/tenant/pricing/PriceBreakdownBase";
 import { cn } from "@/lib/utils";
 import { ReservationPaymentSummary } from "./ReservationPaymentSummary";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
 export function PriceSummary({
   startDate,
@@ -18,8 +19,10 @@ export function PriceSummary({
   setKeepAsCredit,
   downPayment,
   setDownPayment,
-  paymentMethod,
-  setPaymentMethod,
+  paymentMethodId,
+  setPaymentMethodId,
+  paymentMethods,
+  isCashPayment,
 }: any) {
   const { isVenta, isEvent, days, totalOperacion, totalHoy, pending } =
     usePriceCalculation({
@@ -50,8 +53,10 @@ export function PriceSummary({
         setKeepAsCredit={setKeepAsCredit}
         downPayment={downPayment}
         setDownPayment={setDownPayment}
-        paymentMethod={paymentMethod}
-        setPaymentMethod={setPaymentMethod}
+        paymentMethodId={paymentMethodId}
+        setPaymentMethodId={setPaymentMethodId}
+        paymentMethods={paymentMethods as PaymentMethod[]}
+        isCashPayment={Boolean(isCashPayment)}
       />
       <div className="p-3 border rounded-lg bg-muted/30">
         <div className="flex justify-between text-xs">

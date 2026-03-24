@@ -112,26 +112,26 @@ export class ConvertReservationUseCase {
           createdAt: new Date(),
         });
 
-        this.guaranteeRepo.addGuarantee(guarantee);
+        await this.guaranteeRepo.addGuarantee(guarantee);
       }
 
       // Transacción
-      const res = await processTransactionAction(rentalDTO);
+      const res = await processTransactionAction(rentalDTO as any);
       if(!res.success) throw new Error(res.error);
       const result = res.data;
 
       // Movimiento físico
-      input.reservationItems.forEach((item) => {
-        this.inventoryRepo.updateItemStatus(
+      for (const item of input.reservationItems) {
+        await this.inventoryRepo.updateItemStatus(
           input.selectedStocks[`${item.id}-0`] || input.selectedStocks[item.id],
           "alquilado",
           reservation.branchId,
           input.sellerId,
         );
-      });
+      }
 
       // Reserva → convertida
-      this.reservationRepo.updateStatus(
+      await this.reservationRepo.updateStatus(
         reservation.id,
         "alquiler",
         "convertida",
@@ -169,11 +169,11 @@ export class ConvertReservationUseCase {
         notes: input.notes,
       };
 
-      const res = await processTransactionAction(saleDTO);
+      const res = await processTransactionAction(saleDTO as any);
       if(!res.success) throw new Error(res.error);
       const result = res.data;
 
-      this.reservationRepo.updateStatus(reservation.id, "venta", "convertida");
+      await this.reservationRepo.updateStatus(reservation.id, "venta", "convertida");
 
       return {
         saleId: result.details.id,

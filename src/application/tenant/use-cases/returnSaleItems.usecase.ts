@@ -2,6 +2,7 @@ import { SaleRepository } from "../../../domain/tenant/repositories/SaleReposito
 import { SaleReversalRepository } from "../../../domain/tenant/repositories/SaleReversalRepository";
 import { InventoryRepository } from "../../../domain/tenant/repositories/InventoryRepository";
 import { PaymentRepository } from "../../../domain/tenant/repositories/PaymentRepository";
+import { Payment } from "../../../types/payments/type.payments";
 
 export interface ReturnSaleItemsInput {
   saleId: string;
@@ -103,6 +104,7 @@ export class ReturnSaleItemsUseCase {
 
       this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
+        tenantId: sale.tenantId,
         operationId: sale.operationId,
         amount: totalRefunded,
         paymentMethodId: firstPaymentMethod,
@@ -110,10 +112,11 @@ export class ReturnSaleItemsUseCase {
         status: "posted",
         category: "refund",
         date: new Date(),
+        createdAt: new Date(),
         notes: `Reembolso neto por devolución (comisión restada). Razón: ${reason}`,
         receivedById: userId,
         branchId: sale.branchId,
-      } as any);
+      } as Payment);
     }
   }
 }
