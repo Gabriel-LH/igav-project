@@ -12,18 +12,17 @@ import { Label } from "@/components/label";
 import { useState } from "react";
 import { Rental } from "@/src/types/rentals/type.rentals";
 import { useRentalStore } from "@/src/store/useRentalStore";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { GuaranteeSection } from "@/src/components/tenant/home/ui/reservation/GuaranteeSection";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { Checkbox } from "@/components/checkbox";
 import { Badge } from "@/components/badge";
-
 interface DeliverRentalModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rental: Rental;
+  customerName?: string;
   onConfirm: (
     id: string,
     guarantee: { value: string; type: GuaranteeType },
@@ -35,6 +34,7 @@ export const DeliverRentalModal = ({
   open,
   onOpenChange,
   rental,
+  customerName = "",
   onConfirm,
 }: DeliverRentalModalProps) => {
   const [loading, setLoading] = useState(false);
@@ -55,11 +55,6 @@ export const DeliverRentalModal = ({
 
   const { products } = useInventoryStore();
   const { rentalItems } = useRentalStore();
-  const customers = CLIENTS_MOCK;
-  const customer = customers.find((c) => c.id === rental.customerId);
-  const customerName = customer
-    ? `${customer.firstName} ${customer.lastName}`
-    : "";
 
   // 1. Obtener items de este alquiler
   const currentRentalItems = rentalItems.filter(

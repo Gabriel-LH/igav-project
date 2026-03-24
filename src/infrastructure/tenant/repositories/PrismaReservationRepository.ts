@@ -61,7 +61,7 @@ export class PrismaReservationRepository implements ReservationRepository {
       where: { id },
       data: {
         status: newStatus as any,
-        reservationItems: {
+        items: {
           updateMany: {
             where: { reservationId: id },
             data: { itemStatus: itemStatus as any },

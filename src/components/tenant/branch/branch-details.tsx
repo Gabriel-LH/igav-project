@@ -182,14 +182,6 @@ export function BranchDetails({
                   <p className="text-sm text-muted-foreground">Horario de atención</p>
                   <p className="font-medium">{config.openHours.open} - {config.openHours.close}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Días en lavandería</p>
-                  <p className="font-medium">{config.daysInLaundry} días</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Días en mantenimiento</p>
-                  <p className="font-medium">{config.daysInMaintenance} días</p>
-                </div>
               </div>
             </CardContent>
           </Card>

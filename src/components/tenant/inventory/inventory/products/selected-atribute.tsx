@@ -36,8 +36,6 @@ import {
   createAttributeTypeAction,
   createAttributeValueAction,
 } from "@/src/app/(tenant)/tenant/actions/attribute.actions";
-import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
-import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
 import { AttributeTypeFormData } from "@/src/types/attributes/type.attribute-type";
 import { AttributeValueFormData } from "@/src/types/attributes/type.attribute-value";
 import { toast } from "sonner";
@@ -60,6 +58,8 @@ interface VariantAttributeSelectorProps {
   attributeValues: AttributeValue[];
   selectedAttributes: SelectedAttributeConfig[];
   onChange: (attributes: SelectedAttributeConfig[]) => void;
+  onAttributeTypeAdded?: (type: AttributeType) => void;
+  onAttributeValueAdded?: (value: AttributeValue) => void;
   disabled?: boolean;
 }
 
@@ -68,17 +68,13 @@ export function VariantAttributeSelector({
   attributeValues,
   selectedAttributes,
   onChange,
+  onAttributeTypeAdded,
+  onAttributeValueAdded,
   disabled = false,
 }: VariantAttributeSelectorProps) {
   const [openTypePopover, setOpenTypePopover] = useState(false);
   const [openValuePopover, setOpenValuePopover] = useState<string | null>(null);
   const [openValueFormId, setOpenValueFormId] = useState<string | null>(null);
-  const addAttributeType = useAttributeTypeStore(
-    (state) => state.addAttributeType,
-  );
-  const addAttributeValue = useAttributeValueStore(
-    (state) => state.addAttributeValue,
-  );
 
   // Memoizar tipos de variante para evitar recálculos
   const variantTypes = useMemo(() => {
@@ -204,7 +200,7 @@ export function VariantAttributeSelector({
     async (data: AttributeTypeFormData) => {
       const result = await createAttributeTypeAction(data);
       if (result.success && result.data) {
-        addAttributeType(result.data);
+        onAttributeTypeAdded?.(result.data);
         const exists = selectedAttributes.some(
           (attr) => attr.attributeId === result.data!.id,
         );
@@ -224,7 +220,7 @@ export function VariantAttributeSelector({
         toast.error(result.error || "No se pudo crear el tipo de atributo");
       }
     },
-    [addAttributeType, onChange, selectedAttributes],
+    [onAttributeTypeAdded, onChange, selectedAttributes],
   );
 
   const handleCreateAttributeValue = useCallback(
@@ -234,7 +230,7 @@ export function VariantAttributeSelector({
         attributeTypeId,
       });
       if (result.success && result.data) {
-        addAttributeValue(result.data);
+        onAttributeValueAdded?.(result.data);
         onChange(
           selectedAttributes.map((attr) => {
             if (attr.attributeId !== attributeTypeId) return attr;
@@ -260,7 +256,7 @@ export function VariantAttributeSelector({
         toast.error(result.error || "No se pudo crear el valor de atributo");
       }
     },
-    [addAttributeValue, onChange, selectedAttributes],
+    [onAttributeValueAdded, onChange, selectedAttributes],
   );
 
   // Memoizar cálculos

@@ -9,6 +9,38 @@ export class PrismaRentalRepository implements RentalRepository {
   ) {}
 
   async addRental(rental: Rental, rentalItems: RentalItem[]): Promise<void> {
+    const rentalItemData = await Promise.all(
+      rentalItems.map(async (item) => {
+        const serialMatch = await this.prisma.inventoryItem.findUnique({
+          where: { id: item.stockId },
+          select: { id: true },
+        });
+        const isSerial = item.isSerial ?? !!serialMatch;
+
+        return {
+          id: item.id,
+          tenantId: rental.tenantId,
+          rentalId: rental.id,
+          operationId: rental.operationId,
+          productId: item.productId,
+          variantId: item.variantId || "",
+          stockLotId: isSerial ? null : item.stockId,
+          inventoryItemId: isSerial ? item.stockId : null,
+          quantity: item.quantity,
+          priceAtMoment: item.priceAtMoment,
+          discountAmount: item.discountAmount ?? 0,
+          discountReason: item.discountReason ?? null,
+          bundleId: item.bundleId ?? null,
+          promotionId: item.promotionId ?? null,
+          conditionOut: item.conditionOut as any,
+          itemStatus: item.itemStatus as any,
+          notes: item.notes || "",
+          listPrice: item.listPrice,
+          isSerial,
+        };
+      }),
+    );
+
     await this.prisma.rental.create({
       data: {
         id: rental.id,
@@ -25,26 +57,14 @@ export class PrismaRentalRepository implements RentalRepository {
         notes: rental.notes || "",
         createdAt: rental.createdAt,
         updatedAt: rental.updatedAt,
-        items: {
-          create: rentalItems.map((item) => ({
-            id: item.id,
-            tenantId: rental.tenantId,
-            operationId: rental.operationId,
-            productId: item.productId,
-            variantId: item.variantId || "",
-            stockId: item.stockId,
-            quantity: item.quantity,
-            priceAtMoment: item.priceAtMoment,
-            discountAmount: item.discountAmount,
-            discountReason: item.discountReason,
-            conditionOut: item.conditionOut as any,
-            itemStatus: item.itemStatus as any,
-            notes: item.notes || "",
-            listPrice: item.listPrice,
-          })),
-        },
       },
     });
+
+    if (rentalItemData.length > 0) {
+      await this.prisma.rentalItem.createMany({
+        data: rentalItemData,
+      });
+    }
   }
 
   async getRentals(): Promise<Rental[]> {
@@ -54,7 +74,7 @@ export class PrismaRentalRepository implements RentalRepository {
 
   async getRentalItems(): Promise<RentalItem[]> {
     const items = await this.prisma.rentalItem.findMany();
-    return items as unknown as RentalItem[];
+    return items.map(this.mapRentalItem);
   }
 
   async updateStatus(id: string, newStatus: string): Promise<void> {
@@ -96,7 +116,7 @@ export class PrismaRentalRepository implements RentalRepository {
     const item = await this.prisma.rentalItem.findUnique({
       where: { id },
     });
-    return item as unknown as RentalItem;
+    return item ? this.mapRentalItem(item) : undefined;
   }
 
   async getRentalByOperationId(operationId: string): Promise<Rental | undefined> {
@@ -110,7 +130,18 @@ export class PrismaRentalRepository implements RentalRepository {
     const items = await this.prisma.rentalItem.findMany({
       where: { rentalId },
     });
-    return items as unknown as RentalItem[];
+    return items.map(this.mapRentalItem);
+  }
+
+  private mapRentalItem(
+    item: Prisma.RentalItemGetPayload<{}>,
+  ): RentalItem {
+    const stockId = item.inventoryItemId ?? item.stockLotId ?? "";
+    return {
+      ...(item as unknown as RentalItem),
+      stockId,
+      isSerial: item.isSerial ?? Boolean(item.inventoryItemId),
+    };
   }
 
   async processReturnItem(itemId: string, status: string): Promise<void> {

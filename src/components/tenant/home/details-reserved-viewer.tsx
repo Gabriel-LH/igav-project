@@ -19,8 +19,10 @@ import {
   CalendarRemove01Icon,
 } from "@hugeicons/core-free-icons";
 import { getOperationBalances } from "@/src/utils/payment-helpers";
+import { getActivePolicyAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 import { PaymentHistoryModal } from "./ui/modals/PaymentHistorialModal";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Badge } from "@/components/badge";
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -135,21 +137,55 @@ export function DetailsReservedViewer({
     return Object.values(groups);
   }, [activeResItems]);
 
-  const allPaymentsForThisOp = useMemo(
-    () =>
+  const [allPaymentsForThisOp, setAllPaymentsForThisOp] = useState<any[]>([]);
+  const [policy, setPolicy] = useState<TenantPolicy | null>(null);
+
+  useEffect(() => {
+    async function fetchPolicy() {
+      const res = await getActivePolicyAction();
+      if (res.success && res.data) {
+        setPolicy(res.data);
+      }
+    }
+    fetchPolicy();
+  }, []);
+
+  useEffect(() => {
+    setAllPaymentsForThisOp(
       globalPayments.filter(
         (p) => String(p.operationId) === String(operation?.id),
       ),
-    [globalPayments, operation?.id],
-  );
+    );
+  }, [globalPayments, operation?.id]);
 
-  const totalCalculated = activeResItems.reduce(
-    (acc, item) => acc + item.priceAtMoment * item.quantity,
-    0,
-  );
+  const durationInDays = useMemo(() => {
+    if (!activeRes || activeRes.operationType !== "alquiler") return 1;
+    const start = new Date(activeRes.startDate);
+    const end = new Date(activeRes.endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    
+    // El cálculo depende de la política (por defecto inclusivo)
+    const isInclusive = policy?.rentals?.inclusiveDayCalculation ?? true;
+    const baseDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return isInclusive ? baseDays + 1 : baseDays || 1; 
+  }, [activeRes, policy]);
+
+  const totalCalculated = useMemo(() => {
+    return activeResItems.reduce(
+      (acc, item) =>
+        acc +
+        Number(item.priceAtMoment) *
+          Number(item.quantity) *
+          (activeRes?.operationType === "alquiler" ? durationInDays : 1),
+      0,
+    );
+  }, [activeResItems, activeRes?.operationType, durationInDays]);
 
   const { totalPaid, balance, isCredit, creditAmount } = getOperationBalances(
-    operation?.id || "",
+    activeRes?.operationId || "",
     allPaymentsForThisOp,
     totalCalculated,
   );

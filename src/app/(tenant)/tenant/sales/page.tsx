@@ -1,14 +1,17 @@
 import { SalesHeader } from "@/src/components/tenant/sales/sale-header";
 import { SalesGrid } from "@/src/components/tenant/sales/sales-grid";
+import { getSalesGridAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
+import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
 
-export default function SalesPage() {
+export default async function SalesPage() {
+  const access = await requireTenantMembership();
+  const salesData = await getSalesGridAction(access.membership!.tenantId);
+
   return (
     <>
       <div className="flex flex-col gap-6 p-6">
         <SalesHeader />
-        <SalesGrid />
-        {/* <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-secondary border-t-primary" /> */}
-        {/* <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-primary/10 border-t-primary border-b-primary" /> */}
+        <SalesGrid initialData={salesData} />
       </div>
     </>
   );

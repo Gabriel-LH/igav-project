@@ -14,10 +14,22 @@ export const reservationItemSchema = z.object({
   priceAtMoment: z.number(),
   listPrice: z.number().optional(),
   discountAmount: z.number().default(0),
-  discountReason: z.string().optional(),
-  bundleId: z.string().optional(),
-  promotionId: z.string().optional(),
-  notes: z.string().optional(),
+  discountReason: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
+  bundleId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
+  promotionId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
+  notes: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
 
   // --- ESTADO DE LA RESERVA DEL ITEM ---
   itemStatus: z.enum(["confirmada", "cancelada", "convertida", "expirada"]), //expirada se usara para volver a disponible el stock automaticamente

@@ -4,10 +4,9 @@ import { Product } from "@/src/types/product/type.product";
 import { CartItem, CartOperationType } from "@/src/types/cart/type.cart";
 import { differenceInDays } from "date-fns";
 import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import {
   BundleDomainService,
@@ -43,7 +42,9 @@ const calculateSubtotal = (
   if (opType === "venta") return item.unitPrice * item.quantity;
 
   // 2. Si es Alquiler -> Precio final x Cantidad x Días
-  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === item.variantId);
+  const variant = useInventoryStore
+    .getState()
+    .productVariants.find((v) => v.id === item.variantId);
   const isEvent = variant?.rentUnit === "evento";
 
   const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
@@ -57,7 +58,7 @@ const getProductListPrice = (
   variantId: string | undefined,
   type: CartOperationType,
 ) => {
-  const variant = PRODUCT_VARIANTS_MOCK.find((v) => v.id === variantId);
+  const variant = useInventoryStore.getState().productVariants.find((v) => v.id === variantId);
   if (!variant) return 0;
   return type === "venta" ? (variant.priceSell ?? 0) : (variant.priceRent ?? 0);
 };
@@ -171,7 +172,7 @@ export const useCartStore = create<CartState>()(
                 operationType: type,
                 listPrice,
                 promotions: [],
-                businessRules: MOCK_TENANT_CONFIG,
+                config: useTenantConfigStore.getState().config!,
                 explicitBundle: {
                   promotionId: customData!.appliedPromotionId!,
                   bundleId: customData!.bundleId!,
@@ -409,17 +410,20 @@ export const useCartStore = create<CartState>()(
           };
         }
 
+        const config = useTenantConfigStore.getState().config!;
+
         const { cart, eligibility } = bundleService.applyBundleToCart(
           get().items,
           bundleDefinition,
           tenantId,
           branchId,
-          startDate,
-          endDate,
-          PROMOTIONS_MOCK, // Passing mocks or empty arrays according to old signatures
-          [BUSINESS_RULES_MOCK] as any[],
+          startDate ?? new Date(),
+          endDate ?? new Date(),
+          PROMOTIONS_MOCK,
+          config,
           useInventoryStore.getState().inventoryItems,
           useInventoryStore.getState().stockLots,
+          useInventoryStore.getState().productVariants,
         );
 
         set((state) => {
@@ -455,15 +459,19 @@ export const useCartStore = create<CartState>()(
           return;
         }
 
-        const cart = bundleService.clearBundleAssignments(
+        const config = useTenantConfigStore.getState().config!;
+        const variants = useInventoryStore.getState().productVariants;
+
+        const updatedItems = bundleService.clearBundleAssignments(
           get().items,
-          dates.from,
-          dates.to,
-          [MOCK_TENANT_CONFIG] as any[],
+          get().globalRentalDates?.from ?? new Date(),
+          get().globalRentalDates?.to ?? new Date(),
+          config,
+          variants,
         );
 
         set({
-          items: cart,
+          items: updatedItems,
           activeBundles: [],
         });
       },
@@ -502,9 +510,10 @@ export const useCartStore = create<CartState>()(
             startDate,
             endDate,
             PROMOTIONS_MOCK,
-            [BUSINESS_RULES_MOCK] as any[],
+            useTenantConfigStore.getState().config!,
             useInventoryStore.getState().inventoryItems,
             useInventoryStore.getState().stockLots,
+            useInventoryStore.getState().productVariants,
           );
 
           updatedCart = cart;

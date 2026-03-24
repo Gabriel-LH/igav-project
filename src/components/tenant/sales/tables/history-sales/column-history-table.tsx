@@ -30,7 +30,6 @@ import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-a
 import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
 import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
 import { toast } from "sonner";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
 import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/returnSaleItems.usecase";
 
@@ -136,7 +135,7 @@ function ActionCell({
 
   const { sales, saleItems } = useSaleStore(); // Asumiendo que tienes un store de ventas
 
-  const user = USER_MOCK[0];
+  const userId = "user_1";
 
   // 1. Buscamos la venta base
   const baseSale = sales.find((s) => s.id === item.id);
@@ -162,7 +161,7 @@ function ActionCell({
       cancelSaleUC.execute({
         saleId: id,
         reason,
-        userId: user.id,
+        userId: userId,
       });
 
       toast.success("Venta anulada", {
@@ -198,7 +197,7 @@ function ActionCell({
         saleId,
         reason,
         items,
-        userId: user.id,
+        userId: userId,
       });
 
       toast.success("Devolución registrada", {

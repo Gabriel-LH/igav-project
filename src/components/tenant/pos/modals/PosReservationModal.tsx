@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { ShoppingBag, Calendar, BookmarkPlus } from "lucide-react";
+import { ShoppingBag, Calendar, BookmarkPlus, Info } from "lucide-react";
 
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -22,10 +22,9 @@ import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/tran
 import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
-import { DateTimeContainer } from "@/src/components/tenant/home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "@/src/components/tenant/home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "@/src/components/tenant/home/ui/direct-transaction/TimePicker";
-import { startOfDay, endOfDay, addDays } from "date-fns";
+import { addDays } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -33,13 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { Wallet, CreditCard, Smartphone, Banknote } from "lucide-react";
+import { Banknote, CreditCard, Smartphone } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBundle.usecase";
 import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
 interface PosReservationModalProps {
@@ -52,7 +51,8 @@ export function PosReservationModal({
   onOpenChange,
 }: PosReservationModalProps) {
   const { items, clearCart, activeTenantId } = useCartStore();
-  const { inventoryItems, stockLots } = useInventoryStore();
+  const { productVariants } = useInventoryStore();
+  const { policy } = useTenantConfigStore();
 
   const sellerId = USER_MOCK[0].id;
   const currentBranchId = USER_MOCK[0].branchId!;
@@ -64,15 +64,9 @@ export function PosReservationModal({
   const [notes, setNotes] = React.useState("");
 
   // Fechas
-  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
-  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
-  const returnDateRef = React.useRef<HTMLButtonElement>(null);
-  const returnTimeRef = React.useRef<HTMLButtonElement>(null);
-
-  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>({
-    from: new Date(),
-    to: addDays(new Date(), 3),
-  });
+  const [pickupDate, setPickupDate] = React.useState<Date | undefined>(new Date());
+  const [returnDate, setReturnDate] = React.useState<Date | undefined>(addDays(new Date(), 3));
+  
   const [pickupTime, setPickupTime] = React.useState(
     MOCK_BRANCH_CONFIG.openHours.open,
   );
@@ -86,7 +80,7 @@ export function PosReservationModal({
     "cash" | "card" | "transfer" | "yape" | "plin"
   >("cash");
 
-  // ─── SEPARAR POR TIPO ───
+  // ─── CALCULOS GLOBALES ───
   const ventaItems = useMemo(
     () => items.filter((i) => i.operationType === "venta"),
     [items],
@@ -99,203 +93,65 @@ export function PosReservationModal({
   const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
 
-  const conflicts = useMemo(() => {
-    if (!hasRentals) return [];
+  const totalVentas = useMemo(() => ventaItems.reduce((acc, i) => acc + i.subtotal, 0), [ventaItems]);
+  const totalAlquileres = useMemo(() => alquilerItems.reduce((acc, i) => acc + i.subtotal, 0), [alquilerItems]);
+  const totalOperacion = useMemo(() => items.reduce((acc, i) => acc + i.subtotal, 0), [items]);
 
-    const list: string[] = [];
-    alquilerItems.forEach((item) => {
-      const check = getAvailabilityByAttributes(
-        item.product.id,
-        item.variantId || "",
-        dateRange.from,
-        dateRange.to,
-        "alquiler",
-      );
+  // ─── VALIDACIONES ───
+  const buildReservationItems = (type: "venta" | "alquiler") => {
+    const list = type === "venta" ? ventaItems : alquilerItems;
+    if (list.length === 0) return null;
 
-      if (item.quantity > check.availableCount) {
-        list.push(
-          `${item.product.name}: Solicitado ${item.quantity}, Disponible ${check.availableCount}`,
+    return list.map((item) => {
+      const variant = productVariants.find((v) => v.id === item.variantId);
+
+      // Disponibilidad para alquiler
+      if (type === "alquiler" && pickupDate && returnDate) {
+        const check = getAvailabilityByAttributes(
+          item.product.id,
+          item.variantId || "",
+          pickupDate,
+          returnDate,
+          "alquiler",
         );
-      }
-    });
-
-    return list;
-  }, [alquilerItems, dateRange, hasRentals]);
-
-  // ─── CÁLCULOS ───
-  const totalVentas = useMemo(
-    () => ventaItems.reduce((sum, i) => sum + i.subtotal, 0),
-    [ventaItems],
-  );
-  const totalVentasLista = useMemo(
-    () =>
-      ventaItems.reduce(
-        (sum, item) => sum + (item.listPrice ?? item.unitPrice) * item.quantity,
-        0,
-      ),
-    [ventaItems],
-  );
-
-  const totalAlquileres = useMemo(() => {
-    if (!hasRentals) return 0;
-    const days =
-      dateRange?.from && dateRange?.to
-        ? Math.max(
-            Math.ceil(
-              (dateRange.to.getTime() - dateRange.from.getTime()) /
-                (1000 * 60 * 60 * 24),
-            ),
-            1,
-          )
-        : 1;
-    return alquilerItems.reduce((sum, item) => {
-      const variant = PRODUCT_VARIANTS_MOCK.find(
-        (v: any) => v.id === item.variantId,
-      );
-      const isEvent = variant?.rentUnit === "evento";
-      return sum + item.unitPrice * item.quantity * (isEvent ? 1 : days);
-    }, 0);
-  }, [alquilerItems, dateRange, hasRentals]);
-  const totalAlquileresLista = useMemo(() => {
-    if (!hasRentals) return 0;
-    const days =
-      dateRange?.from && dateRange?.to
-        ? Math.max(
-            Math.ceil(
-              (dateRange.to.getTime() - dateRange.from.getTime()) /
-                (1000 * 60 * 60 * 24),
-            ),
-            1,
-          )
-        : 1;
-    return alquilerItems.reduce((sum, item) => {
-      const variant = PRODUCT_VARIANTS_MOCK.find(
-        (v: any) => v.id === item.variantId,
-      );
-      const isEvent = variant?.rentUnit === "evento";
-      return (
-        sum +
-        (item.listPrice ?? item.unitPrice) *
-          item.quantity *
-          (isEvent ? 1 : days)
-      );
-    }, 0);
-  }, [alquilerItems, dateRange, hasRentals]);
-
-  const totalOperacion = totalVentas + totalAlquileres;
-  const totalOperacionLista = totalVentasLista + totalAlquileresLista;
-  const pendingAmount = Math.max(totalOperacion - Number(downPayment || 0), 0);
-
-  const operationType = hasRentals ? "alquiler" : "venta";
-
-  // ─── CONSTRUIR ITEMS ───
-  const buildReservationItems = (filterType?: "venta" | "alquiler") => {
-    const transactionItems: any[] = [];
-    const targetItems = filterType
-      ? items.filter((i) => i.operationType === filterType)
-      : items;
-
-    for (const cartItem of targetItems) {
-      const isVenta = cartItem.operationType === "venta";
-
-      if (isVenta) {
-        if (cartItem.product.is_serial) {
-          if (cartItem.selectedCodes.length < cartItem.quantity) {
-            toast.error(
-              `"${cartItem.product.name}": Debes asignar ${cartItem.quantity} unidades serializadas.`,
-            );
-            return null;
-          }
-          cartItem.selectedCodes.forEach((id) => {
-            const stockFound = inventoryItems.find(
-              (s) => s.id === id || s.serialCode === id,
-            );
-            transactionItems.push({
-              productId: cartItem.product.id,
-              productName: cartItem.product.name,
-              stockId: stockFound?.id || id,
-              quantity: 1,
-              variantId: cartItem.variantId ?? "",
-              priceAtMoment: cartItem.unitPrice,
-              listPrice: cartItem.listPrice ?? cartItem.unitPrice,
-              discountAmount: cartItem.discountAmount ?? 0,
-              discountReason: cartItem.discountReason,
-              promotionId: cartItem.appliedPromotionId,
-              bundleId: cartItem.bundleId,
-            });
-          });
-        } else {
-          // No serializado: FIFO auto-assign con filtros de variante
-          const candidates = stockLots.filter(
-            (s) =>
-              String(s.productId) === String(cartItem.product.id) &&
-              s.status === "disponible" &&
-              s.isForSale &&
-              (!cartItem.variantId || s.variantId === cartItem.variantId),
+        if (check.availableCount < item.quantity) {
+          toast.error(
+            `No hay disponibilidad para ${item.product.name} (${variant?.variantSignature || "N/A"}). Requerido: ${item.quantity}, Disponible: ${check.availableCount}`,
           );
-
-          let remaining = cartItem.quantity;
-          for (const lot of candidates) {
-            if (remaining <= 0) break;
-            const take = Math.min(remaining, lot.quantity);
-            transactionItems.push({
-              productId: cartItem.product.id,
-              productName: cartItem.product.name,
-              stockId: lot.id, // Usamos el ID (UUID)
-              quantity: take,
-              variantId: cartItem.variantId ?? "",
-              priceAtMoment: cartItem.unitPrice,
-              listPrice: cartItem.listPrice ?? cartItem.unitPrice,
-              discountAmount: cartItem.discountAmount ?? 0,
-              discountReason: cartItem.discountReason,
-              promotionId: cartItem.appliedPromotionId,
-              bundleId: cartItem.bundleId,
-            });
-            remaining -= take;
-          }
-          if (remaining > 0) {
-            toast.error(
-              `"${cartItem.product.name}": Stock insuficiente para la venta.`,
-            );
-            return null;
-          }
-        }
-      } else {
-        // Alquileres
-        for (let i = 0; i < cartItem.quantity; i++) {
-          transactionItems.push({
-            productId: cartItem.product.id,
-            productName: cartItem.product.name,
-            stockId: undefined, // Virtual
-            quantity: 1,
-            variantId: cartItem.variantId ?? "",
-            priceAtMoment: cartItem.unitPrice,
-            listPrice: cartItem.listPrice ?? cartItem.unitPrice,
-            discountAmount: cartItem.discountAmount ?? 0,
-            discountReason: cartItem.discountReason,
-            promotionId: cartItem.appliedPromotionId,
-            bundleId: cartItem.bundleId,
-          });
+          throw new Error("Disponibilidad insuficiente");
         }
       }
-    }
 
-    return transactionItems;
+      return {
+        productId: item.product.id,
+        productName: item.product.name,
+        stockId: item.variantId || "", // Usamos variantId como fallback de stockId en la fase de reserva
+        quantity: item.quantity,
+        variantId: item.variantId || "",
+        priceAtMoment: item.unitPrice,
+        listPrice: item.listPrice,
+        discountAmount: item.discountAmount,
+        discountReason: item.discountReason,
+        promotionId: item.appliedPromotionId,
+        bundleId: item.bundleId,
+      };
+    });
   };
 
-  // ─── CONFIRMAR ───
-  const handleConfirm = async () => {
-    if (!selectedCustomer) return toast.error("Seleccione un cliente");
-    if (items.length === 0) return toast.error("El carrito está vacío");
-    if (!dateRange?.from) return toast.error("Seleccione una fecha");
-    if (conflicts.length > 0) {
-      return toast.error("Conflictos de stock en fechas seleccionadas");
-    }
-    if (Number(downPayment) <= 0) {
-      return toast.error("Ingrese un adelanto mayor a 0");
+  const handleCreateReservation = async () => {
+    if (!selectedCustomer) {
+      toast.error("Seleccione un cliente");
+      return;
     }
 
-    const totalDP = Number(downPayment);
+    if (hasRentals && (!pickupDate || !returnDate)) {
+      toast.error("Seleccione las fechas de alquiler");
+      return;
+    }
+
+    const totalDP = parseFloat(downPayment) || 0;
+
+    // ─── BUNDLES LOCKER ───
     if (items.some((item) => item.bundleId)) {
       const tenantId = activeTenantId ?? items[0]?.product.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
@@ -307,10 +163,13 @@ export function PosReservationModal({
         items,
         tenantId,
         currentBranchId,
-        dateRange.from,
-        dateRange.to,
+        pickupDate || new Date(),
+        returnDate || addDays(new Date(), 3),
       );
     }
+
+    const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+    if (!tenantId) throw new Error("Tenant no resuelto");
 
     if (hasSales && hasRentals) {
       const saleShare = totalVentas / totalOperacion;
@@ -319,68 +178,62 @@ export function PosReservationModal({
 
       const saleItems = buildReservationItems("venta");
       if (!saleItems) return;
-      const saleDTO: ReservationDTO = {
-        tenantId: activeTenantId ?? items[0]?.product.tenantId,
+      const saleDTO: any = {
+        id: crypto.randomUUID(),
+        operationId: crypto.randomUUID(),
+        tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
+        updatedAt: new Date(),
         type: "reserva",
         operationType: "venta",
         customerId: selectedCustomer.id,
         status: "confirmada",
-        notes: notes + " (Venta de operacion mixta)",
+        notes: notes + " (Parte de operacion mixta)",
+        items: saleItems,
+        reservationDateRange: {
+          from: new Date(),
+          to: new Date(),
+          hourFrom: "00:00",
+        },
         financials: {
-          subtotal: totalVentasLista,
-          totalDiscount: Math.max(totalVentasLista - totalVentas, 0),
-          taxAmount: 0,
+          subtotal: totalVentas,
+          totalDiscount: 0,
           totalAmount: totalVentas,
           receivedAmount: saleDP,
-          keepAsCredit: false,
           paymentMethod,
         },
-
         sellerId,
-        reservationDateRange: {
-          from: startOfDay(dateRange.from),
-          to: endOfDay(dateRange.to || dateRange.from),
-          hourFrom: pickupTime,
-        },
-        id: "",
-        operationId: "",
-        items: saleItems,
-        updatedAt: new Date(),
       };
 
       const rentalItems = buildReservationItems("alquiler");
       if (!rentalItems) return;
-      const rentalDTO: ReservationDTO = {
-        tenantId: activeTenantId ?? items[0]?.product.tenantId,
+      const rentalDTO: any = {
+        id: crypto.randomUUID(),
+        operationId: crypto.randomUUID(),
+        tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
+        updatedAt: new Date(),
         type: "reserva",
         operationType: "alquiler",
         customerId: selectedCustomer.id,
         status: "confirmada",
-        notes: notes + " (Alquiler de operacion mixta)",
-        financials: {
-          subtotal: totalAlquileresLista,
-          totalDiscount: Math.max(totalAlquileresLista - totalAlquileres, 0),
-          taxAmount: 0,
-          totalAmount: totalAlquileres,
-          receivedAmount: rentalDP,
-          keepAsCredit: false,
-          paymentMethod,
-        },
-
-        sellerId,
+        notes: notes + " (Parte de operacion mixta)",
+        items: rentalItems,
         reservationDateRange: {
-          from: startOfDay(dateRange.from),
-          to: endOfDay(dateRange.to || dateRange.from),
+          from: pickupDate,
+          to: returnDate,
           hourFrom: pickupTime,
         },
-        id: "",
-        operationId: "",
-        items: rentalItems,
-        updatedAt: new Date(),
+        financials: {
+          subtotal: totalAlquileres,
+          totalDiscount: 0,
+          totalAmount: totalAlquileres,
+          receivedAmount: rentalDP,
+          paymentMethod,
+        },
+        sellerId,
       };
 
       try {
@@ -389,56 +242,50 @@ export function PosReservationModal({
         const resRent = await processTransactionAction(rentalDTO);
         if (!resRent.success) throw new Error(resRent.error);
         toast.success(`Dos reservas creadas (Venta + Alquiler)`);
-      } catch (err) {
-        console.error(err);
-        toast.error("Error al procesar la reserva mixta");
-        return;
+      } catch (err: any) {
+        toast.error("Error: " + err.message);
       }
     } else {
-      const transactionItems = buildReservationItems();
-      if (!transactionItems) return;
+      const opType = hasSales ? "venta" : "alquiler";
+      const resItems = buildReservationItems(opType);
+      if (!resItems) return;
 
-      const newReservation: ReservationDTO = {
-        tenantId: activeTenantId ?? items[0]?.product.tenantId,
+      const newReservation: any = {
+        id: crypto.randomUUID(),
+        operationId: crypto.randomUUID(),
+        tenantId,
         branchId: currentBranchId,
         createdAt: new Date(),
+        updatedAt: new Date(),
         type: "reserva",
-        operationType,
+        operationType: opType,
         customerId: selectedCustomer.id,
         status: "confirmada",
         notes,
+        items: resItems,
+        reservationDateRange: {
+          from: opType === "alquiler" ? pickupDate : new Date(),
+          to: opType === "alquiler" ? returnDate : new Date(),
+          hourFrom: opType === "alquiler" ? pickupTime : "00:00",
+        },
         financials: {
-          subtotal: totalOperacionLista,
-          totalDiscount: Math.max(totalOperacionLista - totalOperacion, 0),
-          taxAmount: 0,
+          subtotal: totalOperacion,
+          totalDiscount: 0,
           totalAmount: totalOperacion,
           receivedAmount: totalDP,
-          keepAsCredit: false,
           paymentMethod,
         },
-
         sellerId,
-        reservationDateRange: {
-          from: startOfDay(dateRange.from),
-          to: endOfDay(dateRange.to || dateRange.from),
-          hourFrom: pickupTime,
-        },
-        id: "",
-        operationId: "",
-        items: transactionItems,
-        updatedAt: new Date(),
       };
 
       try {
         const result = await processTransactionAction(newReservation);
         if (!result.success) throw new Error(result.error);
         toast.success(
-          `Reserva de ${operationType} creada. Adelanto: ${formatCurrency(totalDP)}`,
+          `Reserva de ${opType} creada. Adelanto: ${formatCurrency(totalDP)}`,
         );
-      } catch (err) {
-        console.error(err);
-        toast.error("Error al procesar la reserva");
-        return;
+      } catch (err: any) {
+        toast.error("Error: " + err.message);
       }
     }
 
@@ -448,274 +295,129 @@ export function PosReservationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="uppercase text-sm font-black flex items-center gap-2 text-amber-700">
-            <BookmarkPlus className="w-5 h-5" />
-            Reservar — Con Adelanto
+          <DialogTitle className="flex items-center gap-2">
+            <BookmarkPlus className="w-5 h-5 text-primary" /> Reserva Profesional
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
-            Separa los productos con un adelanto. El saldo se paga al recoger.
+          <DialogDescription>
+            Configure fechas y adelanto para la reserva del cliente.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto space-y-4 py-2 pr-1">
-          {/* ─── RESUMEN ─── */}
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase font-black text-muted-foreground">
-              Productos a reservar ({items.length})
-            </Label>
-
-            {hasSales && (
-              <div className="border rounded-lg p-3 ">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShoppingBag className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-black uppercase text-orange-500">
-                    Ventas
-                  </span>
-                </div>
-                {ventaItems.map((item) => (
-                  <div
-                    key={item.cartId}
-                    className="flex justify-between text-xs py-1 border-t border-orange-100/50"
-                  >
-                    <span>
-                      {item.product.name}{" "}
-                      <span className="text-muted-foreground">
-                        ×{item.quantity}
-                      </span>
-                    </span>
-                    <span className="font-bold">
-                      {formatCurrency(item.subtotal)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Cliente</Label>
+              <CustomerSelector
+                selected={selectedCustomer}
+                onSelect={(c: any) => setSelectedCustomer(c)}
+              />
+            </div>
 
             {hasRentals && (
-              <div className="border rounded-lg p-3 ">
-                <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-black uppercase text-blue-500">
-                    Alquileres
-                  </span>
-                </div>
-                {alquilerItems.map((item) => (
-                  <div
-                    key={item.cartId}
-                    className="flex justify-between text-xs py-1 border-t border-blue-100/50"
-                  >
-                    <span>
-                      {item.product.name}{" "}
-                      <span className="text-muted-foreground">
-                        ×{item.quantity}
-                      </span>
-                    </span>
-                    <span className="font-bold">
-                      {formatCurrency(item.subtotal)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ─── FECHAS ─── */}
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase font-black text-muted-foreground">
-              Período de Reserva
-            </Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="relative">
-                <DateTimeContainer
-                  label="Fecha Recojo"
-                  date={dateRange.from}
-                  time={pickupTime}
-                  onDateClick={() => pickupDateRef.current?.click()}
-                  onTimeClick={() => pickupTimeRef.current?.click()}
-                  placeholderDate="Seleccionar"
-                  placeholderTime="Hora"
-                />
-                <div className="absolute opacity-0 pointer-events-none top-0">
-                  <DirectTransactionCalendar
-                    triggerRef={pickupDateRef}
-                    selectedDate={dateRange.from}
-                    onSelect={(date: Date | undefined) => {
-                      if (date) setDateRange({ ...dateRange, from: date });
-                    }}
-                    mode="pickup"
-                    quantity={1}
-                    type="alquiler"
-                    cartItems={alquilerItems}
-                  />
-                  <TimePicker
-                    triggerRef={pickupTimeRef}
-                    value={pickupTime}
-                    onChange={setPickupTime}
-                  />
-                </div>
-              </div>
-
-              {hasRentals && (
-                <div className="relative">
-                  <DateTimeContainer
-                    label="Fecha Devolución"
-                    date={dateRange.to}
-                    time={returnTime}
-                    onDateClick={() => returnDateRef.current?.click()}
-                    onTimeClick={() => returnTimeRef.current?.click()}
-                    placeholderDate="Seleccionar"
-                    placeholderTime="Hora"
-                  />
-                  <div className="absolute opacity-0 pointer-events-none top-0">
+              <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  <Calendar className="w-4 h-4" /> Fechas de Alquiler
+                </h4>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Fecha Recojo</Label>
                     <DirectTransactionCalendar
-                      triggerRef={returnDateRef}
-                      minDate={dateRange.from}
-                      selectedDate={dateRange.to}
-                      onSelect={(date: Date | undefined) => {
-                        if (date) setDateRange({ ...dateRange, to: date });
-                      }}
-                      mode="return"
-                      type="alquiler"
-                      quantity={1}
-                      cartItems={alquilerItems}
+                      selectedDate={pickupDate}
+                      onSelect={(d) => setPickupDate(d)}
+                      mode="pickup"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Hora Recojo</Label>
                     <TimePicker
-                      triggerRef={returnTimeRef}
+                      value={pickupTime}
+                      onChange={setPickupTime}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Fecha Devolución</Label>
+                    <DirectTransactionCalendar
+                      selectedDate={returnDate}
+                      onSelect={setReturnDate}
+                      mode="return"
+                      minDate={pickupDate}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Hora Devolución</Label>
+                    <TimePicker
                       value={returnTime}
                       onChange={setReturnTime}
                     />
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {conflicts.length > 0 && (
-            <div className="p-3 border border-red-200 bg-red-50 rounded-lg">
-              <p className="text-[11px] font-bold text-red-700 uppercase">
-                Conflictos de disponibilidad
-              </p>
-              <ul className="mt-1 space-y-1">
-                {conflicts.map((c, i) => (
-                  <li key={i} className="text-[11px] text-red-600">
-                    • {c}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* ─── CLIENTE ─── */}
-          <CustomerSelector
-            selected={selectedCustomer}
-            onSelect={setSelectedCustomer}
-          />
-
-          {/* ─── TOTAL Y ADELANTO ─── */}
-          <div className="space-y-3">
-            <div className="bg-primary/5 p-3 rounded-lg border-l-2 border-primary">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold uppercase">
-                  Total de la operación
-                </span>
-                <span className="text-xl font-black text-primary">
-                  {formatCurrency(totalOperacion)}
-                </span>
               </div>
-            </div>
+            )}
 
-            {/* Adelanto */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-[10px] font-bold uppercase flex items-center gap-1">
-                  <Banknote className="w-3 h-3" /> Adelanto
-                </Label>
-                <Select
-                  value={paymentMethod}
-                  onValueChange={(val) =>
-                    setPaymentMethod(val as typeof paymentMethod)
-                  }
-                >
-                  <SelectTrigger className="h-7 w-32 text-[10px] font-bold">
-                    <SelectValue placeholder="Método" />
-                  </SelectTrigger>
-                  <SelectContent className="text-[11px]">
-                    <SelectItem value="cash">
-                      <Wallet className="w-3 h-3 mr-1 inline" /> Efectivo
-                    </SelectItem>
-                    <SelectItem value="card">
-                      <CreditCard className="w-3 h-3 mr-1 inline" /> Tarjeta
-                    </SelectItem>
-                    <SelectItem value="yape">
-                      <Smartphone className="w-3 h-3 mr-1 inline" /> Yape
-                    </SelectItem>
-                    <SelectItem value="plin">
-                      <Smartphone className="w-3 h-3 mr-1 inline" /> Plin
-                    </SelectItem>
-                    <SelectItem value="transfer">
-                      <Banknote className="w-3 h-3 mr-1 inline" /> Transferencia
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="relative">
-                <span className="absolute left-2.5 top-2.5 text-xs font-bold">
-                  S/.
-                </span>
-                <Input
-                  className="pl-7 h-9 font-semibold"
-                  placeholder="0.00"
-                  type="number"
-                  value={downPayment}
-                  onChange={(e) => setDownPayment(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Pendiente */}
-            <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-bold text-muted-foreground">
-                Saldo pendiente
-              </span>
-              <span className="text-lg font-black text-amber-700">
-                {formatCurrency(pendingAmount)}
-              </span>
+              <Label>Notas</Label>
+              <Input
+                placeholder="Ej: Pendiente confirmar talla..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </div>
           </div>
 
-          {/* Notas */}
-          <div>
-            <Label className="text-[10px] uppercase font-bold mb-1">
-              Notas
-            </Label>
-            <Input
-              placeholder="Observaciones adicionales..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="h-8 text-xs"
-            />
-          </div>
-        </div>
+          <div className="space-y-4">
+            <div className="border rounded-lg p-4 bg-primary/5">
+              <h4 className="flex items-center gap-2 text-sm font-semibold mb-3">
+                <ShoppingBag className="w-4 h-4" /> Resumen
+              </h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total Operación:</span>
+                  <span>{formatCurrency(totalOperacion)}</span>
+                </div>
+                <Separator className="my-2" />
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  {hasSales && <p>Ventas: {formatCurrency(totalVentas)}</p>}
+                  {hasRentals && <p>Alquileres: {formatCurrency(totalAlquileres)}</p>}
+                </div>
+              </div>
+            </div>
 
-        {/* ─── BOTÓN CONFIRMAR ─── */}
-        <div className="pt-4 border-t">
-          <Button
-            onClick={handleConfirm}
-            disabled={
-              items.length === 0 ||
-              !selectedCustomer ||
-              Number(downPayment) <= 0 ||
-              Number(downPayment) > totalOperacion ||
-              conflicts.length > 0
-            }
-            className="w-full h-12 font-black text-white bg-linear-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 shadow-lg"
-          >
-            <BookmarkPlus className="w-5 h-5 mr-2" />
-            RESERVAR — Adelanto {formatCurrency(Number(downPayment || 0))}
-          </Button>
+            <div className="space-y-4 border rounded-lg p-4">
+              <h4 className="text-sm font-semibold">Adelanto</h4>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={downPayment}
+                onChange={(e) => setDownPayment(e.target.value)}
+              />
+              
+              <Label className="text-xs">Método</Label>
+              <Select value={paymentMethod} onValueChange={(v: any) => setPaymentMethod(v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Efectivo</SelectItem>
+                  <SelectItem value="card">Tarjeta</SelectItem>
+                  <SelectItem value="transfer">Transferencia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              className="w-full h-12"
+              disabled={!selectedCustomer}
+              onClick={handleCreateReservation}
+            >
+              Procesar Reserva
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

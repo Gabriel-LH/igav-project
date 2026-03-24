@@ -13,23 +13,23 @@ import { useState } from "react";
 import { z } from "zod";
 import { Sale } from "@/src/types/sales/type.sale";
 import { useSaleStore } from "@/src/store/useSaleStore";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Checkbox } from "@/components/checkbox";
 import { Badge } from "@/components/badge";
 import { SaleItem } from "@/src/types/sales/type.saleItem";
-
 interface DeliverSaleModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sale: Sale;
-  onConfirm: (id: string) => void;
+  customerName?: string;
+  onConfirm: (id: string, itemIds?: string[]) => void;
 }
 
 export const DeliverSaleModal = ({
   open,
   onOpenChange,
   sale,
+  customerName = "Cliente Desconocido",
   onConfirm,
 }: DeliverSaleModalProps) => {
   const [loading, setLoading] = useState(false);
@@ -214,10 +214,6 @@ export const DeliverSaleModal = ({
     }
   };
 
-  const customer = CLIENTS_MOCK.find((c) => c.id === sale.customerId);
-  const customerName = customer
-    ? `${customer.firstName} ${customer.lastName}`
-    : "Cliente Desconocido";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

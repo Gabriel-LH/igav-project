@@ -3,11 +3,11 @@ import { Promotion } from "../../../types/promotion/type.promotion";
 import { CartItem } from "../../../types/cart/type.cart";
 import { applyPricingEngine } from "../../../utils/pricing/applyPricingEngine";
 import { getAvailabilityByAttributes } from "../../../utils/reservation/checkAvailability";
-import { BusinessRules as BusinessRule } from "../../types/bussines-rules/bussines-rules";
+import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
 import { Product } from "../../../types/product/type.product";
 import { InventoryItem } from "../../../types/product/type.inventoryItem";
 import { StockLot } from "../../../types/product/type.stockLote";
-import { PRODUCT_VARIANTS_MOCK } from "../../../mocks/mock.productVariant";
+import { ProductVariant } from "../../../types/product/type.productVariant";
 
 export interface BundleDefinition {
   id: string;
@@ -156,11 +156,14 @@ export class BundleDomainService {
     return bundle.appliesTo.includes(operationType);
   }
 
-  private rentalMultiplier(item: CartItem, startDate: Date, endDate: Date) {
+  private rentalMultiplier(
+    item: CartItem,
+    startDate: Date,
+    endDate: Date,
+    productVariants: ProductVariant[],
+  ) {
     if (item.operationType !== "alquiler") return 1;
-    const variant = PRODUCT_VARIANTS_MOCK.find(
-      (v: any) => v.id === item.variantId,
-    );
+    const variant = productVariants.find((v: any) => v.id === item.variantId);
     if (variant?.rentUnit === "evento") return 1;
     return Math.max(differenceInDays(endDate, startDate), 1);
   }
@@ -169,7 +172,8 @@ export class BundleDomainService {
     cart: CartItem[],
     startDate: Date,
     endDate: Date,
-    businessRules: BusinessRule[],
+    config: TenantConfig,
+    productVariants: ProductVariant[],
   ): CartItem[] {
     return cart.map((item) => {
       const listPrice = item.listPrice ?? item.unitPrice;
@@ -178,13 +182,13 @@ export class BundleDomainService {
         operationType: item.operationType,
         listPrice,
         promotions: [],
-        businessRules: businessRules as any,
+        config: config,
       });
       const unitPrice = pricing.priceAtMoment;
       const subtotal =
         unitPrice *
         item.quantity *
-        this.rentalMultiplier(item, startDate, endDate);
+        this.rentalMultiplier(item, startDate, endDate, productVariants);
 
       return {
         ...item,
@@ -225,6 +229,7 @@ export class BundleDomainService {
     endDate: Date,
     inventoryItems: InventoryItem[],
     stockLots: StockLot[],
+    productVariants: ProductVariant[],
     checkAvailability: CheckAvailabilityFn = this.defaultCheckAvailability,
   ): BundleEligibilityResult {
     const hasCrossTenantItem = cart.some(
@@ -372,9 +377,10 @@ export class BundleDomainService {
     startDate: Date,
     endDate: Date,
     promotions: Promotion[],
-    businessRules: BusinessRule[],
+    config: TenantConfig,
     inventoryItems: InventoryItem[],
     stockLots: StockLot[],
+    productVariants: ProductVariant[],
     checkAvailability: CheckAvailabilityFn = this.defaultCheckAvailability,
   ): { cart: CartItem[]; eligibility: BundleEligibilityResult } {
     const eligibility = this.detectBundleEligibility(
@@ -386,12 +392,19 @@ export class BundleDomainService {
       endDate,
       inventoryItems,
       stockLots,
+      productVariants,
       checkAvailability,
     );
 
     if (!eligibility.eligible || eligibility.possibleCount <= 0) {
       return {
-        cart: this.cloneWithoutBundle(cart, startDate, endDate, businessRules),
+        cart: this.cloneWithoutBundle(
+          cart,
+          startDate,
+          endDate,
+          config,
+          productVariants,
+        ),
         eligibility,
       };
     }
@@ -400,7 +413,8 @@ export class BundleDomainService {
       cart,
       startDate,
       endDate,
-      businessRules,
+      config,
+      productVariants,
     );
     const requiredTotalByProduct = new Map<string, number>();
     bundleDefinition.requiredItems.forEach((required) => {
@@ -436,7 +450,6 @@ export class BundleDomainService {
         return { line, consumedQty, listPrice };
       });
 
-    // 1️⃣ Agrupar líneas consumidas por operationType
     const groups = new Map<
       "venta" | "alquiler",
       {
@@ -447,7 +460,12 @@ export class BundleDomainService {
 
     consumedLines.forEach((entry) => {
       const op = entry.line.operationType;
-      const multiplier = this.rentalMultiplier(entry.line, startDate, endDate);
+      const multiplier = this.rentalMultiplier(
+        entry.line,
+        startDate,
+        endDate,
+        productVariants,
+      );
       const lineTotal = entry.listPrice * entry.consumedQty * multiplier;
 
       const existing = groups.get(op);
@@ -463,10 +481,6 @@ export class BundleDomainService {
     });
 
     const sharedBundleGroupId = crypto.randomUUID();
-
-    // 2️⃣ Calcular factores de ajuste
-
-    // Total global de todas las líneas consumidas
     const globalTotal = Array.from(groups.values()).reduce(
       (acc, g) => acc + g.total,
       0,
@@ -478,24 +492,16 @@ export class BundleDomainService {
       groups.forEach((_, op) => groupFactors.set(op, 1));
     } else {
       if (bundleDefinition.discountType === "percentage") {
-        // 🔹 Descuento proporcional por grupo
         groups.forEach((group, op) => {
           const discountTotal =
             (group.total * bundleDefinition.discountValue) / 100;
-
           const finalTotal = Math.max(0, group.total - discountTotal);
           const factor = finalTotal / group.total;
-
           groupFactors.set(op, factor);
         });
       } else {
-        // 🔹 FIXED = bundlePrice FINAL GLOBAL
         const finalGlobalTotal = Math.max(0, bundleDefinition.discountValue);
-
-        const globalFactor =
-          globalTotal > 0 ? finalGlobalTotal / globalTotal : 1;
-
-        // aplicar mismo factor proporcional a cada grupo
+        const globalFactor = finalGlobalTotal / globalTotal;
         groups.forEach((group, op) => {
           groupFactors.set(op, globalFactor);
         });
@@ -521,16 +527,18 @@ export class BundleDomainService {
           subtotal:
             line.unitPrice *
             remainingQty *
-            this.rentalMultiplier(line, startDate, endDate),
+            this.rentalMultiplier(line, startDate, endDate, productVariants),
         });
       }
 
       const factor = groupFactors.get(line.operationType) ?? 1;
-
-      const multiplier = this.rentalMultiplier(line, startDate, endDate);
+      const multiplier = this.rentalMultiplier(
+        line,
+        startDate,
+        endDate,
+        productVariants,
+      );
       const baseLineTotal = listPrice * multiplier;
-
-      // ajustamos el total y luego regresamos a unitario
       const adjustedLineTotal = baseLineTotal * factor;
       const proratedUnitPrice = adjustedLineTotal / multiplier;
 
@@ -539,7 +547,7 @@ export class BundleDomainService {
         operationType: line.operationType,
         listPrice,
         promotions: promotions,
-        businessRules: businessRules as any,
+        config: config,
         explicitBundle: {
           promotionId: bundleDefinition.id,
           bundleId: sharedBundleGroupId,
@@ -561,7 +569,7 @@ export class BundleDomainService {
         subtotal:
           pricing.priceAtMoment *
           consumedQty *
-          this.rentalMultiplier(line, startDate, endDate),
+          this.rentalMultiplier(line, startDate, endDate, productVariants),
       });
     });
 
@@ -575,12 +583,15 @@ export class BundleDomainService {
     cart: CartItem[],
     startDate: Date,
     endDate: Date,
-    businessRules: BusinessRule[],
+    config: TenantConfig,
+    productVariants: ProductVariant[],
   ): CartItem[] {
-    return this.cloneWithoutBundle(cart, startDate, endDate, businessRules);
+    return this.cloneWithoutBundle(
+      cart,
+      startDate,
+      endDate,
+      config,
+      productVariants,
+    );
   }
-
-  // NOTE: reserveBundledItems, reserveStockUsingInventory, releaseStockUsingInventory
-  // have been correctly removed from this domain service and will be handled by
-  // applyBundle.orchestrator.ts using the repositories directly.
 }

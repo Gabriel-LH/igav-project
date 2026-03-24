@@ -8,4 +8,6 @@ export interface SaleRepository {
   getSaleByOperationId(operationId: string): Promise<Sale | undefined>;
   updateSale(id: string, data: Partial<Sale>): Promise<void>;
   updateSaleItem(id: string, data: Partial<SaleItem>): Promise<void>;
+  getSales(): Promise<Sale[]>;
+  getSaleItems(): Promise<SaleItem[]>;
 }

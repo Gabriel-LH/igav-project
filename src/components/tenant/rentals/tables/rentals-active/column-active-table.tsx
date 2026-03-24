@@ -18,22 +18,16 @@ import { DragHandle } from "@/src/components/tenant/dashboard/data-table/ui/Drag
 import { rentalsActiveSchema } from "../type/type.active";
 import { ArrowUpDown, CircleDashed, CircleX, PencilLine } from "lucide-react";
 import { TableCellViewerActive } from "./active-table-cell-viewer";
-import { CancelRentalUseCase } from "@/src/application/tenant/use-cases/cancelRental.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
+import { cancelRentalAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
 import { useState } from "react";
-import { useRentalStore } from "@/src/store/useRentalStore";
 import { toast } from "sonner";
 import { RentalWithItems } from "@/src/types/rentals/type.rentals";
 import { CancelRentalModal } from "../../ui/modals/CancelRentalModal";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 
 export const columnsRentalsActive: ColumnDef<
   z.infer<typeof rentalsActiveSchema>
 >[] = [
+  // ... (select, product, etc. sections remain the same)
   {
     id: "drag",
     header: () => null,
@@ -165,35 +159,28 @@ function ActionCell({
   row: Row<z.infer<typeof rentalsActiveSchema>>;
 }) {
   const [open, setOpen] = useState(false);
-
   const item = row.original;
 
-  const { rentals, rentalItems } = useRentalStore();
-
-  const baseRental = rentals.find((rental) => rental.id === item.id);
-
-  const itemsOfRental = rentalItems.filter(
-    (rentalItem) => rentalItem.rentalId === item.id,
-  );
-
-  const fullRentalData: RentalWithItems | undefined = baseRental
-    ? {
-        ...baseRental,
-        items: itemsOfRental,
-      }
-    : undefined;
+  // Reconstruct basic rental data for the modal to avoid Zustand store
+  const fullRentalData: RentalWithItems = {
+    ...item,
+    id: item.id,
+    branchId: "", 
+    customerId: "", 
+    operationId: "", 
+    status: item.status as any,
+    items: (item.itemsDetail || []).map(i => ({
+      ...i,
+      rentalId: item.id,
+    })) as any,
+  } as any;
 
   const handleConfirm = async (rentalId: string, reason: string) => {
     try {
-      const cancelUseCase = new CancelRentalUseCase(
-        new ZustandRentalRepository(),
-        new ZustandGuaranteeRepository(),
-        new ZustandOperationRepository(),
-        new ZustandPaymentRepository(),
-      );
-      cancelUseCase.execute(rentalId, reason, USER_MOCK[0].id);
+      await cancelRentalAction(rentalId, reason, "user_1");
       toast.success("Alquiler cancelado exitosamente");
       setOpen(false);
+      window.location.reload(); 
     } catch (error) {
       toast.error("Error al cancelar el alquiler");
     }

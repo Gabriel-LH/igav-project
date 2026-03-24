@@ -47,7 +47,7 @@ export class DeliverSaleUseCase {
     if (sale.reservationId) {
       this.reservationRepo.updateStatus(
         sale.reservationId,
-        "venta",
+        "convertida",
         "convertida",
       );
     }

@@ -6,6 +6,7 @@ import {
 import { InventoryRepository } from "../../../domain/tenant/repositories/InventoryRepository";
 import { PromotionRepository } from "../../../domain/tenant/repositories/PromotionRepository";
 import { CartItem } from "../../../types/cart/type.cart";
+import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
 
 export class ApplyBundleUseCase {
   private bundleDomainService: BundleDomainService;
@@ -13,14 +14,13 @@ export class ApplyBundleUseCase {
   constructor(
     private inventoryRepo: InventoryRepository,
     private promotionRepo: PromotionRepository,
-    // Note: Business Rules repository could be added here later
   ) {
     this.bundleDomainService = new BundleDomainService();
   }
 
-  getBundleDefinitions(tenantId?: string): BundleDefinition[] {
+  async getBundleDefinitions(tenantId?: string): Promise<BundleDefinition[]> {
     const promotions = this.promotionRepo.getPromotions();
-    const products = this.inventoryRepo.getProducts();
+    const products = await this.inventoryRepo.getProducts();
 
     return this.bundleDomainService.createBundleDefinitionsFromPromotions(
       promotions,
@@ -29,20 +29,19 @@ export class ApplyBundleUseCase {
     );
   }
 
-  applyBundle(
+  async applyBundle(
     cart: CartItem[],
     bundleDefinition: BundleDefinition,
     tenantId: string,
     branchId: string,
     startDate: Date,
     endDate: Date,
+    config: TenantConfig,
   ) {
     const promotions = this.promotionRepo.getPromotions();
-    const inventoryItems = this.inventoryRepo.getInventoryItems();
-    const stockLots = this.inventoryRepo.getStockLots();
-
-    // In a real scenario, this would come from a BusinessRuleRepository
-    const businessRules: any[] = [];
+    const inventoryItems = await this.inventoryRepo.getInventoryItems();
+    const stockLots = await this.inventoryRepo.getStockLots();
+    const productVariants = await this.inventoryRepo.getProductVariants();
 
     return this.bundleDomainService.applyBundleToCart(
       cart,
@@ -52,10 +51,10 @@ export class ApplyBundleUseCase {
       startDate,
       endDate,
       promotions,
-      businessRules,
+      config,
       inventoryItems,
       stockLots,
-      // Optional: Pass an override for checkAvailability if needed
+      productVariants,
     );
   }
 
@@ -102,7 +101,7 @@ export class ApplyBundleUseCase {
   private async reserveStockUsingInventory(
     input: AvailabilityInput,
   ): Promise<void> {
-    const products = this.inventoryRepo.getProducts();
+    const products = await this.inventoryRepo.getProducts();
     const expectedTenantId = products.find(
       (p) => p.id === input.productId,
     )?.tenantId;
@@ -110,9 +109,8 @@ export class ApplyBundleUseCase {
     if (!expectedTenantId) return;
     let remaining = input.quantity;
 
-    const serialCandidates = this.inventoryRepo
-      .getInventoryItems()
-      .filter(
+    const items = await this.inventoryRepo.getInventoryItems();
+    const serialCandidates = items.filter(
         (item) =>
           item.productId === input.productId &&
           item.tenantId === expectedTenantId &&
@@ -123,7 +121,7 @@ export class ApplyBundleUseCase {
 
     for (const serial of serialCandidates) {
       if (remaining <= 0) break;
-      this.inventoryRepo.updateItemStatus(
+      await this.inventoryRepo.updateItemStatus(
         serial.id,
         "reservado",
         input.branchId,
@@ -133,9 +131,8 @@ export class ApplyBundleUseCase {
 
     if (remaining <= 0) return;
 
-    const lotCandidates = this.inventoryRepo
-      .getStockLots()
-      .filter(
+    const lots = await this.inventoryRepo.getStockLots();
+    const lotCandidates = lots.filter(
         (lot) =>
           lot.productId === input.productId &&
           products.some(
@@ -151,11 +148,9 @@ export class ApplyBundleUseCase {
       if (remaining <= 0) break;
       const take = Math.min(remaining, lot.quantity);
       if (take > 0) {
-        this.inventoryRepo.decreaseLotQuantity(lot.id, take);
+        await this.inventoryRepo.decreaseLotQuantity(lot.id, take);
         remaining -= take;
       }
     }
   }
-
-  // Similar implementation for releaseStockUsingInventory could be added if needed
 }

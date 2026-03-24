@@ -1,5 +1,5 @@
 import { addDays, startOfDay } from "date-fns";
-import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules"; 
+import { BusinessRules } from "@/src/types/tenant/type.businessRules"; 
 import { getEstimatedTransferTime } from "../transfer/get-estimated-transfer-time";
 import { Reservation } from "@/src/types/reservation/type.reservation";
 import { Payment } from "@/src/types/payments/type.payments";

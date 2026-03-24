@@ -77,16 +77,25 @@ export class PrismaInventoryRepository implements InventoryRepository {
   }
 
   async getProducts(): Promise<Product[]> {
-    return [];
+    const products = await this.prisma.product.findMany({
+      where: { isDeleted: false },
+    });
+    return products as unknown as Product[];
   }
+
   async getProductVariants(): Promise<ProductVariant[]> {
-    return [];
+    const variants = await this.prisma.productVariant.findMany();
+    return variants as unknown as ProductVariant[];
   }
+
   async getInventoryItems(): Promise<InventoryItem[]> {
-    return [];
+    const items = await this.prisma.inventoryItem.findMany();
+    return items as unknown as InventoryItem[];
   }
+
   async getStockLots(): Promise<StockLot[]> {
-    return [];
+    const lots = await this.prisma.stockLot.findMany();
+    return lots as unknown as StockLot[];
   }
   async getInventoryItemById(id: string): Promise<InventoryItem | undefined> {
     return undefined;

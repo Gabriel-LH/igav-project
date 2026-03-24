@@ -11,12 +11,10 @@ import {
   getOperationBalances,
   getNetPostedAmount,
 } from "../../../utils/payment-helpers";
-import { PaymentMethodType } from "../../../utils/status-type/PaymentMethodType";
-
 export interface RegisterPaymentInput {
   operationId: string;
   amount: number;
-  method: PaymentMethodType;
+  method: string;
   userId: string;
 }
 

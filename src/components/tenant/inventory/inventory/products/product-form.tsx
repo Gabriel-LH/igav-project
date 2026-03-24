@@ -53,11 +53,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
-import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
-import { useModelStore } from "@/src/store/useModelStore";
-import { useBrandStore } from "@/src/store/useBrandStore";
-import { useCategoryStore } from "@/src/store/useCategoryStore";
 import {
   getAttributeTypesAction,
   getAttributeValuesAction,
@@ -130,25 +125,29 @@ export function ProductForm({
   initialCatalogs,
   initialAttributes,
 }: ProductFormProps) {
-  const attributeTypes = useAttributeTypeStore((state) => state.attributeTypes);
-  const attributeValues = useAttributeValueStore(
-    (state) => state.attributeValues,
+  const [attributeTypes, setAttributeTypes] = useState<AttributeType[]>(
+    initialAttributes?.attributeTypes || [],
   );
-  const setAttributeTypes = useAttributeTypeStore(
-    (state) => state.setAttributeTypes,
+  const [attributeValues, setAttributeValues] = useState<AttributeValue[]>(
+    initialAttributes?.attributeValues || [],
   );
-  const setAttributeValues = useAttributeValueStore(
-    (state) => state.setAttributeValues,
+
+  const [models, setModels] = useState<Model[]>(initialCatalogs?.models || []);
+  const [brands, setBrands] = useState<Brand[]>(initialCatalogs?.brands || []);
+  const [categories, setCategories] = useState<Category[]>(
+    initialCatalogs?.categories || [],
   );
-  const models = useModelStore((state) => state.models);
-  const brands = useBrandStore((state) => state.brands);
-  const categories = useCategoryStore((state) => state.categories);
-  const setBrands = useBrandStore((state) => state.setBrands);
-  const setModels = useModelStore((state) => state.setModels);
-  const setCategories = useCategoryStore((state) => state.setCategories);
-  const addBrand = useBrandStore((state) => state.addBrand);
-  const addModel = useModelStore((state) => state.addModel);
-  const addCategory = useCategoryStore((state) => state.addCategory);
+
+  const addBrand = (newBrand: Brand) =>
+    setBrands((prev) => [...prev, newBrand]);
+  const addModel = (newModel: Model) =>
+    setModels((prev) => [...prev, newModel]);
+  const addCategory = (newCategory: Category) =>
+    setCategories((prev) => [...prev, newCategory]);
+  const addAttributeType = (newType: AttributeType) =>
+    setAttributeTypes((prev) => [...prev, newType]);
+  const addAttributeValue = (newValue: AttributeValue) =>
+    setAttributeValues((prev) => [...prev, newValue]);
 
   const didInitAttributes = useRef(false);
   const didInitCatalogs = useRef(false);
@@ -160,16 +159,10 @@ export function ProductForm({
       didInitAttributes.current = true;
       setAttributeTypes(initialAttributes.attributeTypes);
       setAttributeValues(initialAttributes.attributeValues);
-      return () => {
-        isMounted = false;
-      };
+      return;
     }
 
-    if (didInitAttributes.current) {
-      return () => {
-        isMounted = false;
-      };
-    }
+    if (didInitAttributes.current) return;
 
     didInitAttributes.current = true;
 
@@ -195,7 +188,7 @@ export function ProductForm({
     return () => {
       isMounted = false;
     };
-  }, [initialAttributes, setAttributeTypes, setAttributeValues]);
+  }, [initialAttributes]);
 
   useEffect(() => {
     let isMounted = true;
@@ -205,16 +198,10 @@ export function ProductForm({
       setBrands(initialCatalogs.brands);
       setModels(initialCatalogs.models);
       setCategories(initialCatalogs.categories);
-      return () => {
-        isMounted = false;
-      };
+      return;
     }
 
-    if (didInitCatalogs.current) {
-      return () => {
-        isMounted = false;
-      };
-    }
+    if (didInitCatalogs.current) return;
 
     didInitCatalogs.current = true;
 
@@ -243,7 +230,7 @@ export function ProductForm({
     return () => {
       isMounted = false;
     };
-  }, [initialCatalogs, setBrands, setCategories, setModels]);
+  }, [initialCatalogs]);
 
   const handleCreateBrand = async (
     data: Parameters<typeof createBrandAction>[0],
@@ -685,8 +672,8 @@ export function ProductForm({
               </div>
               {/* Reemplazamos el Input anterior por este: */}
               <MediaPicker
-                value={formData.image}
-                onChange={(url) => setFormData({ ...formData, image: url })}
+                value={formData.image || []}
+                onChange={(url) => setFormData({ ...formData, image: Array.isArray(url) ? url : [url].filter(Boolean) as string[] })}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Puedes subir un archivo o pegar una URL externa para ahorrar
@@ -899,6 +886,8 @@ export function ProductForm({
               attributeTypes={attributeTypes}
               attributeValues={attributeValues}
               selectedAttributes={formData.selectedAttributes}
+              onAttributeTypeAdded={addAttributeType}
+              onAttributeValueAdded={addAttributeValue}
               onChange={(attrs) =>
                 setFormData({ ...formData, selectedAttributes: attrs })
               }

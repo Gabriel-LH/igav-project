@@ -20,9 +20,6 @@ import {
 } from "@/src/app/(tenant)/tenant/actions/product.actions";
 import { Product } from "@/src/types/product/type.product";
 import { ProductVariant } from "@/src/types/product/type.productVariant";
-import { useAttributeTypeStore } from "@/src/store/useAttributeTypeStore";
-import { useAttributeValueStore } from "@/src/store/useAttributeValueStore";
-import { useModelStore } from "@/src/store/useModelStore";
 import { reconstructSelectedAttributes } from "@/src/utils/variants/reconstructSelectedAttributes";
 import type { ProductsBootstrapData } from "@/src/app/(tenant)/tenant/actions/product.actions";
 
@@ -40,13 +37,7 @@ export function ProductsLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
-  // Stores needed for reconstructing selectedAttributes and brandId
-  const attributeTypes = useAttributeTypeStore((s) => s.attributeTypes);
-  const attributeValues = useAttributeValueStore((s) => s.attributeValues);
-  const models = useModelStore((s) => s.models);
-  const setAttributeTypes = useAttributeTypeStore((s) => s.setAttributeTypes);
-  const setAttributeValues = useAttributeValueStore((s) => s.setAttributeValues);
-  const setModels = useModelStore((s) => s.setModels);
+  // Data is now managed locally via bootstrapData state
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -66,9 +57,6 @@ export function ProductsLayout() {
       setProducts(cachedBootstrapData.products);
       setVariants(cachedBootstrapData.variants);
       setBootstrapData(cachedBootstrapData);
-      setAttributeTypes(cachedBootstrapData.attributeTypes);
-      setAttributeValues(cachedBootstrapData.attributeValues);
-      setModels(cachedBootstrapData.models);
       setIsLoading(false);
       return;
     }
@@ -78,16 +66,15 @@ export function ProductsLayout() {
     }
 
     const result = await bootstrapPromise;
-    if (result.success && result.data) {
+    if (result && result.success && 'data' in result && result.data) {
       cachedBootstrapData = result.data;
       setProducts(result.data.products);
       setVariants(result.data.variants);
       setBootstrapData(result.data);
-      setAttributeTypes(result.data.attributeTypes);
-      setAttributeValues(result.data.attributeValues);
-      setModels(result.data.models);
-    } else {
+    } else if (result && !result.success && 'error' in result) {
       toast.error(result.error || "Error al cargar productos");
+    } else {
+      toast.error("Error desconocido al cargar productos");
     }
     setIsLoading(false);
   }, []);

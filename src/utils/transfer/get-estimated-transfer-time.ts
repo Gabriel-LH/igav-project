@@ -1,4 +1,4 @@
-import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules"; 
+import { BusinessRules } from "@/src/types/tenant/type.businessRules"; 
 
 export const getEstimatedTransferTime = (
   fromId: string,

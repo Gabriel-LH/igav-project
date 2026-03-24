@@ -302,6 +302,7 @@ export type InventoryItemWhereInput = {
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryListRelationFilter
   priceHistories?: Prisma.PriceHistoryListRelationFilter
+  rentalItems?: Prisma.RentalItemListRelationFilter
 }
 
 export type InventoryItemOrderByWithRelationInput = {
@@ -326,6 +327,7 @@ export type InventoryItemOrderByWithRelationInput = {
   variant?: Prisma.ProductVariantOrderByWithRelationInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryOrderByRelationAggregateInput
   priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
+  rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
 }
 
 export type InventoryItemWhereUniqueInput = Prisma.AtLeast<{
@@ -353,6 +355,7 @@ export type InventoryItemWhereUniqueInput = Prisma.AtLeast<{
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryListRelationFilter
   priceHistories?: Prisma.PriceHistoryListRelationFilter
+  rentalItems?: Prisma.RentalItemListRelationFilter
 }, "id" | "serialCode">
 
 export type InventoryItemOrderByWithAggregationInput = {
@@ -417,6 +420,7 @@ export type InventoryItemCreateInput = {
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateInput = {
@@ -437,6 +441,7 @@ export type InventoryItemUncheckedCreateInput = {
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUpdateInput = {
@@ -457,6 +462,7 @@ export type InventoryItemUpdateInput = {
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateInput = {
@@ -477,6 +483,7 @@ export type InventoryItemUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemCreateManyInput = {
@@ -775,6 +782,22 @@ export type InventoryItemUpdateOneWithoutPriceHistoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InventoryItemUpdateToOneWithWhereWithoutPriceHistoriesInput, Prisma.InventoryItemUpdateWithoutPriceHistoriesInput>, Prisma.InventoryItemUncheckedUpdateWithoutPriceHistoriesInput>
 }
 
+export type InventoryItemCreateNestedOneWithoutRentalItemsInput = {
+  create?: Prisma.XOR<Prisma.InventoryItemCreateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedCreateWithoutRentalItemsInput>
+  connectOrCreate?: Prisma.InventoryItemCreateOrConnectWithoutRentalItemsInput
+  connect?: Prisma.InventoryItemWhereUniqueInput
+}
+
+export type InventoryItemUpdateOneWithoutRentalItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.InventoryItemCreateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedCreateWithoutRentalItemsInput>
+  connectOrCreate?: Prisma.InventoryItemCreateOrConnectWithoutRentalItemsInput
+  upsert?: Prisma.InventoryItemUpsertWithoutRentalItemsInput
+  disconnect?: Prisma.InventoryItemWhereInput | boolean
+  delete?: Prisma.InventoryItemWhereInput | boolean
+  connect?: Prisma.InventoryItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InventoryItemUpdateToOneWithWhereWithoutRentalItemsInput, Prisma.InventoryItemUpdateWithoutRentalItemsInput>, Prisma.InventoryItemUncheckedUpdateWithoutRentalItemsInput>
+}
+
 export type InventoryItemCreateNestedManyWithoutTenantInput = {
   create?: Prisma.XOR<Prisma.InventoryItemCreateWithoutTenantInput, Prisma.InventoryItemUncheckedCreateWithoutTenantInput> | Prisma.InventoryItemCreateWithoutTenantInput[] | Prisma.InventoryItemUncheckedCreateWithoutTenantInput[]
   connectOrCreate?: Prisma.InventoryItemCreateOrConnectWithoutTenantInput | Prisma.InventoryItemCreateOrConnectWithoutTenantInput[]
@@ -834,6 +857,7 @@ export type InventoryItemCreateWithoutBranchInput = {
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutBranchInput = {
@@ -853,6 +877,7 @@ export type InventoryItemUncheckedCreateWithoutBranchInput = {
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutBranchInput = {
@@ -919,6 +944,7 @@ export type InventoryItemCreateWithoutProductInput = {
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutProductInput = {
@@ -938,6 +964,7 @@ export type InventoryItemUncheckedCreateWithoutProductInput = {
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutProductInput = {
@@ -983,6 +1010,7 @@ export type InventoryItemCreateWithoutVariantInput = {
   product: Prisma.ProductCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutVariantInput = {
@@ -1002,6 +1030,7 @@ export type InventoryItemUncheckedCreateWithoutVariantInput = {
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutVariantInput = {
@@ -1047,6 +1076,7 @@ export type InventoryItemCreateWithoutInventoryItemStatusHistoriesInput = {
   product: Prisma.ProductCreateNestedOneWithoutInventoryItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutInventoryItemStatusHistoriesInput = {
@@ -1066,6 +1096,7 @@ export type InventoryItemUncheckedCreateWithoutInventoryItemStatusHistoriesInput
   createdAt?: Date | string
   updatedAt?: Date | string
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutInventoryItemStatusHistoriesInput = {
@@ -1101,6 +1132,7 @@ export type InventoryItemUpdateWithoutInventoryItemStatusHistoriesInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutInventoryItemStatusHistoriesInput = {
@@ -1120,6 +1152,7 @@ export type InventoryItemUncheckedUpdateWithoutInventoryItemStatusHistoriesInput
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemCreateWithoutPriceHistoriesInput = {
@@ -1139,6 +1172,7 @@ export type InventoryItemCreateWithoutPriceHistoriesInput = {
   product: Prisma.ProductCreateNestedOneWithoutInventoryItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutPriceHistoriesInput = {
@@ -1158,6 +1192,7 @@ export type InventoryItemUncheckedCreateWithoutPriceHistoriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutPriceHistoriesInput = {
@@ -1193,6 +1228,7 @@ export type InventoryItemUpdateWithoutPriceHistoriesInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutPriceHistoriesInput = {
@@ -1212,6 +1248,103 @@ export type InventoryItemUncheckedUpdateWithoutPriceHistoriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
+}
+
+export type InventoryItemCreateWithoutRentalItemsInput = {
+  id?: string
+  serialCode: string
+  isForRent: boolean
+  isForSale: boolean
+  usageCount?: number
+  lastMaintenance?: Date | string | null
+  condition: $Enums.InventoryCondition
+  status: $Enums.InventoryStatus
+  damageNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutInventoryItemsInput
+  branch: Prisma.BranchCreateNestedOneWithoutInventoryItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutInventoryItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+}
+
+export type InventoryItemUncheckedCreateWithoutRentalItemsInput = {
+  id?: string
+  tenantId: string
+  serialCode: string
+  variantId: string
+  productId: string
+  branchId: string
+  isForRent: boolean
+  isForSale: boolean
+  usageCount?: number
+  lastMaintenance?: Date | string | null
+  condition: $Enums.InventoryCondition
+  status: $Enums.InventoryStatus
+  damageNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+}
+
+export type InventoryItemCreateOrConnectWithoutRentalItemsInput = {
+  where: Prisma.InventoryItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.InventoryItemCreateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedCreateWithoutRentalItemsInput>
+}
+
+export type InventoryItemUpsertWithoutRentalItemsInput = {
+  update: Prisma.XOR<Prisma.InventoryItemUpdateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedUpdateWithoutRentalItemsInput>
+  create: Prisma.XOR<Prisma.InventoryItemCreateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedCreateWithoutRentalItemsInput>
+  where?: Prisma.InventoryItemWhereInput
+}
+
+export type InventoryItemUpdateToOneWithWhereWithoutRentalItemsInput = {
+  where?: Prisma.InventoryItemWhereInput
+  data: Prisma.XOR<Prisma.InventoryItemUpdateWithoutRentalItemsInput, Prisma.InventoryItemUncheckedUpdateWithoutRentalItemsInput>
+}
+
+export type InventoryItemUpdateWithoutRentalItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serialCode?: Prisma.StringFieldUpdateOperationsInput | string
+  isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  usageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastMaintenance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  condition?: Prisma.EnumInventoryConditionFieldUpdateOperationsInput | $Enums.InventoryCondition
+  status?: Prisma.EnumInventoryStatusFieldUpdateOperationsInput | $Enums.InventoryStatus
+  damageNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryItemsNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutInventoryItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutInventoryItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+}
+
+export type InventoryItemUncheckedUpdateWithoutRentalItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  serialCode?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  usageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastMaintenance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  condition?: Prisma.EnumInventoryConditionFieldUpdateOperationsInput | $Enums.InventoryCondition
+  status?: Prisma.EnumInventoryStatusFieldUpdateOperationsInput | $Enums.InventoryStatus
+  damageNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemCreateWithoutTenantInput = {
@@ -1231,6 +1364,7 @@ export type InventoryItemCreateWithoutTenantInput = {
   variant: Prisma.ProductVariantCreateNestedOneWithoutInventoryItemsInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemUncheckedCreateWithoutTenantInput = {
@@ -1250,6 +1384,7 @@ export type InventoryItemUncheckedCreateWithoutTenantInput = {
   updatedAt?: Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutInventoryItemInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput
 }
 
 export type InventoryItemCreateOrConnectWithoutTenantInput = {
@@ -1312,6 +1447,7 @@ export type InventoryItemUpdateWithoutBranchInput = {
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutBranchInput = {
@@ -1331,6 +1467,7 @@ export type InventoryItemUncheckedUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateManyWithoutBranchInput = {
@@ -1384,6 +1521,7 @@ export type InventoryItemUpdateWithoutProductInput = {
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutProductInput = {
@@ -1403,6 +1541,7 @@ export type InventoryItemUncheckedUpdateWithoutProductInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateManyWithoutProductInput = {
@@ -1456,6 +1595,7 @@ export type InventoryItemUpdateWithoutVariantInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutVariantInput = {
@@ -1475,6 +1615,7 @@ export type InventoryItemUncheckedUpdateWithoutVariantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateManyWithoutVariantInput = {
@@ -1528,6 +1669,7 @@ export type InventoryItemUpdateWithoutTenantInput = {
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutInventoryItemsNestedInput
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateWithoutTenantInput = {
@@ -1547,6 +1689,7 @@ export type InventoryItemUncheckedUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutInventoryItemNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput
 }
 
 export type InventoryItemUncheckedUpdateManyWithoutTenantInput = {
@@ -1574,11 +1717,13 @@ export type InventoryItemUncheckedUpdateManyWithoutTenantInput = {
 export type InventoryItemCountOutputType = {
   inventoryItemStatusHistories: number
   priceHistories: number
+  rentalItems: number
 }
 
 export type InventoryItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventoryItemStatusHistories?: boolean | InventoryItemCountOutputTypeCountInventoryItemStatusHistoriesArgs
   priceHistories?: boolean | InventoryItemCountOutputTypeCountPriceHistoriesArgs
+  rentalItems?: boolean | InventoryItemCountOutputTypeCountRentalItemsArgs
 }
 
 /**
@@ -1605,6 +1750,13 @@ export type InventoryItemCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends 
   where?: Prisma.PriceHistoryWhereInput
 }
 
+/**
+ * InventoryItemCountOutputType without action
+ */
+export type InventoryItemCountOutputTypeCountRentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalItemWhereInput
+}
+
 
 export type InventoryItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1628,6 +1780,7 @@ export type InventoryItemSelect<ExtArgs extends runtime.Types.Extensions.Interna
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   inventoryItemStatusHistories?: boolean | Prisma.InventoryItem$inventoryItemStatusHistoriesArgs<ExtArgs>
   priceHistories?: boolean | Prisma.InventoryItem$priceHistoriesArgs<ExtArgs>
+  rentalItems?: boolean | Prisma.InventoryItem$rentalItemsArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inventoryItem"]>
 
@@ -1701,6 +1854,7 @@ export type InventoryItemInclude<ExtArgs extends runtime.Types.Extensions.Intern
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   inventoryItemStatusHistories?: boolean | Prisma.InventoryItem$inventoryItemStatusHistoriesArgs<ExtArgs>
   priceHistories?: boolean | Prisma.InventoryItem$priceHistoriesArgs<ExtArgs>
+  rentalItems?: boolean | Prisma.InventoryItem$rentalItemsArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InventoryItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1725,6 +1879,7 @@ export type $InventoryItemPayload<ExtArgs extends runtime.Types.Extensions.Inter
     variant: Prisma.$ProductVariantPayload<ExtArgs>
     inventoryItemStatusHistories: Prisma.$InventoryItemStatusHistoryPayload<ExtArgs>[]
     priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
+    rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2142,6 +2297,7 @@ export interface Prisma__InventoryItemClient<T, Null = never, ExtArgs extends ru
   variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   inventoryItemStatusHistories<T extends Prisma.InventoryItem$inventoryItemStatusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryItem$inventoryItemStatusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   priceHistories<T extends Prisma.InventoryItem$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryItem$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rentalItems<T extends Prisma.InventoryItem$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryItem$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2627,6 +2783,30 @@ export type InventoryItem$priceHistoriesArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
+}
+
+/**
+ * InventoryItem.rentalItems
+ */
+export type InventoryItem$rentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RentalItem
+   */
+  select?: Prisma.RentalItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RentalItem
+   */
+  omit?: Prisma.RentalItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RentalItemInclude<ExtArgs> | null
+  where?: Prisma.RentalItemWhereInput
+  orderBy?: Prisma.RentalItemOrderByWithRelationInput | Prisma.RentalItemOrderByWithRelationInput[]
+  cursor?: Prisma.RentalItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RentalItemScalarFieldEnum | Prisma.RentalItemScalarFieldEnum[]
 }
 
 /**

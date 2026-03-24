@@ -99,4 +99,14 @@ export class PrismaSaleRepository implements SaleRepository {
     });
     return sales as unknown as Sale[];
   }
+
+  async getSales(): Promise<Sale[]> {
+    const sales = await this.prisma.sale.findMany();
+    return sales as unknown as Sale[];
+  }
+
+  async getSaleItems(): Promise<SaleItem[]> {
+    const items = await this.prisma.saleItem.findMany();
+    return items as unknown as SaleItem[];
+  }
 }

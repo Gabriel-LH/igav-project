@@ -18,7 +18,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -27,11 +26,14 @@ import { type Branch } from "@/src/types/branch/type.branch";
 import { type BranchConfig } from "@/src/types/branch/type.branchConfig";
 import { branchConfigSchema } from "@/src/types/branch/type.branchConfig";
 
-// Extendemos el schema para el formulario
+// Extendemos el schema para el formulario (omitiendo lo que no es del form y los campos deprecados)
 const formSchema = branchConfigSchema.omit({
+  id: true,
   branchId: true,
   createdAt: true,
   updatedAt: true,
+  daysInLaundry: true,
+  daysInMaintenance: true,
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -49,8 +51,6 @@ export function BranchConfigModal({
   onClose,
   onSave,
 }: BranchConfigModalProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,8 +58,6 @@ export function BranchConfigModal({
         open: "08:00",
         close: "20:00",
       },
-      daysInLaundry: 2,
-      daysInMaintenance: 7,
     },
   });
 
@@ -67,16 +65,17 @@ export function BranchConfigModal({
     if (config) {
       form.reset({
         openHours: config.openHours,
-        daysInLaundry: config.daysInLaundry,
-        daysInMaintenance: config.daysInMaintenance,
       });
     }
   }, [config, form]);
 
   const handleSubmit = (values: FormValues) => {
     const newConfig: BranchConfig = {
+      id: config?.id || crypto.randomUUID(),
       branchId: branch.id,
       ...values,
+      daysInLaundry: config?.daysInLaundry || 0, // Mantener los valores existentes en DB por si acaso
+      daysInMaintenance: config?.daysInMaintenance || 0,
       createdAt: config?.createdAt || new Date(),
       updatedAt: new Date(),
     };
@@ -148,61 +147,10 @@ export function BranchConfigModal({
             </div>
 
             <Separator />
-
-            {/* Parámetros operativos */}
-            <div className="space-y-4">
-              <h3 className="font-medium">Parámetros operativos</h3>
-
-              <FormField
-                control={form.control}
-                name="daysInLaundry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Días en lavandería</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="30"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Tiempo estimado para proceso de lavado
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="daysInMaintenance"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Días en mantenimiento</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="60"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Tiempo estimado para mantenimiento de equipos
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            
+            <p className="text-xs text-muted-foreground italic">
+              Nota: Los días de lavandería y mantenimiento globales se gestionan ahora desde el módulo de Políticas.
+            </p>
 
             <div className="flex justify-end gap-4 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>

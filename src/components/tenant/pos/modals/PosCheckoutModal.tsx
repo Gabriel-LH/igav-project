@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,8 +21,7 @@ import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/Cu
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
 import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
 import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
-import { USER_MOCK } from "@/src/mocks/mock.user";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
+import { useTenantConfigStore, DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
@@ -43,9 +42,7 @@ import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-a
 import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
-import { PRODUCT_VARIANTS_MOCK } from "@/src/mocks/mock.productVariant";
 import { useCouponStore } from "@/src/store/useCouponStore";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { authClient } from "@/src/lib/auth-client";
 import { useBranchStore } from "@/src/store/useBranchStore";
 
@@ -72,6 +69,15 @@ export function PosCheckoutModal({
   const sellerId = session?.user?.id || "";
   const currentBranchId = useBranchStore((s) => s.selectedBranchId) || "";
   const { productVariants } = useInventoryStore();
+  const { config, ensureLoaded } = useTenantConfigStore();
+
+  useEffect(() => {
+    if (open) {
+      ensureLoaded();
+    }
+  }, [open, ensureLoaded]);
+
+  const tenantConfig = config || (DEFAULT_CONFIG as any);
 
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
@@ -89,7 +95,7 @@ export function PosCheckoutModal({
 
   // Configuraciones (Idealmente vienen de tus businessRules)
   const availablePoints = selectedClient?.loyaltyPoints || 0;
-  const pointValueInMoney = 0.01; // 1 punto = S/ 0.01
+  const pointValueInMoney = tenantConfig.loyalty?.redemptionValue || 0.01;
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
@@ -111,8 +117,9 @@ export function PosCheckoutModal({
     });
   };
 
-  const pickupTime = globalRentalTimes?.pickup || MOCK_BRANCH_CONFIG.openHours.open;
-  const returnTime = globalRentalTimes?.return || MOCK_BRANCH_CONFIG.openHours.close;
+  // Horarios por defecto (Idealmente vendrían del config de sucursal)
+  const pickupTime = globalRentalTimes?.pickup || "08:00";
+  const returnTime = globalRentalTimes?.return || "20:00";
 
   // Financieros
   const [paymentMethod, setPaymentMethod] = useState<
@@ -154,7 +161,7 @@ export function PosCheckoutModal({
     [alquilerItems],
   );
 
-  const IGV_RATE = MOCK_TENANT_CONFIG.tax.rate; // 0.18
+  const IGV_RATE = tenantConfig.tax?.rate || 0.18;
 
   const subtotalBruto = items.reduce(
     (acc, item) =>

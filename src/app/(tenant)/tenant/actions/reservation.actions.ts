@@ -14,9 +14,10 @@ import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/res
 export async function convertReservationAction(input: ConvertReservationInput) {
   try {
     const membership = await requireTenantMembership();
-    const { tenantId } = membership;
+    const { tenantId, user } = membership;
 
     if (!tenantId) throw new Error("Tenant ID es obligatorio");
+    if (!user?.id) throw new Error("User ID es obligatorio");
 
     const result = await prisma.$transaction(async (tx) => {
       const reservationRepo = new PrismaReservationRepository(tx);
@@ -29,7 +30,10 @@ export async function convertReservationAction(input: ConvertReservationInput) {
         guaranteeRepo,
       );
 
-      return await convertUseCase.execute(input);
+      return await convertUseCase.execute({
+        ...input,
+        sellerId: user.id,
+      });
     });
 
     revalidatePath("/tenant/home");

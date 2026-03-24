@@ -1,4 +1,4 @@
-import { BusinessRules } from "@/src/types/bussines-rules/bussines-rules";
+import { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { CartOperationType } from "@/src/types/cart/type.cart";
 import { Product } from "@/src/types/product/type.product";
 import { Promotion } from "@/src/types/promotion/type.promotion";
@@ -8,7 +8,7 @@ export interface ApplyPricingEngineInput {
   operationType: CartOperationType;
   listPrice: number;
   promotions: Promotion[];
-  businessRules: BusinessRules;
+  config: TenantConfig;
   manualDiscountAmount?: number;
   manualDiscountReason?: string;
   explicitBundle?: {
@@ -40,7 +40,7 @@ const isPromotionActive = (promotion: Promotion, now = new Date()) => {
 const appliesToProduct = (promotion: Promotion, product: Product) => {
   if (promotion.scope === "global") return true;
   if (promotion.scope === "category") {
-    return promotion.targetIds?.includes(product.categoryId) ?? false;
+    return (product.categoryId && promotion.targetIds?.includes(product.categoryId)) ?? false;
   }
   if (promotion.scope === "product_specific") {
     return promotion.targetIds?.includes(product.id) ?? false;
@@ -70,7 +70,7 @@ export function applyPricingEngine(
     listPrice,
     operationType,
     promotions,
-    businessRules,
+    config,
     manualDiscountAmount = 0,
     manualDiscountReason,
     explicitBundle,
@@ -116,7 +116,7 @@ export function applyPricingEngine(
     : 0;
 
   const allowPromotionAndManual =
-    !isExclusive && businessRules.allowStackingDiscounts;
+    !isExclusive && config.discounts.allowStacking;
 
   const desiredManualDiscount = allowPromotionAndManual
     ? manualDiscountAmount
@@ -124,13 +124,15 @@ export function applyPricingEngine(
       ? 0
       : manualDiscountAmount;
 
-  const maxManualDiscount = safeListPrice * businessRules.maxDiscountPercentageAllowed;
+  // En el nuevo schema, maxPercentageAllowed es un número entero (ej: 50 para 50%)
+  const maxManualDiscount = safeListPrice * (config.discounts.maxPercentageAllowed / 100);
   const boundedManualDiscount = Math.min(Math.max(0, desiredManualDiscount), maxManualDiscount);
 
+  // requireAdminAuthOver también es un entero (ej: 20 para 20%)
   const requiresAdminAuth =
     safeListPrice > 0 &&
-    boundedManualDiscount / safeListPrice >
-      businessRules.requireAdminAuthForDiscountOver;
+    (boundedManualDiscount / safeListPrice) * 100 >
+      config.discounts.requireAdminAuthOver;
 
   const totalDiscount = Math.min(
     safeListPrice,

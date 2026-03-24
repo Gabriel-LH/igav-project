@@ -1,9 +1,9 @@
 
-import { USER_MOCK } from "../mocks/mock.user";
 import { Client } from "../types/clients/type.client";
 import { Product } from "../types/product/type.product";
 import { Sale } from "../types/sales/type.sale";
 import { SaleItem } from "../types/sales/type.saleItem";
+import { User } from "../types/user/type.user";
 
 export interface SaleTableRow {
   id: string;
@@ -16,13 +16,9 @@ export interface SaleTableRow {
   cancelDate: string;
   returnDate: string;
   nameCustomer: string;
-
-  // Nuevos campos de agrupación (La clave del cambio)
-  summary: string; // Texto corto para la tabla: "Producto (+N más)"
-  totalItems: number; // Cantidad total de unidades
-  itemsDetail: any[]; // Array enriquecido con nombres/fotos para el Drawer
-
-  // Campos de compatibilidad (mantenidos para no romper <DataTable /> actual)
+  summary: string; 
+  totalItems: number; 
+  itemsDetail: any[]; 
   product: string;
   count: number;
   income: number;
@@ -36,11 +32,13 @@ export const mapSaleToTable = (
   sales: Sale[],
   salesItems: SaleItem[],
   products: Product[],
+  users: User[],
 ): SaleTableRow[] => {
+  const usersById = new Map(users.map(u => [u.id, u]));
   return sales.map((sale) => {
-    const branch = MOCK_BRANCHES.find((b) => b.id === sale.branchId);
+    const branchName = "Principal";
     const customer = customers.find((c) => c.id === sale.customerId);
-    const seller = USER_MOCK[0];
+    const seller = usersById.get(sale.sellerId);
 
     // 1. Buscamos TODOS los items de esta venta
     const currentItems = salesItems.filter((s) => s.saleId === sale.id);
@@ -88,7 +86,7 @@ export const mapSaleToTable = (
 
     return {
       id: sale.id,
-      branchName: branch?.name || "Principal",
+      branchName,
       sellerName: seller?.firstName + " " + seller?.lastName || "",
 
       createdAt: sale.createdAt

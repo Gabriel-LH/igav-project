@@ -1,170 +1,152 @@
-// components/tenant-policies/TenantPoliciesModule.tsx (verifica esta parte)
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Save, RotateCcw, AlertTriangle, Info } from 'lucide-react';
-import { SalesPoliciesTab } from './sales-policy-tab';
-import { RentalsPoliciesTab } from './rentals-policy-tab';
-import { ReservationsPoliciesTab } from './reservation-policy-tab';
-import { InventoryPoliciesTab } from './inventory-policy-tab';
-import { FinancialPoliciesTab } from './financials-policy-tab';
-import { SecurityPoliciesTab } from './security-policy-tab';
-import { MOCK_TENANT_POLICIES } from '@/src/mocks/mock.tenantPolicies'; 
-import { tenantPoliciesSchema, type TenantPolicies } from '@/src/types/tenant/type.tenantPolicies';
+import { useState, useEffect } from "react";
+import { Save, RotateCcw,} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PolicyConfigForm } from "./policy-config-form";
+import {
+  getActivePolicyAction,
+  upsertPolicyAction,
+} from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
+import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { File02Icon } from "@hugeicons/core-free-icons";
 
 export function TenantPoliciesModule() {
-  const [activeTab, setActiveTab] = useState('sales');
+  const [policy, setPolicy] = useState<TenantPolicy | null>(null);
+  const [originalPolicy, setOriginalPolicy] = useState<TenantPolicy | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [highImpactChanges, setHighImpactChanges] = useState<string[]>([]);
-  const [originalPolicies, setOriginalPolicies] = useState<TenantPolicies>(MOCK_TENANT_POLICIES);
 
-  // Crear el formulario principal con opciones para evitar re-renders
-  const methods = useForm<TenantPolicies>({
-    resolver: zodResolver(tenantPoliciesSchema),
-    defaultValues: originalPolicies,
-    mode: 'onChange', // Cambiar a onChange para mejor rendimiento
-  });
-
-  const { watch, reset, formState } = methods;
-  const currentPolicies = watch();
-
-  // Usar useEffect con dependencias específicas
   useEffect(() => {
-    const changed = JSON.stringify(currentPolicies) !== JSON.stringify(originalPolicies);
-    setHasUnsavedChanges(changed);
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const res = await getActivePolicyAction();
+        if (res.success && res.data) {
+          setPolicy(res.data);
+          setOriginalPolicy(res.data);
+        } else {
+          const defPolicy: TenantPolicy = {
+              id: "default",
+              tenantId: "default",
+              version: 1,
+              isActive: true,
+              createdAt: new Date(),
+              updatedBy: "system",
+              sales: { allowReturns: true, maxReturnDays: 30, requireOriginalTicket: true, allowPartialReturns: true },
+              rentals: { 
+                  allowLateReturn: true, 
+                  lateToleranceHours: 2, 
+                  lateFeeType: "fixed" as any, 
+                  lateFeeValue: 0, 
+                  defaultRentalDurationDays: 3, 
+                  minRentalDurationDays: 1, 
+                  requireGuarantee: true, 
+                  inclusiveDayCalculation: true,
+                  autoMarkAsLate: true,
+                  allowRentalWithoutStockAssigned: false,
+                  autoMoveToLaundryOnReturn: true,
+                  autoMoveToMaintenanceIfDamaged: true,
+                  defaultLaundryDays: 2,
+                  defaultMaintenanceDays: 1
+              },
+              reservations: { autoExpireReservations: true, expireAfterHours: 24, requireDownPayment: false, minDownPaymentPercentage: 0 },
+              inventory: { allowManualAdjustments: true, requireReasonForAdjustment: true, autoOrderThreshold: 5, autoBlockStockIfReserved: true },
+              financial: { allowNegativeBalance: false, maxCreditPerClient: 0, allowInstallments: false, autoApplyChargesOnDamage: true },
+              security: { requirePinForHighDiscount: true, highDiscountThreshold: 20, requireManagerApprovalForVoid: true }
+          };
+          setPolicy(defPolicy);
+          setOriginalPolicy(defPolicy);
+        }
+      } catch (error) {
+          console.error("Error loading policies:", error);
+      } finally {
+          setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
-    // Detectar cambios de alto impacto
-    const impacts: string[] = [];
-    if (currentPolicies.rentals?.autoMarkAsLate !== originalPolicies.rentals?.autoMarkAsLate) {
-      impacts.push('Marcado automático de atrasados');
-    }
-    if (currentPolicies.inventory?.autoBlockStockIfReserved !== originalPolicies.inventory?.autoBlockStockIfReserved) {
-      impacts.push('Bloqueo automático de stock reservado');
-    }
-    if (currentPolicies.financial?.autoApplyChargesOnDamage !== originalPolicies.financial?.autoApplyChargesOnDamage) {
-      impacts.push('Cargos automáticos por daño');
-    }
-    setHighImpactChanges(impacts);
-  }, [
-    currentPolicies.rentals?.autoMarkAsLate,
-    currentPolicies.inventory?.autoBlockStockIfReserved,
-    currentPolicies.financial?.autoApplyChargesOnDamage,
-    originalPolicies
-  ]);
+  useEffect(() => {
+    if (!policy || !originalPolicy) return;
+    const changed = JSON.stringify(policy) !== JSON.stringify(originalPolicy);
+    setHasUnsavedChanges(changed);
+  }, [policy, originalPolicy]);
+
+  const handlePolicyChange = (section: keyof TenantPolicy, values: any) => {
+    if (!policy) return;
+    setPolicy({
+      ...policy,
+      [section]: {
+        ...(policy[section] as any),
+        ...values,
+      },
+    });
+  };
 
   const handleSave = async () => {
-    console.log('Guardando políticas:', currentPolicies);
-    setOriginalPolicies(currentPolicies);
-    setHasUnsavedChanges(false);
+    if (!policy) return;
+    setIsSaving(true);
+    try {
+        const res = await upsertPolicyAction(policy, "Actualización manual de políticas");
+        if (res.success) {
+          toast.success("Políticas actualizadas correctamente");
+          setOriginalPolicy(policy);
+          setHasUnsavedChanges(false);
+        } else {
+          toast.error("Error al guardar políticas: " + res.error);
+        }
+    } catch (error) {
+        toast.error("Error de conexión al guardar políticas");
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
-    reset(originalPolicies);
-    setHasUnsavedChanges(false);
+    setPolicy(originalPolicy);
   };
 
+  if (isLoading) {
+    return <div className="p-12 text-center animate-pulse text-muted-foreground">Cargando políticas del sistema...</div>;
+  }
+
+  if (!policy) return null;
+
   return (
-    <FormProvider {...methods}>
-      <div className="container mx-auto py-6 space-y-6">
-        {/* Header */}
-        <div className="flex justify-end items-start">
-          <div className="flex items-center gap-2">
+    <div className="space-y-6">
+       <div className="flex justify-between items-center bg-card p-4 rounded-xl border shadow-sm">
+            <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                    <HugeiconsIcon icon={File02Icon} className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                    <h2 className="text-xl font-bold">Configuración de Políticas</h2>
+                    <p className="text-sm text-muted-foreground">Define las reglas de negocio globales para el tenant</p>
+                </div>
+            </div>
             {hasUnsavedChanges && (
-              <>
-                <Button variant="outline" onClick={handleCancel}>
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Cancelar
-                </Button>
-                <Button onClick={handleSave}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Guardar cambios
-                </Button>
-              </>
+                <div className="flex gap-2 animate-in fade-in slide-in-from-right-4">
+                    <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Descartar
+                    </Button>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? "Guardando..." : (
+                            <>
+                                <Save className="w-4 h-4 mr-2" />
+                                Guardar Cambios
+                            </>
+                        )}
+                    </Button>
+                </div>
             )}
-          </div>
-        </div>
+       </div>
 
-        {/* Alerta de cambios de alto impacto */}
-        {highImpactChanges.length > 0 && hasUnsavedChanges && (
-          <Alert variant="default" className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <AlertTitle>Cambios de alto impacto detectados</AlertTitle>
-            <AlertDescription>
-              Las siguientes modificaciones afectan procesos automatizados:
-              <ul className="list-disc ml-6 mt-2">
-                {highImpactChanges.map((change, i) => (
-                  <li key={i}>{change}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Tabs principales */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-4xl grid-cols-6">
-            <TabsTrigger value="sales" className="flex items-center gap-2">
-              <span>💰</span>
-              Ventas
-            </TabsTrigger>
-            <TabsTrigger value="rentals" className="flex items-center gap-2">
-              <span>📦</span>
-              Alquileres
-            </TabsTrigger>
-            <TabsTrigger value="reservations" className="flex items-center gap-2">
-              <span>📅</span>
-              Reservas
-            </TabsTrigger>
-            <TabsTrigger value="inventory" className="flex items-center gap-2">
-              <span>📊</span>
-              Inventario
-            </TabsTrigger>
-            <TabsTrigger value="financial" className="flex items-center gap-2">
-              <span>💵</span>
-              Financiero
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <span>🔒</span>
-              Seguridad
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="sales">
-            <SalesPoliciesTab />
-          </TabsContent>
-
-          <TabsContent value="rentals">
-            <RentalsPoliciesTab />
-          </TabsContent>
-
-          <TabsContent value="reservations">
-            <ReservationsPoliciesTab />
-          </TabsContent>
-
-          <TabsContent value="inventory">
-            <InventoryPoliciesTab />
-          </TabsContent>
-
-          <TabsContent value="financial">
-            <FinancialPoliciesTab />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <SecurityPoliciesTab />
-          </TabsContent>
-        </Tabs>
-
-        {/* Footer informativo */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground border-t pt-4">
-          <Info className="h-4 w-4" />
-          <span>Los cambios en políticas tienen efecto inmediato en el comportamiento del sistema</span>
-        </div>
-      </div>
-    </FormProvider>
+       <PolicyConfigForm policy={policy} onChange={handlePolicyChange} />
+    </div>
   );
 }

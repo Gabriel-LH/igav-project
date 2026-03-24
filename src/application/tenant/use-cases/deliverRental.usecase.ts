@@ -13,13 +13,13 @@ export class DeliverRentalUseCase {
     private guaranteeRepo: GuaranteeRepository,
   ) {}
 
-  execute(
+  async execute(
     rentalId: string,
     guaranteeData: { value: string; type: GuaranteeType },
     userId: string,
-  ): Rental {
+  ): Promise<Rental> {
     const now = new Date();
-    const rental = this.rentalRepo.getRentalById(rentalId);
+    const rental = await this.rentalRepo.getRentalById(rentalId);
 
     if (!rental) {
       throw new Error("Alquiler no encontrado");
@@ -31,45 +31,47 @@ export class DeliverRentalUseCase {
       );
     }
 
-    const rentalItems = this.rentalRepo.getRentalItemsByRentalId(rental.id);
+    const rentalItems = await this.rentalRepo.getRentalItemsByRentalId(
+      rental.id,
+    );
 
     if (rentalItems.length === 0) {
       throw new Error("El alquiler no tiene items");
     }
 
     if (rental.guaranteeId && guaranteeData) {
-      this.guaranteeRepo.updateGuarantee(rental.guaranteeId, {
+      await this.guaranteeRepo.updateGuarantee(rental.guaranteeId, {
         type: guaranteeData.type,
         value: guaranteeData.value,
         status: "custodia",
       } as any);
     }
 
-    rentalItems.forEach((item) => {
+    for (const item of rentalItems) {
       if (!item.stockId) {
         throw new Error(`Item ${item.id} no tiene stock asignado`);
       }
 
-      this.inventoryRepo.updateItemStatus(
+      await this.inventoryRepo.updateItemStatus(
         item.stockId,
         "alquilado",
         rental.branchId,
         userId,
       );
 
-      this.inventoryRepo.decreaseLotQuantity(item.stockId, 1);
-    });
+      await this.inventoryRepo.decreaseLotQuantity(item.stockId, 1);
+    }
 
-    this.rentalRepo.updateRental(rental.id, {
+    await this.rentalRepo.updateRental(rental.id, {
       status: "alquilado",
       updatedAt: now,
       updatedBy: userId,
     });
 
     if (rental.reservationId) {
-      this.reservationRepo.updateStatus(
+      await this.reservationRepo.updateStatus(
         rental.reservationId,
-        "alquiler",
+        "convertida",
         "convertida",
       );
     }

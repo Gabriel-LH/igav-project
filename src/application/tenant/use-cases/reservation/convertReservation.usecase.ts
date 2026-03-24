@@ -102,6 +102,7 @@ export class ConvertReservationUseCase {
       if (guaranteeInput && guaranteeInput.type !== "no_aplica") {
         const guarantee = guaranteeSchema.parse({
           id: `GUA-${crypto.randomUUID()}`,
+          tenantId: reservation.tenantId,
           operationId: reservation.operationId,
           branchId: reservation.branchId,
           receivedById: input.sellerId,
@@ -133,7 +134,7 @@ export class ConvertReservationUseCase {
       // Reserva → convertida
       await this.reservationRepo.updateStatus(
         reservation.id,
-        "alquiler",
+        "convertida",
         "convertida",
       );
 
@@ -173,7 +174,11 @@ export class ConvertReservationUseCase {
       if(!res.success) throw new Error(res.error);
       const result = res.data;
 
-      await this.reservationRepo.updateStatus(reservation.id, "venta", "convertida");
+      await this.reservationRepo.updateStatus(
+        reservation.id,
+        "convertida",
+        "convertida",
+      );
 
       return {
         saleId: result.details.id,

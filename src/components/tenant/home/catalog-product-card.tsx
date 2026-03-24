@@ -8,7 +8,7 @@ import { productSchema } from "../../../types/product/type.product";
 import { z } from "zod";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { useBranchStore } from "@/src/store/useBranchStore";
-import { MOCK_TENANT_CONFIG } from "@/src/mocks/mock.tenantConfig";
+import { useTenantConfigStore, DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
@@ -59,12 +59,17 @@ export function CatalogProductCard({
 }: Props) {
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
   const { promotions } = usePromotionStore();
+  const { config, ensureLoaded } = useTenantConfigStore();
 
   useEffect(() => {
+    ensureLoaded();
     const promotionRepo = new ZustandPromotionRepository();
     const promotionLoader = new PromotionLoaderService(promotionRepo);
     promotionLoader.ensurePromotionsLoaded();
-  }, []);
+  }, [ensureLoaded]);
+
+  // Fallback to DEFAULT_CONFIG if database config is not yet loaded
+  const tenantConfig = config || (DEFAULT_CONFIG as any);
 
   const activePromos = useMemo(() => {
     const now = new Date();
@@ -258,9 +263,9 @@ export function CatalogProductCard({
     ? getEstimatedTransferTime(
         currentBranchId,
         remoteStock[0].branchId,
-        MOCK_TENANT_CONFIG,
+        tenantConfig,
       )
-    : MOCK_TENANT_CONFIG.defaultTransferTime;
+    : tenantConfig.defaultTransferTime;
 
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true }),

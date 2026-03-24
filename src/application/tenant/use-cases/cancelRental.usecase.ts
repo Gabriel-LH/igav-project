@@ -12,24 +12,22 @@ export class CancelRentalUseCase {
     private paymentRepo: PaymentRepository,
   ) {}
 
-  execute(rentalId: string, reason: string, userId: string): void {
-    const rental = this.rentalRepo.getRentalById
-      ? this.rentalRepo.getRentalById(rentalId)
-      : null;
+  async execute(rentalId: string, reason: string, userId: string): Promise<void> {
+    const rental = await this.rentalRepo.getRentalById(rentalId);
 
     if (!rental) {
-      throw new Error("Rental no encontrado o método no implementado en repo");
+      throw new Error("Rental no encontrado");
     }
 
-    this.rentalRepo.cancelRental(rentalId, reason);
+    await this.rentalRepo.cancelRental(rentalId, reason);
 
     if (rental.guaranteeId) {
-      this.guaranteeRepo.releaseGuarantee(rental.guaranteeId);
+      await this.guaranteeRepo.releaseGuarantee(rental.guaranteeId);
     }
 
-    this.operationRepo.updateOperationStatus(rental.operationId, "cancelado");
+    await this.operationRepo.updateOperationStatus(rental.operationId, "cancelado");
 
-    const payments = this.paymentRepo.getPaymentsByOperationId(
+    const payments = await this.paymentRepo.getPaymentsByOperationId(
       rental.operationId,
     );
     const totalRefund = payments.reduce(
@@ -41,7 +39,7 @@ export class CancelRentalUseCase {
       const firstPaymentMethod =
         payments.find((p) => p.direction === "in")?.paymentMethodId || "cash";
 
-      this.paymentRepo.addPayment({
+      await this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
         tenantId: rental.tenantId,
         operationId: rental.operationId,

@@ -1283,21 +1283,21 @@ model Product {
 }
 
 model ProductVariant {
-  id            String    @id @default(uuid())
-  tenantId      String
-  productId     String
-  variantCode       String    @unique
-  variantSignature  String    @default("")
-  barcode       String?
-  attributes    Json      @default("{}")
-  purchasePrice Float?    @default(0)
-  priceSell     Float?
-  priceRent     Float?
-  rentUnit      RentUnit?
-  image         String[]  @default([])
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(uuid())
+  tenantId         String
+  productId        String
+  variantCode      String    @unique
+  variantSignature String    @default("")
+  barcode          String?
+  attributes       Json      @default("{}")
+  purchasePrice    Float?    @default(0)
+  priceSell        Float?
+  priceRent        Float?
+  rentUnit         RentUnit?
+  image            String[]  @default([])
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -1336,6 +1336,7 @@ model InventoryItem {
   variant                      ProductVariant               @relation(fields: [variantId], references: [id], onDelete: Cascade)
   inventoryItemStatusHistories InventoryItemStatusHistory[]
   priceHistories               PriceHistory[]
+  rentalItems                  RentalItem[]
 
   @@map("inventory_item")
 }
@@ -1681,37 +1682,39 @@ model Rental {
 }
 
 model RentalItem {
-  id             String           @id @default(uuid())
-  tenantId       String
-  rentalId       String
-  operationId    String
-  productId      String
-  stockId        String
-  variantId      String
-  priceAtMoment  Float
-  quantity       Int              @default(1)
-  conditionOut   String
-  conditionIn    String?
-  isDamaged      Boolean          @default(false)
-  damageNotes    String?
-  discountAmount Float            @default(0)
-  discountReason String?
-  bundleId       String?
-  promotionId    String?
-  productName    String?
-  variantCode    String?
-  serialCode     String?
-  isSerial       Boolean          @default(false)
-  notes          String?
-  listPrice      Float
-  itemStatus     RentalItemStatus
+  id              String           @id @default(uuid())
+  tenantId        String
+  rentalId        String
+  operationId     String
+  productId       String
+  stockLotId      String?
+  inventoryItemId String?
+  variantId       String
+  priceAtMoment   Float
+  quantity        Int              @default(1)
+  conditionOut    String
+  conditionIn     String?
+  isDamaged       Boolean          @default(false)
+  damageNotes     String?
+  discountAmount  Float            @default(0)
+  discountReason  String?
+  bundleId        String?
+  promotionId     String?
+  productName     String?
+  variantCode     String?
+  serialCode      String?
+  isSerial        Boolean          @default(false)
+  notes           String?
+  listPrice       Float
+  itemStatus      RentalItemStatus
 
-  rental    Rental         @relation(fields: [rentalId], references: [id], onDelete: Cascade)
-  operation Operation      @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  product   Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  stock     StockLot       @relation(fields: [stockId], references: [id], onDelete: Cascade)
-  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rental        Rental         @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  operation     Operation      @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stockLot      StockLot?      @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  variant       ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   rentalCharges             RentalCharge[]
   rentalItemStatusHistories RentalItemStatusHistory[]

@@ -1,13 +1,10 @@
-import { MOCK_BRANCHES } from "../mocks/mock.branch";
-import { OPERATIONS_MOCK } from "../mocks/mock.operation";
-import { USER_MOCK } from "../mocks/mock.user";
 import { Client } from "../types/clients/type.client";
 import { Guarantee } from "../types/guarantee/type.guarantee";
 import { Product } from "../types/product/type.product";
 import { Rental } from "../types/rentals/type.rentals";
 import { RentalItem } from "../types/rentals/type.rentalsItem";
+import { User } from "../types/user/type.user";
 
-// Este es el tipo que tu tabla espera (el que definiste en Zod)
 export interface RentalTableRow {
   id: string;
   branchName: string;
@@ -16,17 +13,13 @@ export interface RentalTableRow {
   expectedReturnDate: string;
   cancelDate: string;
   nameCustomer: string;
-
-  // Nuevos campos de agrupación
   summary: string;
   totalItems: number;
   itemsDetail: RentalItem[];
-
-  // Campos antiguos mantenidos por compatibilidad o migración
-  product: string; // Mapeado a summary para que no rompa la tabla actual
-  count: number; // Mapeado a totalItems
+  product: string;
+  count: number;
   rent_unit: string;
-  income: number; // Total de la operación
+  income: number;
   gurantee_type: string;
   gurantee_value: string;
   guarantee_status: string;
@@ -42,51 +35,25 @@ export const mapRentalToTable = (
   guarantees: Guarantee[],
   rentalItems: RentalItem[],
   products: Product[],
+  users: User[],
 ): RentalTableRow[] => {
-  const usersById = new Map(USER_MOCK.map((user) => [user.id, user]));
-  const sellerIdByOperationId = new Map(
-    OPERATIONS_MOCK.map((operation) => [operation.id, operation.sellerId]),
-  );
+  const usersById = new Map(users.map((user) => [user.id, user]));
 
   return rentals.map((rental) => {
-    const branch = MOCK_BRANCHES.find((b) => b.id === rental.branchId);
+    const branchName = "Principal"; // Fallback to Principal
     const customer = customers.find((c) => c.id === rental.customerId);
     const guarantee = guarantees.find((g) => g.id === rental.guaranteeId);
-    const sellerId =
-      (
-        rental as Rental & {
-          sellerId?: string;
-          userId?: string;
-          createdBy?: string;
-        }
-      ).sellerId ||
-      (
-        rental as Rental & {
-          sellerId?: string;
-          userId?: string;
-          createdBy?: string;
-        }
-      ).userId ||
-      sellerIdByOperationId.get(rental.operationId) ||
-      rental.updatedBy ||
-      (
-        rental as Rental & {
-          sellerId?: string;
-          userId?: string;
-          createdBy?: string;
-        }
-      ).createdBy;
-    const seller = (sellerId && usersById.get(sellerId)) || USER_MOCK[0];
+    
+    // Fallback if sellerId is not directly on rental (though it should be in real data)
+    const seller = usersById.get((rental as any).sellerId) || users[0];
 
     const currentItems = rentalItems.filter((r) => r.rentalId === rental.id);
 
-    // Enriquecer items
     const itemsWithNames = currentItems.map((item) => {
       const prod = products.find((p) => p.id === item.productId);
       return {
         ...item,
         productName: prod?.name || "Desconocido",
-        // Agregamos info visual útil para el Drawer
         image: prod?.image,
         sku: prod?.baseSku,
       };
@@ -94,68 +61,38 @@ export const mapRentalToTable = (
 
     const mainProductName = itemsWithNames[0]?.productName || "Sin productos";
     const distinctCount = itemsWithNames.length;
+    const cleanSummary = distinctCount > 1 ? `${mainProductName} (+${distinctCount - 1} más)` : mainProductName;
+    const totalItems = currentItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
-    const cleanSummary =
-      distinctCount > 1
-        ? `${mainProductName} (+${distinctCount - 1} más)`
-        : mainProductName;
-
-    const totalItems = currentItems.reduce(
-      (acc, item) => acc + (item.quantity || 1),
-      0,
-    );
-
-    // CONTENIDO DE BÚSQUEDA
     const searchContent = [
       rental.id,
       customer?.firstName,
       customer?.lastName,
       customer?.dni,
       ...itemsWithNames.map((i) => i.productName),
-      ...currentItems.map((i) => i.variantId),
-      ...currentItems.map((i) => i.stockId),
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    ].filter(Boolean).join(" ").toLowerCase();
 
     return {
       id: rental.id,
-      branchName: branch?.name || "Principal",
-      sellerName: seller?.firstName + " " + seller?.lastName || "---",
-      outDate: rental.outDate
-        ? new Date(rental.outDate).toLocaleDateString()
-        : "---",
-      expectedReturnDate: rental.expectedReturnDate
-        ? new Date(rental.expectedReturnDate).toLocaleDateString()
-        : "---",
-      cancelDate: rental.cancelDate
-        ? new Date(rental.cancelDate).toLocaleDateString()
-        : "---",
-      returnDate: rental.actualReturnDate
-        ? new Date(rental.actualReturnDate).toLocaleDateString()
-        : "---",
-      nameCustomer: customer?.firstName + " " + customer?.lastName || "---",
-
-      // Nuevos campos
+      branchName,
+      sellerName: seller ? `${seller.firstName} ${seller.lastName}` : "---",
+      outDate: rental.outDate ? new Date(rental.outDate).toLocaleDateString() : "---",
+      expectedReturnDate: rental.expectedReturnDate ? new Date(rental.expectedReturnDate).toLocaleDateString() : "---",
+      cancelDate: rental.cancelDate ? new Date(rental.cancelDate).toLocaleDateString() : "---",
+      returnDate: rental.actualReturnDate ? new Date(rental.actualReturnDate).toLocaleDateString() : "---",
+      nameCustomer: customer ? `${customer.firstName} ${customer.lastName}` : "---",
       summary: cleanSummary,
       totalItems,
       itemsDetail: itemsWithNames,
-
-      // Campos de compatibilidad adaptados
-      product: cleanSummary, // <--- COMPATIBILIDAD: La tabla mostrará el resumen en la columna "Producto"
-      count: totalItems, // <--- COMPATIBILIDAD
+      product: cleanSummary,
+      count: totalItems,
       rent_unit: "Días",
-      income:
-        currentItems.reduce(
-          (acc, item) => acc + item.priceAtMoment, // Basado en el feedback del usuario de que se multiplicaba de más
-          0,
-        ) || 0,
+      income: currentItems.reduce((acc, item) => acc + item.priceAtMoment, 0) || 0,
       gurantee_type: guarantee ? guarantee.type.toString() : "---",
       gurantee_value: guarantee ? guarantee.value.toString() : "---",
       guarantee_status: guarantee?.status || "---",
       status: rental.status,
-      damage: "---", // Difícil de resumir si hay muchos
+      damage: "---",
       searchContent,
     };
   });

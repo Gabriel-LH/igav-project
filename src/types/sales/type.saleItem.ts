@@ -11,9 +11,18 @@ export const saleItemSchema = z.object({
   quantity: z.number(),
 
   discountAmount: z.number().default(0), // Dinero descontado (ej: 20)
-  discountReason: z.string().optional(), // Ej: "Pack Terno Ejecutivo", "Promo Verano"
-  bundleId: z.string().optional(), // ID temporal para agrupar visualmente en el recibo (ej: "pack-uuid-123")
-  promotionId: z.string().optional(),
+  discountReason: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ), // Ej: "Pack Terno Ejecutivo", "Promo Verano"
+  bundleId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ), // ID temporal para agrupar visualmente en el recibo (ej: "pack-uuid-123")
+  promotionId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
 
   productName: z.string().optional(),
   variantCode: z.string().optional(), // Para saber qué talla/color era

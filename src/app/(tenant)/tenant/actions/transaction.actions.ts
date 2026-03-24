@@ -4,6 +4,7 @@ import prisma from "@/src/lib/prisma";
 import { makeServerProcessTransaction } from "@/src/infrastructure/tenant/factories/serverProcessTransaction.factory";
 import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
 import { revalidatePath } from "next/cache";
+import { resolvePaymentMethodId } from "./_utils/resolve-payment-method-id";
 
 export async function processTransactionAction(dto: Record<string, unknown>) {
   try {
@@ -17,10 +18,24 @@ export async function processTransactionAction(dto: Record<string, unknown>) {
       throw new Error("Seller ID es obligatorio para procesar transacciones");
     }
 
+    const rawPaymentMethod =
+      (dto as { financials?: { paymentMethod?: unknown } })?.financials
+        ?.paymentMethod ?? null;
+    const resolvedPaymentMethodId =
+      await resolvePaymentMethodId(rawPaymentMethod);
+
+    if (!resolvedPaymentMethodId) {
+      throw new Error("Método de pago inválido");
+    }
+
     const dtoWithTenant = {
       ...dto,
       tenantId,
       sellerId: user.id,
+      financials: {
+        ...(dto as { financials?: Record<string, unknown> }).financials,
+        paymentMethod: resolvedPaymentMethodId,
+      },
     };
 
     // We execute the whole transaction inside a Prisma $transaction

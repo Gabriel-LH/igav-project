@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertTriangle, Save, RotateCcw } from "lucide-react";
+import { Save, RotateCcw } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,15 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FiscalConfigForm } from "./fiscal-config-form";
 import { PricingConfigForm } from "./pricing-config-fomr";
 import { DiscountsConfigForm } from "./discount-config-form";
 import { LoyaltyConfigForm } from "./loyalty-config-form";
-import { ConfirmModal } from "./ui/ConfirmModal";
-import { MOCK_TENANT_CONFIG, HAS_SALES } from "@/src/mocks/mock.tenantConfig";
+import { useTenantConfigStore, DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -28,205 +25,183 @@ import {
   MoneyBag02Icon,
   SaleTag01Icon,
   StarIcon,
+  Settings01Icon,
 } from "@hugeicons/core-free-icons";
 import { CashConfigForm } from "./cash-config-form";
+import {
+  getTenantConfigAction,
+  updateTenantConfigAction,
+} from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { toast } from "sonner";
 
 export function TenantConfigModule() {
-  const [config, setConfig] = useState<TenantConfig>(MOCK_TENANT_CONFIG);
-  const [originalConfig, setOriginalConfig] =
-    useState<TenantConfig>(MOCK_TENANT_CONFIG);
+  // Inicializar con Defaults de entrada para evitar estado null
+  const [config, setConfig] = useState<TenantConfig>(DEFAULT_CONFIG as TenantConfig);
+  const [originalConfig, setOriginalConfig] = useState<TenantConfig>(DEFAULT_CONFIG as TenantConfig);
+  
   const [activeTab, setActiveTab] = useState("fiscal");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [pendingChanges, setPendingChanges] = useState<Partial<TenantConfig>>(
-    {},
-  );
-  const [requiresRestart, setRequiresRestart] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar datos reales
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const res = await getTenantConfigAction();
+        if (res.success && res.data) {
+          // Combinación básica para asegurar que no falten secciones críticas
+          const merged = { 
+              ...DEFAULT_CONFIG, 
+              ...res.data,
+              tax: { ...DEFAULT_CONFIG.tax, ...(res.data.tax || {}) },
+              pricing: { ...DEFAULT_CONFIG.pricing, ...(res.data.pricing || {}) }
+          };
+          setConfig(merged as TenantConfig);
+          setOriginalConfig(merged as TenantConfig);
+        }
+      } catch (error) {
+        console.error("Error al cargar configuración:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   // Detectar cambios sin guardar
   useEffect(() => {
-    const changed = JSON.stringify(config) !== JSON.stringify(originalConfig);
-    setHasUnsavedChanges(changed);
+    setHasUnsavedChanges(JSON.stringify(config) !== JSON.stringify(originalConfig));
   }, [config, originalConfig]);
 
   const handleConfigChange = (section: keyof TenantConfig, values: any) => {
-    setConfig((prev) => ({
-      ...prev,
-      [section]:
-        typeof values === "object" && values !== null
-          ? { ...(prev[section] as any), ...values }
-          : values,
-    }));
+    setConfig({
+      ...config,
+      [section]: {
+        ...(config[section] as any),
+        ...values,
+      },
+    });
   };
 
   const handleSave = async () => {
-    // Detectar qué secciones cambiaron y si requieren reinicio
-    const changedSections: string[] = [];
-    const sectionsThatNeedRestart: string[] = [];
-
-    if (JSON.stringify(config.tax) !== JSON.stringify(originalConfig.tax)) {
-      changedSections.push("tax");
-      sectionsThatNeedRestart.push("Configuración fiscal");
-    }
-    if (
-      config.pricing.pricePrecision !== originalConfig.pricing.pricePrecision
-    ) {
-      changedSections.push("pricing.pricePrecision");
-      sectionsThatNeedRestart.push("Precisión de precios");
-    }
-
-    // Verificar si hay cambios fiscales y ya existen ventas
-    if (changedSections.includes("tax") && HAS_SALES) {
-      setPendingChanges(config);
-      setShowConfirmModal(true);
-      return;
-    }
-
-    // Guardar cambios
-    await performSave(config, sectionsThatNeedRestart);
-  };
-
-  const performSave = async (
-    newConfig: TenantConfig,
-    restartSections: string[],
-  ) => {
-    // Aquí iría la llamada a la API
-    console.log("Guardando configuración:", newConfig);
-
-    setOriginalConfig(newConfig);
-    setHasUnsavedChanges(false);
-
-    if (restartSections.length > 0) {
-      setRequiresRestart(restartSections);
-      // Mostrar notificación de reinicio necesario
+    setIsSaving(true);
+    try {
+        const res = await updateTenantConfigAction(config);
+        if (res.success) {
+          toast.success("Configuración guardada correctamente");
+          setOriginalConfig(config);
+          setHasUnsavedChanges(false);
+        } else {
+          toast.error("Error al guardar: " + res.error);
+        }
+    } catch (error) {
+        toast.error("Error de red al guardar configuración");
+    } finally {
+        setIsSaving(false);
     }
   };
 
   const handleCancel = () => {
     setConfig(originalConfig);
-    setHasUnsavedChanges(false);
   };
 
-  const handleConfirmFiscalChanges = async () => {
-    setShowConfirmModal(false);
-    await performSave(pendingChanges as TenantConfig, ["Configuración fiscal"]);
-  };
+  if (isLoading) {
+    return (
+      <div className="p-12 text-center text-muted-foreground animate-pulse">
+        Cargando configuración general...
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex justify-end items-center">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-6 rounded-xl border shadow-sm">
+        <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+                <HugeiconsIcon icon={Settings01Icon} className="w-6 h-6 text-primary" />
+            </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Configuración del Sistema</h1>
+            <p className="text-muted-foreground">
+              Gestiona los parámetros fiscales, precios y reglas de caja de tu negocio.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
           {hasUnsavedChanges && (
-            <>
-              <Button variant="outline" onClick={handleCancel}>
+            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
+              <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Cancelar
+                Descartar
               </Button>
-              <Button onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" />
-                Guardar cambios
+              <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                {isSaving ? "Guardando..." : (
+                    <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Guardar cambios
+                    </>
+                )}
               </Button>
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Alerta de cambios que requieren reinicio */}
-      {requiresRestart.length > 0 && (
-        <Alert
-          variant="default"
-          className="border-amber-500 bg-amber-50 dark:bg-amber-950/20"
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="md:col-span-4 space-y-6"
         >
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          <AlertTitle>Requiere reinicio de sesión</AlertTitle>
-          <AlertDescription>
-            Los siguientes cambios requerirán que los usuarios cierren sesión y
-            vuelvan a iniciar:
-            <ul className="list-disc ml-6 mt-2">
-              {requiresRestart.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1 bg-muted/50">
+            <TabsTrigger value="fiscal" className="py-2.5">
+              <HugeiconsIcon icon={MoneyBag02Icon} className="w-4 h-4 mr-2" />
+              Fiscal
+            </TabsTrigger>
+            <TabsTrigger value="pricing" className="py-2.5">
+              <HugeiconsIcon icon={SaleTag01Icon} className="w-4 h-4 mr-2" />
+              Precios
+            </TabsTrigger>
+            <TabsTrigger value="discounts" className="py-2.5">
+              <HugeiconsIcon icon={DiscountTag01Icon} className="w-4 h-4 mr-2" />
+              Descuentos
+            </TabsTrigger>
+            <TabsTrigger value="loyalty" className="py-2.5">
+              <HugeiconsIcon icon={StarIcon} className="w-4 h-4 mr-2" />
+              Fidelidad
+            </TabsTrigger>
+            <TabsTrigger value="cash" className="py-2.5">
+              <HugeiconsIcon icon={CashierIcon} className="w-4 h-4 mr-2" />
+              Caja
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Tabs principales */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
-        <TabsList className="grid w-full max-w-4xl grid-cols-5">
-          <TabsTrigger value="fiscal" className="flex items-center gap-2">
-            <HugeiconsIcon icon={MoneyBag02Icon} />
-            Información Fiscal
-          </TabsTrigger>
-          <TabsTrigger value="pricing" className="flex items-center gap-2">
-            <HugeiconsIcon icon={SaleTag01Icon} />
-            Precios
-          </TabsTrigger>
-          <TabsTrigger value="discounts" className="flex items-center gap-2">
-            <HugeiconsIcon icon={DiscountTag01Icon} />
-            Descuentos
-          </TabsTrigger>
-          <TabsTrigger value="loyalty" className="flex items-center gap-2">
-            <HugeiconsIcon icon={StarIcon} className="fill-amber-400" />
-            Lealtad
-          </TabsTrigger>
-          <TabsTrigger value="cash" className="flex items-center gap-2">
-            <HugeiconsIcon icon={CashierIcon} />
-            Caja
-          </TabsTrigger>
-        </TabsList>
+          <div className="mt-6">
+            <TabsContent value="fiscal" className="m-0 focus-visible:ring-0">
+              <FiscalConfigForm config={config} onChange={(v) => handleConfigChange("tax", v)} />
+            </TabsContent>
 
-        <TabsContent value="fiscal" className="space-y-4">
-          <FiscalConfigForm
-            config={config}
-            onChange={(values) => handleConfigChange("tax", values)}
-          />
-        </TabsContent>
+            <TabsContent value="pricing" className="m-0 focus-visible:ring-0">
+              <PricingConfigForm config={config} onChange={(v) => handleConfigChange("pricing", v)} />
+            </TabsContent>
 
-        <TabsContent value="pricing" className="space-y-4">
-          <PricingConfigForm
-            config={config}
-            onChange={(values) => handleConfigChange("pricing", values)}
-          />
-        </TabsContent>
+            <TabsContent value="discounts" className="m-0 focus-visible:ring-0">
+              <DiscountsConfigForm config={config} onChange={(v) => handleConfigChange("discounts", v)} />
+            </TabsContent>
 
-        <TabsContent value="discounts" className="space-y-4">
-          <DiscountsConfigForm
-            config={config}
-            onChange={(values) => handleConfigChange("discounts", values)}
-          />
-        </TabsContent>
+            <TabsContent value="loyalty" className="m-0 focus-visible:ring-0">
+              <LoyaltyConfigForm config={config} onChange={(v) => handleConfigChange("loyalty", v)} />
+            </TabsContent>
 
-        <TabsContent value="loyalty" className="space-y-4">
-          <LoyaltyConfigForm
-            config={config}
-            onChange={(values) => handleConfigChange("loyalty", values)}
-          />
-        </TabsContent>
-
-        <TabsContent value="cash" className="space-y-4">
-          <CashConfigForm
-            config={config}
-            onChange={(values) => handleConfigChange("cash", values)}
-          />
-        </TabsContent>
-      </Tabs>
-      {/* Modal de confirmación para cambios fiscales */}
-      <ConfirmModal
-        open={showConfirmModal}
-        onOpenChange={setShowConfirmModal}
-        title="⚠️ Cambios en configuración fiscal"
-        description="Ya existen ventas registradas en el sistema. Modificar la configuración fiscal puede afectar el cálculo de impuestos en períodos anteriores. ¿Estás seguro de continuar?"
-        confirmText="Sí, continuar"
-        cancelText="No, cancelar"
-        variant="destructive"
-        onConfirm={handleConfirmFiscalChanges}
-      />
+            <TabsContent value="cash" className="m-0 focus-visible:ring-0">
+              <CashConfigForm config={config} onChange={(v) => handleConfigChange("cash", v)} />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
     </div>
   );
 }

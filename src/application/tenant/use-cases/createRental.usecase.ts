@@ -35,6 +35,7 @@ export class CreateRentalUseCase {
     ) {
       guaranteeData = guaranteeSchema.parse({
         id: crypto.randomUUID(),
+        tenantId,
         operationId: String(operationId),
         branchId: dto.branchId,
         receivedById: dto.sellerId,
@@ -55,7 +56,7 @@ export class CreateRentalUseCase {
     if (fromReservation) {
       await this.reservationRepo.updateStatus(
         (dto as RentalFromReservationDTO).reservationId,
-        "alquiler",
+        "convertida",
         "convertida",
       );
       for (const item of (dto as RentalFromReservationDTO).reservationItems) {

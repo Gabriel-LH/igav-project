@@ -51,4 +51,11 @@ export class PrismaGuaranteeRepository implements GuaranteeRepository {
       },
     });
   }
+
+  async getGuarantees(tenantId?: string): Promise<Guarantee[]> {
+    const guarantees = await this.prisma.guarantee.findMany({
+      where: tenantId ? { tenantId } : undefined,
+    });
+    return guarantees as unknown as Guarantee[];
+  }
 }

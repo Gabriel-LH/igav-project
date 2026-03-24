@@ -5,4 +5,5 @@ export interface GuaranteeRepository {
   updateGuaranteeStatus(id: string, status: string): Promise<void>;
   updateGuarantee(id: string, data: Partial<Guarantee>): Promise<void>;
   releaseGuarantee(id: string): Promise<void>;
+  getGuarantees(tenantId?: string): Promise<Guarantee[]>;
 }

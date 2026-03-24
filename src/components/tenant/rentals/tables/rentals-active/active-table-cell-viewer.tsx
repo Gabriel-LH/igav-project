@@ -22,8 +22,7 @@ export function TableCellViewerActive({ item }: { item: any }) {
   // Nota: Usa tu tipo 'RentalTableRow' o 'rentalsActiveSchema' en lugar de 'any'
   const isMobile = useIsMobile();
 
-  // Calculamos totales al vuelo para mostrarlos en el header del drawer
-  const totalIncome = item.itemsDetail?.reduce((acc: number, i: any) => acc + (i.priceAtMoment * i.quantity), 0) || 0;
+  const totalIncome = item.income;
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -72,9 +71,14 @@ export function TableCellViewerActive({ item }: { item: any }) {
                       <div className="flex-1 min-w-0">
                          <div className="flex justify-between items-start">
                             <p className="font-bold text-sm truncate pr-2">{detail.productName}</p>
-                            <span className="font-mono text-sm font-bold">
-                               {formatCurrency(detail.priceAtMoment * detail.quantity)}
-                            </span>
+                             <div className="text-right shrink-0">
+                                <p className="font-mono text-sm font-bold">
+                                   {formatCurrency(detail.totalItemPrice)}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground">
+                                   {formatCurrency(detail.priceAtMoment)} / unidad
+                                </p>
+                             </div>
                          </div>
                          
                          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">

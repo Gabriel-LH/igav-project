@@ -23,7 +23,6 @@ import { CancelSaleModal } from "../../ui/modals/CancelSaleModal";
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
 import { toast } from "sonner";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { DeliverSaleUseCase } from "@/src/application/tenant/use-cases/sale/deliverSale.usecase";
 import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
 import { ZustandSaleReversalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleReversalRepository";
@@ -124,7 +123,7 @@ function ActionCell({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDeliverModal, setShowDeliverModal] = useState(false);
 
-  const user = USER_MOCK[0];
+  const userId = "user_1";
 
   const item = row.original;
 
@@ -143,7 +142,7 @@ function ActionCell({
       cancelUseCase.execute({
         saleId: id,
         reason,
-        userId: user.id,
+        userId: userId,
       });
 
       toast.success("Venta anulada", {
@@ -169,7 +168,7 @@ function ActionCell({
         new ZustandInventoryRepository(),
         new ZustandReservationRepository(),
       );
-      deliverUseCase.execute(id, user.id);
+      deliverUseCase.execute(id, userId);
 
       toast.success("Venta entregada", {
         description: "La venta fue entregada correctamente",
@@ -228,6 +227,7 @@ function ActionCell({
         open={showDeliverModal}
         onOpenChange={setShowDeliverModal}
         sale={fullSaleData}
+        customerName={item.nameCustomer}
         onConfirm={handleDeliverSale}
       />
     </>

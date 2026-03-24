@@ -12,6 +12,7 @@ import { PrismaLoyaltyRepository } from "@/src/infrastructure/tenant/repositorie
 import { RegisterPaymentUseCase, RegisterPaymentInput } from "@/src/application/tenant/use-cases/registerPayment.usecase";
 import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
 import { RewardLoyaltyUseCase } from "@/src/application/tenant/use-cases/rewardLoyalty.usecase";
+import { resolvePaymentMethodId } from "./_utils/resolve-payment-method-id";
 
 export async function registerPaymentAction(input: RegisterPaymentInput) {
   try {
@@ -19,6 +20,13 @@ export async function registerPaymentAction(input: RegisterPaymentInput) {
     const { tenantId } = membership;
 
     if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const resolvedPaymentMethodId =
+      await resolvePaymentMethodId(input.method);
+
+    if (!resolvedPaymentMethodId) {
+      throw new Error("Método de pago inválido");
+    }
 
     const result = await prisma.$transaction(async (tx) => {
       const operationRepo = new PrismaOperationRepository(tx);
@@ -40,7 +48,10 @@ export async function registerPaymentAction(input: RegisterPaymentInput) {
         rewardLoyaltyUC,
       );
 
-      return await registerPaymentUC.execute(input);
+      return await registerPaymentUC.execute({
+        ...input,
+        method: resolvedPaymentMethodId,
+      } as RegisterPaymentInput);
     });
 
     revalidatePath("/tenant/home");

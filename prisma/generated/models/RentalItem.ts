@@ -46,7 +46,8 @@ export type RentalItemMinAggregateOutputType = {
   rentalId: string | null
   operationId: string | null
   productId: string | null
-  stockId: string | null
+  stockLotId: string | null
+  inventoryItemId: string | null
   variantId: string | null
   priceAtMoment: number | null
   quantity: number | null
@@ -73,7 +74,8 @@ export type RentalItemMaxAggregateOutputType = {
   rentalId: string | null
   operationId: string | null
   productId: string | null
-  stockId: string | null
+  stockLotId: string | null
+  inventoryItemId: string | null
   variantId: string | null
   priceAtMoment: number | null
   quantity: number | null
@@ -100,7 +102,8 @@ export type RentalItemCountAggregateOutputType = {
   rentalId: number
   operationId: number
   productId: number
-  stockId: number
+  stockLotId: number
+  inventoryItemId: number
   variantId: number
   priceAtMoment: number
   quantity: number
@@ -143,7 +146,8 @@ export type RentalItemMinAggregateInputType = {
   rentalId?: true
   operationId?: true
   productId?: true
-  stockId?: true
+  stockLotId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   quantity?: true
@@ -170,7 +174,8 @@ export type RentalItemMaxAggregateInputType = {
   rentalId?: true
   operationId?: true
   productId?: true
-  stockId?: true
+  stockLotId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   quantity?: true
@@ -197,7 +202,8 @@ export type RentalItemCountAggregateInputType = {
   rentalId?: true
   operationId?: true
   productId?: true
-  stockId?: true
+  stockLotId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   quantity?: true
@@ -311,7 +317,8 @@ export type RentalItemGroupByOutputType = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId: string | null
+  inventoryItemId: string | null
   variantId: string
   priceAtMoment: number
   quantity: number
@@ -361,7 +368,8 @@ export type RentalItemWhereInput = {
   rentalId?: Prisma.StringFilter<"RentalItem"> | string
   operationId?: Prisma.StringFilter<"RentalItem"> | string
   productId?: Prisma.StringFilter<"RentalItem"> | string
-  stockId?: Prisma.StringFilter<"RentalItem"> | string
+  stockLotId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
   variantId?: Prisma.StringFilter<"RentalItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"RentalItem"> | number
   quantity?: Prisma.IntFilter<"RentalItem"> | number
@@ -383,7 +391,8 @@ export type RentalItemWhereInput = {
   rental?: Prisma.XOR<Prisma.RentalScalarRelationFilter, Prisma.RentalWhereInput>
   operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  stock?: Prisma.XOR<Prisma.StockLotScalarRelationFilter, Prisma.StockLotWhereInput>
+  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   rentalCharges?: Prisma.RentalChargeListRelationFilter
@@ -396,7 +405,8 @@ export type RentalItemOrderByWithRelationInput = {
   rentalId?: Prisma.SortOrder
   operationId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockLotId?: Prisma.SortOrderInput | Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -418,7 +428,8 @@ export type RentalItemOrderByWithRelationInput = {
   rental?: Prisma.RentalOrderByWithRelationInput
   operation?: Prisma.OperationOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
-  stock?: Prisma.StockLotOrderByWithRelationInput
+  stockLot?: Prisma.StockLotOrderByWithRelationInput
+  inventoryItem?: Prisma.InventoryItemOrderByWithRelationInput
   variant?: Prisma.ProductVariantOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
   rentalCharges?: Prisma.RentalChargeOrderByRelationAggregateInput
@@ -434,7 +445,8 @@ export type RentalItemWhereUniqueInput = Prisma.AtLeast<{
   rentalId?: Prisma.StringFilter<"RentalItem"> | string
   operationId?: Prisma.StringFilter<"RentalItem"> | string
   productId?: Prisma.StringFilter<"RentalItem"> | string
-  stockId?: Prisma.StringFilter<"RentalItem"> | string
+  stockLotId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
   variantId?: Prisma.StringFilter<"RentalItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"RentalItem"> | number
   quantity?: Prisma.IntFilter<"RentalItem"> | number
@@ -456,7 +468,8 @@ export type RentalItemWhereUniqueInput = Prisma.AtLeast<{
   rental?: Prisma.XOR<Prisma.RentalScalarRelationFilter, Prisma.RentalWhereInput>
   operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  stock?: Prisma.XOR<Prisma.StockLotScalarRelationFilter, Prisma.StockLotWhereInput>
+  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   rentalCharges?: Prisma.RentalChargeListRelationFilter
@@ -469,7 +482,8 @@ export type RentalItemOrderByWithAggregationInput = {
   rentalId?: Prisma.SortOrder
   operationId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockLotId?: Prisma.SortOrderInput | Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -504,7 +518,8 @@ export type RentalItemScalarWhereWithAggregatesInput = {
   rentalId?: Prisma.StringWithAggregatesFilter<"RentalItem"> | string
   operationId?: Prisma.StringWithAggregatesFilter<"RentalItem"> | string
   productId?: Prisma.StringWithAggregatesFilter<"RentalItem"> | string
-  stockId?: Prisma.StringWithAggregatesFilter<"RentalItem"> | string
+  stockLotId?: Prisma.StringNullableWithAggregatesFilter<"RentalItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableWithAggregatesFilter<"RentalItem"> | string | null
   variantId?: Prisma.StringWithAggregatesFilter<"RentalItem"> | string
   priceAtMoment?: Prisma.FloatWithAggregatesFilter<"RentalItem"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"RentalItem"> | number
@@ -547,7 +562,8 @@ export type RentalItemCreateInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
@@ -560,7 +576,8 @@ export type RentalItemUncheckedCreateInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -605,7 +622,8 @@ export type RentalItemUpdateInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
@@ -618,7 +636,8 @@ export type RentalItemUncheckedUpdateInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -647,7 +666,8 @@ export type RentalItemCreateManyInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -695,7 +715,8 @@ export type RentalItemUncheckedUpdateManyInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -732,7 +753,8 @@ export type RentalItemCountOrderByAggregateInput = {
   rentalId?: Prisma.SortOrder
   operationId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockLotId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -766,7 +788,8 @@ export type RentalItemMaxOrderByAggregateInput = {
   rentalId?: Prisma.SortOrder
   operationId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockLotId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -793,7 +816,8 @@ export type RentalItemMinOrderByAggregateInput = {
   rentalId?: Prisma.SortOrder
   operationId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockLotId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -952,45 +976,87 @@ export type RentalItemUncheckedUpdateManyWithoutVariantNestedInput = {
   deleteMany?: Prisma.RentalItemScalarWhereInput | Prisma.RentalItemScalarWhereInput[]
 }
 
-export type RentalItemCreateNestedManyWithoutStockInput = {
-  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput> | Prisma.RentalItemCreateWithoutStockInput[] | Prisma.RentalItemUncheckedCreateWithoutStockInput[]
-  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockInput | Prisma.RentalItemCreateOrConnectWithoutStockInput[]
-  createMany?: Prisma.RentalItemCreateManyStockInputEnvelope
+export type RentalItemCreateNestedManyWithoutInventoryItemInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput> | Prisma.RentalItemCreateWithoutInventoryItemInput[] | Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput | Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput[]
+  createMany?: Prisma.RentalItemCreateManyInventoryItemInputEnvelope
   connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
 }
 
-export type RentalItemUncheckedCreateNestedManyWithoutStockInput = {
-  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput> | Prisma.RentalItemCreateWithoutStockInput[] | Prisma.RentalItemUncheckedCreateWithoutStockInput[]
-  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockInput | Prisma.RentalItemCreateOrConnectWithoutStockInput[]
-  createMany?: Prisma.RentalItemCreateManyStockInputEnvelope
+export type RentalItemUncheckedCreateNestedManyWithoutInventoryItemInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput> | Prisma.RentalItemCreateWithoutInventoryItemInput[] | Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput | Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput[]
+  createMany?: Prisma.RentalItemCreateManyInventoryItemInputEnvelope
   connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
 }
 
-export type RentalItemUpdateManyWithoutStockNestedInput = {
-  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput> | Prisma.RentalItemCreateWithoutStockInput[] | Prisma.RentalItemUncheckedCreateWithoutStockInput[]
-  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockInput | Prisma.RentalItemCreateOrConnectWithoutStockInput[]
-  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutStockInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutStockInput[]
-  createMany?: Prisma.RentalItemCreateManyStockInputEnvelope
+export type RentalItemUpdateManyWithoutInventoryItemNestedInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput> | Prisma.RentalItemCreateWithoutInventoryItemInput[] | Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput | Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput[]
+  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutInventoryItemInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutInventoryItemInput[]
+  createMany?: Prisma.RentalItemCreateManyInventoryItemInputEnvelope
   set?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   disconnect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   delete?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
-  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutStockInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutStockInput[]
-  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutStockInput | Prisma.RentalItemUpdateManyWithWhereWithoutStockInput[]
+  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutInventoryItemInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutInventoryItemInput[]
+  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutInventoryItemInput | Prisma.RentalItemUpdateManyWithWhereWithoutInventoryItemInput[]
   deleteMany?: Prisma.RentalItemScalarWhereInput | Prisma.RentalItemScalarWhereInput[]
 }
 
-export type RentalItemUncheckedUpdateManyWithoutStockNestedInput = {
-  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput> | Prisma.RentalItemCreateWithoutStockInput[] | Prisma.RentalItemUncheckedCreateWithoutStockInput[]
-  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockInput | Prisma.RentalItemCreateOrConnectWithoutStockInput[]
-  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutStockInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutStockInput[]
-  createMany?: Prisma.RentalItemCreateManyStockInputEnvelope
+export type RentalItemUncheckedUpdateManyWithoutInventoryItemNestedInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput> | Prisma.RentalItemCreateWithoutInventoryItemInput[] | Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput | Prisma.RentalItemCreateOrConnectWithoutInventoryItemInput[]
+  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutInventoryItemInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutInventoryItemInput[]
+  createMany?: Prisma.RentalItemCreateManyInventoryItemInputEnvelope
   set?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   disconnect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   delete?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
   connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
-  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutStockInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutStockInput[]
-  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutStockInput | Prisma.RentalItemUpdateManyWithWhereWithoutStockInput[]
+  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutInventoryItemInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutInventoryItemInput[]
+  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutInventoryItemInput | Prisma.RentalItemUpdateManyWithWhereWithoutInventoryItemInput[]
+  deleteMany?: Prisma.RentalItemScalarWhereInput | Prisma.RentalItemScalarWhereInput[]
+}
+
+export type RentalItemCreateNestedManyWithoutStockLotInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput> | Prisma.RentalItemCreateWithoutStockLotInput[] | Prisma.RentalItemUncheckedCreateWithoutStockLotInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockLotInput | Prisma.RentalItemCreateOrConnectWithoutStockLotInput[]
+  createMany?: Prisma.RentalItemCreateManyStockLotInputEnvelope
+  connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+}
+
+export type RentalItemUncheckedCreateNestedManyWithoutStockLotInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput> | Prisma.RentalItemCreateWithoutStockLotInput[] | Prisma.RentalItemUncheckedCreateWithoutStockLotInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockLotInput | Prisma.RentalItemCreateOrConnectWithoutStockLotInput[]
+  createMany?: Prisma.RentalItemCreateManyStockLotInputEnvelope
+  connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+}
+
+export type RentalItemUpdateManyWithoutStockLotNestedInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput> | Prisma.RentalItemCreateWithoutStockLotInput[] | Prisma.RentalItemUncheckedCreateWithoutStockLotInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockLotInput | Prisma.RentalItemCreateOrConnectWithoutStockLotInput[]
+  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutStockLotInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutStockLotInput[]
+  createMany?: Prisma.RentalItemCreateManyStockLotInputEnvelope
+  set?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  disconnect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  delete?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutStockLotInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutStockLotInput[]
+  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutStockLotInput | Prisma.RentalItemUpdateManyWithWhereWithoutStockLotInput[]
+  deleteMany?: Prisma.RentalItemScalarWhereInput | Prisma.RentalItemScalarWhereInput[]
+}
+
+export type RentalItemUncheckedUpdateManyWithoutStockLotNestedInput = {
+  create?: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput> | Prisma.RentalItemCreateWithoutStockLotInput[] | Prisma.RentalItemUncheckedCreateWithoutStockLotInput[]
+  connectOrCreate?: Prisma.RentalItemCreateOrConnectWithoutStockLotInput | Prisma.RentalItemCreateOrConnectWithoutStockLotInput[]
+  upsert?: Prisma.RentalItemUpsertWithWhereUniqueWithoutStockLotInput | Prisma.RentalItemUpsertWithWhereUniqueWithoutStockLotInput[]
+  createMany?: Prisma.RentalItemCreateManyStockLotInputEnvelope
+  set?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  disconnect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  delete?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  connect?: Prisma.RentalItemWhereUniqueInput | Prisma.RentalItemWhereUniqueInput[]
+  update?: Prisma.RentalItemUpdateWithWhereUniqueWithoutStockLotInput | Prisma.RentalItemUpdateWithWhereUniqueWithoutStockLotInput[]
+  updateMany?: Prisma.RentalItemUpdateManyWithWhereWithoutStockLotInput | Prisma.RentalItemUpdateManyWithWhereWithoutStockLotInput[]
   deleteMany?: Prisma.RentalItemScalarWhereInput | Prisma.RentalItemScalarWhereInput[]
 }
 
@@ -1131,7 +1197,8 @@ export type RentalItemCreateWithoutOperationInput = {
   itemStatus: $Enums.RentalItemStatus
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
@@ -1143,7 +1210,8 @@ export type RentalItemUncheckedCreateWithoutOperationInput = {
   tenantId: string
   rentalId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1201,7 +1269,8 @@ export type RentalItemScalarWhereInput = {
   rentalId?: Prisma.StringFilter<"RentalItem"> | string
   operationId?: Prisma.StringFilter<"RentalItem"> | string
   productId?: Prisma.StringFilter<"RentalItem"> | string
-  stockId?: Prisma.StringFilter<"RentalItem"> | string
+  stockLotId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"RentalItem"> | string | null
   variantId?: Prisma.StringFilter<"RentalItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"RentalItem"> | number
   quantity?: Prisma.IntFilter<"RentalItem"> | number
@@ -1243,7 +1312,8 @@ export type RentalItemCreateWithoutProductInput = {
   itemStatus: $Enums.RentalItemStatus
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
@@ -1255,7 +1325,8 @@ export type RentalItemUncheckedCreateWithoutProductInput = {
   tenantId: string
   rentalId: string
   operationId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1326,7 +1397,8 @@ export type RentalItemCreateWithoutVariantInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutRentalItemInput
@@ -1338,7 +1410,8 @@ export type RentalItemUncheckedCreateWithoutVariantInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   priceAtMoment: number
   quantity?: number
   conditionOut: string
@@ -1386,7 +1459,7 @@ export type RentalItemUpdateManyWithWhereWithoutVariantInput = {
   data: Prisma.XOR<Prisma.RentalItemUpdateManyMutationInput, Prisma.RentalItemUncheckedUpdateManyWithoutVariantInput>
 }
 
-export type RentalItemCreateWithoutStockInput = {
+export type RentalItemCreateWithoutInventoryItemInput = {
   id?: string
   priceAtMoment: number
   quantity?: number
@@ -1408,18 +1481,20 @@ export type RentalItemCreateWithoutStockInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutRentalItemInput
 }
 
-export type RentalItemUncheckedCreateWithoutStockInput = {
+export type RentalItemUncheckedCreateWithoutInventoryItemInput = {
   id?: string
   tenantId: string
   rentalId: string
   operationId: string
   productId: string
+  stockLotId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1442,30 +1517,114 @@ export type RentalItemUncheckedCreateWithoutStockInput = {
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedCreateNestedManyWithoutRentalItemInput
 }
 
-export type RentalItemCreateOrConnectWithoutStockInput = {
+export type RentalItemCreateOrConnectWithoutInventoryItemInput = {
   where: Prisma.RentalItemWhereUniqueInput
-  create: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput>
+  create: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput>
 }
 
-export type RentalItemCreateManyStockInputEnvelope = {
-  data: Prisma.RentalItemCreateManyStockInput | Prisma.RentalItemCreateManyStockInput[]
+export type RentalItemCreateManyInventoryItemInputEnvelope = {
+  data: Prisma.RentalItemCreateManyInventoryItemInput | Prisma.RentalItemCreateManyInventoryItemInput[]
   skipDuplicates?: boolean
 }
 
-export type RentalItemUpsertWithWhereUniqueWithoutStockInput = {
+export type RentalItemUpsertWithWhereUniqueWithoutInventoryItemInput = {
   where: Prisma.RentalItemWhereUniqueInput
-  update: Prisma.XOR<Prisma.RentalItemUpdateWithoutStockInput, Prisma.RentalItemUncheckedUpdateWithoutStockInput>
-  create: Prisma.XOR<Prisma.RentalItemCreateWithoutStockInput, Prisma.RentalItemUncheckedCreateWithoutStockInput>
+  update: Prisma.XOR<Prisma.RentalItemUpdateWithoutInventoryItemInput, Prisma.RentalItemUncheckedUpdateWithoutInventoryItemInput>
+  create: Prisma.XOR<Prisma.RentalItemCreateWithoutInventoryItemInput, Prisma.RentalItemUncheckedCreateWithoutInventoryItemInput>
 }
 
-export type RentalItemUpdateWithWhereUniqueWithoutStockInput = {
+export type RentalItemUpdateWithWhereUniqueWithoutInventoryItemInput = {
   where: Prisma.RentalItemWhereUniqueInput
-  data: Prisma.XOR<Prisma.RentalItemUpdateWithoutStockInput, Prisma.RentalItemUncheckedUpdateWithoutStockInput>
+  data: Prisma.XOR<Prisma.RentalItemUpdateWithoutInventoryItemInput, Prisma.RentalItemUncheckedUpdateWithoutInventoryItemInput>
 }
 
-export type RentalItemUpdateManyWithWhereWithoutStockInput = {
+export type RentalItemUpdateManyWithWhereWithoutInventoryItemInput = {
   where: Prisma.RentalItemScalarWhereInput
-  data: Prisma.XOR<Prisma.RentalItemUpdateManyMutationInput, Prisma.RentalItemUncheckedUpdateManyWithoutStockInput>
+  data: Prisma.XOR<Prisma.RentalItemUpdateManyMutationInput, Prisma.RentalItemUncheckedUpdateManyWithoutInventoryItemInput>
+}
+
+export type RentalItemCreateWithoutStockLotInput = {
+  id?: string
+  priceAtMoment: number
+  quantity?: number
+  conditionOut: string
+  conditionIn?: string | null
+  isDamaged?: boolean
+  damageNotes?: string | null
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  promotionId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  notes?: string | null
+  listPrice: number
+  itemStatus: $Enums.RentalItemStatus
+  rental: Prisma.RentalCreateNestedOneWithoutItemsInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
+  rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutRentalItemInput
+}
+
+export type RentalItemUncheckedCreateWithoutStockLotInput = {
+  id?: string
+  tenantId: string
+  rentalId: string
+  operationId: string
+  productId: string
+  inventoryItemId?: string | null
+  variantId: string
+  priceAtMoment: number
+  quantity?: number
+  conditionOut: string
+  conditionIn?: string | null
+  isDamaged?: boolean
+  damageNotes?: string | null
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  promotionId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  notes?: string | null
+  listPrice: number
+  itemStatus: $Enums.RentalItemStatus
+  rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalItemInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedCreateNestedManyWithoutRentalItemInput
+}
+
+export type RentalItemCreateOrConnectWithoutStockLotInput = {
+  where: Prisma.RentalItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput>
+}
+
+export type RentalItemCreateManyStockLotInputEnvelope = {
+  data: Prisma.RentalItemCreateManyStockLotInput | Prisma.RentalItemCreateManyStockLotInput[]
+  skipDuplicates?: boolean
+}
+
+export type RentalItemUpsertWithWhereUniqueWithoutStockLotInput = {
+  where: Prisma.RentalItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.RentalItemUpdateWithoutStockLotInput, Prisma.RentalItemUncheckedUpdateWithoutStockLotInput>
+  create: Prisma.XOR<Prisma.RentalItemCreateWithoutStockLotInput, Prisma.RentalItemUncheckedCreateWithoutStockLotInput>
+}
+
+export type RentalItemUpdateWithWhereUniqueWithoutStockLotInput = {
+  where: Prisma.RentalItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.RentalItemUpdateWithoutStockLotInput, Prisma.RentalItemUncheckedUpdateWithoutStockLotInput>
+}
+
+export type RentalItemUpdateManyWithWhereWithoutStockLotInput = {
+  where: Prisma.RentalItemScalarWhereInput
+  data: Prisma.XOR<Prisma.RentalItemUpdateManyMutationInput, Prisma.RentalItemUncheckedUpdateManyWithoutStockLotInput>
 }
 
 export type RentalItemCreateWithoutRentalInput = {
@@ -1489,7 +1648,8 @@ export type RentalItemCreateWithoutRentalInput = {
   itemStatus: $Enums.RentalItemStatus
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
@@ -1501,7 +1661,8 @@ export type RentalItemUncheckedCreateWithoutRentalInput = {
   tenantId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1572,7 +1733,8 @@ export type RentalItemCreateWithoutRentalChargesInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutRentalItemInput
@@ -1584,7 +1746,8 @@ export type RentalItemUncheckedCreateWithoutRentalChargesInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1644,7 +1807,8 @@ export type RentalItemUpdateWithoutRentalChargesInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutRentalItemNestedInput
@@ -1656,7 +1820,8 @@ export type RentalItemUncheckedUpdateWithoutRentalChargesInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1700,7 +1865,8 @@ export type RentalItemCreateWithoutRentalItemStatusHistoriesInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
@@ -1712,7 +1878,8 @@ export type RentalItemUncheckedCreateWithoutRentalItemStatusHistoriesInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1772,7 +1939,8 @@ export type RentalItemUpdateWithoutRentalItemStatusHistoriesInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
@@ -1784,7 +1952,8 @@ export type RentalItemUncheckedUpdateWithoutRentalItemStatusHistoriesInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1828,7 +1997,8 @@ export type RentalItemCreateWithoutTenantInput = {
   rental: Prisma.RentalCreateNestedOneWithoutItemsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalItemsInput
   product: Prisma.ProductCreateNestedOneWithoutRentalItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutRentalItemsInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutRentalItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutRentalItemsInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutRentalItemInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutRentalItemInput
@@ -1839,7 +2009,8 @@ export type RentalItemUncheckedCreateWithoutTenantInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1893,7 +2064,8 @@ export type RentalItemCreateManyOperationInput = {
   tenantId: string
   rentalId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -1935,7 +2107,8 @@ export type RentalItemUpdateWithoutOperationInput = {
   itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
@@ -1947,7 +2120,8 @@ export type RentalItemUncheckedUpdateWithoutOperationInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1975,7 +2149,8 @@ export type RentalItemUncheckedUpdateManyWithoutOperationInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2001,7 +2176,8 @@ export type RentalItemCreateManyProductInput = {
   tenantId: string
   rentalId: string
   operationId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -2043,7 +2219,8 @@ export type RentalItemUpdateWithoutProductInput = {
   itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
@@ -2055,7 +2232,8 @@ export type RentalItemUncheckedUpdateWithoutProductInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2083,7 +2261,8 @@ export type RentalItemUncheckedUpdateManyWithoutProductInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2110,7 +2289,8 @@ export type RentalItemCreateManyVariantInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   priceAtMoment: number
   quantity?: number
   conditionOut: string
@@ -2152,7 +2332,8 @@ export type RentalItemUpdateWithoutVariantInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutRentalItemNestedInput
@@ -2164,7 +2345,8 @@ export type RentalItemUncheckedUpdateWithoutVariantInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   conditionOut?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2192,7 +2374,8 @@ export type RentalItemUncheckedUpdateManyWithoutVariantInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   conditionOut?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2212,12 +2395,13 @@ export type RentalItemUncheckedUpdateManyWithoutVariantInput = {
   itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
 }
 
-export type RentalItemCreateManyStockInput = {
+export type RentalItemCreateManyInventoryItemInput = {
   id?: string
   tenantId: string
   rentalId: string
   operationId: string
   productId: string
+  stockLotId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -2238,7 +2422,7 @@ export type RentalItemCreateManyStockInput = {
   itemStatus: $Enums.RentalItemStatus
 }
 
-export type RentalItemUpdateWithoutStockInput = {
+export type RentalItemUpdateWithoutInventoryItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2260,18 +2444,20 @@ export type RentalItemUpdateWithoutStockInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutRentalItemNestedInput
 }
 
-export type RentalItemUncheckedUpdateWithoutStockInput = {
+export type RentalItemUncheckedUpdateWithoutInventoryItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2294,12 +2480,125 @@ export type RentalItemUncheckedUpdateWithoutStockInput = {
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedUpdateManyWithoutRentalItemNestedInput
 }
 
-export type RentalItemUncheckedUpdateManyWithoutStockInput = {
+export type RentalItemUncheckedUpdateManyWithoutInventoryItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  conditionOut?: Prisma.StringFieldUpdateOperationsInput | string
+  conditionIn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDamaged?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  damageNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
+}
+
+export type RentalItemCreateManyStockLotInput = {
+  id?: string
+  tenantId: string
+  rentalId: string
+  operationId: string
+  productId: string
+  inventoryItemId?: string | null
+  variantId: string
+  priceAtMoment: number
+  quantity?: number
+  conditionOut: string
+  conditionIn?: string | null
+  isDamaged?: boolean
+  damageNotes?: string | null
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  promotionId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  notes?: string | null
+  listPrice: number
+  itemStatus: $Enums.RentalItemStatus
+}
+
+export type RentalItemUpdateWithoutStockLotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  conditionOut?: Prisma.StringFieldUpdateOperationsInput | string
+  conditionIn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDamaged?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  damageNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
+  rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
+  rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutRentalItemNestedInput
+}
+
+export type RentalItemUncheckedUpdateWithoutStockLotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  rentalId?: Prisma.StringFieldUpdateOperationsInput | string
+  operationId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  conditionOut?: Prisma.StringFieldUpdateOperationsInput | string
+  conditionIn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDamaged?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  damageNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  listPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
+  rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalItemNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedUpdateManyWithoutRentalItemNestedInput
+}
+
+export type RentalItemUncheckedUpdateManyWithoutStockLotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  rentalId?: Prisma.StringFieldUpdateOperationsInput | string
+  operationId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2325,7 +2624,8 @@ export type RentalItemCreateManyRentalInput = {
   tenantId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -2367,7 +2667,8 @@ export type RentalItemUpdateWithoutRentalInput = {
   itemStatus?: Prisma.EnumRentalItemStatusFieldUpdateOperationsInput | $Enums.RentalItemStatus
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
@@ -2379,7 +2680,8 @@ export type RentalItemUncheckedUpdateWithoutRentalInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2407,7 +2709,8 @@ export type RentalItemUncheckedUpdateManyWithoutRentalInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2433,7 +2736,8 @@ export type RentalItemCreateManyTenantInput = {
   rentalId: string
   operationId: string
   productId: string
-  stockId: string
+  stockLotId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   quantity?: number
@@ -2476,7 +2780,8 @@ export type RentalItemUpdateWithoutTenantInput = {
   rental?: Prisma.RentalUpdateOneRequiredWithoutItemsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutRentalItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutRentalItemsNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutRentalItemsNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutRentalItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutRentalItemsNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutRentalItemNestedInput
   rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutRentalItemNestedInput
@@ -2487,7 +2792,8 @@ export type RentalItemUncheckedUpdateWithoutTenantInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2515,7 +2821,8 @@ export type RentalItemUncheckedUpdateManyWithoutTenantInput = {
   rentalId?: Prisma.StringFieldUpdateOperationsInput | string
   operationId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2582,7 +2889,8 @@ export type RentalItemSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   rentalId?: boolean
   operationId?: boolean
   productId?: boolean
-  stockId?: boolean
+  stockLotId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   quantity?: boolean
@@ -2604,7 +2912,8 @@ export type RentalItemSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   rentalCharges?: boolean | Prisma.RentalItem$rentalChargesArgs<ExtArgs>
@@ -2618,7 +2927,8 @@ export type RentalItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   rentalId?: boolean
   operationId?: boolean
   productId?: boolean
-  stockId?: boolean
+  stockLotId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   quantity?: boolean
@@ -2640,7 +2950,8 @@ export type RentalItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rentalItem"]>
@@ -2651,7 +2962,8 @@ export type RentalItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   rentalId?: boolean
   operationId?: boolean
   productId?: boolean
-  stockId?: boolean
+  stockLotId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   quantity?: boolean
@@ -2673,7 +2985,8 @@ export type RentalItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rentalItem"]>
@@ -2684,7 +2997,8 @@ export type RentalItemSelectScalar = {
   rentalId?: boolean
   operationId?: boolean
   productId?: boolean
-  stockId?: boolean
+  stockLotId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   quantity?: boolean
@@ -2705,12 +3019,13 @@ export type RentalItemSelectScalar = {
   itemStatus?: boolean
 }
 
-export type RentalItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "rentalId" | "operationId" | "productId" | "stockId" | "variantId" | "priceAtMoment" | "quantity" | "conditionOut" | "conditionIn" | "isDamaged" | "damageNotes" | "discountAmount" | "discountReason" | "bundleId" | "promotionId" | "productName" | "variantCode" | "serialCode" | "isSerial" | "notes" | "listPrice" | "itemStatus", ExtArgs["result"]["rentalItem"]>
+export type RentalItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "rentalId" | "operationId" | "productId" | "stockLotId" | "inventoryItemId" | "variantId" | "priceAtMoment" | "quantity" | "conditionOut" | "conditionIn" | "isDamaged" | "damageNotes" | "discountAmount" | "discountReason" | "bundleId" | "promotionId" | "productName" | "variantCode" | "serialCode" | "isSerial" | "notes" | "listPrice" | "itemStatus", ExtArgs["result"]["rentalItem"]>
 export type RentalItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   rentalCharges?: boolean | Prisma.RentalItem$rentalChargesArgs<ExtArgs>
@@ -2721,7 +3036,8 @@ export type RentalItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.E
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
@@ -2729,7 +3045,8 @@ export type RentalItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   rental?: boolean | Prisma.RentalDefaultArgs<ExtArgs>
   operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
+  stockLot?: boolean | Prisma.RentalItem$stockLotArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.RentalItem$inventoryItemArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
@@ -2740,7 +3057,8 @@ export type $RentalItemPayload<ExtArgs extends runtime.Types.Extensions.Internal
     rental: Prisma.$RentalPayload<ExtArgs>
     operation: Prisma.$OperationPayload<ExtArgs>
     product: Prisma.$ProductPayload<ExtArgs>
-    stock: Prisma.$StockLotPayload<ExtArgs>
+    stockLot: Prisma.$StockLotPayload<ExtArgs> | null
+    inventoryItem: Prisma.$InventoryItemPayload<ExtArgs> | null
     variant: Prisma.$ProductVariantPayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
     rentalCharges: Prisma.$RentalChargePayload<ExtArgs>[]
@@ -2752,7 +3070,8 @@ export type $RentalItemPayload<ExtArgs extends runtime.Types.Extensions.Internal
     rentalId: string
     operationId: string
     productId: string
-    stockId: string
+    stockLotId: string | null
+    inventoryItemId: string | null
     variantId: string
     priceAtMoment: number
     quantity: number
@@ -3168,7 +3487,8 @@ export interface Prisma__RentalItemClient<T, Null = never, ExtArgs extends runti
   rental<T extends Prisma.RentalDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RentalDefaultArgs<ExtArgs>>): Prisma.Prisma__RentalClient<runtime.Types.Result.GetResult<Prisma.$RentalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  stock<T extends Prisma.StockLotDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLotDefaultArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  stockLot<T extends Prisma.RentalItem$stockLotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RentalItem$stockLotArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  inventoryItem<T extends Prisma.RentalItem$inventoryItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RentalItem$inventoryItemArgs<ExtArgs>>): Prisma.Prisma__InventoryItemClient<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   rentalCharges<T extends Prisma.RentalItem$rentalChargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RentalItem$rentalChargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3207,7 +3527,8 @@ export interface RentalItemFieldRefs {
   readonly rentalId: Prisma.FieldRef<"RentalItem", 'String'>
   readonly operationId: Prisma.FieldRef<"RentalItem", 'String'>
   readonly productId: Prisma.FieldRef<"RentalItem", 'String'>
-  readonly stockId: Prisma.FieldRef<"RentalItem", 'String'>
+  readonly stockLotId: Prisma.FieldRef<"RentalItem", 'String'>
+  readonly inventoryItemId: Prisma.FieldRef<"RentalItem", 'String'>
   readonly variantId: Prisma.FieldRef<"RentalItem", 'String'>
   readonly priceAtMoment: Prisma.FieldRef<"RentalItem", 'Float'>
   readonly quantity: Prisma.FieldRef<"RentalItem", 'Int'>
@@ -3619,6 +3940,44 @@ export type RentalItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many RentalItems to delete.
    */
   limit?: number
+}
+
+/**
+ * RentalItem.stockLot
+ */
+export type RentalItem$stockLotArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
+}
+
+/**
+ * RentalItem.inventoryItem
+ */
+export type RentalItem$inventoryItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryItem
+   */
+  select?: Prisma.InventoryItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryItem
+   */
+  omit?: Prisma.InventoryItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryItemInclude<ExtArgs> | null
+  where?: Prisma.InventoryItemWhereInput
 }
 
 /**

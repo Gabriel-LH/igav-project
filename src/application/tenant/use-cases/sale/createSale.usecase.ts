@@ -51,7 +51,7 @@ export class CreateSaleUseCase {
       
       await this.reservationRepo.updateStatus(
         (dto as SaleFromReservationDTO).reservationId,
-        "venta",
+        "convertida",
         "convertida",
       );
       for (const item of (dto as SaleFromReservationDTO).reservationItems) {

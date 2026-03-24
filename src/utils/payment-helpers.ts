@@ -24,13 +24,15 @@ export const getNetPostedAmount = (payments: Payment[]): number => {
   return payments
     .filter((payment) => payment.status === "posted")
     .reduce((acc, payment) => {
-      const signedAmount = payment.direction === "in" ? payment.amount : -payment.amount;
+      const amount = Number(payment.amount);
+      const signedAmount =
+        payment.direction === "in" ? amount : -amount;
       return acc + signedAmount;
     }, 0);
 };
 
 export const sumPayments = (payments: { amount: number }[]): number => {
-  return payments.reduce((acc, curr) => acc + curr.amount, 0);
+  return payments.reduce((acc, curr) => acc + Number(curr.amount), 0);
 };
 
 export const getRemainingBalance = (
@@ -83,14 +85,16 @@ export const getOperationBalances = (
 
   const totalIn = postedPayments
     .filter((payment) => payment.direction === "in")
-    .reduce((acc, payment) => acc + payment.amount, 0);
+    .reduce((acc, payment) => acc + Number(payment.amount), 0);
 
   const totalOut = postedPayments
     .filter((payment) => payment.direction === "out")
-    .reduce((acc, payment) => acc + payment.amount, 0);
+    .reduce((acc, payment) => acc + Number(payment.amount), 0);
 
   const totalPaid = totalIn - totalOut;
-  const diff = totalPaid - totalToPay;
+
+  // Redondeamos a 2 decimales para evitar errores de punto flotante
+  const diff = Math.round((totalPaid - totalToPay) * 100) / 100;
 
   return {
     totalCalculated: totalToPay,

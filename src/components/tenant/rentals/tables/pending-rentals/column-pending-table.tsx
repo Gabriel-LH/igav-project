@@ -17,23 +17,14 @@ import {
 import { DragHandle } from "@/src/components/tenant/dashboard/data-table/ui/DragHandle";
 import { rentalsPendingSchema } from "../type/type.pending";
 import { ArrowUpDown, BadgeX, CircleDashed, Handbag } from "lucide-react";
-import { TableCellViewerPending } from "./pending-table-cell-viewer";
-import { CancelRentalUseCase } from "@/src/application/tenant/use-cases/cancelRental.usecase";
+import { cancelRentalAction, deliverRentalAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
 import { toast } from "sonner";
-import { useRentalStore } from "@/src/store/useRentalStore";
 import { useState } from "react";
 import { RentalWithItems } from "@/src/types/rentals/type.rentals";
 import { CancelRentalModal } from "../../ui/modals/CancelRentalModal";
-import { DeliverRentalUseCase } from "@/src/application/tenant/use-cases/deliverRental.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandReservationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandReservationRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
 import { DeliverRentalModal } from "../../ui/modals/DeliverRentalModal";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { TableCellViewerPending } from "./pending-table-cell-viewer";
 
 export const columnsRentalsPending: ColumnDef<
   z.infer<typeof rentalsPendingSchema>
@@ -182,7 +173,7 @@ function ActionCell({
         new ZustandOperationRepository(),
         new ZustandPaymentRepository(),
       );
-      cancelUseCase.execute(rentalId, reason, USER_MOCK[0].id);
+      cancelUseCase.execute(rentalId, reason, "user_1");
       toast.success("Alquiler cancelado exitosamente");
       setOpenCancel(false);
     } catch (error) {
@@ -253,6 +244,7 @@ function ActionCell({
         open={openDeliver}
         onOpenChange={setOpenDeliver}
         rental={fullRentalData}
+        customerName={item.nameCustomer}
         onConfirm={handleDeliverRental}
       />
     </>

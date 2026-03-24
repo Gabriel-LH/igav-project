@@ -4,13 +4,12 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { useBranchStore } from "@/src/store/useBranchStore";
 import {
   BundleDomainService,
   BundleDefinition,
 } from "@/src/domain/tenant/services/bundle.service";
 import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
-import { BUSINESS_RULES_MOCK } from "@/src/mocks/mock.bussines_rules";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Gift } from "lucide-react";
 
@@ -18,14 +17,14 @@ export function PosBundlesPanel() {
   const { items, globalRentalDates, applyBundleDefinition, activeTenantId } =
     useCartStore();
 
-  const currentBranchId = USER_MOCK[0].branchId!;
+  const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
 
   const startDate = globalRentalDates?.from ?? new Date();
   const endDate = globalRentalDates?.to ?? new Date();
 
   const tenantId = activeTenantId ?? items[0]?.product.tenantId;
 
-  const { products, inventoryItems, stockLots } = useInventoryStore();
+  const { products, inventoryItems, stockLots, productVariants } = useInventoryStore();
   const bundleService = useMemo(() => new BundleDomainService(), []);
 
   const bundles = useMemo(() => {
@@ -44,11 +43,12 @@ export function PosBundlesPanel() {
         items,
         bundle,
         tenantId,
-        currentBranchId,
+        selectedBranchId,
         startDate,
         endDate,
         inventoryItems,
         stockLots,
+        productVariants,
       );
 
       return { bundle, eligibility };
@@ -57,12 +57,13 @@ export function PosBundlesPanel() {
     items,
     bundles,
     tenantId,
-    currentBranchId,
+    selectedBranchId,
     startDate,
     endDate,
     bundleService,
     inventoryItems,
     stockLots,
+    productVariants,
   ]);
 
   const relevantBundles = useMemo(() => {
@@ -75,7 +76,7 @@ export function PosBundlesPanel() {
     const target = bundles.find((b) => b.id === bundleId);
     if (!target) return;
 
-    applyBundleDefinition(target, currentBranchId, startDate, endDate);
+    applyBundleDefinition(target, selectedBranchId, startDate, endDate);
   };
 
   if (!relevantBundles.length) return null;

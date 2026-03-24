@@ -2,28 +2,17 @@
 
 import { useMemo } from "react";
 import { RentalsDataTable } from "./rentals-data-table";
-import { useRentalStore } from "@/src/store/useRentalStore";
-import { mapRentalToTable } from "@/src/adapters/rentals-active-adapters";
-import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
+import { RentalTableRow } from "@/src/adapters/rentals-active-adapters";
 
-export const RentalsGrid = () => {
-  const { rentals, rentalItems } = useRentalStore();
-  const { products } = useInventoryStore();
-  const { customers } = useCustomerStore();
-  const { guarantees } = useGuaranteeStore();
+interface RentalsGridProps {
+  initialData: RentalTableRow[];
+}
 
-  const allData = useMemo(
-    () =>
-      mapRentalToTable(customers, rentals, guarantees, rentalItems, products),
-    [rentals, rentalItems, products, customers, guarantees],
-  );
-
-  const active = allData.filter((i) => i.status === "alquilado");
-  const canceled = allData.filter((i) => i.status === "anulado");
-  const history = allData.filter((i) => i.status === "devuelto");
-  const pending = allData.filter((i) => i.status === "reservado_fisico");
+export const RentalsGrid = ({ initialData }: RentalsGridProps) => {
+  const active = useMemo(() => initialData.filter((i) => i.status === "alquilado"), [initialData]);
+  const canceled = useMemo(() => initialData.filter((i) => i.status === "anulado"), [initialData]);
+  const history = useMemo(() => initialData.filter((i) => i.status === "devuelto"), [initialData]);
+  const pending = useMemo(() => initialData.filter((i) => i.status === "reservado_fisico"), [initialData]);
 
   return (
     <div className="flex flex-1 flex-col">
