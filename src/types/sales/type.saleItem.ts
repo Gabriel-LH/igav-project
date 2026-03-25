@@ -5,7 +5,8 @@ export const saleItemSchema = z.object({
   saleId: z.string(),
   productId: z.string(),
   variantId: z.string(),
-  stockId: z.string(), // La prenda específica que se llevó
+  stockId: z.string().optional(),
+  inventoryItemId: z.string().optional(),
   priceAtMoment: z.number(), // El precio FINAL que pagó el cliente (ej: 80)
   listPrice: z.number().optional(), // El precio ORIGINAL de catálogo (ej: 100)
   quantity: z.number(),

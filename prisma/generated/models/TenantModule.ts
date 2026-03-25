@@ -182,8 +182,8 @@ export type TenantModuleWhereInput = {
   moduleId?: Prisma.StringFilter<"TenantModule"> | string
   status?: Prisma.EnumTenantModuleStatusFilter<"TenantModule"> | $Enums.TenantModuleStatus
   staterdAt?: Prisma.DateTimeFilter<"TenantModule"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type TenantModuleOrderByWithRelationInput = {
@@ -192,8 +192,8 @@ export type TenantModuleOrderByWithRelationInput = {
   moduleId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   staterdAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   module?: Prisma.ModuleOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type TenantModuleWhereUniqueInput = Prisma.AtLeast<{
@@ -205,8 +205,8 @@ export type TenantModuleWhereUniqueInput = Prisma.AtLeast<{
   moduleId?: Prisma.StringFilter<"TenantModule"> | string
   status?: Prisma.EnumTenantModuleStatusFilter<"TenantModule"> | $Enums.TenantModuleStatus
   staterdAt?: Prisma.DateTimeFilter<"TenantModule"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type TenantModuleOrderByWithAggregationInput = {
@@ -235,8 +235,8 @@ export type TenantModuleCreateInput = {
   id?: string
   status: $Enums.TenantModuleStatus
   staterdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutTenantModulesInput
   module: Prisma.ModuleCreateNestedOneWithoutTenantModulesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTenantModulesInput
 }
 
 export type TenantModuleUncheckedCreateInput = {
@@ -251,8 +251,8 @@ export type TenantModuleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTenantModuleStatusFieldUpdateOperationsInput | $Enums.TenantModuleStatus
   staterdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTenantModulesNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTenantModulesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTenantModulesNestedInput
 }
 
 export type TenantModuleUncheckedUpdateInput = {
@@ -562,8 +562,8 @@ export type TenantModuleSelect<ExtArgs extends runtime.Types.Extensions.Internal
   moduleId?: boolean
   status?: boolean
   staterdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantModule"]>
 
 export type TenantModuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -572,8 +572,8 @@ export type TenantModuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   moduleId?: boolean
   status?: boolean
   staterdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantModule"]>
 
 export type TenantModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -582,8 +582,8 @@ export type TenantModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   moduleId?: boolean
   status?: boolean
   staterdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantModule"]>
 
 export type TenantModuleSelectScalar = {
@@ -596,23 +596,23 @@ export type TenantModuleSelectScalar = {
 
 export type TenantModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "moduleId" | "status" | "staterdAt", ExtArgs["result"]["tenantModule"]>
 export type TenantModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TenantModuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TenantModuleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $TenantModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TenantModule"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     module: Prisma.$ModulePayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1014,8 +1014,8 @@ readonly fields: TenantModuleFieldRefs;
  */
 export interface Prisma__TenantModuleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   module<T extends Prisma.ModuleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ModuleDefaultArgs<ExtArgs>>): Prisma.Prisma__ModuleClient<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

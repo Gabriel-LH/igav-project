@@ -17,6 +17,7 @@ export class DeliverRentalUseCase {
     rentalId: string,
     guaranteeData: { value: string; type: GuaranteeType },
     userId: string,
+    selectedIds?: string[],
   ): Promise<Rental> {
     const now = new Date();
     const rental = await this.rentalRepo.getRentalById(rentalId);
@@ -46,8 +47,11 @@ export class DeliverRentalUseCase {
         status: "custodia",
       } as any);
     }
-
     for (const item of rentalItems) {
+      if (selectedIds && !selectedIds.includes(item.id)) {
+        continue; // Only deliver selected items if provided
+      }
+
       if (!item.stockId) {
         throw new Error(`Item ${item.id} no tiene stock asignado`);
       }

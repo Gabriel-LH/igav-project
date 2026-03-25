@@ -2,6 +2,7 @@ import { SaleDTO } from "./SaleDTO";
 
 export interface SaleFromReservationDTO {
   type: "venta";
+  tenantId: string;
 
   status: "vendido" | "reservado" | "cancelado" | "pendiente_entrega" | "pendiente_pago" | "devuelto";
   reservationId: string;
@@ -9,7 +10,8 @@ export interface SaleFromReservationDTO {
 
   reservationItems: {
     reservationItemId: string;
-    stockId: string;
+    stockId?: string;
+    inventoryItemId?: string;
   }[];
 
   sellerId: string;

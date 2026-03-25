@@ -19,8 +19,6 @@ import type { AttributeValue } from "@/src/types/attributes/type.attribute-value
 import { useMemo, useEffect } from "react";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
-import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 import {
@@ -63,9 +61,6 @@ export function CatalogProductCard({
 
   useEffect(() => {
     ensureLoaded();
-    const promotionRepo = new ZustandPromotionRepository();
-    const promotionLoader = new PromotionLoaderService(promotionRepo);
-    promotionLoader.ensurePromotionsLoaded();
   }, [ensureLoaded]);
 
   // Fallback to DEFAULT_CONFIG if database config is not yet loaded

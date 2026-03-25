@@ -39,6 +39,8 @@ import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { getClientsAction } from "@/src/app/(tenant)/tenant/actions/client.actions";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
+import { getPromotionsAction } from "@/src/app/(tenant)/tenant/actions/promotion.actions";
+import { usePromotionStore } from "@/src/store/usePromotionStore";
 
 interface ProductGridProps {
   categories: Category[];
@@ -62,6 +64,7 @@ export function ProductGrid({
   const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
   const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
   const setCustomers = useCustomerStore((s) => s.setCustomers);
+  const setPromotions = usePromotionStore((s) => s.setPromotions);
   const customers = useCustomerStore((s) => s.customers);
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -94,10 +97,11 @@ export function ProductGrid({
 
     setIsLoading(true);
     try {
-      const [inventoryResult, availabilityResult, clientsResult] = await Promise.all([
+      const [inventoryResult, availabilityResult, clientsResult, promotionsResult] = await Promise.all([
         getBranchInventoryAction(selectedBranchId),
         getAvailabilityCalendarDataAction(),
         getClientsAction(),
+        getPromotionsAction(),
       ]);
 
       if (!inventoryResult.success || !inventoryResult.data) {
@@ -136,6 +140,10 @@ export function ProductGrid({
 
       if (clientsResult.success && clientsResult.data) {
         setCustomers(clientsResult.data);
+      }
+
+      if (promotionsResult.success && promotionsResult.data) {
+        setPromotions(promotionsResult.data);
       }
     } catch {
       toast.error("Error de red");

@@ -809,7 +809,6 @@ export const ProductScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   name: 'name',
-  image: 'image',
   baseSku: 'baseSku',
   modelId: 'modelId',
   categoryId: 'categoryId',
@@ -824,7 +823,8 @@ export const ProductScalarFieldEnum = {
   deletedAt: 'deletedAt',
   deletedBy: 'deletedBy',
   deleteReason: 'deleteReason',
-  isDeleted: 'isDeleted'
+  isDeleted: 'isDeleted',
+  image: 'image'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -835,17 +835,17 @@ export const ProductVariantScalarFieldEnum = {
   tenantId: 'tenantId',
   productId: 'productId',
   variantCode: 'variantCode',
-  variantSignature: 'variantSignature',
   barcode: 'barcode',
   attributes: 'attributes',
-  purchasePrice: 'purchasePrice',
   priceSell: 'priceSell',
   priceRent: 'priceRent',
   rentUnit: 'rentUnit',
-  image: 'image',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  purchasePrice: 'purchasePrice',
+  image: 'image',
+  variantSignature: 'variantSignature'
 } as const
 
 export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
@@ -915,10 +915,10 @@ export const StockLotScalarFieldEnum = {
   lotNumber: 'lotNumber',
   isForRent: 'isForRent',
   isForSale: 'isForSale',
-  condition: 'condition',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  condition: 'condition'
 } as const
 
 export type StockLotScalarFieldEnum = (typeof StockLotScalarFieldEnum)[keyof typeof StockLotScalarFieldEnum]
@@ -929,11 +929,11 @@ export const StockMovementScalarFieldEnum = {
   tenantId: 'tenantId',
   stockLotId: 'stockLotId',
   type: 'type',
-  quantity: 'quantity',
   reason: 'reason',
   operationId: 'operationId',
   changedBy: 'changedBy',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  quantity: 'quantity'
 } as const
 
 export type StockMovementScalarFieldEnum = (typeof StockMovementScalarFieldEnum)[keyof typeof StockMovementScalarFieldEnum]
@@ -1063,8 +1063,6 @@ export const RentalItemScalarFieldEnum = {
   rentalId: 'rentalId',
   operationId: 'operationId',
   productId: 'productId',
-  stockLotId: 'stockLotId',
-  inventoryItemId: 'inventoryItemId',
   variantId: 'variantId',
   priceAtMoment: 'priceAtMoment',
   quantity: 'quantity',
@@ -1082,7 +1080,9 @@ export const RentalItemScalarFieldEnum = {
   isSerial: 'isSerial',
   notes: 'notes',
   listPrice: 'listPrice',
-  itemStatus: 'itemStatus'
+  itemStatus: 'itemStatus',
+  inventoryItemId: 'inventoryItemId',
+  stockLotId: 'stockLotId'
 } as const
 
 export type RentalItemScalarFieldEnum = (typeof RentalItemScalarFieldEnum)[keyof typeof RentalItemScalarFieldEnum]
@@ -1164,6 +1164,7 @@ export const ReservationItemScalarFieldEnum = {
   operationId: 'operationId',
   productId: 'productId',
   stockId: 'stockId',
+  inventoryItemId: 'inventoryItemId',
   reservationId: 'reservationId',
   variantId: 'variantId',
   quantity: 'quantity',
@@ -1174,6 +1175,7 @@ export const ReservationItemScalarFieldEnum = {
   bundleId: 'bundleId',
   promotionId: 'promotionId',
   notes: 'notes',
+  isSerial: 'isSerial',
   itemStatus: 'itemStatus'
 } as const
 
@@ -1230,6 +1232,7 @@ export const SaleItemScalarFieldEnum = {
   saleId: 'saleId',
   productId: 'productId',
   stockId: 'stockId',
+  inventoryItemId: 'inventoryItemId',
   variantId: 'variantId',
   priceAtMoment: 'priceAtMoment',
   listPrice: 'listPrice',

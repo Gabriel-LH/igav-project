@@ -312,11 +312,11 @@ export type PaymentWhereInput = {
   reference?: Prisma.StringNullableFilter<"Payment"> | string | null
   date?: Prisma.DateTimeFilter<"Payment"> | Date | string
   notes?: Prisma.StringNullableFilter<"Payment"> | string | null
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
   cashSession?: Prisma.XOR<Prisma.CashSessionNullableScalarRelationFilter, Prisma.CashSessionWhereInput> | null
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
+  receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
@@ -338,11 +338,11 @@ export type PaymentOrderByWithRelationInput = {
   reference?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
-  operation?: Prisma.OperationOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
-  receivedBy?: Prisma.UserOrderByWithRelationInput
-  paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
   cashSession?: Prisma.CashSessionOrderByWithRelationInput
+  operation?: Prisma.OperationOrderByWithRelationInput
+  paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
+  receivedBy?: Prisma.UserOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
@@ -367,11 +367,11 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   reference?: Prisma.StringNullableFilter<"Payment"> | string | null
   date?: Prisma.DateTimeFilter<"Payment"> | Date | string
   notes?: Prisma.StringNullableFilter<"Payment"> | string | null
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
   cashSession?: Prisma.XOR<Prisma.CashSessionNullableScalarRelationFilter, Prisma.CashSessionWhereInput> | null
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
+  receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
@@ -435,11 +435,11 @@ export type PaymentCreateInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
+  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -475,11 +475,11 @@ export type PaymentUpdateInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -911,10 +911,10 @@ export type PaymentCreateWithoutReceivedByInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
+  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -998,10 +998,10 @@ export type PaymentCreateWithoutBranchInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
+  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -1062,10 +1062,10 @@ export type PaymentCreateWithoutCashSessionInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -1127,9 +1127,9 @@ export type PaymentCreateWithoutOperationInput = {
   date: Date | string
   notes?: string | null
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -1190,10 +1190,10 @@ export type PaymentCreateWithoutPaymentMethodInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPaymentsInput
 }
 
@@ -1254,11 +1254,11 @@ export type PaymentCreateWithoutTenantInput = {
   reference?: string | null
   date: Date | string
   notes?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
-  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  operation: Prisma.OperationCreateNestedOneWithoutPaymentsInput
+  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutPaymentsInput
+  receivedBy: Prisma.UserCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutTenantInput = {
@@ -1337,10 +1337,10 @@ export type PaymentUpdateWithoutReceivedByInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -1413,10 +1413,10 @@ export type PaymentUpdateWithoutBranchInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -1489,10 +1489,10 @@ export type PaymentUpdateWithoutCashSessionInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -1566,9 +1566,9 @@ export type PaymentUpdateWithoutOperationInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -1641,10 +1641,10 @@ export type PaymentUpdateWithoutPaymentMethodInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
@@ -1717,11 +1717,11 @@ export type PaymentUpdateWithoutTenantInput = {
   reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
-  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutPaymentsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutPaymentsNestedInput
+  receivedBy?: Prisma.UserUpdateOneRequiredWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutTenantInput = {
@@ -1782,11 +1782,11 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   reference?: boolean
   date?: boolean
   notes?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
@@ -1808,11 +1808,11 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   reference?: boolean
   date?: boolean
   notes?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
@@ -1834,11 +1834,11 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   reference?: boolean
   date?: boolean
   notes?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
@@ -1864,38 +1864,38 @@ export type PaymentSelectScalar = {
 
 export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "operationId" | "branchId" | "receivedById" | "amount" | "direction" | "paymentMethodId" | "cashSessionId" | "createdAt" | "currency" | "status" | "category" | "originalPaymentId" | "reference" | "date" | "notes", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type PaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type PaymentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
+  receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Payment"
   objects: {
-    operation: Prisma.$OperationPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
-    receivedBy: Prisma.$UserPayload<ExtArgs>
-    paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs>
     cashSession: Prisma.$CashSessionPayload<ExtArgs> | null
+    operation: Prisma.$OperationPayload<ExtArgs>
+    paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs>
+    receivedBy: Prisma.$UserPayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2310,11 +2310,11 @@ readonly fields: PaymentFieldRefs;
  */
 export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  receivedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  paymentMethod<T extends Prisma.PaymentMethodDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethodDefaultArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   cashSession<T extends Prisma.Payment$cashSessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$cashSessionArgs<ExtArgs>>): Prisma.Prisma__CashSessionClient<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  paymentMethod<T extends Prisma.PaymentMethodDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethodDefaultArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  receivedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

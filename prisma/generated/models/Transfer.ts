@@ -222,10 +222,10 @@ export type TransferWhereInput = {
   notes?: Prisma.StringFilter<"Transfer"> | string
   createdAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
   createdBy?: Prisma.StringFilter<"Transfer"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branchOrigin?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  branchDestination?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   transferItems?: Prisma.TransferItemListRelationFilter
+  branchDestination?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  branchOrigin?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type TransferOrderByWithRelationInput = {
@@ -239,10 +239,10 @@ export type TransferOrderByWithRelationInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  branchOrigin?: Prisma.BranchOrderByWithRelationInput
-  branchDestination?: Prisma.BranchOrderByWithRelationInput
   transferItems?: Prisma.TransferItemOrderByRelationAggregateInput
+  branchDestination?: Prisma.BranchOrderByWithRelationInput
+  branchOrigin?: Prisma.BranchOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type TransferWhereUniqueInput = Prisma.AtLeast<{
@@ -259,10 +259,10 @@ export type TransferWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringFilter<"Transfer"> | string
   createdAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
   createdBy?: Prisma.StringFilter<"Transfer"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branchOrigin?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  branchDestination?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   transferItems?: Prisma.TransferItemListRelationFilter
+  branchDestination?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  branchOrigin?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type TransferOrderByWithAggregationInput = {
@@ -305,10 +305,10 @@ export type TransferCreateInput = {
   notes: string
   createdAt: Date | string
   createdBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
-  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
-  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutTransferInput
+  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
+  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
 }
 
 export type TransferUncheckedCreateInput = {
@@ -333,10 +333,10 @@ export type TransferUpdateInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
-  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
-  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutTransferNestedInput
+  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
+  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
 }
 
 export type TransferUncheckedUpdateInput = {
@@ -443,13 +443,6 @@ export type TransferScalarRelationFilter = {
   isNot?: Prisma.TransferWhereInput
 }
 
-export type TransferCreateNestedManyWithoutBranchOriginInput = {
-  create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput> | Prisma.TransferCreateWithoutBranchOriginInput[] | Prisma.TransferUncheckedCreateWithoutBranchOriginInput[]
-  connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchOriginInput | Prisma.TransferCreateOrConnectWithoutBranchOriginInput[]
-  createMany?: Prisma.TransferCreateManyBranchOriginInputEnvelope
-  connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
-}
-
 export type TransferCreateNestedManyWithoutBranchDestinationInput = {
   create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchDestinationInput, Prisma.TransferUncheckedCreateWithoutBranchDestinationInput> | Prisma.TransferCreateWithoutBranchDestinationInput[] | Prisma.TransferUncheckedCreateWithoutBranchDestinationInput[]
   connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchDestinationInput | Prisma.TransferCreateOrConnectWithoutBranchDestinationInput[]
@@ -457,7 +450,7 @@ export type TransferCreateNestedManyWithoutBranchDestinationInput = {
   connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
 }
 
-export type TransferUncheckedCreateNestedManyWithoutBranchOriginInput = {
+export type TransferCreateNestedManyWithoutBranchOriginInput = {
   create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput> | Prisma.TransferCreateWithoutBranchOriginInput[] | Prisma.TransferUncheckedCreateWithoutBranchOriginInput[]
   connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchOriginInput | Prisma.TransferCreateOrConnectWithoutBranchOriginInput[]
   createMany?: Prisma.TransferCreateManyBranchOriginInputEnvelope
@@ -471,18 +464,11 @@ export type TransferUncheckedCreateNestedManyWithoutBranchDestinationInput = {
   connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
 }
 
-export type TransferUpdateManyWithoutBranchOriginNestedInput = {
+export type TransferUncheckedCreateNestedManyWithoutBranchOriginInput = {
   create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput> | Prisma.TransferCreateWithoutBranchOriginInput[] | Prisma.TransferUncheckedCreateWithoutBranchOriginInput[]
   connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchOriginInput | Prisma.TransferCreateOrConnectWithoutBranchOriginInput[]
-  upsert?: Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput | Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput[]
   createMany?: Prisma.TransferCreateManyBranchOriginInputEnvelope
-  set?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
-  disconnect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
-  delete?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
   connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
-  update?: Prisma.TransferUpdateWithWhereUniqueWithoutBranchOriginInput | Prisma.TransferUpdateWithWhereUniqueWithoutBranchOriginInput[]
-  updateMany?: Prisma.TransferUpdateManyWithWhereWithoutBranchOriginInput | Prisma.TransferUpdateManyWithWhereWithoutBranchOriginInput[]
-  deleteMany?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
 }
 
 export type TransferUpdateManyWithoutBranchDestinationNestedInput = {
@@ -499,7 +485,7 @@ export type TransferUpdateManyWithoutBranchDestinationNestedInput = {
   deleteMany?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
 }
 
-export type TransferUncheckedUpdateManyWithoutBranchOriginNestedInput = {
+export type TransferUpdateManyWithoutBranchOriginNestedInput = {
   create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput> | Prisma.TransferCreateWithoutBranchOriginInput[] | Prisma.TransferUncheckedCreateWithoutBranchOriginInput[]
   connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchOriginInput | Prisma.TransferCreateOrConnectWithoutBranchOriginInput[]
   upsert?: Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput | Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput[]
@@ -524,6 +510,20 @@ export type TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput = {
   connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
   update?: Prisma.TransferUpdateWithWhereUniqueWithoutBranchDestinationInput | Prisma.TransferUpdateWithWhereUniqueWithoutBranchDestinationInput[]
   updateMany?: Prisma.TransferUpdateManyWithWhereWithoutBranchDestinationInput | Prisma.TransferUpdateManyWithWhereWithoutBranchDestinationInput[]
+  deleteMany?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
+}
+
+export type TransferUncheckedUpdateManyWithoutBranchOriginNestedInput = {
+  create?: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput> | Prisma.TransferCreateWithoutBranchOriginInput[] | Prisma.TransferUncheckedCreateWithoutBranchOriginInput[]
+  connectOrCreate?: Prisma.TransferCreateOrConnectWithoutBranchOriginInput | Prisma.TransferCreateOrConnectWithoutBranchOriginInput[]
+  upsert?: Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput | Prisma.TransferUpsertWithWhereUniqueWithoutBranchOriginInput[]
+  createMany?: Prisma.TransferCreateManyBranchOriginInputEnvelope
+  set?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
+  disconnect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
+  delete?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
+  connect?: Prisma.TransferWhereUniqueInput | Prisma.TransferWhereUniqueInput[]
+  update?: Prisma.TransferUpdateWithWhereUniqueWithoutBranchOriginInput | Prisma.TransferUpdateWithWhereUniqueWithoutBranchOriginInput[]
+  updateMany?: Prisma.TransferUpdateManyWithWhereWithoutBranchOriginInput | Prisma.TransferUpdateManyWithWhereWithoutBranchOriginInput[]
   deleteMany?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
 }
 
@@ -587,42 +587,6 @@ export type TransferUpdateOneRequiredWithoutTransferItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TransferUpdateToOneWithWhereWithoutTransferItemsInput, Prisma.TransferUpdateWithoutTransferItemsInput>, Prisma.TransferUncheckedUpdateWithoutTransferItemsInput>
 }
 
-export type TransferCreateWithoutBranchOriginInput = {
-  id?: string
-  status: $Enums.TransferStatus
-  sentAt: Date | string
-  receivedAt: Date | string
-  notes: string
-  createdAt: Date | string
-  createdBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
-  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
-  transferItems?: Prisma.TransferItemCreateNestedManyWithoutTransferInput
-}
-
-export type TransferUncheckedCreateWithoutBranchOriginInput = {
-  id?: string
-  tenantId: string
-  destinationBranchId: string
-  status: $Enums.TransferStatus
-  sentAt: Date | string
-  receivedAt: Date | string
-  notes: string
-  createdAt: Date | string
-  createdBy: string
-  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutTransferInput
-}
-
-export type TransferCreateOrConnectWithoutBranchOriginInput = {
-  where: Prisma.TransferWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput>
-}
-
-export type TransferCreateManyBranchOriginInputEnvelope = {
-  data: Prisma.TransferCreateManyBranchOriginInput | Prisma.TransferCreateManyBranchOriginInput[]
-  skipDuplicates?: boolean
-}
-
 export type TransferCreateWithoutBranchDestinationInput = {
   id?: string
   status: $Enums.TransferStatus
@@ -631,9 +595,9 @@ export type TransferCreateWithoutBranchDestinationInput = {
   notes: string
   createdAt: Date | string
   createdBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
-  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutTransferInput
+  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
 }
 
 export type TransferUncheckedCreateWithoutBranchDestinationInput = {
@@ -659,36 +623,40 @@ export type TransferCreateManyBranchDestinationInputEnvelope = {
   skipDuplicates?: boolean
 }
 
-export type TransferUpsertWithWhereUniqueWithoutBranchOriginInput = {
+export type TransferCreateWithoutBranchOriginInput = {
+  id?: string
+  status: $Enums.TransferStatus
+  sentAt: Date | string
+  receivedAt: Date | string
+  notes: string
+  createdAt: Date | string
+  createdBy: string
+  transferItems?: Prisma.TransferItemCreateNestedManyWithoutTransferInput
+  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
+}
+
+export type TransferUncheckedCreateWithoutBranchOriginInput = {
+  id?: string
+  tenantId: string
+  destinationBranchId: string
+  status: $Enums.TransferStatus
+  sentAt: Date | string
+  receivedAt: Date | string
+  notes: string
+  createdAt: Date | string
+  createdBy: string
+  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutTransferInput
+}
+
+export type TransferCreateOrConnectWithoutBranchOriginInput = {
   where: Prisma.TransferWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransferUpdateWithoutBranchOriginInput, Prisma.TransferUncheckedUpdateWithoutBranchOriginInput>
   create: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput>
 }
 
-export type TransferUpdateWithWhereUniqueWithoutBranchOriginInput = {
-  where: Prisma.TransferWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransferUpdateWithoutBranchOriginInput, Prisma.TransferUncheckedUpdateWithoutBranchOriginInput>
-}
-
-export type TransferUpdateManyWithWhereWithoutBranchOriginInput = {
-  where: Prisma.TransferScalarWhereInput
-  data: Prisma.XOR<Prisma.TransferUpdateManyMutationInput, Prisma.TransferUncheckedUpdateManyWithoutBranchOriginInput>
-}
-
-export type TransferScalarWhereInput = {
-  AND?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
-  OR?: Prisma.TransferScalarWhereInput[]
-  NOT?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
-  id?: Prisma.StringFilter<"Transfer"> | string
-  tenantId?: Prisma.StringFilter<"Transfer"> | string
-  originBranchId?: Prisma.StringFilter<"Transfer"> | string
-  destinationBranchId?: Prisma.StringFilter<"Transfer"> | string
-  status?: Prisma.EnumTransferStatusFilter<"Transfer"> | $Enums.TransferStatus
-  sentAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
-  receivedAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
-  notes?: Prisma.StringFilter<"Transfer"> | string
-  createdAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
-  createdBy?: Prisma.StringFilter<"Transfer"> | string
+export type TransferCreateManyBranchOriginInputEnvelope = {
+  data: Prisma.TransferCreateManyBranchOriginInput | Prisma.TransferCreateManyBranchOriginInput[]
+  skipDuplicates?: boolean
 }
 
 export type TransferUpsertWithWhereUniqueWithoutBranchDestinationInput = {
@@ -707,6 +675,38 @@ export type TransferUpdateManyWithWhereWithoutBranchDestinationInput = {
   data: Prisma.XOR<Prisma.TransferUpdateManyMutationInput, Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationInput>
 }
 
+export type TransferScalarWhereInput = {
+  AND?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
+  OR?: Prisma.TransferScalarWhereInput[]
+  NOT?: Prisma.TransferScalarWhereInput | Prisma.TransferScalarWhereInput[]
+  id?: Prisma.StringFilter<"Transfer"> | string
+  tenantId?: Prisma.StringFilter<"Transfer"> | string
+  originBranchId?: Prisma.StringFilter<"Transfer"> | string
+  destinationBranchId?: Prisma.StringFilter<"Transfer"> | string
+  status?: Prisma.EnumTransferStatusFilter<"Transfer"> | $Enums.TransferStatus
+  sentAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
+  receivedAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
+  notes?: Prisma.StringFilter<"Transfer"> | string
+  createdAt?: Prisma.DateTimeFilter<"Transfer"> | Date | string
+  createdBy?: Prisma.StringFilter<"Transfer"> | string
+}
+
+export type TransferUpsertWithWhereUniqueWithoutBranchOriginInput = {
+  where: Prisma.TransferWhereUniqueInput
+  update: Prisma.XOR<Prisma.TransferUpdateWithoutBranchOriginInput, Prisma.TransferUncheckedUpdateWithoutBranchOriginInput>
+  create: Prisma.XOR<Prisma.TransferCreateWithoutBranchOriginInput, Prisma.TransferUncheckedCreateWithoutBranchOriginInput>
+}
+
+export type TransferUpdateWithWhereUniqueWithoutBranchOriginInput = {
+  where: Prisma.TransferWhereUniqueInput
+  data: Prisma.XOR<Prisma.TransferUpdateWithoutBranchOriginInput, Prisma.TransferUncheckedUpdateWithoutBranchOriginInput>
+}
+
+export type TransferUpdateManyWithWhereWithoutBranchOriginInput = {
+  where: Prisma.TransferScalarWhereInput
+  data: Prisma.XOR<Prisma.TransferUpdateManyMutationInput, Prisma.TransferUncheckedUpdateManyWithoutBranchOriginInput>
+}
+
 export type TransferCreateWithoutTenantInput = {
   id?: string
   status: $Enums.TransferStatus
@@ -715,9 +715,9 @@ export type TransferCreateWithoutTenantInput = {
   notes: string
   createdAt: Date | string
   createdBy: string
-  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
-  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutTransferInput
+  branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
+  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
 }
 
 export type TransferUncheckedCreateWithoutTenantInput = {
@@ -767,9 +767,9 @@ export type TransferCreateWithoutTransferItemsInput = {
   notes: string
   createdAt: Date | string
   createdBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
-  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
   branchDestination: Prisma.BranchCreateNestedOneWithoutDestinationTransfersInput
+  branchOrigin: Prisma.BranchCreateNestedOneWithoutOriginTransfersInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransfersInput
 }
 
 export type TransferUncheckedCreateWithoutTransferItemsInput = {
@@ -809,9 +809,9 @@ export type TransferUpdateWithoutTransferItemsInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
-  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
   branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
+  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
 }
 
 export type TransferUncheckedUpdateWithoutTransferItemsInput = {
@@ -827,18 +827,6 @@ export type TransferUncheckedUpdateWithoutTransferItemsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type TransferCreateManyBranchOriginInput = {
-  id?: string
-  tenantId: string
-  destinationBranchId: string
-  status: $Enums.TransferStatus
-  sentAt: Date | string
-  receivedAt: Date | string
-  notes: string
-  createdAt: Date | string
-  createdBy: string
-}
-
 export type TransferCreateManyBranchDestinationInput = {
   id?: string
   tenantId: string
@@ -851,42 +839,16 @@ export type TransferCreateManyBranchDestinationInput = {
   createdBy: string
 }
 
-export type TransferUpdateWithoutBranchOriginInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
-  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  notes?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
-  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
-  transferItems?: Prisma.TransferItemUpdateManyWithoutTransferNestedInput
-}
-
-export type TransferUncheckedUpdateWithoutBranchOriginInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
-  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  notes?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutTransferNestedInput
-}
-
-export type TransferUncheckedUpdateManyWithoutBranchOriginInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
-  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  notes?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+export type TransferCreateManyBranchOriginInput = {
+  id?: string
+  tenantId: string
+  destinationBranchId: string
+  status: $Enums.TransferStatus
+  sentAt: Date | string
+  receivedAt: Date | string
+  notes: string
+  createdAt: Date | string
+  createdBy: string
 }
 
 export type TransferUpdateWithoutBranchDestinationInput = {
@@ -897,9 +859,9 @@ export type TransferUpdateWithoutBranchDestinationInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
-  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutTransferNestedInput
+  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
 }
 
 export type TransferUncheckedUpdateWithoutBranchDestinationInput = {
@@ -919,6 +881,44 @@ export type TransferUncheckedUpdateManyWithoutBranchDestinationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   originBranchId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
+  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type TransferUpdateWithoutBranchOriginInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
+  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  transferItems?: Prisma.TransferItemUpdateManyWithoutTransferNestedInput
+  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransfersNestedInput
+}
+
+export type TransferUncheckedUpdateWithoutBranchOriginInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
+  sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutTransferNestedInput
+}
+
+export type TransferUncheckedUpdateManyWithoutBranchOriginInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTransferStatusFieldUpdateOperationsInput | $Enums.TransferStatus
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   receivedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -947,9 +947,9 @@ export type TransferUpdateWithoutTenantInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
-  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutTransferNestedInput
+  branchDestination?: Prisma.BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput
+  branchOrigin?: Prisma.BranchUpdateOneRequiredWithoutOriginTransfersNestedInput
 }
 
 export type TransferUncheckedUpdateWithoutTenantInput = {
@@ -1019,10 +1019,10 @@ export type TransferSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   notes?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   transferItems?: boolean | Prisma.Transfer$transferItemsArgs<ExtArgs>
+  branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TransferCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transfer"]>
 
@@ -1037,9 +1037,9 @@ export type TransferSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   notes?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transfer"]>
 
 export type TransferSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1053,9 +1053,9 @@ export type TransferSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   notes?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transfer"]>
 
 export type TransferSelectScalar = {
@@ -1073,30 +1073,30 @@ export type TransferSelectScalar = {
 
 export type TransferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "originBranchId" | "destinationBranchId" | "status" | "sentAt" | "receivedAt" | "notes" | "createdAt" | "createdBy", ExtArgs["result"]["transfer"]>
 export type TransferInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   transferItems?: boolean | Prisma.Transfer$transferItemsArgs<ExtArgs>
+  branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TransferCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TransferIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TransferIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   branchDestination?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  branchOrigin?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $TransferPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Transfer"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    branchOrigin: Prisma.$BranchPayload<ExtArgs>
-    branchDestination: Prisma.$BranchPayload<ExtArgs>
     transferItems: Prisma.$TransferItemPayload<ExtArgs>[]
+    branchDestination: Prisma.$BranchPayload<ExtArgs>
+    branchOrigin: Prisma.$BranchPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1503,10 +1503,10 @@ readonly fields: TransferFieldRefs;
  */
 export interface Prisma__TransferClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  branchOrigin<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  branchDestination<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   transferItems<T extends Prisma.Transfer$transferItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transfer$transferItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  branchDestination<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  branchOrigin<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

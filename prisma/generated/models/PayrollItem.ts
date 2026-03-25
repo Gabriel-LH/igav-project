@@ -248,10 +248,10 @@ export type PayrollItemWhereInput = {
   deductionTotal?: Prisma.FloatFilter<"PayrollItem"> | number
   netTotal?: Prisma.FloatFilter<"PayrollItem"> | number
   status?: Prisma.EnumPayrollItemStatusFilter<"PayrollItem"> | $Enums.PayrollItemStatus
-  payrollRun?: Prisma.XOR<Prisma.PayrollRunScalarRelationFilter, Prisma.PayrollRunWhereInput>
   membership?: Prisma.XOR<Prisma.UserTenantMembershipScalarRelationFilter, Prisma.UserTenantMembershipWhereInput>
-  lineItems?: Prisma.PayrollLineItemListRelationFilter
+  payrollRun?: Prisma.XOR<Prisma.PayrollRunScalarRelationFilter, Prisma.PayrollRunWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  lineItems?: Prisma.PayrollLineItemListRelationFilter
 }
 
 export type PayrollItemOrderByWithRelationInput = {
@@ -263,10 +263,10 @@ export type PayrollItemOrderByWithRelationInput = {
   deductionTotal?: Prisma.SortOrder
   netTotal?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  payrollRun?: Prisma.PayrollRunOrderByWithRelationInput
   membership?: Prisma.UserTenantMembershipOrderByWithRelationInput
-  lineItems?: Prisma.PayrollLineItemOrderByRelationAggregateInput
+  payrollRun?: Prisma.PayrollRunOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
+  lineItems?: Prisma.PayrollLineItemOrderByRelationAggregateInput
 }
 
 export type PayrollItemWhereUniqueInput = Prisma.AtLeast<{
@@ -281,10 +281,10 @@ export type PayrollItemWhereUniqueInput = Prisma.AtLeast<{
   deductionTotal?: Prisma.FloatFilter<"PayrollItem"> | number
   netTotal?: Prisma.FloatFilter<"PayrollItem"> | number
   status?: Prisma.EnumPayrollItemStatusFilter<"PayrollItem"> | $Enums.PayrollItemStatus
-  payrollRun?: Prisma.XOR<Prisma.PayrollRunScalarRelationFilter, Prisma.PayrollRunWhereInput>
   membership?: Prisma.XOR<Prisma.UserTenantMembershipScalarRelationFilter, Prisma.UserTenantMembershipWhereInput>
-  lineItems?: Prisma.PayrollLineItemListRelationFilter
+  payrollRun?: Prisma.XOR<Prisma.PayrollRunScalarRelationFilter, Prisma.PayrollRunWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  lineItems?: Prisma.PayrollLineItemListRelationFilter
 }, "id">
 
 export type PayrollItemOrderByWithAggregationInput = {
@@ -323,10 +323,10 @@ export type PayrollItemCreateInput = {
   deductionTotal: number
   netTotal: number
   status: $Enums.PayrollItemStatus
-  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutPayrollItemsInput
-  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
+  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPayrollItemsInput
+  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
 }
 
 export type PayrollItemUncheckedCreateInput = {
@@ -347,10 +347,10 @@ export type PayrollItemUpdateInput = {
   deductionTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   netTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumPayrollItemStatusFieldUpdateOperationsInput | $Enums.PayrollItemStatus
-  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutPayrollItemsNestedInput
-  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
+  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPayrollItemsNestedInput
+  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
 }
 
 export type PayrollItemUncheckedUpdateInput = {
@@ -606,8 +606,8 @@ export type PayrollItemCreateWithoutPayrollRunInput = {
   netTotal: number
   status: $Enums.PayrollItemStatus
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutPayrollItemsInput
-  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
   tenant: Prisma.TenantCreateNestedOneWithoutPayrollItemsInput
+  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
 }
 
 export type PayrollItemUncheckedCreateWithoutPayrollRunInput = {
@@ -667,8 +667,8 @@ export type PayrollItemCreateWithoutLineItemsInput = {
   deductionTotal: number
   netTotal: number
   status: $Enums.PayrollItemStatus
-  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutPayrollItemsInput
+  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPayrollItemsInput
 }
 
@@ -705,8 +705,8 @@ export type PayrollItemUpdateWithoutLineItemsInput = {
   deductionTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   netTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumPayrollItemStatusFieldUpdateOperationsInput | $Enums.PayrollItemStatus
-  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutPayrollItemsNestedInput
+  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPayrollItemsNestedInput
 }
 
@@ -727,8 +727,8 @@ export type PayrollItemCreateWithoutTenantInput = {
   deductionTotal: number
   netTotal: number
   status: $Enums.PayrollItemStatus
-  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutPayrollItemsInput
+  payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
   lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
 }
 
@@ -776,8 +776,8 @@ export type PayrollItemCreateWithoutMembershipInput = {
   netTotal: number
   status: $Enums.PayrollItemStatus
   payrollRun: Prisma.PayrollRunCreateNestedOneWithoutPayrollItemsInput
-  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
   tenant: Prisma.TenantCreateNestedOneWithoutPayrollItemsInput
+  lineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutPayrollItemInput
 }
 
 export type PayrollItemUncheckedCreateWithoutMembershipInput = {
@@ -834,8 +834,8 @@ export type PayrollItemUpdateWithoutPayrollRunInput = {
   netTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumPayrollItemStatusFieldUpdateOperationsInput | $Enums.PayrollItemStatus
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutPayrollItemsNestedInput
-  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPayrollItemsNestedInput
+  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
 }
 
 export type PayrollItemUncheckedUpdateWithoutPayrollRunInput = {
@@ -875,8 +875,8 @@ export type PayrollItemUpdateWithoutTenantInput = {
   deductionTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   netTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumPayrollItemStatusFieldUpdateOperationsInput | $Enums.PayrollItemStatus
-  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutPayrollItemsNestedInput
+  payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
   lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
 }
 
@@ -918,8 +918,8 @@ export type PayrollItemUpdateWithoutMembershipInput = {
   netTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumPayrollItemStatusFieldUpdateOperationsInput | $Enums.PayrollItemStatus
   payrollRun?: Prisma.PayrollRunUpdateOneRequiredWithoutPayrollItemsNestedInput
-  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPayrollItemsNestedInput
+  lineItems?: Prisma.PayrollLineItemUpdateManyWithoutPayrollItemNestedInput
 }
 
 export type PayrollItemUncheckedUpdateWithoutMembershipInput = {
@@ -983,10 +983,10 @@ export type PayrollItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   deductionTotal?: boolean
   netTotal?: boolean
   status?: boolean
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
-  lineItems?: boolean | Prisma.PayrollItem$lineItemsArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  lineItems?: boolean | Prisma.PayrollItem$lineItemsArgs<ExtArgs>
   _count?: boolean | Prisma.PayrollItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payrollItem"]>
 
@@ -999,8 +999,8 @@ export type PayrollItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   deductionTotal?: boolean
   netTotal?: boolean
   status?: boolean
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payrollItem"]>
 
@@ -1013,8 +1013,8 @@ export type PayrollItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   deductionTotal?: boolean
   netTotal?: boolean
   status?: boolean
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payrollItem"]>
 
@@ -1031,30 +1031,30 @@ export type PayrollItemSelectScalar = {
 
 export type PayrollItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "payrollRunId" | "membershipId" | "grossTotal" | "deductionTotal" | "netTotal" | "status", ExtArgs["result"]["payrollItem"]>
 export type PayrollItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
-  lineItems?: boolean | Prisma.PayrollItem$lineItemsArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  lineItems?: boolean | Prisma.PayrollItem$lineItemsArgs<ExtArgs>
   _count?: boolean | Prisma.PayrollItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PayrollItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type PayrollItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
+  payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $PayrollItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PayrollItem"
   objects: {
-    payrollRun: Prisma.$PayrollRunPayload<ExtArgs>
     membership: Prisma.$UserTenantMembershipPayload<ExtArgs>
-    lineItems: Prisma.$PayrollLineItemPayload<ExtArgs>[]
+    payrollRun: Prisma.$PayrollRunPayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
+    lineItems: Prisma.$PayrollLineItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1459,10 +1459,10 @@ readonly fields: PayrollItemFieldRefs;
  */
 export interface Prisma__PayrollItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  payrollRun<T extends Prisma.PayrollRunDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayrollRunDefaultArgs<ExtArgs>>): Prisma.Prisma__PayrollRunClient<runtime.Types.Result.GetResult<Prisma.$PayrollRunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   membership<T extends Prisma.UserTenantMembershipDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembershipDefaultArgs<ExtArgs>>): Prisma.Prisma__UserTenantMembershipClient<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  lineItems<T extends Prisma.PayrollItem$lineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayrollItem$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payrollRun<T extends Prisma.PayrollRunDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayrollRunDefaultArgs<ExtArgs>>): Prisma.Prisma__PayrollRunClient<runtime.Types.Result.GetResult<Prisma.$PayrollRunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  lineItems<T extends Prisma.PayrollItem$lineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayrollItem$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

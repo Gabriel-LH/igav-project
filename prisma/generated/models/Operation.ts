@@ -304,22 +304,22 @@ export type OperationWhereInput = {
   totalAmount?: Prisma.FloatFilter<"Operation"> | number
   date?: Prisma.DateTimeFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  seller?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  customer?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
-  sales?: Prisma.SaleListRelationFilter
-  rentals?: Prisma.RentalListRelationFilter
   clientCreditLedgers?: Prisma.ClientCreditLedgerListRelationFilter
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  customer?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
+  seller?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   payments?: Prisma.PaymentListRelationFilter
-  stockMovements?: Prisma.StockMovementListRelationFilter
-  rentalItems?: Prisma.RentalItemListRelationFilter
+  rentals?: Prisma.RentalListRelationFilter
   rentalCharges?: Prisma.RentalChargeListRelationFilter
+  rentalItems?: Prisma.RentalItemListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
   saleCharges?: Prisma.SaleChargeListRelationFilter
+  stockMovements?: Prisma.StockMovementListRelationFilter
 }
 
 export type OperationOrderByWithRelationInput = {
@@ -338,22 +338,22 @@ export type OperationOrderByWithRelationInput = {
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  branch?: Prisma.BranchOrderByWithRelationInput
-  seller?: Prisma.UserOrderByWithRelationInput
-  customer?: Prisma.ClientOrderByWithRelationInput
-  sales?: Prisma.SaleOrderByRelationAggregateInput
-  rentals?: Prisma.RentalOrderByRelationAggregateInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerOrderByRelationAggregateInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerOrderByRelationAggregateInput
   guarantees?: Prisma.GuaranteeOrderByRelationAggregateInput
+  branch?: Prisma.BranchOrderByWithRelationInput
+  customer?: Prisma.ClientOrderByWithRelationInput
+  seller?: Prisma.UserOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
-  stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
-  rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
+  rentals?: Prisma.RentalOrderByRelationAggregateInput
   rentalCharges?: Prisma.RentalChargeOrderByRelationAggregateInput
+  rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
   reservationItems?: Prisma.ReservationItemOrderByRelationAggregateInput
+  sales?: Prisma.SaleOrderByRelationAggregateInput
   saleCharges?: Prisma.SaleChargeOrderByRelationAggregateInput
+  stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
 }
 
 export type OperationWhereUniqueInput = Prisma.AtLeast<{
@@ -375,22 +375,22 @@ export type OperationWhereUniqueInput = Prisma.AtLeast<{
   totalAmount?: Prisma.FloatFilter<"Operation"> | number
   date?: Prisma.DateTimeFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  seller?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  customer?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
-  sales?: Prisma.SaleListRelationFilter
-  rentals?: Prisma.RentalListRelationFilter
   clientCreditLedgers?: Prisma.ClientCreditLedgerListRelationFilter
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  customer?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
+  seller?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   payments?: Prisma.PaymentListRelationFilter
-  stockMovements?: Prisma.StockMovementListRelationFilter
-  rentalItems?: Prisma.RentalItemListRelationFilter
+  rentals?: Prisma.RentalListRelationFilter
   rentalCharges?: Prisma.RentalChargeListRelationFilter
+  rentalItems?: Prisma.RentalItemListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
   saleCharges?: Prisma.SaleChargeListRelationFilter
+  stockMovements?: Prisma.StockMovementListRelationFilter
 }, "id" | "referenceCode">
 
 export type OperationOrderByWithAggregationInput = {
@@ -449,22 +449,22 @@ export type OperationCreateInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateInput = {
@@ -483,18 +483,18 @@ export type OperationUncheckedCreateInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUpdateInput = {
@@ -509,22 +509,22 @@ export type OperationUpdateInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateInput = {
@@ -543,18 +543,18 @@ export type OperationUncheckedUpdateInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateManyInput = {
@@ -1065,21 +1065,21 @@ export type OperationCreateWithoutSellerInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutSellerInput = {
@@ -1097,18 +1097,18 @@ export type OperationUncheckedCreateWithoutSellerInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutSellerInput = {
@@ -1170,21 +1170,21 @@ export type OperationCreateWithoutBranchInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutBranchInput = {
@@ -1202,18 +1202,18 @@ export type OperationUncheckedCreateWithoutBranchInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutBranchInput = {
@@ -1254,21 +1254,21 @@ export type OperationCreateWithoutCustomerInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutCustomerInput = {
@@ -1286,18 +1286,18 @@ export type OperationUncheckedCreateWithoutCustomerInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutCustomerInput = {
@@ -1338,21 +1338,21 @@ export type OperationCreateWithoutClientCreditLedgersInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutClientCreditLedgersInput = {
@@ -1371,17 +1371,17 @@ export type OperationUncheckedCreateWithoutClientCreditLedgersInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutClientCreditLedgersInput = {
@@ -1412,21 +1412,21 @@ export type OperationUpdateWithoutClientCreditLedgersInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutClientCreditLedgersInput = {
@@ -1445,17 +1445,17 @@ export type OperationUncheckedUpdateWithoutClientCreditLedgersInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutClientLoyaltyLedgersInput = {
@@ -1470,21 +1470,21 @@ export type OperationCreateWithoutClientLoyaltyLedgersInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutClientLoyaltyLedgersInput = {
@@ -1503,17 +1503,17 @@ export type OperationUncheckedCreateWithoutClientLoyaltyLedgersInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutClientLoyaltyLedgersInput = {
@@ -1544,21 +1544,21 @@ export type OperationUpdateWithoutClientLoyaltyLedgersInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutClientLoyaltyLedgersInput = {
@@ -1577,17 +1577,17 @@ export type OperationUncheckedUpdateWithoutClientLoyaltyLedgersInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutGuaranteesInput = {
@@ -1602,21 +1602,21 @@ export type OperationCreateWithoutGuaranteesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutGuaranteesInput = {
@@ -1635,17 +1635,17 @@ export type OperationUncheckedCreateWithoutGuaranteesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutGuaranteesInput = {
@@ -1676,21 +1676,21 @@ export type OperationUpdateWithoutGuaranteesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutGuaranteesInput = {
@@ -1709,17 +1709,17 @@ export type OperationUncheckedUpdateWithoutGuaranteesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutPaymentsInput = {
@@ -1734,21 +1734,21 @@ export type OperationCreateWithoutPaymentsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutPaymentsInput = {
@@ -1767,17 +1767,17 @@ export type OperationUncheckedCreateWithoutPaymentsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutPaymentsInput = {
@@ -1808,21 +1808,21 @@ export type OperationUpdateWithoutPaymentsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutPaymentsInput = {
@@ -1841,17 +1841,17 @@ export type OperationUncheckedUpdateWithoutPaymentsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutStockMovementsInput = {
@@ -1866,20 +1866,20 @@ export type OperationCreateWithoutStockMovementsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
 }
 
@@ -1899,16 +1899,16 @@ export type OperationUncheckedCreateWithoutStockMovementsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
 }
 
@@ -1940,20 +1940,20 @@ export type OperationUpdateWithoutStockMovementsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
 }
 
@@ -1973,16 +1973,16 @@ export type OperationUncheckedUpdateWithoutStockMovementsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
 }
 
@@ -1998,21 +1998,21 @@ export type OperationCreateWithoutRentalsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutRentalsInput = {
@@ -2031,17 +2031,17 @@ export type OperationUncheckedCreateWithoutRentalsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutRentalsInput = {
@@ -2072,21 +2072,21 @@ export type OperationUpdateWithoutRentalsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutRentalsInput = {
@@ -2105,17 +2105,17 @@ export type OperationUncheckedUpdateWithoutRentalsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutRentalItemsInput = {
@@ -2130,21 +2130,21 @@ export type OperationCreateWithoutRentalItemsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutRentalItemsInput = {
@@ -2163,17 +2163,17 @@ export type OperationUncheckedCreateWithoutRentalItemsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutRentalItemsInput = {
@@ -2204,21 +2204,21 @@ export type OperationUpdateWithoutRentalItemsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutRentalItemsInput = {
@@ -2237,17 +2237,17 @@ export type OperationUncheckedUpdateWithoutRentalItemsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutRentalChargesInput = {
@@ -2262,21 +2262,21 @@ export type OperationCreateWithoutRentalChargesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutRentalChargesInput = {
@@ -2295,17 +2295,17 @@ export type OperationUncheckedCreateWithoutRentalChargesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutRentalChargesInput = {
@@ -2336,21 +2336,21 @@ export type OperationUpdateWithoutRentalChargesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutRentalChargesInput = {
@@ -2369,17 +2369,17 @@ export type OperationUncheckedUpdateWithoutRentalChargesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutReservationsInput = {
@@ -2394,21 +2394,21 @@ export type OperationCreateWithoutReservationsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutReservationsInput = {
@@ -2427,17 +2427,17 @@ export type OperationUncheckedCreateWithoutReservationsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutReservationsInput = {
@@ -2468,21 +2468,21 @@ export type OperationUpdateWithoutReservationsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutReservationsInput = {
@@ -2501,17 +2501,17 @@ export type OperationUncheckedUpdateWithoutReservationsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutReservationItemsInput = {
@@ -2526,21 +2526,21 @@ export type OperationCreateWithoutReservationItemsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutReservationItemsInput = {
@@ -2559,17 +2559,17 @@ export type OperationUncheckedCreateWithoutReservationItemsInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutReservationItemsInput = {
@@ -2600,21 +2600,21 @@ export type OperationUpdateWithoutReservationItemsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutReservationItemsInput = {
@@ -2633,17 +2633,17 @@ export type OperationUncheckedUpdateWithoutReservationItemsInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutSalesInput = {
@@ -2658,21 +2658,21 @@ export type OperationCreateWithoutSalesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutSalesInput = {
@@ -2691,17 +2691,17 @@ export type OperationUncheckedCreateWithoutSalesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutSalesInput = {
@@ -2732,21 +2732,21 @@ export type OperationUpdateWithoutSalesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutSalesInput = {
@@ -2765,17 +2765,17 @@ export type OperationUncheckedUpdateWithoutSalesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutSaleChargesInput = {
@@ -2790,21 +2790,21 @@ export type OperationCreateWithoutSaleChargesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutSaleChargesInput = {
@@ -2823,17 +2823,17 @@ export type OperationUncheckedCreateWithoutSaleChargesInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutSaleChargesInput = {
@@ -2864,21 +2864,21 @@ export type OperationUpdateWithoutSaleChargesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutSaleChargesInput = {
@@ -2897,17 +2897,17 @@ export type OperationUncheckedUpdateWithoutSaleChargesInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateWithoutTenantInput = {
@@ -2922,21 +2922,21 @@ export type OperationCreateWithoutTenantInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
-  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
-  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
-  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
+  branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
+  customer?: Prisma.ClientCreateNestedOneWithoutOperationsInput
+  seller: Prisma.UserCreateNestedOneWithoutOperationsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutTenantInput = {
@@ -2954,18 +2954,18 @@ export type OperationUncheckedCreateWithoutTenantInput = {
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutOperationInput
   rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutOperationInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutOperationInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutOperationInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutOperationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOperationInput
   saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutOperationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutTenantInput = {
@@ -3023,21 +3023,21 @@ export type OperationUpdateWithoutSellerInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutSellerInput = {
@@ -3055,18 +3055,18 @@ export type OperationUncheckedUpdateWithoutSellerInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateManyWithoutSellerInput = {
@@ -3115,21 +3115,21 @@ export type OperationUpdateWithoutBranchInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutBranchInput = {
@@ -3147,18 +3147,18 @@ export type OperationUncheckedUpdateWithoutBranchInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateManyWithoutBranchInput = {
@@ -3207,21 +3207,21 @@ export type OperationUpdateWithoutCustomerInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutCustomerInput = {
@@ -3239,18 +3239,18 @@ export type OperationUncheckedUpdateWithoutCustomerInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateManyWithoutCustomerInput = {
@@ -3299,21 +3299,21 @@ export type OperationUpdateWithoutTenantInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
-  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
-  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
+  customer?: Prisma.ClientUpdateOneWithoutOperationsNestedInput
+  seller?: Prisma.UserUpdateOneRequiredWithoutOperationsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutTenantInput = {
@@ -3331,18 +3331,18 @@ export type OperationUncheckedUpdateWithoutTenantInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutOperationNestedInput
   rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutOperationNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutOperationNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutOperationNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutOperationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOperationNestedInput
   saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutOperationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateManyWithoutTenantInput = {
@@ -3368,33 +3368,33 @@ export type OperationUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type OperationCountOutputType = {
-  sales: number
-  rentals: number
   clientCreditLedgers: number
   clientLoyaltyLedgers: number
   guarantees: number
   payments: number
-  stockMovements: number
-  rentalItems: number
+  rentals: number
   rentalCharges: number
+  rentalItems: number
   reservations: number
   reservationItems: number
+  sales: number
   saleCharges: number
+  stockMovements: number
 }
 
 export type OperationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sales?: boolean | OperationCountOutputTypeCountSalesArgs
-  rentals?: boolean | OperationCountOutputTypeCountRentalsArgs
   clientCreditLedgers?: boolean | OperationCountOutputTypeCountClientCreditLedgersArgs
   clientLoyaltyLedgers?: boolean | OperationCountOutputTypeCountClientLoyaltyLedgersArgs
   guarantees?: boolean | OperationCountOutputTypeCountGuaranteesArgs
   payments?: boolean | OperationCountOutputTypeCountPaymentsArgs
-  stockMovements?: boolean | OperationCountOutputTypeCountStockMovementsArgs
-  rentalItems?: boolean | OperationCountOutputTypeCountRentalItemsArgs
+  rentals?: boolean | OperationCountOutputTypeCountRentalsArgs
   rentalCharges?: boolean | OperationCountOutputTypeCountRentalChargesArgs
+  rentalItems?: boolean | OperationCountOutputTypeCountRentalItemsArgs
   reservations?: boolean | OperationCountOutputTypeCountReservationsArgs
   reservationItems?: boolean | OperationCountOutputTypeCountReservationItemsArgs
+  sales?: boolean | OperationCountOutputTypeCountSalesArgs
   saleCharges?: boolean | OperationCountOutputTypeCountSaleChargesArgs
+  stockMovements?: boolean | OperationCountOutputTypeCountStockMovementsArgs
 }
 
 /**
@@ -3405,20 +3405,6 @@ export type OperationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
    * Select specific fields to fetch from the OperationCountOutputType
    */
   select?: Prisma.OperationCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * OperationCountOutputType without action
- */
-export type OperationCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SaleWhereInput
-}
-
-/**
- * OperationCountOutputType without action
- */
-export type OperationCountOutputTypeCountRentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RentalWhereInput
 }
 
 /**
@@ -3452,15 +3438,8 @@ export type OperationCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Ty
 /**
  * OperationCountOutputType without action
  */
-export type OperationCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StockMovementWhereInput
-}
-
-/**
- * OperationCountOutputType without action
- */
-export type OperationCountOutputTypeCountRentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RentalItemWhereInput
+export type OperationCountOutputTypeCountRentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalWhereInput
 }
 
 /**
@@ -3468,6 +3447,13 @@ export type OperationCountOutputTypeCountRentalItemsArgs<ExtArgs extends runtime
  */
 export type OperationCountOutputTypeCountRentalChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RentalChargeWhereInput
+}
+
+/**
+ * OperationCountOutputType without action
+ */
+export type OperationCountOutputTypeCountRentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalItemWhereInput
 }
 
 /**
@@ -3487,8 +3473,22 @@ export type OperationCountOutputTypeCountReservationItemsArgs<ExtArgs extends ru
 /**
  * OperationCountOutputType without action
  */
+export type OperationCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleWhereInput
+}
+
+/**
+ * OperationCountOutputType without action
+ */
 export type OperationCountOutputTypeCountSaleChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SaleChargeWhereInput
+}
+
+/**
+ * OperationCountOutputType without action
+ */
+export type OperationCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockMovementWhereInput
 }
 
 
@@ -3508,22 +3508,22 @@ export type OperationSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
-  sales?: boolean | Prisma.Operation$salesArgs<ExtArgs>
-  rentals?: boolean | Prisma.Operation$rentalsArgs<ExtArgs>
   clientCreditLedgers?: boolean | Prisma.Operation$clientCreditLedgersArgs<ExtArgs>
   clientLoyaltyLedgers?: boolean | Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs>
   guarantees?: boolean | Prisma.Operation$guaranteesArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   payments?: boolean | Prisma.Operation$paymentsArgs<ExtArgs>
-  stockMovements?: boolean | Prisma.Operation$stockMovementsArgs<ExtArgs>
-  rentalItems?: boolean | Prisma.Operation$rentalItemsArgs<ExtArgs>
+  rentals?: boolean | Prisma.Operation$rentalsArgs<ExtArgs>
   rentalCharges?: boolean | Prisma.Operation$rentalChargesArgs<ExtArgs>
+  rentalItems?: boolean | Prisma.Operation$rentalItemsArgs<ExtArgs>
   reservations?: boolean | Prisma.Operation$reservationsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.Operation$reservationItemsArgs<ExtArgs>
+  sales?: boolean | Prisma.Operation$salesArgs<ExtArgs>
   saleCharges?: boolean | Prisma.Operation$saleChargesArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.Operation$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.OperationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["operation"]>
 
@@ -3543,10 +3543,10 @@ export type OperationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["operation"]>
 
 export type OperationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3565,10 +3565,10 @@ export type OperationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["operation"]>
 
 export type OperationSelectScalar = {
@@ -3591,56 +3591,56 @@ export type OperationSelectScalar = {
 
 export type OperationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "referenceCode" | "branchId" | "sellerId" | "type" | "customerMode" | "customerId" | "status" | "paymentStatus" | "subtotal" | "discountAmount" | "totalAmount" | "date" | "createdAt", ExtArgs["result"]["operation"]>
 export type OperationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
-  sales?: boolean | Prisma.Operation$salesArgs<ExtArgs>
-  rentals?: boolean | Prisma.Operation$rentalsArgs<ExtArgs>
   clientCreditLedgers?: boolean | Prisma.Operation$clientCreditLedgersArgs<ExtArgs>
   clientLoyaltyLedgers?: boolean | Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs>
   guarantees?: boolean | Prisma.Operation$guaranteesArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   payments?: boolean | Prisma.Operation$paymentsArgs<ExtArgs>
-  stockMovements?: boolean | Prisma.Operation$stockMovementsArgs<ExtArgs>
-  rentalItems?: boolean | Prisma.Operation$rentalItemsArgs<ExtArgs>
+  rentals?: boolean | Prisma.Operation$rentalsArgs<ExtArgs>
   rentalCharges?: boolean | Prisma.Operation$rentalChargesArgs<ExtArgs>
+  rentalItems?: boolean | Prisma.Operation$rentalItemsArgs<ExtArgs>
   reservations?: boolean | Prisma.Operation$reservationsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.Operation$reservationItemsArgs<ExtArgs>
+  sales?: boolean | Prisma.Operation$salesArgs<ExtArgs>
   saleCharges?: boolean | Prisma.Operation$saleChargesArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.Operation$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.OperationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OperationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type OperationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
+  seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $OperationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Operation"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    branch: Prisma.$BranchPayload<ExtArgs>
-    seller: Prisma.$UserPayload<ExtArgs>
-    customer: Prisma.$ClientPayload<ExtArgs> | null
-    sales: Prisma.$SalePayload<ExtArgs>[]
-    rentals: Prisma.$RentalPayload<ExtArgs>[]
     clientCreditLedgers: Prisma.$ClientCreditLedgerPayload<ExtArgs>[]
     clientLoyaltyLedgers: Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>[]
     guarantees: Prisma.$GuaranteePayload<ExtArgs>[]
+    branch: Prisma.$BranchPayload<ExtArgs>
+    customer: Prisma.$ClientPayload<ExtArgs> | null
+    seller: Prisma.$UserPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     payments: Prisma.$PaymentPayload<ExtArgs>[]
-    stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
-    rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
+    rentals: Prisma.$RentalPayload<ExtArgs>[]
     rentalCharges: Prisma.$RentalChargePayload<ExtArgs>[]
+    rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
     reservationItems: Prisma.$ReservationItemPayload<ExtArgs>[]
+    sales: Prisma.$SalePayload<ExtArgs>[]
     saleCharges: Prisma.$SaleChargePayload<ExtArgs>[]
+    stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4052,22 +4052,22 @@ readonly fields: OperationFieldRefs;
  */
 export interface Prisma__OperationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  seller<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  customer<T extends Prisma.Operation$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$customerArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  sales<T extends Prisma.Operation$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  rentals<T extends Prisma.Operation$rentalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$rentalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clientCreditLedgers<T extends Prisma.Operation$clientCreditLedgersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$clientCreditLedgersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientCreditLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clientLoyaltyLedgers<T extends Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   guarantees<T extends Prisma.Operation$guaranteesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$guaranteesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  customer<T extends Prisma.Operation$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$customerArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  seller<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   payments<T extends Prisma.Operation$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  stockMovements<T extends Prisma.Operation$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  rentalItems<T extends Prisma.Operation$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rentals<T extends Prisma.Operation$rentalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$rentalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rentalCharges<T extends Prisma.Operation$rentalChargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$rentalChargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rentalItems<T extends Prisma.Operation$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.Operation$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationItems<T extends Prisma.Operation$reservationItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$reservationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sales<T extends Prisma.Operation$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleCharges<T extends Prisma.Operation$saleChargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$saleChargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockMovements<T extends Prisma.Operation$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4508,73 +4508,6 @@ export type OperationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Operation.customer
- */
-export type Operation$customerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Client
-   */
-  select?: Prisma.ClientSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Client
-   */
-  omit?: Prisma.ClientOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ClientInclude<ExtArgs> | null
-  where?: Prisma.ClientWhereInput
-}
-
-/**
- * Operation.sales
- */
-export type Operation$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Sale
-   */
-  select?: Prisma.SaleSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Sale
-   */
-  omit?: Prisma.SaleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SaleInclude<ExtArgs> | null
-  where?: Prisma.SaleWhereInput
-  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
-  cursor?: Prisma.SaleWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
-}
-
-/**
- * Operation.rentals
- */
-export type Operation$rentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Rental
-   */
-  select?: Prisma.RentalSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Rental
-   */
-  omit?: Prisma.RentalOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RentalInclude<ExtArgs> | null
-  where?: Prisma.RentalWhereInput
-  orderBy?: Prisma.RentalOrderByWithRelationInput | Prisma.RentalOrderByWithRelationInput[]
-  cursor?: Prisma.RentalWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RentalScalarFieldEnum | Prisma.RentalScalarFieldEnum[]
-}
-
-/**
  * Operation.clientCreditLedgers
  */
 export type Operation$clientCreditLedgersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4647,6 +4580,25 @@ export type Operation$guaranteesArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * Operation.customer
+ */
+export type Operation$customerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Client
+   */
+  select?: Prisma.ClientSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Client
+   */
+  omit?: Prisma.ClientOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClientInclude<ExtArgs> | null
+  where?: Prisma.ClientWhereInput
+}
+
+/**
  * Operation.payments
  */
 export type Operation$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4671,51 +4623,27 @@ export type Operation$paymentsArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Operation.stockMovements
+ * Operation.rentals
  */
-export type Operation$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Operation$rentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StockMovement
+   * Select specific fields to fetch from the Rental
    */
-  select?: Prisma.StockMovementSelect<ExtArgs> | null
+  select?: Prisma.RentalSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StockMovement
+   * Omit specific fields from the Rental
    */
-  omit?: Prisma.StockMovementOmit<ExtArgs> | null
+  omit?: Prisma.RentalOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StockMovementInclude<ExtArgs> | null
-  where?: Prisma.StockMovementWhereInput
-  orderBy?: Prisma.StockMovementOrderByWithRelationInput | Prisma.StockMovementOrderByWithRelationInput[]
-  cursor?: Prisma.StockMovementWhereUniqueInput
+  include?: Prisma.RentalInclude<ExtArgs> | null
+  where?: Prisma.RentalWhereInput
+  orderBy?: Prisma.RentalOrderByWithRelationInput | Prisma.RentalOrderByWithRelationInput[]
+  cursor?: Prisma.RentalWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StockMovementScalarFieldEnum | Prisma.StockMovementScalarFieldEnum[]
-}
-
-/**
- * Operation.rentalItems
- */
-export type Operation$rentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RentalItem
-   */
-  select?: Prisma.RentalItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RentalItem
-   */
-  omit?: Prisma.RentalItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RentalItemInclude<ExtArgs> | null
-  where?: Prisma.RentalItemWhereInput
-  orderBy?: Prisma.RentalItemOrderByWithRelationInput | Prisma.RentalItemOrderByWithRelationInput[]
-  cursor?: Prisma.RentalItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RentalItemScalarFieldEnum | Prisma.RentalItemScalarFieldEnum[]
+  distinct?: Prisma.RentalScalarFieldEnum | Prisma.RentalScalarFieldEnum[]
 }
 
 /**
@@ -4740,6 +4668,30 @@ export type Operation$rentalChargesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.RentalChargeScalarFieldEnum | Prisma.RentalChargeScalarFieldEnum[]
+}
+
+/**
+ * Operation.rentalItems
+ */
+export type Operation$rentalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RentalItem
+   */
+  select?: Prisma.RentalItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RentalItem
+   */
+  omit?: Prisma.RentalItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RentalItemInclude<ExtArgs> | null
+  where?: Prisma.RentalItemWhereInput
+  orderBy?: Prisma.RentalItemOrderByWithRelationInput | Prisma.RentalItemOrderByWithRelationInput[]
+  cursor?: Prisma.RentalItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RentalItemScalarFieldEnum | Prisma.RentalItemScalarFieldEnum[]
 }
 
 /**
@@ -4791,6 +4743,30 @@ export type Operation$reservationItemsArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
+ * Operation.sales
+ */
+export type Operation$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
+  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
+  cursor?: Prisma.SaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
  * Operation.saleCharges
  */
 export type Operation$saleChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4812,6 +4788,30 @@ export type Operation$saleChargesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.SaleChargeScalarFieldEnum | Prisma.SaleChargeScalarFieldEnum[]
+}
+
+/**
+ * Operation.stockMovements
+ */
+export type Operation$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockMovement
+   */
+  select?: Prisma.StockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockMovement
+   */
+  omit?: Prisma.StockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockMovementInclude<ExtArgs> | null
+  where?: Prisma.StockMovementWhereInput
+  orderBy?: Prisma.StockMovementOrderByWithRelationInput | Prisma.StockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.StockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockMovementScalarFieldEnum | Prisma.StockMovementScalarFieldEnum[]
 }
 
 /**

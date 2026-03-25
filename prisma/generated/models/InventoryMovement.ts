@@ -276,9 +276,9 @@ export type InventoryMovementWhereInput = {
   unitCost?: Prisma.FloatFilter<"InventoryMovement"> | number
   createdBy?: Prisma.DateTimeFilter<"InventoryMovement"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"InventoryMovement"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantNullableScalarRelationFilter, Prisma.ProductVariantWhereInput> | null
 }
 
@@ -295,9 +295,9 @@ export type InventoryMovementOrderByWithRelationInput = {
   unitCost?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   variant?: Prisma.ProductVariantOrderByWithRelationInput
 }
 
@@ -317,9 +317,9 @@ export type InventoryMovementWhereUniqueInput = Prisma.AtLeast<{
   unitCost?: Prisma.FloatFilter<"InventoryMovement"> | number
   createdBy?: Prisma.DateTimeFilter<"InventoryMovement"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"InventoryMovement"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantNullableScalarRelationFilter, Prisma.ProductVariantWhereInput> | null
 }, "id">
 
@@ -370,9 +370,9 @@ export type InventoryMovementCreateInput = {
   unitCost: number
   createdBy: Date | string
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   branch: Prisma.BranchCreateNestedOneWithoutInventoryMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutInventoryMovementsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   variant?: Prisma.ProductVariantCreateNestedOneWithoutInventoryMovementsInput
 }
 
@@ -400,9 +400,9 @@ export type InventoryMovementUpdateInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   createdBy?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutInventoryMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryMovementsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   variant?: Prisma.ProductVariantUpdateOneWithoutInventoryMovementsNestedInput
 }
 
@@ -712,8 +712,8 @@ export type InventoryMovementCreateWithoutBranchInput = {
   unitCost: number
   createdBy: Date | string
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutInventoryMovementsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   variant?: Prisma.ProductVariantCreateNestedOneWithoutInventoryMovementsInput
 }
 
@@ -784,8 +784,8 @@ export type InventoryMovementCreateWithoutProductInput = {
   unitCost: number
   createdBy: Date | string
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   branch: Prisma.BranchCreateNestedOneWithoutInventoryMovementsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   variant?: Prisma.ProductVariantCreateNestedOneWithoutInventoryMovementsInput
 }
 
@@ -838,9 +838,9 @@ export type InventoryMovementCreateWithoutVariantInput = {
   unitCost: number
   createdBy: Date | string
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
   branch: Prisma.BranchCreateNestedOneWithoutInventoryMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutInventoryMovementsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutInventoryMovementsInput
 }
 
 export type InventoryMovementUncheckedCreateWithoutVariantInput = {
@@ -960,8 +960,8 @@ export type InventoryMovementUpdateWithoutBranchInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   createdBy?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryMovementsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   variant?: Prisma.ProductVariantUpdateOneWithoutInventoryMovementsNestedInput
 }
 
@@ -1016,8 +1016,8 @@ export type InventoryMovementUpdateWithoutProductInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   createdBy?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutInventoryMovementsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   variant?: Prisma.ProductVariantUpdateOneWithoutInventoryMovementsNestedInput
 }
 
@@ -1072,9 +1072,9 @@ export type InventoryMovementUpdateWithoutVariantInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   createdBy?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutInventoryMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutInventoryMovementsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutInventoryMovementsNestedInput
 }
 
 export type InventoryMovementUncheckedUpdateWithoutVariantInput = {
@@ -1176,9 +1176,9 @@ export type InventoryMovementSelect<ExtArgs extends runtime.Types.Extensions.Int
   unitCost?: boolean
   createdBy?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }, ExtArgs["result"]["inventoryMovement"]>
 
@@ -1195,9 +1195,9 @@ export type InventoryMovementSelectCreateManyAndReturn<ExtArgs extends runtime.T
   unitCost?: boolean
   createdBy?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }, ExtArgs["result"]["inventoryMovement"]>
 
@@ -1214,9 +1214,9 @@ export type InventoryMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   unitCost?: boolean
   createdBy?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }, ExtArgs["result"]["inventoryMovement"]>
 
@@ -1237,30 +1237,30 @@ export type InventoryMovementSelectScalar = {
 
 export type InventoryMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "branchId" | "productId" | "variantId" | "type" | "referenceType" | "referenceId" | "quantity" | "unitCost" | "createdBy" | "createdAt", ExtArgs["result"]["inventoryMovement"]>
 export type InventoryMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }
 export type InventoryMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }
 export type InventoryMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.InventoryMovement$variantArgs<ExtArgs>
 }
 
 export type $InventoryMovementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "InventoryMovement"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
     product: Prisma.$ProductPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     variant: Prisma.$ProductVariantPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1670,9 +1670,9 @@ readonly fields: InventoryMovementFieldRefs;
  */
 export interface Prisma__InventoryMovementClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   variant<T extends Prisma.InventoryMovement$variantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryMovement$variantArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

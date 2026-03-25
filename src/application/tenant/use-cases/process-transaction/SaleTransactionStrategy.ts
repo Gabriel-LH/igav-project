@@ -25,7 +25,7 @@ export class SaleTransactionStrategy implements ITransactionStrategy {
       operationId,
       tenantId,
       financials.totalAmount,
-      financials.paymentMethod,
+      financials.paymentMethodId,
     );
 
     return { details: specificData, guarantee: null };

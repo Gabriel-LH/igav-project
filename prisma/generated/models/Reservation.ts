@@ -262,9 +262,9 @@ export type ReservationWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Reservation"> | Date | string | null
   status?: Prisma.EnumReservationStatusFilter<"Reservation"> | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFilter<"Reservation"> | $Enums.OperationType
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
-  customer?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  customer?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   items?: Prisma.ReservationItemListRelationFilter
 }
@@ -285,9 +285,9 @@ export type ReservationOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   operationType?: Prisma.SortOrder
-  operation?: Prisma.OperationOrderByWithRelationInput
-  customer?: Prisma.ClientOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
+  customer?: Prisma.ClientOrderByWithRelationInput
+  operation?: Prisma.OperationOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
   items?: Prisma.ReservationItemOrderByRelationAggregateInput
 }
@@ -311,9 +311,9 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Reservation"> | Date | string | null
   status?: Prisma.EnumReservationStatusFilter<"Reservation"> | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFilter<"Reservation"> | $Enums.OperationType
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
-  customer?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  customer?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   items?: Prisma.ReservationItemListRelationFilter
 }, "id">
@@ -372,9 +372,9 @@ export type ReservationCreateInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
-  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
   branch: Prisma.BranchCreateNestedOneWithoutReservationsInput
+  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   tenant: Prisma.TenantCreateNestedOneWithoutReservationsInput
   items?: Prisma.ReservationItemCreateNestedManyWithoutReservationInput
 }
@@ -410,9 +410,9 @@ export type ReservationUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
-  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutReservationsNestedInput
+  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutReservationsNestedInput
   items?: Prisma.ReservationItemUpdateManyWithoutReservationNestedInput
 }
@@ -753,8 +753,8 @@ export type ReservationCreateWithoutBranchInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   tenant: Prisma.TenantCreateNestedOneWithoutReservationsInput
   items?: Prisma.ReservationItemCreateNestedManyWithoutReservationInput
 }
@@ -836,8 +836,8 @@ export type ReservationCreateWithoutCustomerInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   branch: Prisma.BranchCreateNestedOneWithoutReservationsInput
+  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   tenant: Prisma.TenantCreateNestedOneWithoutReservationsInput
   items?: Prisma.ReservationItemCreateNestedManyWithoutReservationInput
 }
@@ -898,8 +898,8 @@ export type ReservationCreateWithoutOperationInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
   branch: Prisma.BranchCreateNestedOneWithoutReservationsInput
+  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
   tenant: Prisma.TenantCreateNestedOneWithoutReservationsInput
   items?: Prisma.ReservationItemCreateNestedManyWithoutReservationInput
 }
@@ -960,9 +960,9 @@ export type ReservationCreateWithoutItemsInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
-  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
   branch: Prisma.BranchCreateNestedOneWithoutReservationsInput
+  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   tenant: Prisma.TenantCreateNestedOneWithoutReservationsInput
 }
 
@@ -1012,9 +1012,9 @@ export type ReservationUpdateWithoutItemsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
-  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutReservationsNestedInput
+  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -1048,9 +1048,9 @@ export type ReservationCreateWithoutTenantInput = {
   deletedAt?: Date | string | null
   status: $Enums.ReservationStatus
   operationType: $Enums.OperationType
-  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
-  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
   branch: Prisma.BranchCreateNestedOneWithoutReservationsInput
+  customer: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  operation: Prisma.OperationCreateNestedOneWithoutReservationsInput
   items?: Prisma.ReservationItemCreateNestedManyWithoutReservationInput
 }
 
@@ -1127,8 +1127,8 @@ export type ReservationUpdateWithoutBranchInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutReservationsNestedInput
   items?: Prisma.ReservationItemUpdateManyWithoutReservationNestedInput
 }
@@ -1197,8 +1197,8 @@ export type ReservationUpdateWithoutCustomerInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutReservationsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutReservationsNestedInput
   items?: Prisma.ReservationItemUpdateManyWithoutReservationNestedInput
 }
@@ -1267,8 +1267,8 @@ export type ReservationUpdateWithoutOperationInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutReservationsNestedInput
+  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutReservationsNestedInput
   items?: Prisma.ReservationItemUpdateManyWithoutReservationNestedInput
 }
@@ -1337,9 +1337,9 @@ export type ReservationUpdateWithoutTenantInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
   operationType?: Prisma.EnumOperationTypeFieldUpdateOperationsInput | $Enums.OperationType
-  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
-  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutReservationsNestedInput
+  customer?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutReservationsNestedInput
   items?: Prisma.ReservationItemUpdateManyWithoutReservationNestedInput
 }
 
@@ -1425,9 +1425,9 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   deletedAt?: boolean
   status?: boolean
   operationType?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Reservation$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
@@ -1449,9 +1449,9 @@ export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   deletedAt?: boolean
   status?: boolean
   operationType?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
@@ -1471,9 +1471,9 @@ export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   deletedAt?: boolean
   status?: boolean
   operationType?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
@@ -1497,32 +1497,32 @@ export type ReservationSelectScalar = {
 
 export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "operationId" | "customerId" | "branchId" | "startDate" | "endDate" | "hour" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy" | "deletedAt" | "status" | "operationType", ExtArgs["result"]["reservation"]>
 export type ReservationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Reservation$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
-  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Reservation"
   objects: {
-    operation: Prisma.$OperationPayload<ExtArgs>
-    customer: Prisma.$ClientPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
+    customer: Prisma.$ClientPayload<ExtArgs>
+    operation: Prisma.$OperationPayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
     items: Prisma.$ReservationItemPayload<ExtArgs>[]
   }
@@ -1936,9 +1936,9 @@ readonly fields: ReservationFieldRefs;
  */
 export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  customer<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  customer<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Reservation$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**

@@ -158,15 +158,15 @@ export type PromotionBranchWhereInput = {
   NOT?: Prisma.PromotionBranchWhereInput | Prisma.PromotionBranchWhereInput[]
   promotionId?: Prisma.StringFilter<"PromotionBranch"> | string
   branchId?: Prisma.StringFilter<"PromotionBranch"> | string
-  promotion?: Prisma.XOR<Prisma.PromotionScalarRelationFilter, Prisma.PromotionWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  promotion?: Prisma.XOR<Prisma.PromotionScalarRelationFilter, Prisma.PromotionWhereInput>
 }
 
 export type PromotionBranchOrderByWithRelationInput = {
   promotionId?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
-  promotion?: Prisma.PromotionOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
+  promotion?: Prisma.PromotionOrderByWithRelationInput
 }
 
 export type PromotionBranchWhereUniqueInput = Prisma.AtLeast<{
@@ -176,8 +176,8 @@ export type PromotionBranchWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PromotionBranchWhereInput | Prisma.PromotionBranchWhereInput[]
   promotionId?: Prisma.StringFilter<"PromotionBranch"> | string
   branchId?: Prisma.StringFilter<"PromotionBranch"> | string
-  promotion?: Prisma.XOR<Prisma.PromotionScalarRelationFilter, Prisma.PromotionWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  promotion?: Prisma.XOR<Prisma.PromotionScalarRelationFilter, Prisma.PromotionWhereInput>
 }, "promotionId_branchId">
 
 export type PromotionBranchOrderByWithAggregationInput = {
@@ -197,8 +197,8 @@ export type PromotionBranchScalarWhereWithAggregatesInput = {
 }
 
 export type PromotionBranchCreateInput = {
-  promotion: Prisma.PromotionCreateNestedOneWithoutBranchRelationsInput
   branch: Prisma.BranchCreateNestedOneWithoutPromotionBranchesInput
+  promotion: Prisma.PromotionCreateNestedOneWithoutBranchRelationsInput
 }
 
 export type PromotionBranchUncheckedCreateInput = {
@@ -207,8 +207,8 @@ export type PromotionBranchUncheckedCreateInput = {
 }
 
 export type PromotionBranchUpdateInput = {
-  promotion?: Prisma.PromotionUpdateOneRequiredWithoutBranchRelationsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutPromotionBranchesNestedInput
+  promotion?: Prisma.PromotionUpdateOneRequiredWithoutBranchRelationsNestedInput
 }
 
 export type PromotionBranchUncheckedUpdateInput = {
@@ -457,22 +457,22 @@ export type PromotionBranchUncheckedUpdateManyWithoutPromotionInput = {
 export type PromotionBranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   promotionId?: boolean
   branchId?: boolean
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBranch"]>
 
 export type PromotionBranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   promotionId?: boolean
   branchId?: boolean
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBranch"]>
 
 export type PromotionBranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   promotionId?: boolean
   branchId?: boolean
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBranch"]>
 
 export type PromotionBranchSelectScalar = {
@@ -482,23 +482,23 @@ export type PromotionBranchSelectScalar = {
 
 export type PromotionBranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"promotionId" | "branchId", ExtArgs["result"]["promotionBranch"]>
 export type PromotionBranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }
 export type PromotionBranchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }
 export type PromotionBranchIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.PromotionDefaultArgs<ExtArgs>
 }
 
 export type $PromotionBranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PromotionBranch"
   objects: {
-    promotion: Prisma.$PromotionPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
+    promotion: Prisma.$PromotionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     promotionId: string
@@ -897,8 +897,8 @@ readonly fields: PromotionBranchFieldRefs;
  */
 export interface Prisma__PromotionBranchClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  promotion<T extends Prisma.PromotionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromotionDefaultArgs<ExtArgs>>): Prisma.Prisma__PromotionClient<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  promotion<T extends Prisma.PromotionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromotionDefaultArgs<ExtArgs>>): Prisma.Prisma__PromotionClient<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

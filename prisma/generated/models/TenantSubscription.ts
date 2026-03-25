@@ -246,8 +246,8 @@ export type TenantSubscriptionWhereInput = {
   externalSubscriptionId?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type TenantSubscriptionOrderByWithRelationInput = {
@@ -264,8 +264,8 @@ export type TenantSubscriptionOrderByWithRelationInput = {
   externalSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   plan?: Prisma.PlanOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type TenantSubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -285,8 +285,8 @@ export type TenantSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   externalSubscriptionId?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type TenantSubscriptionOrderByWithAggregationInput = {
@@ -339,8 +339,8 @@ export type TenantSubscriptionCreateInput = {
   externalSubscriptionId?: string | null
   createdAt?: Date | string
   createdBy?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutTenantSubscriptionsInput
   plan: Prisma.PlanCreateNestedOneWithoutTenantSubscriptionsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTenantSubscriptionsInput
 }
 
 export type TenantSubscriptionUncheckedCreateInput = {
@@ -371,8 +371,8 @@ export type TenantSubscriptionUpdateInput = {
   externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTenantSubscriptionsNestedInput
   plan?: Prisma.PlanUpdateOneRequiredWithoutTenantSubscriptionsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTenantSubscriptionsNestedInput
 }
 
 export type TenantSubscriptionUncheckedUpdateInput = {
@@ -858,8 +858,8 @@ export type TenantSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.In
   externalSubscriptionId?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantSubscription"]>
 
 export type TenantSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -876,8 +876,8 @@ export type TenantSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.
   externalSubscriptionId?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantSubscription"]>
 
 export type TenantSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -894,8 +894,8 @@ export type TenantSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.
   externalSubscriptionId?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantSubscription"]>
 
 export type TenantSubscriptionSelectScalar = {
@@ -916,23 +916,23 @@ export type TenantSubscriptionSelectScalar = {
 
 export type TenantSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "planId" | "status" | "billingCycle" | "startedAt" | "trialEndsAt" | "currentPeriodStart" | "currentPeriodEnd" | "provider" | "externalSubscriptionId" | "createdAt" | "createdBy", ExtArgs["result"]["tenantSubscription"]>
 export type TenantSubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TenantSubscriptionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TenantSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $TenantSubscriptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TenantSubscription"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     plan: Prisma.$PlanPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1342,8 +1342,8 @@ readonly fields: TenantSubscriptionFieldRefs;
  */
 export interface Prisma__TenantSubscriptionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   plan<T extends Prisma.PlanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanDefaultArgs<ExtArgs>>): Prisma.Prisma__PlanClient<runtime.Types.Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

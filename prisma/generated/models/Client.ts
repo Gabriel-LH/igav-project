@@ -400,15 +400,15 @@ export type ClientWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"Client"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Client"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   referredBy?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   referredClients?: Prisma.ClientListRelationFilter
-  referralsMade?: Prisma.ReferralListRelationFilter
-  referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
-  operations?: Prisma.OperationListRelationFilter
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerListRelationFilter
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   creditLedger?: Prisma.ClientCreditLedgerListRelationFilter
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerListRelationFilter
   coupons?: Prisma.CouponListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
+  referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
+  referralsMade?: Prisma.ReferralListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
 }
 
@@ -441,15 +441,15 @@ export type ClientOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   referredBy?: Prisma.ClientOrderByWithRelationInput
   referredClients?: Prisma.ClientOrderByRelationAggregateInput
-  referralsMade?: Prisma.ReferralOrderByRelationAggregateInput
-  referralReceived?: Prisma.ReferralOrderByWithRelationInput
-  operations?: Prisma.OperationOrderByRelationAggregateInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerOrderByRelationAggregateInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   creditLedger?: Prisma.ClientCreditLedgerOrderByRelationAggregateInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerOrderByRelationAggregateInput
   coupons?: Prisma.CouponOrderByRelationAggregateInput
+  operations?: Prisma.OperationOrderByRelationAggregateInput
+  referralReceived?: Prisma.ReferralOrderByWithRelationInput
+  referralsMade?: Prisma.ReferralOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
 }
 
@@ -485,15 +485,15 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"Client"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Client"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   referredBy?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   referredClients?: Prisma.ClientListRelationFilter
-  referralsMade?: Prisma.ReferralListRelationFilter
-  referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
-  operations?: Prisma.OperationListRelationFilter
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerListRelationFilter
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   creditLedger?: Prisma.ClientCreditLedgerListRelationFilter
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerListRelationFilter
   coupons?: Prisma.CouponListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
+  referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
+  referralsMade?: Prisma.ReferralListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
 }, "id" | "dni" | "referralCode">
 
@@ -594,15 +594,15 @@ export type ClientCreateInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -636,12 +636,12 @@ export type ClientUncheckedCreateInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -672,15 +672,15 @@ export type ClientUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -714,12 +714,12 @@ export type ClientUncheckedUpdateInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1059,16 +1059,24 @@ export type ClientUpdateOneWithoutOperationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutOperationsInput, Prisma.ClientUpdateWithoutOperationsInput>, Prisma.ClientUncheckedUpdateWithoutOperationsInput>
 }
 
+export type ClientCreateNestedOneWithoutReferralReceivedInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutReferralReceivedInput, Prisma.ClientUncheckedCreateWithoutReferralReceivedInput>
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutReferralReceivedInput
+  connect?: Prisma.ClientWhereUniqueInput
+}
+
 export type ClientCreateNestedOneWithoutReferralsMadeInput = {
   create?: Prisma.XOR<Prisma.ClientCreateWithoutReferralsMadeInput, Prisma.ClientUncheckedCreateWithoutReferralsMadeInput>
   connectOrCreate?: Prisma.ClientCreateOrConnectWithoutReferralsMadeInput
   connect?: Prisma.ClientWhereUniqueInput
 }
 
-export type ClientCreateNestedOneWithoutReferralReceivedInput = {
+export type ClientUpdateOneRequiredWithoutReferralReceivedNestedInput = {
   create?: Prisma.XOR<Prisma.ClientCreateWithoutReferralReceivedInput, Prisma.ClientUncheckedCreateWithoutReferralReceivedInput>
   connectOrCreate?: Prisma.ClientCreateOrConnectWithoutReferralReceivedInput
+  upsert?: Prisma.ClientUpsertWithoutReferralReceivedInput
   connect?: Prisma.ClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutReferralReceivedInput, Prisma.ClientUpdateWithoutReferralReceivedInput>, Prisma.ClientUncheckedUpdateWithoutReferralReceivedInput>
 }
 
 export type ClientUpdateOneRequiredWithoutReferralsMadeNestedInput = {
@@ -1077,16 +1085,6 @@ export type ClientUpdateOneRequiredWithoutReferralsMadeNestedInput = {
   upsert?: Prisma.ClientUpsertWithoutReferralsMadeInput
   connect?: Prisma.ClientWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutReferralsMadeInput, Prisma.ClientUpdateWithoutReferralsMadeInput>, Prisma.ClientUncheckedUpdateWithoutReferralsMadeInput>
-}
-
-export type ClientUpdateOneWithoutReferralReceivedNestedInput = {
-  create?: Prisma.XOR<Prisma.ClientCreateWithoutReferralReceivedInput, Prisma.ClientUncheckedCreateWithoutReferralReceivedInput>
-  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutReferralReceivedInput
-  upsert?: Prisma.ClientUpsertWithoutReferralReceivedInput
-  disconnect?: Prisma.ClientWhereInput | boolean
-  delete?: Prisma.ClientWhereInput | boolean
-  connect?: Prisma.ClientWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutReferralReceivedInput, Prisma.ClientUpdateWithoutReferralReceivedInput>, Prisma.ClientUncheckedUpdateWithoutReferralReceivedInput>
 }
 
 export type ClientCreateNestedOneWithoutReservationsInput = {
@@ -1172,14 +1170,14 @@ export type ClientCreateWithoutReferredClientsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -1212,12 +1210,12 @@ export type ClientUncheckedCreateWithoutReferredClientsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -1253,14 +1251,14 @@ export type ClientCreateWithoutReferredByInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -1293,12 +1291,12 @@ export type ClientUncheckedCreateWithoutReferredByInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -1350,14 +1348,14 @@ export type ClientUpdateWithoutReferredClientsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1390,12 +1388,12 @@ export type ClientUncheckedUpdateWithoutReferredClientsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1476,14 +1474,14 @@ export type ClientCreateWithoutCreditLedgerInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -1517,11 +1515,11 @@ export type ClientUncheckedCreateWithoutCreditLedgerInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
   loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -1568,14 +1566,14 @@ export type ClientUpdateWithoutCreditLedgerInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1609,11 +1607,11 @@ export type ClientUncheckedUpdateWithoutCreditLedgerInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
   loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1644,14 +1642,14 @@ export type ClientCreateWithoutLoyaltyLedgerInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -1685,11 +1683,11 @@ export type ClientUncheckedCreateWithoutLoyaltyLedgerInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -1736,14 +1734,14 @@ export type ClientUpdateWithoutLoyaltyLedgerInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1777,11 +1775,11 @@ export type ClientUncheckedUpdateWithoutLoyaltyLedgerInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1812,14 +1810,14 @@ export type ClientCreateWithoutCouponsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -1853,11 +1851,11 @@ export type ClientUncheckedCreateWithoutCouponsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -1904,14 +1902,14 @@ export type ClientUpdateWithoutCouponsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1945,11 +1943,11 @@ export type ClientUncheckedUpdateWithoutCouponsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -1980,14 +1978,14 @@ export type ClientCreateWithoutOperationsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -2021,11 +2019,11 @@ export type ClientUncheckedCreateWithoutOperationsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -2072,14 +2070,14 @@ export type ClientUpdateWithoutOperationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2113,93 +2111,12 @@ export type ClientUncheckedUpdateWithoutOperationsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
-}
-
-export type ClientCreateWithoutReferralsMadeInput = {
-  id?: string
-  userName?: string | null
-  firstName: string
-  lastName: string
-  dni: string
-  email?: string | null
-  phone: string
-  address: string
-  city: string
-  province?: string | null
-  zipCode?: string | null
-  type?: $Enums.ClientType
-  walletBalance?: number
-  loyaltyPoints?: number
-  referralCode: string
-  status?: $Enums.ClientStatus
-  internalNotes?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
-  referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
-  referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
-  creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
-  coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
-}
-
-export type ClientUncheckedCreateWithoutReferralsMadeInput = {
-  id?: string
-  tenantId: string
-  userName?: string | null
-  firstName: string
-  lastName: string
-  dni: string
-  email?: string | null
-  phone: string
-  address: string
-  city: string
-  province?: string | null
-  zipCode?: string | null
-  type?: $Enums.ClientType
-  walletBalance?: number
-  loyaltyPoints?: number
-  referralCode: string
-  referredByClientId?: string | null
-  status?: $Enums.ClientStatus
-  internalNotes?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  deleteReason?: string | null
-  referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
-  creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
-  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
-}
-
-export type ClientCreateOrConnectWithoutReferralsMadeInput = {
-  where: Prisma.ClientWhereUniqueInput
-  create: Prisma.XOR<Prisma.ClientCreateWithoutReferralsMadeInput, Prisma.ClientUncheckedCreateWithoutReferralsMadeInput>
 }
 
 export type ClientCreateWithoutReferralReceivedInput = {
@@ -2229,14 +2146,14 @@ export type ClientCreateWithoutReferralReceivedInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -2270,11 +2187,11 @@ export type ClientUncheckedCreateWithoutReferralReceivedInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -2283,91 +2200,85 @@ export type ClientCreateOrConnectWithoutReferralReceivedInput = {
   create: Prisma.XOR<Prisma.ClientCreateWithoutReferralReceivedInput, Prisma.ClientUncheckedCreateWithoutReferralReceivedInput>
 }
 
-export type ClientUpsertWithoutReferralsMadeInput = {
-  update: Prisma.XOR<Prisma.ClientUpdateWithoutReferralsMadeInput, Prisma.ClientUncheckedUpdateWithoutReferralsMadeInput>
+export type ClientCreateWithoutReferralsMadeInput = {
+  id?: string
+  userName?: string | null
+  firstName: string
+  lastName: string
+  dni: string
+  email?: string | null
+  phone: string
+  address: string
+  city: string
+  province?: string | null
+  zipCode?: string | null
+  type?: $Enums.ClientType
+  walletBalance?: number
+  loyaltyPoints?: number
+  referralCode: string
+  status?: $Enums.ClientStatus
+  internalNotes?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  deleteReason?: string | null
+  referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
+  referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
+  creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
+}
+
+export type ClientUncheckedCreateWithoutReferralsMadeInput = {
+  id?: string
+  tenantId: string
+  userName?: string | null
+  firstName: string
+  lastName: string
+  dni: string
+  email?: string | null
+  phone: string
+  address: string
+  city: string
+  province?: string | null
+  zipCode?: string | null
+  type?: $Enums.ClientType
+  walletBalance?: number
+  loyaltyPoints?: number
+  referralCode: string
+  referredByClientId?: string | null
+  status?: $Enums.ClientStatus
+  internalNotes?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  deleteReason?: string | null
+  referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
+  creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type ClientCreateOrConnectWithoutReferralsMadeInput = {
+  where: Prisma.ClientWhereUniqueInput
   create: Prisma.XOR<Prisma.ClientCreateWithoutReferralsMadeInput, Prisma.ClientUncheckedCreateWithoutReferralsMadeInput>
-  where?: Prisma.ClientWhereInput
-}
-
-export type ClientUpdateToOneWithWhereWithoutReferralsMadeInput = {
-  where?: Prisma.ClientWhereInput
-  data: Prisma.XOR<Prisma.ClientUpdateWithoutReferralsMadeInput, Prisma.ClientUncheckedUpdateWithoutReferralsMadeInput>
-}
-
-export type ClientUpdateWithoutReferralsMadeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  dni?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  type?: Prisma.EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
-  walletBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
-  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
-  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
-  referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
-  referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
-  creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
-  coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
-}
-
-export type ClientUncheckedUpdateWithoutReferralsMadeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  dni?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  type?: Prisma.EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
-  walletBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
-  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
-  referredByClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
-  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
-  creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
-  coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type ClientUpsertWithoutReferralReceivedInput = {
@@ -2408,14 +2319,14 @@ export type ClientUpdateWithoutReferralReceivedInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2449,11 +2360,98 @@ export type ClientUncheckedUpdateWithoutReferralReceivedInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type ClientUpsertWithoutReferralsMadeInput = {
+  update: Prisma.XOR<Prisma.ClientUpdateWithoutReferralsMadeInput, Prisma.ClientUncheckedUpdateWithoutReferralsMadeInput>
+  create: Prisma.XOR<Prisma.ClientCreateWithoutReferralsMadeInput, Prisma.ClientUncheckedCreateWithoutReferralsMadeInput>
+  where?: Prisma.ClientWhereInput
+}
+
+export type ClientUpdateToOneWithWhereWithoutReferralsMadeInput = {
+  where?: Prisma.ClientWhereInput
+  data: Prisma.XOR<Prisma.ClientUpdateWithoutReferralsMadeInput, Prisma.ClientUncheckedUpdateWithoutReferralsMadeInput>
+}
+
+export type ClientUpdateWithoutReferralsMadeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dni?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+  walletBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
+  referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
+  creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
+}
+
+export type ClientUncheckedUpdateWithoutReferralsMadeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dni?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+  walletBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredByClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
+  creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2484,15 +2482,15 @@ export type ClientCreateWithoutReservationsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   deleteReason?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
+  tenant: Prisma.TenantCreateNestedOneWithoutClientsInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
 }
 
 export type ClientUncheckedCreateWithoutReservationsInput = {
@@ -2525,12 +2523,12 @@ export type ClientUncheckedCreateWithoutReservationsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
 }
 
 export type ClientCreateOrConnectWithoutReservationsInput = {
@@ -2576,15 +2574,15 @@ export type ClientUpdateWithoutReservationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutReservationsInput = {
@@ -2617,12 +2615,12 @@ export type ClientUncheckedUpdateWithoutReservationsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
 }
 
 export type ClientCreateWithoutTenantInput = {
@@ -2654,12 +2652,12 @@ export type ClientCreateWithoutTenantInput = {
   deleteReason?: string | null
   referredBy?: Prisma.ClientCreateNestedOneWithoutReferredClientsInput
   referredClients?: Prisma.ClientCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutCustomerInput
 }
 
@@ -2692,12 +2690,12 @@ export type ClientUncheckedCreateWithoutTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   referredClients?: Prisma.ClientUncheckedCreateNestedManyWithoutReferredByInput
-  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutClientInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutClientInput
   coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutAssignedClientInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutCustomerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredClientInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -2784,14 +2782,14 @@ export type ClientUpdateWithoutReferredByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutClientsNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2824,12 +2822,12 @@ export type ClientUncheckedUpdateWithoutReferredByInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2922,12 +2920,12 @@ export type ClientUpdateWithoutTenantInput = {
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredBy?: Prisma.ClientUpdateOneWithoutReferredClientsNestedInput
   referredClients?: Prisma.ClientUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutCustomerNestedInput
 }
 
@@ -2960,12 +2958,12 @@ export type ClientUncheckedUpdateWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredClients?: Prisma.ClientUncheckedUpdateManyWithoutReferredByNestedInput
-  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
-  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   creditLedger?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutClientNestedInput
+  loyaltyLedger?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutClientNestedInput
   coupons?: Prisma.CouponUncheckedUpdateManyWithoutAssignedClientNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutCustomerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredClientNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -3006,21 +3004,21 @@ export type ClientUncheckedUpdateManyWithoutTenantInput = {
 
 export type ClientCountOutputType = {
   referredClients: number
-  referralsMade: number
-  operations: number
-  loyaltyLedger: number
   creditLedger: number
+  loyaltyLedger: number
   coupons: number
+  operations: number
+  referralsMade: number
   reservations: number
 }
 
 export type ClientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   referredClients?: boolean | ClientCountOutputTypeCountReferredClientsArgs
-  referralsMade?: boolean | ClientCountOutputTypeCountReferralsMadeArgs
-  operations?: boolean | ClientCountOutputTypeCountOperationsArgs
-  loyaltyLedger?: boolean | ClientCountOutputTypeCountLoyaltyLedgerArgs
   creditLedger?: boolean | ClientCountOutputTypeCountCreditLedgerArgs
+  loyaltyLedger?: boolean | ClientCountOutputTypeCountLoyaltyLedgerArgs
   coupons?: boolean | ClientCountOutputTypeCountCouponsArgs
+  operations?: boolean | ClientCountOutputTypeCountOperationsArgs
+  referralsMade?: boolean | ClientCountOutputTypeCountReferralsMadeArgs
   reservations?: boolean | ClientCountOutputTypeCountReservationsArgs
 }
 
@@ -3044,15 +3042,8 @@ export type ClientCountOutputTypeCountReferredClientsArgs<ExtArgs extends runtim
 /**
  * ClientCountOutputType without action
  */
-export type ClientCountOutputTypeCountReferralsMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ReferralWhereInput
-}
-
-/**
- * ClientCountOutputType without action
- */
-export type ClientCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.OperationWhereInput
+export type ClientCountOutputTypeCountCreditLedgerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClientCreditLedgerWhereInput
 }
 
 /**
@@ -3065,15 +3056,22 @@ export type ClientCountOutputTypeCountLoyaltyLedgerArgs<ExtArgs extends runtime.
 /**
  * ClientCountOutputType without action
  */
-export type ClientCountOutputTypeCountCreditLedgerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ClientCreditLedgerWhereInput
+export type ClientCountOutputTypeCountCouponsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CouponWhereInput
 }
 
 /**
  * ClientCountOutputType without action
  */
-export type ClientCountOutputTypeCountCouponsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CouponWhereInput
+export type ClientCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OperationWhereInput
+}
+
+/**
+ * ClientCountOutputType without action
+ */
+export type ClientCountOutputTypeCountReferralsMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReferralWhereInput
 }
 
 /**
@@ -3113,15 +3111,15 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   deletedAt?: boolean
   deletedBy?: boolean
   deleteReason?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
   referredClients?: boolean | Prisma.Client$referredClientsArgs<ExtArgs>
-  referralsMade?: boolean | Prisma.Client$referralsMadeArgs<ExtArgs>
-  referralReceived?: boolean | Prisma.Client$referralReceivedArgs<ExtArgs>
-  operations?: boolean | Prisma.Client$operationsArgs<ExtArgs>
-  loyaltyLedger?: boolean | Prisma.Client$loyaltyLedgerArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   creditLedger?: boolean | Prisma.Client$creditLedgerArgs<ExtArgs>
+  loyaltyLedger?: boolean | Prisma.Client$loyaltyLedgerArgs<ExtArgs>
   coupons?: boolean | Prisma.Client$couponsArgs<ExtArgs>
+  operations?: boolean | Prisma.Client$operationsArgs<ExtArgs>
+  referralReceived?: boolean | Prisma.Client$referralReceivedArgs<ExtArgs>
+  referralsMade?: boolean | Prisma.Client$referralsMadeArgs<ExtArgs>
   reservations?: boolean | Prisma.Client$reservationsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
@@ -3155,8 +3153,8 @@ export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   deletedAt?: boolean
   deletedBy?: boolean
   deleteReason?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3188,8 +3186,8 @@ export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   deletedAt?: boolean
   deletedBy?: boolean
   deleteReason?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectScalar = {
@@ -3225,39 +3223,39 @@ export type ClientSelectScalar = {
 
 export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "userName" | "firstName" | "lastName" | "dni" | "email" | "phone" | "address" | "city" | "province" | "zipCode" | "type" | "walletBalance" | "loyaltyPoints" | "referralCode" | "referredByClientId" | "status" | "internalNotes" | "metadata" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "isDeleted" | "deletedAt" | "deletedBy" | "deleteReason", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
   referredClients?: boolean | Prisma.Client$referredClientsArgs<ExtArgs>
-  referralsMade?: boolean | Prisma.Client$referralsMadeArgs<ExtArgs>
-  referralReceived?: boolean | Prisma.Client$referralReceivedArgs<ExtArgs>
-  operations?: boolean | Prisma.Client$operationsArgs<ExtArgs>
-  loyaltyLedger?: boolean | Prisma.Client$loyaltyLedgerArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   creditLedger?: boolean | Prisma.Client$creditLedgerArgs<ExtArgs>
+  loyaltyLedger?: boolean | Prisma.Client$loyaltyLedgerArgs<ExtArgs>
   coupons?: boolean | Prisma.Client$couponsArgs<ExtArgs>
+  operations?: boolean | Prisma.Client$operationsArgs<ExtArgs>
+  referralReceived?: boolean | Prisma.Client$referralReceivedArgs<ExtArgs>
+  referralsMade?: boolean | Prisma.Client$referralsMadeArgs<ExtArgs>
   reservations?: boolean | Prisma.Client$reservationsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ClientIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referredBy?: boolean | Prisma.Client$referredByArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Client"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     referredBy: Prisma.$ClientPayload<ExtArgs> | null
     referredClients: Prisma.$ClientPayload<ExtArgs>[]
-    referralsMade: Prisma.$ReferralPayload<ExtArgs>[]
-    referralReceived: Prisma.$ReferralPayload<ExtArgs> | null
-    operations: Prisma.$OperationPayload<ExtArgs>[]
-    loyaltyLedger: Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>[]
+    tenant: Prisma.$TenantPayload<ExtArgs>
     creditLedger: Prisma.$ClientCreditLedgerPayload<ExtArgs>[]
+    loyaltyLedger: Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>[]
     coupons: Prisma.$CouponPayload<ExtArgs>[]
+    operations: Prisma.$OperationPayload<ExtArgs>[]
+    referralReceived: Prisma.$ReferralPayload<ExtArgs> | null
+    referralsMade: Prisma.$ReferralPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3683,15 +3681,15 @@ readonly fields: ClientFieldRefs;
  */
 export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   referredBy<T extends Prisma.Client$referredByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referredByArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   referredClients<T extends Prisma.Client$referredClientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referredClientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  referralsMade<T extends Prisma.Client$referralsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referralsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  referralReceived<T extends Prisma.Client$referralReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referralReceivedArgs<ExtArgs>>): Prisma.Prisma__ReferralClient<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  operations<T extends Prisma.Client$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  loyaltyLedger<T extends Prisma.Client$loyaltyLedgerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$loyaltyLedgerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   creditLedger<T extends Prisma.Client$creditLedgerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$creditLedgerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientCreditLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  loyaltyLedger<T extends Prisma.Client$loyaltyLedgerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$loyaltyLedgerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientLoyaltyLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coupons<T extends Prisma.Client$couponsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$couponsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operations<T extends Prisma.Client$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  referralReceived<T extends Prisma.Client$referralReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referralReceivedArgs<ExtArgs>>): Prisma.Prisma__ReferralClient<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  referralsMade<T extends Prisma.Client$referralsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$referralsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.Client$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4189,70 +4187,27 @@ export type Client$referredClientsArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * Client.referralsMade
+ * Client.creditLedger
  */
-export type Client$referralsMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Client$creditLedgerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Referral
+   * Select specific fields to fetch from the ClientCreditLedger
    */
-  select?: Prisma.ReferralSelect<ExtArgs> | null
+  select?: Prisma.ClientCreditLedgerSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Referral
+   * Omit specific fields from the ClientCreditLedger
    */
-  omit?: Prisma.ReferralOmit<ExtArgs> | null
+  omit?: Prisma.ClientCreditLedgerOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReferralInclude<ExtArgs> | null
-  where?: Prisma.ReferralWhereInput
-  orderBy?: Prisma.ReferralOrderByWithRelationInput | Prisma.ReferralOrderByWithRelationInput[]
-  cursor?: Prisma.ReferralWhereUniqueInput
+  include?: Prisma.ClientCreditLedgerInclude<ExtArgs> | null
+  where?: Prisma.ClientCreditLedgerWhereInput
+  orderBy?: Prisma.ClientCreditLedgerOrderByWithRelationInput | Prisma.ClientCreditLedgerOrderByWithRelationInput[]
+  cursor?: Prisma.ClientCreditLedgerWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ReferralScalarFieldEnum | Prisma.ReferralScalarFieldEnum[]
-}
-
-/**
- * Client.referralReceived
- */
-export type Client$referralReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Referral
-   */
-  select?: Prisma.ReferralSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Referral
-   */
-  omit?: Prisma.ReferralOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ReferralInclude<ExtArgs> | null
-  where?: Prisma.ReferralWhereInput
-}
-
-/**
- * Client.operations
- */
-export type Client$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Operation
-   */
-  select?: Prisma.OperationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Operation
-   */
-  omit?: Prisma.OperationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OperationInclude<ExtArgs> | null
-  where?: Prisma.OperationWhereInput
-  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
-  cursor?: Prisma.OperationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
+  distinct?: Prisma.ClientCreditLedgerScalarFieldEnum | Prisma.ClientCreditLedgerScalarFieldEnum[]
 }
 
 /**
@@ -4280,30 +4235,6 @@ export type Client$loyaltyLedgerArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Client.creditLedger
- */
-export type Client$creditLedgerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ClientCreditLedger
-   */
-  select?: Prisma.ClientCreditLedgerSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ClientCreditLedger
-   */
-  omit?: Prisma.ClientCreditLedgerOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ClientCreditLedgerInclude<ExtArgs> | null
-  where?: Prisma.ClientCreditLedgerWhereInput
-  orderBy?: Prisma.ClientCreditLedgerOrderByWithRelationInput | Prisma.ClientCreditLedgerOrderByWithRelationInput[]
-  cursor?: Prisma.ClientCreditLedgerWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ClientCreditLedgerScalarFieldEnum | Prisma.ClientCreditLedgerScalarFieldEnum[]
-}
-
-/**
  * Client.coupons
  */
 export type Client$couponsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4325,6 +4256,73 @@ export type Client$couponsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.CouponScalarFieldEnum | Prisma.CouponScalarFieldEnum[]
+}
+
+/**
+ * Client.operations
+ */
+export type Client$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Operation
+   */
+  select?: Prisma.OperationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Operation
+   */
+  omit?: Prisma.OperationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OperationInclude<ExtArgs> | null
+  where?: Prisma.OperationWhereInput
+  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
+  cursor?: Prisma.OperationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
+}
+
+/**
+ * Client.referralReceived
+ */
+export type Client$referralReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Referral
+   */
+  select?: Prisma.ReferralSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Referral
+   */
+  omit?: Prisma.ReferralOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReferralInclude<ExtArgs> | null
+  where?: Prisma.ReferralWhereInput
+}
+
+/**
+ * Client.referralsMade
+ */
+export type Client$referralsMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Referral
+   */
+  select?: Prisma.ReferralSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Referral
+   */
+  omit?: Prisma.ReferralOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReferralInclude<ExtArgs> | null
+  where?: Prisma.ReferralWhereInput
+  orderBy?: Prisma.ReferralOrderByWithRelationInput | Prisma.ReferralOrderByWithRelationInput[]
+  cursor?: Prisma.ReferralWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReferralScalarFieldEnum | Prisma.ReferralScalarFieldEnum[]
 }
 
 /**

@@ -367,7 +367,8 @@ export function DirectTransactionModal({
         return {
           productId: item.id,
           productName: item.name,
-          stockId: id,
+          stockId: item.is_serial ? undefined : id,
+          inventoryItemId: item.is_serial ? id : undefined,
           quantity: 1,
           variantId,
           priceAtMoment: unitFinalPrice,

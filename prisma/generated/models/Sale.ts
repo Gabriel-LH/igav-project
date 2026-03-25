@@ -380,11 +380,11 @@ export type SaleWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Sale"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  items?: Prisma.SaleItemListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   charges?: Prisma.SaleChargeListRelationFilter
+  items?: Prisma.SaleItemListRelationFilter
   saleReversals?: Prisma.SaleReversalListRelationFilter
 }
 
@@ -413,11 +413,11 @@ export type SaleOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  operation?: Prisma.OperationOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
-  items?: Prisma.SaleItemOrderByRelationAggregateInput
+  operation?: Prisma.OperationOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   charges?: Prisma.SaleChargeOrderByRelationAggregateInput
+  items?: Prisma.SaleItemOrderByRelationAggregateInput
   saleReversals?: Prisma.SaleReversalOrderByRelationAggregateInput
 }
 
@@ -449,11 +449,11 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Sale"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  items?: Prisma.SaleItemListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   charges?: Prisma.SaleChargeListRelationFilter
+  items?: Prisma.SaleItemListRelationFilter
   saleReversals?: Prisma.SaleReversalListRelationFilter
 }, "id">
 
@@ -541,11 +541,11 @@ export type SaleCreateInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
-  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
-  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
+  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
 
@@ -574,8 +574,8 @@ export type SaleUncheckedCreateInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   charges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutSaleInput
 }
 
@@ -601,11 +601,11 @@ export type SaleUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
-  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
 
@@ -634,8 +634,8 @@ export type SaleUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   charges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutSaleNestedInput
 }
 
@@ -1021,10 +1021,10 @@ export type SaleCreateWithoutBranchInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   operation: Prisma.OperationCreateNestedOneWithoutSalesInput
-  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
 
@@ -1052,8 +1052,8 @@ export type SaleUncheckedCreateWithoutBranchInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   charges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutSaleInput
 }
 
@@ -1135,10 +1135,10 @@ export type SaleCreateWithoutOperationInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
-  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
 
@@ -1166,8 +1166,8 @@ export type SaleUncheckedCreateWithoutOperationInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   charges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutSaleInput
 }
 
@@ -1219,9 +1219,9 @@ export type SaleCreateWithoutItemsInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
-  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
+  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
@@ -1293,9 +1293,9 @@ export type SaleUpdateWithoutItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
@@ -1351,9 +1351,9 @@ export type SaleCreateWithoutChargesInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
-  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
+  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
@@ -1425,9 +1425,9 @@ export type SaleUpdateWithoutChargesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
@@ -1483,11 +1483,11 @@ export type SaleCreateWithoutSaleReversalsInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
-  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
-  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
+  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutSaleReversalsInput = {
@@ -1515,8 +1515,8 @@ export type SaleUncheckedCreateWithoutSaleReversalsInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   charges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutSaleReversalsInput = {
@@ -1557,11 +1557,11 @@ export type SaleUpdateWithoutSaleReversalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
-  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutSaleReversalsInput = {
@@ -1589,8 +1589,8 @@ export type SaleUncheckedUpdateWithoutSaleReversalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   charges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleCreateWithoutTenantInput = {
@@ -1615,10 +1615,10 @@ export type SaleCreateWithoutTenantInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   branch: Prisma.BranchCreateNestedOneWithoutSalesInput
-  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
+  operation: Prisma.OperationCreateNestedOneWithoutSalesInput
   charges?: Prisma.SaleChargeCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutSaleInput
 }
 
@@ -1646,8 +1646,8 @@ export type SaleUncheckedCreateWithoutTenantInput = {
   updatedAt?: Date | string
   updatedBy?: string | null
   deletedAt?: Date | string | null
-  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   charges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleInput
+  items?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
   saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutSaleInput
 }
 
@@ -1725,10 +1725,10 @@ export type SaleUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
-  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
 
@@ -1756,8 +1756,8 @@ export type SaleUncheckedUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   charges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutSaleNestedInput
 }
 
@@ -1835,10 +1835,10 @@ export type SaleUpdateWithoutOperationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
-  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
 
@@ -1866,8 +1866,8 @@ export type SaleUncheckedUpdateWithoutOperationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   charges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutSaleNestedInput
 }
 
@@ -1945,10 +1945,10 @@ export type SaleUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutSalesNestedInput
-  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutSalesNestedInput
   charges?: Prisma.SaleChargeUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUpdateManyWithoutSaleNestedInput
 }
 
@@ -1976,8 +1976,8 @@ export type SaleUncheckedUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   charges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleNestedInput
+  items?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutSaleNestedInput
 }
 
@@ -2013,14 +2013,14 @@ export type SaleUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type SaleCountOutputType = {
-  items: number
   charges: number
+  items: number
   saleReversals: number
 }
 
 export type SaleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  items?: boolean | SaleCountOutputTypeCountItemsArgs
   charges?: boolean | SaleCountOutputTypeCountChargesArgs
+  items?: boolean | SaleCountOutputTypeCountItemsArgs
   saleReversals?: boolean | SaleCountOutputTypeCountSaleReversalsArgs
 }
 
@@ -2037,15 +2037,15 @@ export type SaleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * SaleCountOutputType without action
  */
-export type SaleCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SaleItemWhereInput
+export type SaleCountOutputTypeCountChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleChargeWhereInput
 }
 
 /**
  * SaleCountOutputType without action
  */
-export type SaleCountOutputTypeCountChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SaleChargeWhereInput
+export type SaleCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleItemWhereInput
 }
 
 /**
@@ -2081,11 +2081,11 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   updatedBy?: boolean
   deletedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  items?: boolean | Prisma.Sale$itemsArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   charges?: boolean | Prisma.Sale$chargesArgs<ExtArgs>
+  items?: boolean | Prisma.Sale$itemsArgs<ExtArgs>
   saleReversals?: boolean | Prisma.Sale$saleReversalsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
@@ -2115,9 +2115,9 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   updatedBy?: boolean
   deletedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
 
 export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2145,9 +2145,9 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   updatedBy?: boolean
   deletedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
 
 export type SaleSelectScalar = {
@@ -2179,33 +2179,33 @@ export type SaleSelectScalar = {
 
 export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "operationId" | "customerMode" | "customerId" | "branchId" | "sellerId" | "reservationId" | "totalAmount" | "saleDate" | "subTotal" | "totalDiscount" | "status" | "notes" | "outDate" | "realOutDate" | "canceledAt" | "returnedAt" | "amountRefunded" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy" | "deletedAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  items?: boolean | Prisma.Sale$itemsArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   charges?: boolean | Prisma.Sale$chargesArgs<ExtArgs>
+  items?: boolean | Prisma.Sale$itemsArgs<ExtArgs>
   saleReversals?: boolean | Prisma.Sale$saleReversalsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SaleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type SaleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Sale"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    operation: Prisma.$OperationPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
-    items: Prisma.$SaleItemPayload<ExtArgs>[]
+    operation: Prisma.$OperationPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     charges: Prisma.$SaleChargePayload<ExtArgs>[]
+    items: Prisma.$SaleItemPayload<ExtArgs>[]
     saleReversals: Prisma.$SaleReversalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2627,11 +2627,11 @@ readonly fields: SaleFieldRefs;
  */
 export interface Prisma__SaleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  items<T extends Prisma.Sale$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   charges<T extends Prisma.Sale$chargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$chargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  items<T extends Prisma.Sale$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleReversals<T extends Prisma.Sale$saleReversalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$saleReversalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleReversalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3082,30 +3082,6 @@ export type SaleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Sale.items
- */
-export type Sale$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the SaleItem
-   */
-  select?: Prisma.SaleItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the SaleItem
-   */
-  omit?: Prisma.SaleItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SaleItemInclude<ExtArgs> | null
-  where?: Prisma.SaleItemWhereInput
-  orderBy?: Prisma.SaleItemOrderByWithRelationInput | Prisma.SaleItemOrderByWithRelationInput[]
-  cursor?: Prisma.SaleItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SaleItemScalarFieldEnum | Prisma.SaleItemScalarFieldEnum[]
-}
-
-/**
  * Sale.charges
  */
 export type Sale$chargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3127,6 +3103,30 @@ export type Sale$chargesArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.SaleChargeScalarFieldEnum | Prisma.SaleChargeScalarFieldEnum[]
+}
+
+/**
+ * Sale.items
+ */
+export type Sale$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SaleItem
+   */
+  select?: Prisma.SaleItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SaleItem
+   */
+  omit?: Prisma.SaleItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleItemInclude<ExtArgs> | null
+  where?: Prisma.SaleItemWhereInput
+  orderBy?: Prisma.SaleItemOrderByWithRelationInput | Prisma.SaleItemOrderByWithRelationInput[]
+  cursor?: Prisma.SaleItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleItemScalarFieldEnum | Prisma.SaleItemScalarFieldEnum[]
 }
 
 /**

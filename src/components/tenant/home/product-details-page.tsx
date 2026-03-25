@@ -46,8 +46,6 @@ import { useBranchStore } from "@/src/store/useBranchStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { calculateBestPromotionForProduct } from "@/src/utils/promotion/promotio.engine";
-import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { getAvailabilityCalendarDataAction } from "@/src/app/(tenant)/tenant/actions/availability.actions";
 import type { Product } from "@/src/types/product/type.product";
@@ -58,13 +56,15 @@ import { toast } from "sonner";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { Promotion } from "@/src/types/promotion/type.promotion";
 
-interface ProductDetailsPageProps {
+export interface ProductDetailsPageProps {
   lookup: string;
   initialVariantId?: string;
   categories: Category[];
   attributeTypes: AttributeType[];
   attributeValues: AttributeValue[];
+  initialPromotions?: Promotion[];
 }
 
 export type DisplayAttributeValue = {
@@ -90,6 +90,7 @@ export function ProductDetailsPage({
   categories,
   attributeTypes,
   attributeValues,
+  initialPromotions = [],
 }: ProductDetailsPageProps) {
   const router = useRouter();
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
@@ -101,7 +102,7 @@ export function ProductDetailsPage({
   const setReservationData = useReservationStore((s) => s.setReservationData);
   const setRentalData = useRentalStore((s) => s.setRentalData);
   const { getModelById } = useAttributeStore();
-  const { promotions } = usePromotionStore();
+  const { promotions, setPromotions } = usePromotionStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
@@ -175,10 +176,10 @@ export function ProductDetailsPage({
   ]);
 
   useEffect(() => {
-    const promotionRepo = new ZustandPromotionRepository();
-    const promotionLoader = new PromotionLoaderService(promotionRepo);
-    promotionLoader.ensurePromotionsLoaded();
-  }, []);
+    if (initialPromotions.length > 0) {
+      setPromotions(initialPromotions);
+    }
+  }, [initialPromotions, setPromotions]);
 
   const resolution = useMemo(
     () =>

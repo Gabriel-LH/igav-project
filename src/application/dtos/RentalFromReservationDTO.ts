@@ -3,6 +3,7 @@ import { RentalDTO } from "./RentalDTO";
 // interfaces/RentalFromReservationDTO.ts
 export interface RentalFromReservationDTO {
   type: "alquiler";
+  tenantId: string;
 
   reservationId: string;
   reservationItems: {

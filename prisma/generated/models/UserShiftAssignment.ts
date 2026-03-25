@@ -222,9 +222,9 @@ export type UserShiftAssignmentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"UserShiftAssignment"> | Date | string
   createdBy?: Prisma.StringFilter<"UserShiftAssignment"> | string
   updatedBy?: Prisma.StringFilter<"UserShiftAssignment"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   membership?: Prisma.XOR<Prisma.UserTenantMembershipScalarRelationFilter, Prisma.UserTenantMembershipWhereInput>
   shift?: Prisma.XOR<Prisma.ShiftScalarRelationFilter, Prisma.ShiftWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type UserShiftAssignmentOrderByWithRelationInput = {
@@ -238,9 +238,9 @@ export type UserShiftAssignmentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   membership?: Prisma.UserTenantMembershipOrderByWithRelationInput
   shift?: Prisma.ShiftOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type UserShiftAssignmentWhereUniqueInput = Prisma.AtLeast<{
@@ -257,9 +257,9 @@ export type UserShiftAssignmentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"UserShiftAssignment"> | Date | string
   createdBy?: Prisma.StringFilter<"UserShiftAssignment"> | string
   updatedBy?: Prisma.StringFilter<"UserShiftAssignment"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   membership?: Prisma.XOR<Prisma.UserTenantMembershipScalarRelationFilter, Prisma.UserTenantMembershipWhereInput>
   shift?: Prisma.XOR<Prisma.ShiftScalarRelationFilter, Prisma.ShiftWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type UserShiftAssignmentOrderByWithAggregationInput = {
@@ -302,9 +302,9 @@ export type UserShiftAssignmentCreateInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutUserShiftAssignmentsInput
   shift: Prisma.ShiftCreateNestedOneWithoutUserShiftAssignmentsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
 }
 
 export type UserShiftAssignmentUncheckedCreateInput = {
@@ -328,9 +328,9 @@ export type UserShiftAssignmentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
   shift?: Prisma.ShiftUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
 }
 
 export type UserShiftAssignmentUncheckedUpdateInput = {
@@ -565,8 +565,8 @@ export type UserShiftAssignmentCreateWithoutShiftInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
   membership: Prisma.UserTenantMembershipCreateNestedOneWithoutUserShiftAssignmentsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
 }
 
 export type UserShiftAssignmentUncheckedCreateWithoutShiftInput = {
@@ -681,8 +681,8 @@ export type UserShiftAssignmentCreateWithoutMembershipInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
   shift: Prisma.ShiftCreateNestedOneWithoutUserShiftAssignmentsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserShiftAssignmentsInput
 }
 
 export type UserShiftAssignmentUncheckedCreateWithoutMembershipInput = {
@@ -743,8 +743,8 @@ export type UserShiftAssignmentUpdateWithoutShiftInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
   membership?: Prisma.UserTenantMembershipUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
 }
 
 export type UserShiftAssignmentUncheckedUpdateWithoutShiftInput = {
@@ -839,8 +839,8 @@ export type UserShiftAssignmentUpdateWithoutMembershipInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
   shift?: Prisma.ShiftUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserShiftAssignmentsNestedInput
 }
 
 export type UserShiftAssignmentUncheckedUpdateWithoutMembershipInput = {
@@ -880,9 +880,9 @@ export type UserShiftAssignmentSelect<ExtArgs extends runtime.Types.Extensions.I
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userShiftAssignment"]>
 
 export type UserShiftAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -896,9 +896,9 @@ export type UserShiftAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userShiftAssignment"]>
 
 export type UserShiftAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -912,9 +912,9 @@ export type UserShiftAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userShiftAssignment"]>
 
 export type UserShiftAssignmentSelectScalar = {
@@ -932,27 +932,27 @@ export type UserShiftAssignmentSelectScalar = {
 
 export type UserShiftAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "membershipId" | "shiftId" | "startDate" | "endDate" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["userShiftAssignment"]>
 export type UserShiftAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type UserShiftAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type UserShiftAssignmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   membership?: boolean | Prisma.UserTenantMembershipDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $UserShiftAssignmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserShiftAssignment"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     membership: Prisma.$UserTenantMembershipPayload<ExtArgs>
     shift: Prisma.$ShiftPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1359,9 +1359,9 @@ readonly fields: UserShiftAssignmentFieldRefs;
  */
 export interface Prisma__UserShiftAssignmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   membership<T extends Prisma.UserTenantMembershipDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembershipDefaultArgs<ExtArgs>>): Prisma.Prisma__UserTenantMembershipClient<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   shift<T extends Prisma.ShiftDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShiftDefaultArgs<ExtArgs>>): Prisma.Prisma__ShiftClient<runtime.Types.Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

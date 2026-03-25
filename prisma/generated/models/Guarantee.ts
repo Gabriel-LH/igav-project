@@ -262,12 +262,12 @@ export type GuaranteeWhereInput = {
   createdBy?: Prisma.StringNullableFilter<"Guarantee"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Guarantee"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Guarantee"> | string | null
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryListRelationFilter
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   returnedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryListRelationFilter
 }
 
 export type GuaranteeOrderByWithRelationInput = {
@@ -286,12 +286,12 @@ export type GuaranteeOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  operation?: Prisma.OperationOrderByWithRelationInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryOrderByRelationAggregateInput
   branch?: Prisma.BranchOrderByWithRelationInput
+  operation?: Prisma.OperationOrderByWithRelationInput
   receivedBy?: Prisma.UserOrderByWithRelationInput
   returnedBy?: Prisma.UserOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryOrderByRelationAggregateInput
 }
 
 export type GuaranteeWhereUniqueInput = Prisma.AtLeast<{
@@ -313,12 +313,12 @@ export type GuaranteeWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.StringNullableFilter<"Guarantee"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Guarantee"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Guarantee"> | string | null
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryListRelationFilter
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   receivedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   returnedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryListRelationFilter
 }, "id">
 
 export type GuaranteeOrderByWithAggregationInput = {
@@ -374,12 +374,12 @@ export type GuaranteeCreateInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
+  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateInput = {
@@ -412,12 +412,12 @@ export type GuaranteeUpdateInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateInput = {
@@ -800,11 +800,11 @@ export type GuaranteeCreateWithoutReceivedByInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
+  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateWithoutReceivedByInput = {
@@ -846,11 +846,11 @@ export type GuaranteeCreateWithoutReturnedByInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
+  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateWithoutReturnedByInput = {
@@ -945,11 +945,11 @@ export type GuaranteeCreateWithoutBranchInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateWithoutBranchInput = {
@@ -1007,8 +1007,8 @@ export type GuaranteeCreateWithoutGuaranteeStatusHistoriesInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
+  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
@@ -1059,8 +1059,8 @@ export type GuaranteeUpdateWithoutGuaranteeStatusHistoriesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
@@ -1095,11 +1095,11 @@ export type GuaranteeCreateWithoutOperationInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
   tenant: Prisma.TenantCreateNestedOneWithoutGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateWithoutOperationInput = {
@@ -1157,11 +1157,11 @@ export type GuaranteeCreateWithoutTenantInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
   branch: Prisma.BranchCreateNestedOneWithoutGuaranteesInput
+  operation: Prisma.OperationCreateNestedOneWithoutGuaranteesInput
   receivedBy: Prisma.UserCreateNestedOneWithoutReceivedGuaranteesInput
   returnedBy?: Prisma.UserCreateNestedOneWithoutReturnedGuaranteesInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutGuaranteeInput
 }
 
 export type GuaranteeUncheckedCreateWithoutTenantInput = {
@@ -1253,11 +1253,11 @@ export type GuaranteeUpdateWithoutReceivedByInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateWithoutReceivedByInput = {
@@ -1306,11 +1306,11 @@ export type GuaranteeUpdateWithoutReturnedByInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateWithoutReturnedByInput = {
@@ -1376,11 +1376,11 @@ export type GuaranteeUpdateWithoutBranchInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateWithoutBranchInput = {
@@ -1446,11 +1446,11 @@ export type GuaranteeUpdateWithoutOperationInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateWithoutOperationInput = {
@@ -1516,11 +1516,11 @@ export type GuaranteeUpdateWithoutTenantInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutGuaranteesNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutGuaranteesNestedInput
   receivedBy?: Prisma.UserUpdateOneRequiredWithoutReceivedGuaranteesNestedInput
   returnedBy?: Prisma.UserUpdateOneWithoutReturnedGuaranteesNestedInput
-  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutGuaranteeNestedInput
 }
 
 export type GuaranteeUncheckedUpdateWithoutTenantInput = {
@@ -1605,12 +1605,12 @@ export type GuaranteeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  guaranteeStatusHistories?: boolean | Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  guaranteeStatusHistories?: boolean | Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.GuaranteeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["guarantee"]>
 
@@ -1630,8 +1630,8 @@ export type GuaranteeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1653,8 +1653,8 @@ export type GuaranteeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1680,24 +1680,24 @@ export type GuaranteeSelectScalar = {
 
 export type GuaranteeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "operationId" | "branchId" | "type" | "value" | "description" | "status" | "receivedById" | "returnedById" | "createdAt" | "returnedAt" | "createdBy" | "updatedAt" | "updatedBy", ExtArgs["result"]["guarantee"]>
 export type GuaranteeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  guaranteeStatusHistories?: boolean | Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  guaranteeStatusHistories?: boolean | Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.GuaranteeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GuaranteeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type GuaranteeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   receivedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   returnedBy?: boolean | Prisma.Guarantee$returnedByArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1706,12 +1706,12 @@ export type GuaranteeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $GuaranteePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Guarantee"
   objects: {
-    operation: Prisma.$OperationPayload<ExtArgs>
+    guaranteeStatusHistories: Prisma.$GuaranteeStatusHistoryPayload<ExtArgs>[]
     branch: Prisma.$BranchPayload<ExtArgs>
+    operation: Prisma.$OperationPayload<ExtArgs>
     receivedBy: Prisma.$UserPayload<ExtArgs>
     returnedBy: Prisma.$UserPayload<ExtArgs> | null
     tenant: Prisma.$TenantPayload<ExtArgs>
-    guaranteeStatusHistories: Prisma.$GuaranteeStatusHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2123,12 +2123,12 @@ readonly fields: GuaranteeFieldRefs;
  */
 export interface Prisma__GuaranteeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  guaranteeStatusHistories<T extends Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteeStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   receivedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   returnedBy<T extends Prisma.Guarantee$returnedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Guarantee$returnedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  guaranteeStatusHistories<T extends Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Guarantee$guaranteeStatusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteeStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2569,25 +2569,6 @@ export type GuaranteeDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Guarantee.returnedBy
- */
-export type Guarantee$returnedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
-}
-
-/**
  * Guarantee.guaranteeStatusHistories
  */
 export type Guarantee$guaranteeStatusHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2609,6 +2590,25 @@ export type Guarantee$guaranteeStatusHistoriesArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.GuaranteeStatusHistoryScalarFieldEnum | Prisma.GuaranteeStatusHistoryScalarFieldEnum[]
+}
+
+/**
+ * Guarantee.returnedBy
+ */
+export type Guarantee$returnedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

@@ -6,7 +6,7 @@ export class ProcessInitialPaymentUseCase {
 
   async execute(params: {
     downPayment: number;
-    paymentMethod: string;
+    paymentMethodId: string;
     operationId: string;
     branchId: string;
     sellerId: string;
@@ -25,7 +25,7 @@ export class ProcessInitialPaymentUseCase {
       receivedById: params.sellerId,
       amount: params.downPayment,
       direction: "in",
-      paymentMethodId: params.paymentMethod,
+      paymentMethodId: params.paymentMethodId,
       status: "posted",
       category: "payment",
       date: now,

@@ -206,8 +206,8 @@ export type PayrollRunWhereInput = {
   payDate?: Prisma.DateTimeFilter<"PayrollRun"> | Date | string
   status?: Prisma.EnumPayrollRunStatusFilter<"PayrollRun"> | $Enums.PayrollRunStatus
   createdAt?: Prisma.DateTimeFilter<"PayrollRun"> | Date | string
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   payrollItems?: Prisma.PayrollItemListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
@@ -220,8 +220,8 @@ export type PayrollRunOrderByWithRelationInput = {
   payDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  branch?: Prisma.BranchOrderByWithRelationInput
   payrollItems?: Prisma.PayrollItemOrderByRelationAggregateInput
+  branch?: Prisma.BranchOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
@@ -237,8 +237,8 @@ export type PayrollRunWhereUniqueInput = Prisma.AtLeast<{
   payDate?: Prisma.DateTimeFilter<"PayrollRun"> | Date | string
   status?: Prisma.EnumPayrollRunStatusFilter<"PayrollRun"> | $Enums.PayrollRunStatus
   createdAt?: Prisma.DateTimeFilter<"PayrollRun"> | Date | string
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   payrollItems?: Prisma.PayrollItemListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
@@ -277,8 +277,8 @@ export type PayrollRunCreateInput = {
   payDate: Date | string
   status: $Enums.PayrollRunStatus
   createdAt?: Date | string
-  branch: Prisma.BranchCreateNestedOneWithoutPayrollRunsInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutPayrollRunInput
+  branch: Prisma.BranchCreateNestedOneWithoutPayrollRunsInput
   tenant: Prisma.TenantCreateNestedOneWithoutPayrollRunsInput
 }
 
@@ -301,8 +301,8 @@ export type PayrollRunUpdateInput = {
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumPayrollRunStatusFieldUpdateOperationsInput | $Enums.PayrollRunStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branch?: Prisma.BranchUpdateOneRequiredWithoutPayrollRunsNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutPayrollRunNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutPayrollRunsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPayrollRunsNestedInput
 }
 
@@ -628,8 +628,8 @@ export type PayrollRunCreateWithoutTenantInput = {
   payDate: Date | string
   status: $Enums.PayrollRunStatus
   createdAt?: Date | string
-  branch: Prisma.BranchCreateNestedOneWithoutPayrollRunsInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutPayrollRunInput
+  branch: Prisma.BranchCreateNestedOneWithoutPayrollRunsInput
 }
 
 export type PayrollRunUncheckedCreateWithoutTenantInput = {
@@ -728,8 +728,8 @@ export type PayrollRunUpdateWithoutTenantInput = {
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumPayrollRunStatusFieldUpdateOperationsInput | $Enums.PayrollRunStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branch?: Prisma.BranchUpdateOneRequiredWithoutPayrollRunsNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutPayrollRunNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutPayrollRunsNestedInput
 }
 
 export type PayrollRunUncheckedUpdateWithoutTenantInput = {
@@ -793,8 +793,8 @@ export type PayrollRunSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   payDate?: boolean
   status?: boolean
   createdAt?: boolean
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   payrollItems?: boolean | Prisma.PayrollRun$payrollItemsArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PayrollRunCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payrollRun"]>
@@ -838,8 +838,8 @@ export type PayrollRunSelectScalar = {
 
 export type PayrollRunOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "branchId" | "periodStart" | "periodEnd" | "payDate" | "status" | "createdAt", ExtArgs["result"]["payrollRun"]>
 export type PayrollRunInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   payrollItems?: boolean | Prisma.PayrollRun$payrollItemsArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PayrollRunCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -855,8 +855,8 @@ export type PayrollRunIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $PayrollRunPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PayrollRun"
   objects: {
-    branch: Prisma.$BranchPayload<ExtArgs>
     payrollItems: Prisma.$PayrollItemPayload<ExtArgs>[]
+    branch: Prisma.$BranchPayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1262,8 +1262,8 @@ readonly fields: PayrollRunFieldRefs;
  */
 export interface Prisma__PayrollRunClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   payrollItems<T extends Prisma.PayrollRun$payrollItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayrollRun$payrollItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

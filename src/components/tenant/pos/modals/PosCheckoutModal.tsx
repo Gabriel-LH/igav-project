@@ -19,9 +19,19 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
-import { processTransactionAction, reserveBundlesAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import {
+  processTransactionAction,
+  reserveBundlesAction,
+} from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { getAvailablePaymentMethodsAction } from "@/src/app/(tenant)/tenant/actions/payment-method.actions";
+import {
+  getBranchInventoryAction,
+} from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { redeemPointsAction } from "@/src/app/(tenant)/tenant/actions/loyalty.actions";
-import { useTenantConfigStore, DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
+import {
+  useTenantConfigStore,
+  DEFAULT_CONFIG,
+} from "@/src/store/useTenantConfigStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
@@ -37,12 +47,12 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
-import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBundle.usecase";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
 import { useCouponStore } from "@/src/store/useCouponStore";
 import { authClient } from "@/src/lib/auth-client";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
 interface PosCheckoutModalProps {
   open: boolean;
@@ -80,6 +90,30 @@ export function PosCheckoutModal({
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [notes, setNotes] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethodId, setPaymentMethodId] = useState<string>("");
+
+  useEffect(() => {
+    async function loadPaymentMethods() {
+      const res = await getAvailablePaymentMethodsAction();
+      if (res.success && res.data) {
+        setPaymentMethods(res.data);
+        if (res.data.length > 0) {
+          setPaymentMethodId(res.data[0].id);
+        }
+      }
+    }
+    if (open) {
+      loadPaymentMethods();
+    }
+  }, [open]);
+
+  const selectedPaymentMethod = useMemo(
+    () => paymentMethods.find((m) => m.id === paymentMethodId),
+    [paymentMethods, paymentMethodId],
+  );
+
+  const isCashPayment = selectedPaymentMethod?.type === "cash";
 
   const [usePoints, setUsePoints] = React.useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
@@ -120,9 +154,6 @@ export function PosCheckoutModal({
   const returnTime = globalRentalTimes?.return || "20:00";
 
   // Financieros
-  const [paymentMethod, setPaymentMethod] = useState<
-    "cash" | "card" | "transfer" | "yape" | "plin"
-  >("cash");
   const [receivedAmount, setReceivedAmount] = useState("");
   const [guarantee, setGuarantee] = useState("");
   const [guaranteeType, setGuaranteeType] = useState<GuaranteeType>("dinero");
@@ -210,11 +241,11 @@ export function PosCheckoutModal({
   }, [totalBrutoConIGV, guarantee, guaranteeType, hasRentals]);
 
   const changeAmount = useMemo(() => {
-    if (paymentMethod !== "cash") return 0;
+    if (!isCashPayment) return 0;
     const received = Number(receivedAmount);
     if (received <= 0 || received < totalACobrarHoy) return 0;
     return received - totalACobrarHoy;
-  }, [receivedAmount, totalACobrarHoy, paymentMethod]);
+  }, [receivedAmount, totalACobrarHoy, isCashPayment]);
 
   const withTime = (date: Date, time: string) => {
     const [h, m] = time.split(":").map(Number);
@@ -254,6 +285,7 @@ export function PosCheckoutModal({
     if (conflicts.length > 0)
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
+    if (!selectedPaymentMethod) return toast.error("Seleccione un método de pago");
 
     const baseData = {
       tenantId: activeTenantId ?? items[0]?.product.tenantId,
@@ -276,7 +308,7 @@ export function PosCheckoutModal({
           tenantId,
           currentBranchId,
           dateRange.from,
-          dateRange.to
+          dateRange.to,
         );
         if (!resBundle.success) throw new Error(resBundle.error);
       }
@@ -287,7 +319,7 @@ export function PosCheckoutModal({
         cartItems: CartItem[],
         opType: "venta" | "alquiler",
       ) => {
-        const results: SaleDTO["items"] = [];
+        const results: any[] = [];
 
         cartItems.forEach((cartItem) => {
           const unitPrice = cartItem.unitPrice;
@@ -303,6 +335,7 @@ export function PosCheckoutModal({
                 productId: cartItem.product.id,
                 productName: cartItem.product.name,
                 stockId: code,
+                inventoryItemId: code,
                 quantity: 1,
                 variantId: cartItem.variantId ?? "",
                 priceAtMoment: unitPrice,
@@ -378,19 +411,19 @@ export function PosCheckoutModal({
         guaranteeAmount;
 
       let remainingCash =
-        paymentMethod === "cash"
+        isCashPayment
           ? Number(receivedAmount) || 0
           : totalACobrarHoy;
 
       const saleReceived =
-        paymentMethod === "cash"
+        isCashPayment
           ? Math.min(saleTotalAmount, remainingCash)
           : saleTotalAmount;
-      if (paymentMethod === "cash")
+      if (isCashPayment)
         remainingCash = Math.max(0, remainingCash - saleReceived);
 
       const rentalReceived =
-        paymentMethod === "cash" ? remainingCash : rentalTotalAmount;
+        isCashPayment ? remainingCash : rentalTotalAmount;
 
       // A. PROCESAR VENTA
       if (ventaItems.length > 0) {
@@ -410,12 +443,12 @@ export function PosCheckoutModal({
             totalAmount: saleTotalAmount,
             keepAsCredit: false,
             receivedAmount: saleReceived,
-            paymentMethod: paymentMethod as PaymentMethodType,
+            paymentMethodId: selectedPaymentMethod.id,
           },
         };
 
         const res = await processTransactionAction(saleDTO);
-        if(!res.success) throw new Error(res.error);
+        if (!res.success) throw new Error(res.error);
       }
 
       if (alquilerItems.length > 0) {
@@ -438,7 +471,7 @@ export function PosCheckoutModal({
             totalAmount: rentalTotalAmount,
             keepAsCredit: false,
             receivedAmount: rentalReceived,
-            paymentMethod: paymentMethod as PaymentMethodType,
+            paymentMethodId: selectedPaymentMethod.id,
           },
 
           guarantee: {
@@ -450,7 +483,7 @@ export function PosCheckoutModal({
         };
 
         const res = await processTransactionAction(rentalDTO);
-        if(!res.success) throw new Error(res.error);
+        if (!res.success) throw new Error(res.error);
       }
 
       if (usePoints && pointsConsumed > 0) {
@@ -467,6 +500,19 @@ export function PosCheckoutModal({
 
       toast.success("Operación exitosa");
       clearCart();
+
+      // RE-FETCH INVENTORY TO SYNC UI
+      (async () => {
+        const invRes = await getBranchInventoryAction(currentBranchId);
+        if (invRes.success && invRes.data) {
+          const store = useInventoryStore.getState();
+          store.setProducts(invRes.data.products);
+          store.setProductVariants(invRes.data.variants);
+          store.setInventoryItems(invRes.data.inventoryItems);
+          store.setStockLots(invRes.data.stockLots);
+        }
+      })();
+
       onOpenChange(false);
     } catch (e) {
       console.error(e);
@@ -711,11 +757,13 @@ export function PosCheckoutModal({
           <CashPaymentSummary
             type={hasRentals ? "alquiler" : "venta"}
             totalToPay={totalACobrarHoy}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
+            paymentMethodId={paymentMethodId}
+            paymentMethods={paymentMethods}
+            isCashPayment={isCashPayment}
             receivedAmount={receivedAmount}
             setReceivedAmount={setReceivedAmount}
             changeAmount={changeAmount}
+            setPaymentMethodId={setPaymentMethodId}
             guarantee={guarantee}
             setGuarantee={setGuarantee}
             guaranteeType={guaranteeType}
@@ -726,13 +774,17 @@ export function PosCheckoutModal({
         <div className="pt-4 border-t">
           <Button
             onClick={handleConfirm}
-            disabled={items.some(
-              (i) =>
-                (i.product.is_serial && i.selectedCodes.length < i.quantity) ||
-                (hasRentals && Number(receivedAmount) <= 0) ||
-                Number(receivedAmount) > totalBrutoConIGV ||
-                (hasRentals && guarantee.length === 0),
-            )}
+            disabled={
+              isProcessing ||
+              items.some(
+                (i) =>
+                  i.product.is_serial && i.selectedCodes.length < i.quantity,
+              ) ||
+              (hasRentals && Number(receivedAmount) <= 0) ||
+              Number(receivedAmount) > totalBrutoConIGV ||
+              (hasRentals && guarantee.length === 0) ||
+              !selectedCustomer
+            }
             className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
           >
             <HugeiconsIcon

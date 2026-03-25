@@ -232,8 +232,8 @@ export type ReferralRewardWhereInput = {
   amount?: Prisma.FloatFilter<"ReferralReward"> | number
   status?: Prisma.EnumReferralRewardStatusFilter<"ReferralReward"> | $Enums.ReferralRewardStatus
   createdAt?: Prisma.DateTimeFilter<"ReferralReward"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   referral?: Prisma.XOR<Prisma.ReferralScalarRelationFilter, Prisma.ReferralWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type ReferralRewardOrderByWithRelationInput = {
@@ -244,8 +244,8 @@ export type ReferralRewardOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   referral?: Prisma.ReferralOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type ReferralRewardWhereUniqueInput = Prisma.AtLeast<{
@@ -259,8 +259,8 @@ export type ReferralRewardWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.FloatFilter<"ReferralReward"> | number
   status?: Prisma.EnumReferralRewardStatusFilter<"ReferralReward"> | $Enums.ReferralRewardStatus
   createdAt?: Prisma.DateTimeFilter<"ReferralReward"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   referral?: Prisma.XOR<Prisma.ReferralScalarRelationFilter, Prisma.ReferralWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type ReferralRewardOrderByWithAggregationInput = {
@@ -297,8 +297,8 @@ export type ReferralRewardCreateInput = {
   amount: number
   status: $Enums.ReferralRewardStatus
   createdAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutReferralRewardsInput
   referral: Prisma.ReferralCreateNestedOneWithoutReferralRewardsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutReferralRewardsInput
 }
 
 export type ReferralRewardUncheckedCreateInput = {
@@ -317,8 +317,8 @@ export type ReferralRewardUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumReferralRewardStatusFieldUpdateOperationsInput | $Enums.ReferralRewardStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutReferralRewardsNestedInput
   referral?: Prisma.ReferralUpdateOneRequiredWithoutReferralRewardsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutReferralRewardsNestedInput
 }
 
 export type ReferralRewardUncheckedUpdateInput = {
@@ -678,8 +678,8 @@ export type ReferralRewardSelect<ExtArgs extends runtime.Types.Extensions.Intern
   amount?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referralReward"]>
 
 export type ReferralRewardSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -690,8 +690,8 @@ export type ReferralRewardSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   amount?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referralReward"]>
 
 export type ReferralRewardSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -702,8 +702,8 @@ export type ReferralRewardSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   amount?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referralReward"]>
 
 export type ReferralRewardSelectScalar = {
@@ -718,23 +718,23 @@ export type ReferralRewardSelectScalar = {
 
 export type ReferralRewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "referralId" | "rewardType" | "amount" | "status" | "createdAt", ExtArgs["result"]["referralReward"]>
 export type ReferralRewardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ReferralRewardIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ReferralRewardIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   referral?: boolean | Prisma.ReferralDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ReferralRewardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReferralReward"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     referral: Prisma.$ReferralPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1138,8 +1138,8 @@ readonly fields: ReferralRewardFieldRefs;
  */
 export interface Prisma__ReferralRewardClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   referral<T extends Prisma.ReferralDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReferralDefaultArgs<ExtArgs>>): Prisma.Prisma__ReferralClient<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

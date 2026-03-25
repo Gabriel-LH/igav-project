@@ -260,10 +260,10 @@ export type PriceHistoryWhereInput = {
   reason?: Prisma.EnumPriceHistoryReasonFilter<"PriceHistory"> | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFilter<"PriceHistory"> | Date | string
   userId?: Prisma.StringFilter<"PriceHistory"> | string
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
+  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
-  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
 }
 
 export type PriceHistoryOrderByWithRelationInput = {
@@ -277,10 +277,10 @@ export type PriceHistoryOrderByWithRelationInput = {
   reason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  inventoryItem?: Prisma.InventoryItemOrderByWithRelationInput
+  stockLot?: Prisma.StockLotOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
   variant?: Prisma.ProductVariantOrderByWithRelationInput
-  stockLot?: Prisma.StockLotOrderByWithRelationInput
-  inventoryItem?: Prisma.InventoryItemOrderByWithRelationInput
 }
 
 export type PriceHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -297,10 +297,10 @@ export type PriceHistoryWhereUniqueInput = Prisma.AtLeast<{
   reason?: Prisma.EnumPriceHistoryReasonFilter<"PriceHistory"> | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFilter<"PriceHistory"> | Date | string
   userId?: Prisma.StringFilter<"PriceHistory"> | string
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
+  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stockLot?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
-  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
 }, "id">
 
 export type PriceHistoryOrderByWithAggregationInput = {
@@ -344,10 +344,10 @@ export type PriceHistoryCreateInput = {
   reason: $Enums.PriceHistoryReason
   createdAt?: Date | string
   userId: string
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
   tenant: Prisma.TenantCreateNestedOneWithoutPriceHistoriesInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutPriceHistoriesInput
-  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
-  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
 }
 
 export type PriceHistoryUncheckedCreateInput = {
@@ -370,10 +370,10 @@ export type PriceHistoryUpdateInput = {
   reason?: Prisma.EnumPriceHistoryReasonFieldUpdateOperationsInput | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPriceHistoriesNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput
-  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
-  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
 }
 
 export type PriceHistoryUncheckedUpdateInput = {
@@ -662,9 +662,9 @@ export type PriceHistoryCreateWithoutVariantInput = {
   reason: $Enums.PriceHistoryReason
   createdAt?: Date | string
   userId: string
-  tenant: Prisma.TenantCreateNestedOneWithoutPriceHistoriesInput
-  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
   inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutPriceHistoriesInput
 }
 
 export type PriceHistoryUncheckedCreateWithoutVariantInput = {
@@ -728,9 +728,9 @@ export type PriceHistoryCreateWithoutInventoryItemInput = {
   reason: $Enums.PriceHistoryReason
   createdAt?: Date | string
   userId: string
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
   tenant: Prisma.TenantCreateNestedOneWithoutPriceHistoriesInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutPriceHistoriesInput
-  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
 }
 
 export type PriceHistoryUncheckedCreateWithoutInventoryItemInput = {
@@ -778,9 +778,9 @@ export type PriceHistoryCreateWithoutStockLotInput = {
   reason: $Enums.PriceHistoryReason
   createdAt?: Date | string
   userId: string
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
   tenant: Prisma.TenantCreateNestedOneWithoutPriceHistoriesInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutPriceHistoriesInput
-  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
 }
 
 export type PriceHistoryUncheckedCreateWithoutStockLotInput = {
@@ -828,9 +828,9 @@ export type PriceHistoryCreateWithoutTenantInput = {
   reason: $Enums.PriceHistoryReason
   createdAt?: Date | string
   userId: string
-  variant: Prisma.ProductVariantCreateNestedOneWithoutPriceHistoriesInput
-  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
   inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutPriceHistoriesInput
+  stockLot?: Prisma.StockLotCreateNestedOneWithoutPriceHistoriesInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutPriceHistoriesInput
 }
 
 export type PriceHistoryUncheckedCreateWithoutTenantInput = {
@@ -890,9 +890,9 @@ export type PriceHistoryUpdateWithoutVariantInput = {
   reason?: Prisma.EnumPriceHistoryReasonFieldUpdateOperationsInput | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutPriceHistoriesNestedInput
-  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
   inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutPriceHistoriesNestedInput
 }
 
 export type PriceHistoryUncheckedUpdateWithoutVariantInput = {
@@ -938,9 +938,9 @@ export type PriceHistoryUpdateWithoutInventoryItemInput = {
   reason?: Prisma.EnumPriceHistoryReasonFieldUpdateOperationsInput | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPriceHistoriesNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput
-  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
 }
 
 export type PriceHistoryUncheckedUpdateWithoutInventoryItemInput = {
@@ -986,9 +986,9 @@ export type PriceHistoryUpdateWithoutStockLotInput = {
   reason?: Prisma.EnumPriceHistoryReasonFieldUpdateOperationsInput | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPriceHistoriesNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput
-  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
 }
 
 export type PriceHistoryUncheckedUpdateWithoutStockLotInput = {
@@ -1034,9 +1034,9 @@ export type PriceHistoryUpdateWithoutTenantInput = {
   reason?: Prisma.EnumPriceHistoryReasonFieldUpdateOperationsInput | $Enums.PriceHistoryReason
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput
-  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
   inventoryItem?: Prisma.InventoryItemUpdateOneWithoutPriceHistoriesNestedInput
+  stockLot?: Prisma.StockLotUpdateOneWithoutPriceHistoriesNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutPriceHistoriesNestedInput
 }
 
 export type PriceHistoryUncheckedUpdateWithoutTenantInput = {
@@ -1076,10 +1076,10 @@ export type PriceHistorySelect<ExtArgs extends runtime.Types.Extensions.Internal
   reason?: boolean
   createdAt?: boolean
   userId?: boolean
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }, ExtArgs["result"]["priceHistory"]>
 
 export type PriceHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1093,10 +1093,10 @@ export type PriceHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   reason?: boolean
   createdAt?: boolean
   userId?: boolean
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }, ExtArgs["result"]["priceHistory"]>
 
 export type PriceHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1110,10 +1110,10 @@ export type PriceHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   reason?: boolean
   createdAt?: boolean
   userId?: boolean
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }, ExtArgs["result"]["priceHistory"]>
 
 export type PriceHistorySelectScalar = {
@@ -1131,31 +1131,31 @@ export type PriceHistorySelectScalar = {
 
 export type PriceHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "variantId" | "stockLotId" | "inventoryItemId" | "oldPrice" | "newPrice" | "reason" | "createdAt" | "userId", ExtArgs["result"]["priceHistory"]>
 export type PriceHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }
 export type PriceHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }
 export type PriceHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
+  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockLot?: boolean | Prisma.PriceHistory$stockLotArgs<ExtArgs>
-  inventoryItem?: boolean | Prisma.PriceHistory$inventoryItemArgs<ExtArgs>
 }
 
 export type $PriceHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PriceHistory"
   objects: {
+    inventoryItem: Prisma.$InventoryItemPayload<ExtArgs> | null
+    stockLot: Prisma.$StockLotPayload<ExtArgs> | null
     tenant: Prisma.$TenantPayload<ExtArgs>
     variant: Prisma.$ProductVariantPayload<ExtArgs>
-    stockLot: Prisma.$StockLotPayload<ExtArgs> | null
-    inventoryItem: Prisma.$InventoryItemPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1562,10 +1562,10 @@ readonly fields: PriceHistoryFieldRefs;
  */
 export interface Prisma__PriceHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  inventoryItem<T extends Prisma.PriceHistory$inventoryItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PriceHistory$inventoryItemArgs<ExtArgs>>): Prisma.Prisma__InventoryItemClient<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  stockLot<T extends Prisma.PriceHistory$stockLotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PriceHistory$stockLotArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  stockLot<T extends Prisma.PriceHistory$stockLotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PriceHistory$stockLotArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  inventoryItem<T extends Prisma.PriceHistory$inventoryItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PriceHistory$inventoryItemArgs<ExtArgs>>): Prisma.Prisma__InventoryItemClient<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2001,25 +2001,6 @@ export type PriceHistoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * PriceHistory.stockLot
- */
-export type PriceHistory$stockLotArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StockLot
-   */
-  select?: Prisma.StockLotSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StockLot
-   */
-  omit?: Prisma.StockLotOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StockLotInclude<ExtArgs> | null
-  where?: Prisma.StockLotWhereInput
-}
-
-/**
  * PriceHistory.inventoryItem
  */
 export type PriceHistory$inventoryItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2036,6 +2017,25 @@ export type PriceHistory$inventoryItemArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.InventoryItemInclude<ExtArgs> | null
   where?: Prisma.InventoryItemWhereInput
+}
+
+/**
+ * PriceHistory.stockLot
+ */
+export type PriceHistory$stockLotArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
 }
 
 /**

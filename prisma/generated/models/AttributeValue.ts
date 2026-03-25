@@ -198,8 +198,8 @@ export type AttributeValueWhereInput = {
   attributeTypeId?: Prisma.StringFilter<"AttributeValue"> | string
   hexColor?: Prisma.StringFilter<"AttributeValue"> | string
   isActive?: Prisma.BoolFilter<"AttributeValue"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   attributeType?: Prisma.XOR<Prisma.AttributeTypeScalarRelationFilter, Prisma.AttributeTypeWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type AttributeValueOrderByWithRelationInput = {
@@ -210,8 +210,8 @@ export type AttributeValueOrderByWithRelationInput = {
   attributeTypeId?: Prisma.SortOrder
   hexColor?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   attributeType?: Prisma.AttributeTypeOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type AttributeValueWhereUniqueInput = Prisma.AtLeast<{
@@ -225,8 +225,8 @@ export type AttributeValueWhereUniqueInput = Prisma.AtLeast<{
   attributeTypeId?: Prisma.StringFilter<"AttributeValue"> | string
   hexColor?: Prisma.StringFilter<"AttributeValue"> | string
   isActive?: Prisma.BoolFilter<"AttributeValue"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   attributeType?: Prisma.XOR<Prisma.AttributeTypeScalarRelationFilter, Prisma.AttributeTypeWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type AttributeValueOrderByWithAggregationInput = {
@@ -261,8 +261,8 @@ export type AttributeValueCreateInput = {
   value: string
   hexColor: string
   isActive: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutAttributeValuesInput
   attributeType: Prisma.AttributeTypeCreateNestedOneWithoutAttributeValuesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutAttributeValuesInput
 }
 
 export type AttributeValueUncheckedCreateInput = {
@@ -281,8 +281,8 @@ export type AttributeValueUpdateInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
   hexColor?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutAttributeValuesNestedInput
   attributeType?: Prisma.AttributeTypeUpdateOneRequiredWithoutAttributeValuesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutAttributeValuesNestedInput
 }
 
 export type AttributeValueUncheckedUpdateInput = {
@@ -630,8 +630,8 @@ export type AttributeValueSelect<ExtArgs extends runtime.Types.Extensions.Intern
   attributeTypeId?: boolean
   hexColor?: boolean
   isActive?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attributeValue"]>
 
 export type AttributeValueSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -642,8 +642,8 @@ export type AttributeValueSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   attributeTypeId?: boolean
   hexColor?: boolean
   isActive?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attributeValue"]>
 
 export type AttributeValueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -654,8 +654,8 @@ export type AttributeValueSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   attributeTypeId?: boolean
   hexColor?: boolean
   isActive?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attributeValue"]>
 
 export type AttributeValueSelectScalar = {
@@ -670,23 +670,23 @@ export type AttributeValueSelectScalar = {
 
 export type AttributeValueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "code" | "value" | "attributeTypeId" | "hexColor" | "isActive", ExtArgs["result"]["attributeValue"]>
 export type AttributeValueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type AttributeValueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type AttributeValueIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   attributeType?: boolean | Prisma.AttributeTypeDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $AttributeValuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AttributeValue"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     attributeType: Prisma.$AttributeTypePayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1090,8 +1090,8 @@ readonly fields: AttributeValueFieldRefs;
  */
 export interface Prisma__AttributeValueClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   attributeType<T extends Prisma.AttributeTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AttributeTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__AttributeTypeClient<runtime.Types.Result.GetResult<Prisma.$AttributeTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

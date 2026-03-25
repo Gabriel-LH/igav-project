@@ -27,15 +27,15 @@ export type AggregateProductVariant = {
 }
 
 export type ProductVariantAvgAggregateOutputType = {
-  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
+  purchasePrice: number | null
 }
 
 export type ProductVariantSumAggregateOutputType = {
-  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
+  purchasePrice: number | null
 }
 
 export type ProductVariantMinAggregateOutputType = {
@@ -43,15 +43,15 @@ export type ProductVariantMinAggregateOutputType = {
   tenantId: string | null
   productId: string | null
   variantCode: string | null
-  variantSignature: string | null
   barcode: string | null
-  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  purchasePrice: number | null
+  variantSignature: string | null
 }
 
 export type ProductVariantMaxAggregateOutputType = {
@@ -59,15 +59,15 @@ export type ProductVariantMaxAggregateOutputType = {
   tenantId: string | null
   productId: string | null
   variantCode: string | null
-  variantSignature: string | null
   barcode: string | null
-  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  purchasePrice: number | null
+  variantSignature: string | null
 }
 
 export type ProductVariantCountAggregateOutputType = {
@@ -75,31 +75,31 @@ export type ProductVariantCountAggregateOutputType = {
   tenantId: number
   productId: number
   variantCode: number
-  variantSignature: number
   barcode: number
   attributes: number
-  purchasePrice: number
   priceSell: number
   priceRent: number
   rentUnit: number
-  image: number
   isActive: number
   createdAt: number
   updatedAt: number
+  purchasePrice: number
+  image: number
+  variantSignature: number
   _all: number
 }
 
 
 export type ProductVariantAvgAggregateInputType = {
-  purchasePrice?: true
   priceSell?: true
   priceRent?: true
+  purchasePrice?: true
 }
 
 export type ProductVariantSumAggregateInputType = {
-  purchasePrice?: true
   priceSell?: true
   priceRent?: true
+  purchasePrice?: true
 }
 
 export type ProductVariantMinAggregateInputType = {
@@ -107,15 +107,15 @@ export type ProductVariantMinAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
-  variantSignature?: true
   barcode?: true
-  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
+  purchasePrice?: true
+  variantSignature?: true
 }
 
 export type ProductVariantMaxAggregateInputType = {
@@ -123,15 +123,15 @@ export type ProductVariantMaxAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
-  variantSignature?: true
   barcode?: true
-  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
+  purchasePrice?: true
+  variantSignature?: true
 }
 
 export type ProductVariantCountAggregateInputType = {
@@ -139,17 +139,17 @@ export type ProductVariantCountAggregateInputType = {
   tenantId?: true
   productId?: true
   variantCode?: true
-  variantSignature?: true
   barcode?: true
   attributes?: true
-  purchasePrice?: true
   priceSell?: true
   priceRent?: true
   rentUnit?: true
-  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
+  purchasePrice?: true
+  image?: true
+  variantSignature?: true
   _all?: true
 }
 
@@ -244,17 +244,17 @@ export type ProductVariantGroupByOutputType = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature: string
   barcode: string | null
   attributes: runtime.JsonValue
-  purchasePrice: number | null
   priceSell: number | null
   priceRent: number | null
   rentUnit: $Enums.RentUnit | null
-  image: string[]
   isActive: boolean
   createdAt: Date
   updatedAt: Date
+  purchasePrice: number | null
+  image: string[]
+  variantSignature: string
   _count: ProductVariantCountAggregateOutputType | null
   _avg: ProductVariantAvgAggregateOutputType | null
   _sum: ProductVariantSumAggregateOutputType | null
@@ -285,27 +285,27 @@ export type ProductVariantWhereInput = {
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
-  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
-  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
-  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }
 
 export type ProductVariantOrderByWithRelationInput = {
@@ -313,27 +313,27 @@ export type ProductVariantOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
-  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
-  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   priceSell?: Prisma.SortOrderInput | Prisma.SortOrder
   priceRent?: Prisma.SortOrderInput | Prisma.SortOrder
   rentUnit?: Prisma.SortOrderInput | Prisma.SortOrder
-  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  product?: Prisma.ProductOrderByWithRelationInput
+  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   inventoryItems?: Prisma.InventoryItemOrderByRelationAggregateInput
-  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
+  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
+  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
+  product?: Prisma.ProductOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
   reservationItems?: Prisma.ReservationItemOrderByRelationAggregateInput
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
+  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
   transferItems?: Prisma.TransferItemOrderByRelationAggregateInput
-  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
-  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
 }
 
 export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
@@ -344,27 +344,27 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
-  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
-  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
-  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }, "id" | "variantCode">
 
 export type ProductVariantOrderByWithAggregationInput = {
@@ -372,17 +372,17 @@ export type ProductVariantOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
-  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrder
-  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   priceSell?: Prisma.SortOrderInput | Prisma.SortOrder
   priceRent?: Prisma.SortOrderInput | Prisma.SortOrder
   rentUnit?: Prisma.SortOrderInput | Prisma.SortOrder
-  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
   _count?: Prisma.ProductVariantCountOrderByAggregateInput
   _avg?: Prisma.ProductVariantAvgOrderByAggregateInput
   _max?: Prisma.ProductVariantMaxOrderByAggregateInput
@@ -398,43 +398,43 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   productId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
-  variantSignature?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonWithAggregatesFilter<"ProductVariant">
-  purchasePrice?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableWithAggregatesFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProductVariant"> | Date | string
+  purchasePrice?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
+  variantSignature?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
 }
 
 export type ProductVariantCreateInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateInput = {
@@ -442,51 +442,51 @@ export type ProductVariantUncheckedCreateInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateInput = {
@@ -494,25 +494,25 @@ export type ProductVariantUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateManyInput = {
@@ -520,33 +520,33 @@ export type ProductVariantCreateManyInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
 }
 
 export type ProductVariantUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProductVariantUncheckedUpdateManyInput = {
@@ -554,17 +554,17 @@ export type ProductVariantUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProductVariantListRelationFilter = {
@@ -582,23 +582,23 @@ export type ProductVariantCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
-  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
-  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
+  image?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
 }
 
 export type ProductVariantAvgOrderByAggregateInput = {
-  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
 }
 
 export type ProductVariantMaxOrderByAggregateInput = {
@@ -606,15 +606,15 @@ export type ProductVariantMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
-  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
-  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
 }
 
 export type ProductVariantMinOrderByAggregateInput = {
@@ -622,21 +622,21 @@ export type ProductVariantMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   variantCode?: Prisma.SortOrder
-  variantSignature?: Prisma.SortOrder
   barcode?: Prisma.SortOrder
-  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
   rentUnit?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
+  variantSignature?: Prisma.SortOrder
 }
 
 export type ProductVariantSumOrderByAggregateInput = {
-  purchasePrice?: Prisma.SortOrder
   priceSell?: Prisma.SortOrder
   priceRent?: Prisma.SortOrder
+  purchasePrice?: Prisma.SortOrder
 }
 
 export type ProductVariantScalarRelationFilter = {
@@ -863,51 +863,51 @@ export type ProductVariantUpdateOneWithoutInventoryMovementsNestedInput = {
 export type ProductVariantCreateWithoutProductInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutProductInput = {
   id?: string
   tenantId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutProductInput = {
@@ -944,42 +944,42 @@ export type ProductVariantScalarWhereInput = {
   tenantId?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   variantCode?: Prisma.StringFilter<"ProductVariant"> | string
-  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
   barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   attributes?: Prisma.JsonFilter<"ProductVariant">
-  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceSell?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   priceRent?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
   rentUnit?: Prisma.EnumRentUnitNullableFilter<"ProductVariant"> | $Enums.RentUnit | null
-  image?: Prisma.StringNullableListFilter<"ProductVariant">
   isActive?: Prisma.BoolFilter<"ProductVariant"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
+  purchasePrice?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  image?: Prisma.StringNullableListFilter<"ProductVariant">
+  variantSignature?: Prisma.StringFilter<"ProductVariant"> | string
 }
 
 export type ProductVariantCreateWithoutInventoryItemsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
   product: Prisma.ProductCreateNestedOneWithoutVariantsInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
@@ -987,24 +987,24 @@ export type ProductVariantUncheckedCreateWithoutInventoryItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutInventoryItemsInput = {
@@ -1026,26 +1026,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutInventoryItemsInput = {
 export type ProductVariantUpdateWithoutInventoryItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
@@ -1053,49 +1053,49 @@ export type ProductVariantUncheckedUpdateWithoutInventoryItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutPriceHistoriesInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutPriceHistoriesInput = {
@@ -1103,24 +1103,24 @@ export type ProductVariantUncheckedCreateWithoutPriceHistoriesInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutPriceHistoriesInput = {
@@ -1142,26 +1142,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutPriceHistoriesInput = {
 export type ProductVariantUpdateWithoutPriceHistoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
@@ -1169,49 +1169,49 @@ export type ProductVariantUncheckedUpdateWithoutPriceHistoriesInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutStockLotsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
@@ -1219,24 +1219,24 @@ export type ProductVariantUncheckedCreateWithoutStockLotsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutStockLotsInput = {
@@ -1258,26 +1258,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutStockLotsInput = {
 export type ProductVariantUpdateWithoutStockLotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
@@ -1285,49 +1285,49 @@ export type ProductVariantUncheckedUpdateWithoutStockLotsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutRentalItemsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
-  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
-  saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
@@ -1335,24 +1335,24 @@ export type ProductVariantUncheckedCreateWithoutRentalItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
-  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
-  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutRentalItemsInput = {
@@ -1374,26 +1374,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutRentalItemsInput = {
 export type ProductVariantUpdateWithoutRentalItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
-  reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
-  saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
@@ -1401,49 +1401,49 @@ export type ProductVariantUncheckedUpdateWithoutRentalItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
-  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
-  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutReservationItemsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
-  saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
@@ -1451,24 +1451,24 @@ export type ProductVariantUncheckedCreateWithoutReservationItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
-  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutReservationItemsInput = {
@@ -1490,26 +1490,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutReservationItemsInput = {
 export type ProductVariantUpdateWithoutReservationItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
-  saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
@@ -1517,49 +1517,49 @@ export type ProductVariantUncheckedUpdateWithoutReservationItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
-  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutSaleItemsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
-  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
@@ -1567,24 +1567,24 @@ export type ProductVariantUncheckedCreateWithoutSaleItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
-  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
-  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
-  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
   priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutSaleItemsInput = {
@@ -1606,26 +1606,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutSaleItemsInput = {
 export type ProductVariantUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
-  reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
@@ -1633,74 +1633,74 @@ export type ProductVariantUncheckedUpdateWithoutSaleItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
-  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
-  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
-  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
   priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutTenantInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutTenantInput = {
   id?: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutTenantInput = {
@@ -1732,26 +1732,26 @@ export type ProductVariantUpdateManyWithWhereWithoutTenantInput = {
 export type ProductVariantCreateWithoutTransferItemsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
@@ -1759,24 +1759,24 @@ export type ProductVariantUncheckedCreateWithoutTransferItemsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutTransferItemsInput = {
@@ -1798,26 +1798,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutTransferItemsInput = {
 export type ProductVariantUpdateWithoutTransferItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
@@ -1825,49 +1825,49 @@ export type ProductVariantUncheckedUpdateWithoutTransferItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateWithoutInventoryMovementsInput = {
   id?: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
-  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductVariantsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
@@ -1875,24 +1875,24 @@ export type ProductVariantUncheckedCreateWithoutInventoryMovementsInput = {
   tenantId: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutVariantInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutVariantInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutVariantInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutVariantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutVariantInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutVariantInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutInventoryMovementsInput = {
@@ -1914,26 +1914,26 @@ export type ProductVariantUpdateToOneWithWhereWithoutInventoryMovementsInput = {
 export type ProductVariantUpdateWithoutInventoryMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -1941,192 +1941,192 @@ export type ProductVariantUncheckedUpdateWithoutInventoryMovementsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateManyProductInput = {
   id?: string
   tenantId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
 }
 
 export type ProductVariantUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProductVariantCreateManyTenantInput = {
   id?: string
   productId: string
   variantCode: string
-  variantSignature?: string
   barcode?: string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: number | null
   priceSell?: number | null
   priceRent?: number | null
   rentUnit?: $Enums.RentUnit | null
-  image?: Prisma.ProductVariantCreateimageInput | string[]
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  purchasePrice?: number | null
+  image?: Prisma.ProductVariantCreateimageInput | string[]
+  variantSignature?: string
 }
 
 export type ProductVariantUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutVariantNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutVariantNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutVariantNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutVariantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutVariantNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutVariantNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutVariantNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   variantCode?: Prisma.StringFieldUpdateOperationsInput | string
-  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
   barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceSell?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceRent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rentUnit?: Prisma.NullableEnumRentUnitFieldUpdateOperationsInput | $Enums.RentUnit | null
-  image?: Prisma.ProductVariantUpdateimageInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchasePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  image?: Prisma.ProductVariantUpdateimageInput | string[]
+  variantSignature?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -2136,24 +2136,24 @@ export type ProductVariantUncheckedUpdateManyWithoutTenantInput = {
 
 export type ProductVariantCountOutputType = {
   inventoryItems: number
-  stockLots: number
+  inventoryMovements: number
+  priceHistories: number
   rentalItems: number
   reservationItems: number
   saleItems: number
+  stockLots: number
   transferItems: number
-  inventoryMovements: number
-  priceHistories: number
 }
 
 export type ProductVariantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventoryItems?: boolean | ProductVariantCountOutputTypeCountInventoryItemsArgs
-  stockLots?: boolean | ProductVariantCountOutputTypeCountStockLotsArgs
+  inventoryMovements?: boolean | ProductVariantCountOutputTypeCountInventoryMovementsArgs
+  priceHistories?: boolean | ProductVariantCountOutputTypeCountPriceHistoriesArgs
   rentalItems?: boolean | ProductVariantCountOutputTypeCountRentalItemsArgs
   reservationItems?: boolean | ProductVariantCountOutputTypeCountReservationItemsArgs
   saleItems?: boolean | ProductVariantCountOutputTypeCountSaleItemsArgs
+  stockLots?: boolean | ProductVariantCountOutputTypeCountStockLotsArgs
   transferItems?: boolean | ProductVariantCountOutputTypeCountTransferItemsArgs
-  inventoryMovements?: boolean | ProductVariantCountOutputTypeCountInventoryMovementsArgs
-  priceHistories?: boolean | ProductVariantCountOutputTypeCountPriceHistoriesArgs
 }
 
 /**
@@ -2176,8 +2176,15 @@ export type ProductVariantCountOutputTypeCountInventoryItemsArgs<ExtArgs extends
 /**
  * ProductVariantCountOutputType without action
  */
-export type ProductVariantCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StockLotWhereInput
+export type ProductVariantCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryMovementWhereInput
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PriceHistoryWhereInput
 }
 
 /**
@@ -2204,22 +2211,15 @@ export type ProductVariantCountOutputTypeCountSaleItemsArgs<ExtArgs extends runt
 /**
  * ProductVariantCountOutputType without action
  */
+export type ProductVariantCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockLotWhereInput
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
 export type ProductVariantCountOutputTypeCountTransferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TransferItemWhereInput
-}
-
-/**
- * ProductVariantCountOutputType without action
- */
-export type ProductVariantCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InventoryMovementWhereInput
-}
-
-/**
- * ProductVariantCountOutputType without action
- */
-export type ProductVariantCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PriceHistoryWhereInput
 }
 
 
@@ -2228,27 +2228,27 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
-  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
-  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
-  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  purchasePrice?: boolean
+  image?: boolean
+  variantSignature?: boolean
   inventoryItems?: boolean | Prisma.ProductVariant$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.ProductVariant$stockLotsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   rentalItems?: boolean | Prisma.ProductVariant$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.ProductVariant$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.ProductVariant$saleItemsArgs<ExtArgs>
+  stockLots?: boolean | Prisma.ProductVariant$stockLotsArgs<ExtArgs>
   transferItems?: boolean | Prisma.ProductVariant$transferItemsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
-  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
@@ -2257,19 +2257,19 @@ export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
-  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
-  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
-  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  purchasePrice?: boolean
+  image?: boolean
+  variantSignature?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
 export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2277,19 +2277,19 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
-  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
-  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
-  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  purchasePrice?: boolean
+  image?: boolean
+  variantSignature?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
 export type ProductVariantSelectScalar = {
@@ -2297,72 +2297,72 @@ export type ProductVariantSelectScalar = {
   tenantId?: boolean
   productId?: boolean
   variantCode?: boolean
-  variantSignature?: boolean
   barcode?: boolean
   attributes?: boolean
-  purchasePrice?: boolean
   priceSell?: boolean
   priceRent?: boolean
   rentUnit?: boolean
-  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  purchasePrice?: boolean
+  image?: boolean
+  variantSignature?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "variantSignature" | "barcode" | "attributes" | "purchasePrice" | "priceSell" | "priceRent" | "rentUnit" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantCode" | "barcode" | "attributes" | "priceSell" | "priceRent" | "rentUnit" | "isActive" | "createdAt" | "updatedAt" | "purchasePrice" | "image" | "variantSignature", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   inventoryItems?: boolean | Prisma.ProductVariant$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.ProductVariant$stockLotsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   rentalItems?: boolean | Prisma.ProductVariant$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.ProductVariant$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.ProductVariant$saleItemsArgs<ExtArgs>
+  stockLots?: boolean | Prisma.ProductVariant$stockLotsArgs<ExtArgs>
   transferItems?: boolean | Prisma.ProductVariant$transferItemsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>
-  priceHistories?: boolean | Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ProductVariantIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProductVariant"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    product: Prisma.$ProductPayload<ExtArgs>
     inventoryItems: Prisma.$InventoryItemPayload<ExtArgs>[]
-    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
+    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
+    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
+    product: Prisma.$ProductPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
     reservationItems: Prisma.$ReservationItemPayload<ExtArgs>[]
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
+    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
     transferItems: Prisma.$TransferItemPayload<ExtArgs>[]
-    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
-    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
     productId: string
     variantCode: string
-    variantSignature: string
     barcode: string | null
     attributes: runtime.JsonValue
-    purchasePrice: number | null
     priceSell: number | null
     priceRent: number | null
     rentUnit: $Enums.RentUnit | null
-    image: string[]
     isActive: boolean
     createdAt: Date
     updatedAt: Date
+    purchasePrice: number | null
+    image: string[]
+    variantSignature: string
   }, ExtArgs["result"]["productVariant"]>
   composites: {}
 }
@@ -2757,16 +2757,16 @@ readonly fields: ProductVariantFieldRefs;
  */
 export interface Prisma__ProductVariantClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   inventoryItems<T extends Prisma.ProductVariant$inventoryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$inventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  stockLots<T extends Prisma.ProductVariant$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryMovements<T extends Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  priceHistories<T extends Prisma.ProductVariant$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   rentalItems<T extends Prisma.ProductVariant$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationItems<T extends Prisma.ProductVariant$reservationItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$reservationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleItems<T extends Prisma.ProductVariant$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockLots<T extends Prisma.ProductVariant$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferItems<T extends Prisma.ProductVariant$transferItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$transferItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  inventoryMovements<T extends Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  priceHistories<T extends Prisma.ProductVariant$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2800,17 +2800,17 @@ export interface ProductVariantFieldRefs {
   readonly tenantId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly productId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly variantCode: Prisma.FieldRef<"ProductVariant", 'String'>
-  readonly variantSignature: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly barcode: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly attributes: Prisma.FieldRef<"ProductVariant", 'Json'>
-  readonly purchasePrice: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly priceSell: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly priceRent: Prisma.FieldRef<"ProductVariant", 'Float'>
   readonly rentUnit: Prisma.FieldRef<"ProductVariant", 'RentUnit'>
-  readonly image: Prisma.FieldRef<"ProductVariant", 'String[]'>
   readonly isActive: Prisma.FieldRef<"ProductVariant", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
+  readonly purchasePrice: Prisma.FieldRef<"ProductVariant", 'Float'>
+  readonly image: Prisma.FieldRef<"ProductVariant", 'String[]'>
+  readonly variantSignature: Prisma.FieldRef<"ProductVariant", 'String'>
 }
     
 
@@ -3231,27 +3231,51 @@ export type ProductVariant$inventoryItemsArgs<ExtArgs extends runtime.Types.Exte
 }
 
 /**
- * ProductVariant.stockLots
+ * ProductVariant.inventoryMovements
  */
-export type ProductVariant$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ProductVariant$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StockLot
+   * Select specific fields to fetch from the InventoryMovement
    */
-  select?: Prisma.StockLotSelect<ExtArgs> | null
+  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StockLot
+   * Omit specific fields from the InventoryMovement
    */
-  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StockLotInclude<ExtArgs> | null
-  where?: Prisma.StockLotWhereInput
-  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
-  cursor?: Prisma.StockLotWhereUniqueInput
+  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
+  where?: Prisma.InventoryMovementWhereInput
+  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryMovementWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
+  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+}
+
+/**
+ * ProductVariant.priceHistories
+ */
+export type ProductVariant$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PriceHistory
+   */
+  select?: Prisma.PriceHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PriceHistory
+   */
+  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
+  where?: Prisma.PriceHistoryWhereInput
+  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.PriceHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**
@@ -3327,6 +3351,30 @@ export type ProductVariant$saleItemsArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * ProductVariant.stockLots
+ */
+export type ProductVariant$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
+  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
+  cursor?: Prisma.StockLotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
+}
+
+/**
  * ProductVariant.transferItems
  */
 export type ProductVariant$transferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3348,54 +3396,6 @@ export type ProductVariant$transferItemsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.TransferItemScalarFieldEnum | Prisma.TransferItemScalarFieldEnum[]
-}
-
-/**
- * ProductVariant.inventoryMovements
- */
-export type ProductVariant$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the InventoryMovement
-   */
-  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the InventoryMovement
-   */
-  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
-  where?: Prisma.InventoryMovementWhereInput
-  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
-  cursor?: Prisma.InventoryMovementWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
-}
-
-/**
- * ProductVariant.priceHistories
- */
-export type ProductVariant$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PriceHistory
-   */
-  select?: Prisma.PriceHistorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PriceHistory
-   */
-  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
-  where?: Prisma.PriceHistoryWhereInput
-  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.PriceHistoryWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**

@@ -256,8 +256,8 @@ export type ModelWhereInput = {
   isActive?: Prisma.BoolFilter<"Model"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Model"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Model"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   brand?: Prisma.XOR<Prisma.BrandScalarRelationFilter, Prisma.BrandWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   products?: Prisma.ProductListRelationFilter
 }
 
@@ -272,8 +272,8 @@ export type ModelOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   brand?: Prisma.BrandOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   products?: Prisma.ProductOrderByRelationAggregateInput
 }
 
@@ -291,8 +291,8 @@ export type ModelWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"Model"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Model"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Model"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   brand?: Prisma.XOR<Prisma.BrandScalarRelationFilter, Prisma.BrandWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   products?: Prisma.ProductListRelationFilter
 }, "id" | "slug">
 
@@ -339,8 +339,8 @@ export type ModelCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutModelsInput
   brand: Prisma.BrandCreateNestedOneWithoutModelsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutModelsInput
   products?: Prisma.ProductCreateNestedManyWithoutModelInput
 }
 
@@ -367,8 +367,8 @@ export type ModelUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutModelsNestedInput
   brand?: Prisma.BrandUpdateOneRequiredWithoutModelsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModelsNestedInput
   products?: Prisma.ProductUpdateManyWithoutModelNestedInput
 }
 
@@ -670,8 +670,8 @@ export type ModelCreateWithoutProductsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutModelsInput
   brand: Prisma.BrandCreateNestedOneWithoutModelsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutModelsInput
 }
 
 export type ModelUncheckedCreateWithoutProductsInput = {
@@ -712,8 +712,8 @@ export type ModelUpdateWithoutProductsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutModelsNestedInput
   brand?: Prisma.BrandUpdateOneRequiredWithoutModelsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModelsNestedInput
 }
 
 export type ModelUncheckedUpdateWithoutProductsInput = {
@@ -923,8 +923,8 @@ export type ModelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   products?: boolean | Prisma.Model$productsArgs<ExtArgs>
   _count?: boolean | Prisma.ModelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["model"]>
@@ -940,8 +940,8 @@ export type ModelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["model"]>
 
 export type ModelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -955,8 +955,8 @@ export type ModelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["model"]>
 
 export type ModelSelectScalar = {
@@ -974,25 +974,25 @@ export type ModelSelectScalar = {
 
 export type ModelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "brandId" | "name" | "slug" | "description" | "year" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["model"]>
 export type ModelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   products?: boolean | Prisma.Model$productsArgs<ExtArgs>
   _count?: boolean | Prisma.ModelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ModelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ModelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ModelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Model"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     brand: Prisma.$BrandPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     products: Prisma.$ProductPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1400,8 +1400,8 @@ readonly fields: ModelFieldRefs;
  */
 export interface Prisma__ModelClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   brand<T extends Prisma.BrandDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BrandDefaultArgs<ExtArgs>>): Prisma.Prisma__BrandClient<runtime.Types.Result.GetResult<Prisma.$BrandPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   products<T extends Prisma.Model$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Model$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

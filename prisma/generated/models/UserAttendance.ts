@@ -308,10 +308,10 @@ export type UserAttendanceWhereInput = {
   workDate?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   shift?: Prisma.XOR<Prisma.ShiftScalarRelationFilter, Prisma.ShiftWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type UserAttendanceOrderByWithRelationInput = {
@@ -331,10 +331,10 @@ export type UserAttendanceOrderByWithRelationInput = {
   workDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
   shift?: Prisma.ShiftOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type UserAttendanceWhereUniqueInput = Prisma.AtLeast<{
@@ -357,10 +357,10 @@ export type UserAttendanceWhereUniqueInput = Prisma.AtLeast<{
   workDate?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserAttendance"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   shift?: Prisma.XOR<Prisma.ShiftScalarRelationFilter, Prisma.ShiftWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type UserAttendanceOrderByWithAggregationInput = {
@@ -422,10 +422,10 @@ export type UserAttendanceCreateInput = {
   workDate: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserAttendancesInput
-  user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
   shift: Prisma.ShiftCreateNestedOneWithoutUserAttendancesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
+  user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
 }
 
 export type UserAttendanceUncheckedCreateInput = {
@@ -460,10 +460,10 @@ export type UserAttendanceUpdateInput = {
   workDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserAttendancesNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
   shift?: Prisma.ShiftUpdateOneRequiredWithoutUserAttendancesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
 }
 
 export type UserAttendanceUncheckedUpdateInput = {
@@ -804,9 +804,9 @@ export type UserAttendanceCreateWithoutUserInput = {
   workDate: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserAttendancesInput
   shift: Prisma.ShiftCreateNestedOneWithoutUserAttendancesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
 }
 
 export type UserAttendanceUncheckedCreateWithoutUserInput = {
@@ -888,9 +888,9 @@ export type UserAttendanceCreateWithoutBranchInput = {
   workDate: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  shift: Prisma.ShiftCreateNestedOneWithoutUserAttendancesInput
   tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
   user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
-  shift: Prisma.ShiftCreateNestedOneWithoutUserAttendancesInput
 }
 
 export type UserAttendanceUncheckedCreateWithoutBranchInput = {
@@ -950,8 +950,8 @@ export type UserAttendanceCreateWithoutShiftInput = {
   workDate: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserAttendancesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserAttendancesInput
   user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
 }
 
@@ -1013,8 +1013,8 @@ export type UserAttendanceCreateWithoutTenantInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutUserAttendancesInput
-  user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
   shift: Prisma.ShiftCreateNestedOneWithoutUserAttendancesInput
+  user: Prisma.UserCreateNestedOneWithoutUserAttendancesInput
 }
 
 export type UserAttendanceUncheckedCreateWithoutTenantInput = {
@@ -1092,9 +1092,9 @@ export type UserAttendanceUpdateWithoutUserInput = {
   workDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserAttendancesNestedInput
   shift?: Prisma.ShiftUpdateOneRequiredWithoutUserAttendancesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
 }
 
 export type UserAttendanceUncheckedUpdateWithoutUserInput = {
@@ -1164,9 +1164,9 @@ export type UserAttendanceUpdateWithoutBranchInput = {
   workDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  shift?: Prisma.ShiftUpdateOneRequiredWithoutUserAttendancesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
-  shift?: Prisma.ShiftUpdateOneRequiredWithoutUserAttendancesNestedInput
 }
 
 export type UserAttendanceUncheckedUpdateWithoutBranchInput = {
@@ -1236,8 +1236,8 @@ export type UserAttendanceUpdateWithoutShiftInput = {
   workDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserAttendancesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserAttendancesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
 }
 
@@ -1309,8 +1309,8 @@ export type UserAttendanceUpdateWithoutTenantInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserAttendancesNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
   shift?: Prisma.ShiftUpdateOneRequiredWithoutUserAttendancesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserAttendancesNestedInput
 }
 
 export type UserAttendanceUncheckedUpdateWithoutTenantInput = {
@@ -1368,10 +1368,10 @@ export type UserAttendanceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   workDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userAttendance"]>
 
 export type UserAttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1391,10 +1391,10 @@ export type UserAttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   workDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userAttendance"]>
 
 export type UserAttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1414,10 +1414,10 @@ export type UserAttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   workDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userAttendance"]>
 
 export type UserAttendanceSelectScalar = {
@@ -1441,31 +1441,31 @@ export type UserAttendanceSelectScalar = {
 
 export type UserAttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "branchId" | "userId" | "shiftId" | "checkIn" | "checkOut" | "notes" | "createdBy" | "status" | "source" | "lateMinutes" | "extraMinutes" | "workDate" | "createdAt" | "updatedAt", ExtArgs["result"]["userAttendance"]>
 export type UserAttendanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserAttendanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserAttendanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shift?: boolean | Prisma.ShiftDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserAttendancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserAttendance"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs>
     shift: Prisma.$ShiftPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1878,10 +1878,10 @@ readonly fields: UserAttendanceFieldRefs;
  */
 export interface Prisma__UserAttendanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   shift<T extends Prisma.ShiftDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShiftDefaultArgs<ExtArgs>>): Prisma.Prisma__ShiftClient<runtime.Types.Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

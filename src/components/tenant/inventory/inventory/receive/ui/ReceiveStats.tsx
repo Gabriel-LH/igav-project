@@ -7,12 +7,14 @@ interface ReceiveStatsProps {
   totalExpected: number;
   scannedCount: number;
   pendingCount: number;
+  modeLabel?: string;
 }
 
 export const ReceiveStats: React.FC<ReceiveStatsProps> = ({
   totalExpected,
   scannedCount,
   pendingCount,
+  modeLabel = "En tránsito",
 }) => {
   const progress = totalExpected > 0 ? (scannedCount / totalExpected) * 100 : 0;
 
@@ -65,7 +67,7 @@ export const ReceiveStats: React.FC<ReceiveStatsProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-purple-600 font-bold uppercase">
-                En Tránsito
+                {modeLabel}
               </p>
               <p className="text-2xl font-black text-purple-700">
                 {totalExpected - scannedCount}

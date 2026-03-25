@@ -232,9 +232,9 @@ export type TransferRouteWhereInput = {
   estimatedTimeHours?: Prisma.IntFilter<"TransferRoute"> | number
   status?: Prisma.EnumTransferRouteStatusFilter<"TransferRoute"> | $Enums.TransferRouteStatus
   createdAt?: Prisma.DateTimeFilter<"TransferRoute"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  originBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   destinationBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  originBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type TransferRouteOrderByWithRelationInput = {
@@ -245,9 +245,9 @@ export type TransferRouteOrderByWithRelationInput = {
   estimatedTimeHours?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  originBranch?: Prisma.BranchOrderByWithRelationInput
   destinationBranch?: Prisma.BranchOrderByWithRelationInput
+  originBranch?: Prisma.BranchOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type TransferRouteWhereUniqueInput = Prisma.AtLeast<{
@@ -261,9 +261,9 @@ export type TransferRouteWhereUniqueInput = Prisma.AtLeast<{
   estimatedTimeHours?: Prisma.IntFilter<"TransferRoute"> | number
   status?: Prisma.EnumTransferRouteStatusFilter<"TransferRoute"> | $Enums.TransferRouteStatus
   createdAt?: Prisma.DateTimeFilter<"TransferRoute"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  originBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   destinationBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  originBranch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
 export type TransferRouteOrderByWithAggregationInput = {
@@ -299,9 +299,9 @@ export type TransferRouteCreateInput = {
   estimatedTimeHours: number
   status: $Enums.TransferRouteStatus
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
-  originBranch: Prisma.BranchCreateNestedOneWithoutOriginRoutesInput
   destinationBranch: Prisma.BranchCreateNestedOneWithoutDestinationRoutesInput
+  originBranch: Prisma.BranchCreateNestedOneWithoutOriginRoutesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
 }
 
 export type TransferRouteUncheckedCreateInput = {
@@ -319,9 +319,9 @@ export type TransferRouteUpdateInput = {
   estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
-  originBranch?: Prisma.BranchUpdateOneRequiredWithoutOriginRoutesNestedInput
   destinationBranch?: Prisma.BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput
+  originBranch?: Prisma.BranchUpdateOneRequiredWithoutOriginRoutesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
 }
 
 export type TransferRouteUncheckedUpdateInput = {
@@ -409,13 +409,6 @@ export type TransferRouteSumOrderByAggregateInput = {
   estimatedTimeHours?: Prisma.SortOrder
 }
 
-export type TransferRouteCreateNestedManyWithoutOriginBranchInput = {
-  create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput> | Prisma.TransferRouteCreateWithoutOriginBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput[]
-  connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput | Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput[]
-  createMany?: Prisma.TransferRouteCreateManyOriginBranchInputEnvelope
-  connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
-}
-
 export type TransferRouteCreateNestedManyWithoutDestinationBranchInput = {
   create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutDestinationBranchInput, Prisma.TransferRouteUncheckedCreateWithoutDestinationBranchInput> | Prisma.TransferRouteCreateWithoutDestinationBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutDestinationBranchInput[]
   connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutDestinationBranchInput | Prisma.TransferRouteCreateOrConnectWithoutDestinationBranchInput[]
@@ -423,7 +416,7 @@ export type TransferRouteCreateNestedManyWithoutDestinationBranchInput = {
   connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
 }
 
-export type TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput = {
+export type TransferRouteCreateNestedManyWithoutOriginBranchInput = {
   create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput> | Prisma.TransferRouteCreateWithoutOriginBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput[]
   connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput | Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput[]
   createMany?: Prisma.TransferRouteCreateManyOriginBranchInputEnvelope
@@ -437,18 +430,11 @@ export type TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput 
   connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
 }
 
-export type TransferRouteUpdateManyWithoutOriginBranchNestedInput = {
+export type TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput = {
   create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput> | Prisma.TransferRouteCreateWithoutOriginBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput[]
   connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput | Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput[]
-  upsert?: Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput | Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput[]
   createMany?: Prisma.TransferRouteCreateManyOriginBranchInputEnvelope
-  set?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
-  disconnect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
-  delete?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
   connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
-  update?: Prisma.TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput | Prisma.TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput[]
-  updateMany?: Prisma.TransferRouteUpdateManyWithWhereWithoutOriginBranchInput | Prisma.TransferRouteUpdateManyWithWhereWithoutOriginBranchInput[]
-  deleteMany?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
 }
 
 export type TransferRouteUpdateManyWithoutDestinationBranchNestedInput = {
@@ -465,7 +451,7 @@ export type TransferRouteUpdateManyWithoutDestinationBranchNestedInput = {
   deleteMany?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
 }
 
-export type TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput = {
+export type TransferRouteUpdateManyWithoutOriginBranchNestedInput = {
   create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput> | Prisma.TransferRouteCreateWithoutOriginBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput[]
   connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput | Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput[]
   upsert?: Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput | Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput[]
@@ -490,6 +476,20 @@ export type TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput 
   connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
   update?: Prisma.TransferRouteUpdateWithWhereUniqueWithoutDestinationBranchInput | Prisma.TransferRouteUpdateWithWhereUniqueWithoutDestinationBranchInput[]
   updateMany?: Prisma.TransferRouteUpdateManyWithWhereWithoutDestinationBranchInput | Prisma.TransferRouteUpdateManyWithWhereWithoutDestinationBranchInput[]
+  deleteMany?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
+}
+
+export type TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput> | Prisma.TransferRouteCreateWithoutOriginBranchInput[] | Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput[]
+  connectOrCreate?: Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput | Prisma.TransferRouteCreateOrConnectWithoutOriginBranchInput[]
+  upsert?: Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput | Prisma.TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput[]
+  createMany?: Prisma.TransferRouteCreateManyOriginBranchInputEnvelope
+  set?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
+  disconnect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
+  delete?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
+  connect?: Prisma.TransferRouteWhereUniqueInput | Prisma.TransferRouteWhereUniqueInput[]
+  update?: Prisma.TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput | Prisma.TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput[]
+  updateMany?: Prisma.TransferRouteUpdateManyWithWhereWithoutOriginBranchInput | Prisma.TransferRouteUpdateManyWithWhereWithoutOriginBranchInput[]
   deleteMany?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
 }
 
@@ -539,41 +539,13 @@ export type EnumTransferRouteStatusFieldUpdateOperationsInput = {
   set?: $Enums.TransferRouteStatus
 }
 
-export type TransferRouteCreateWithoutOriginBranchInput = {
-  id?: string
-  estimatedTimeHours: number
-  status: $Enums.TransferRouteStatus
-  createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
-  destinationBranch: Prisma.BranchCreateNestedOneWithoutDestinationRoutesInput
-}
-
-export type TransferRouteUncheckedCreateWithoutOriginBranchInput = {
-  id?: string
-  tenantId: string
-  destinationBranchId: string
-  estimatedTimeHours: number
-  status: $Enums.TransferRouteStatus
-  createdAt: Date | string
-}
-
-export type TransferRouteCreateOrConnectWithoutOriginBranchInput = {
-  where: Prisma.TransferRouteWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput>
-}
-
-export type TransferRouteCreateManyOriginBranchInputEnvelope = {
-  data: Prisma.TransferRouteCreateManyOriginBranchInput | Prisma.TransferRouteCreateManyOriginBranchInput[]
-  skipDuplicates?: boolean
-}
-
 export type TransferRouteCreateWithoutDestinationBranchInput = {
   id?: string
   estimatedTimeHours: number
   status: $Enums.TransferRouteStatus
   createdAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
   originBranch: Prisma.BranchCreateNestedOneWithoutOriginRoutesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
 }
 
 export type TransferRouteUncheckedCreateWithoutDestinationBranchInput = {
@@ -595,33 +567,32 @@ export type TransferRouteCreateManyDestinationBranchInputEnvelope = {
   skipDuplicates?: boolean
 }
 
-export type TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput = {
+export type TransferRouteCreateWithoutOriginBranchInput = {
+  id?: string
+  estimatedTimeHours: number
+  status: $Enums.TransferRouteStatus
+  createdAt: Date | string
+  destinationBranch: Prisma.BranchCreateNestedOneWithoutDestinationRoutesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutTransferRoutesInput
+}
+
+export type TransferRouteUncheckedCreateWithoutOriginBranchInput = {
+  id?: string
+  tenantId: string
+  destinationBranchId: string
+  estimatedTimeHours: number
+  status: $Enums.TransferRouteStatus
+  createdAt: Date | string
+}
+
+export type TransferRouteCreateOrConnectWithoutOriginBranchInput = {
   where: Prisma.TransferRouteWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransferRouteUpdateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedUpdateWithoutOriginBranchInput>
   create: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput>
 }
 
-export type TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput = {
-  where: Prisma.TransferRouteWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransferRouteUpdateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedUpdateWithoutOriginBranchInput>
-}
-
-export type TransferRouteUpdateManyWithWhereWithoutOriginBranchInput = {
-  where: Prisma.TransferRouteScalarWhereInput
-  data: Prisma.XOR<Prisma.TransferRouteUpdateManyMutationInput, Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchInput>
-}
-
-export type TransferRouteScalarWhereInput = {
-  AND?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
-  OR?: Prisma.TransferRouteScalarWhereInput[]
-  NOT?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
-  id?: Prisma.StringFilter<"TransferRoute"> | string
-  tenantId?: Prisma.StringFilter<"TransferRoute"> | string
-  originBranchId?: Prisma.StringFilter<"TransferRoute"> | string
-  destinationBranchId?: Prisma.StringFilter<"TransferRoute"> | string
-  estimatedTimeHours?: Prisma.IntFilter<"TransferRoute"> | number
-  status?: Prisma.EnumTransferRouteStatusFilter<"TransferRoute"> | $Enums.TransferRouteStatus
-  createdAt?: Prisma.DateTimeFilter<"TransferRoute"> | Date | string
+export type TransferRouteCreateManyOriginBranchInputEnvelope = {
+  data: Prisma.TransferRouteCreateManyOriginBranchInput | Prisma.TransferRouteCreateManyOriginBranchInput[]
+  skipDuplicates?: boolean
 }
 
 export type TransferRouteUpsertWithWhereUniqueWithoutDestinationBranchInput = {
@@ -640,13 +611,42 @@ export type TransferRouteUpdateManyWithWhereWithoutDestinationBranchInput = {
   data: Prisma.XOR<Prisma.TransferRouteUpdateManyMutationInput, Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchInput>
 }
 
+export type TransferRouteScalarWhereInput = {
+  AND?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
+  OR?: Prisma.TransferRouteScalarWhereInput[]
+  NOT?: Prisma.TransferRouteScalarWhereInput | Prisma.TransferRouteScalarWhereInput[]
+  id?: Prisma.StringFilter<"TransferRoute"> | string
+  tenantId?: Prisma.StringFilter<"TransferRoute"> | string
+  originBranchId?: Prisma.StringFilter<"TransferRoute"> | string
+  destinationBranchId?: Prisma.StringFilter<"TransferRoute"> | string
+  estimatedTimeHours?: Prisma.IntFilter<"TransferRoute"> | number
+  status?: Prisma.EnumTransferRouteStatusFilter<"TransferRoute"> | $Enums.TransferRouteStatus
+  createdAt?: Prisma.DateTimeFilter<"TransferRoute"> | Date | string
+}
+
+export type TransferRouteUpsertWithWhereUniqueWithoutOriginBranchInput = {
+  where: Prisma.TransferRouteWhereUniqueInput
+  update: Prisma.XOR<Prisma.TransferRouteUpdateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedUpdateWithoutOriginBranchInput>
+  create: Prisma.XOR<Prisma.TransferRouteCreateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedCreateWithoutOriginBranchInput>
+}
+
+export type TransferRouteUpdateWithWhereUniqueWithoutOriginBranchInput = {
+  where: Prisma.TransferRouteWhereUniqueInput
+  data: Prisma.XOR<Prisma.TransferRouteUpdateWithoutOriginBranchInput, Prisma.TransferRouteUncheckedUpdateWithoutOriginBranchInput>
+}
+
+export type TransferRouteUpdateManyWithWhereWithoutOriginBranchInput = {
+  where: Prisma.TransferRouteScalarWhereInput
+  data: Prisma.XOR<Prisma.TransferRouteUpdateManyMutationInput, Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchInput>
+}
+
 export type TransferRouteCreateWithoutTenantInput = {
   id?: string
   estimatedTimeHours: number
   status: $Enums.TransferRouteStatus
   createdAt: Date | string
-  originBranch: Prisma.BranchCreateNestedOneWithoutOriginRoutesInput
   destinationBranch: Prisma.BranchCreateNestedOneWithoutDestinationRoutesInput
+  originBranch: Prisma.BranchCreateNestedOneWithoutOriginRoutesInput
 }
 
 export type TransferRouteUncheckedCreateWithoutTenantInput = {
@@ -684,15 +684,6 @@ export type TransferRouteUpdateManyWithWhereWithoutTenantInput = {
   data: Prisma.XOR<Prisma.TransferRouteUpdateManyMutationInput, Prisma.TransferRouteUncheckedUpdateManyWithoutTenantInput>
 }
 
-export type TransferRouteCreateManyOriginBranchInput = {
-  id?: string
-  tenantId: string
-  destinationBranchId: string
-  estimatedTimeHours: number
-  status: $Enums.TransferRouteStatus
-  createdAt: Date | string
-}
-
 export type TransferRouteCreateManyDestinationBranchInput = {
   id?: string
   tenantId: string
@@ -702,31 +693,13 @@ export type TransferRouteCreateManyDestinationBranchInput = {
   createdAt: Date | string
 }
 
-export type TransferRouteUpdateWithoutOriginBranchInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
-  destinationBranch?: Prisma.BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput
-}
-
-export type TransferRouteUncheckedUpdateWithoutOriginBranchInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type TransferRouteUncheckedUpdateManyWithoutOriginBranchInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type TransferRouteCreateManyOriginBranchInput = {
+  id?: string
+  tenantId: string
+  destinationBranchId: string
+  estimatedTimeHours: number
+  status: $Enums.TransferRouteStatus
+  createdAt: Date | string
 }
 
 export type TransferRouteUpdateWithoutDestinationBranchInput = {
@@ -734,8 +707,8 @@ export type TransferRouteUpdateWithoutDestinationBranchInput = {
   estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
   originBranch?: Prisma.BranchUpdateOneRequiredWithoutOriginRoutesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
 }
 
 export type TransferRouteUncheckedUpdateWithoutDestinationBranchInput = {
@@ -756,6 +729,33 @@ export type TransferRouteUncheckedUpdateManyWithoutDestinationBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type TransferRouteUpdateWithoutOriginBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  destinationBranch?: Prisma.BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTransferRoutesNestedInput
+}
+
+export type TransferRouteUncheckedUpdateWithoutOriginBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TransferRouteUncheckedUpdateManyWithoutOriginBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  destinationBranchId?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TransferRouteCreateManyTenantInput = {
   id?: string
   originBranchId: string
@@ -770,8 +770,8 @@ export type TransferRouteUpdateWithoutTenantInput = {
   estimatedTimeHours?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransferRouteStatusFieldUpdateOperationsInput | $Enums.TransferRouteStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  originBranch?: Prisma.BranchUpdateOneRequiredWithoutOriginRoutesNestedInput
   destinationBranch?: Prisma.BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput
+  originBranch?: Prisma.BranchUpdateOneRequiredWithoutOriginRoutesNestedInput
 }
 
 export type TransferRouteUncheckedUpdateWithoutTenantInput = {
@@ -802,9 +802,9 @@ export type TransferRouteSelect<ExtArgs extends runtime.Types.Extensions.Interna
   estimatedTimeHours?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferRoute"]>
 
 export type TransferRouteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -815,9 +815,9 @@ export type TransferRouteSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   estimatedTimeHours?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferRoute"]>
 
 export type TransferRouteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -828,9 +828,9 @@ export type TransferRouteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   estimatedTimeHours?: boolean
   status?: boolean
   createdAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferRoute"]>
 
 export type TransferRouteSelectScalar = {
@@ -845,27 +845,27 @@ export type TransferRouteSelectScalar = {
 
 export type TransferRouteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "originBranchId" | "destinationBranchId" | "estimatedTimeHours" | "status" | "createdAt", ExtArgs["result"]["transferRoute"]>
 export type TransferRouteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TransferRouteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type TransferRouteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   destinationBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  originBranch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $TransferRoutePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TransferRoute"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    originBranch: Prisma.$BranchPayload<ExtArgs>
     destinationBranch: Prisma.$BranchPayload<ExtArgs>
+    originBranch: Prisma.$BranchPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1269,9 +1269,9 @@ readonly fields: TransferRouteFieldRefs;
  */
 export interface Prisma__TransferRouteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  originBranch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   destinationBranch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  originBranch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

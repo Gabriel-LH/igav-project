@@ -70,7 +70,6 @@ export type ProductCountAggregateOutputType = {
   id: number
   tenantId: number
   name: number
-  image: number
   baseSku: number
   modelId: number
   categoryId: number
@@ -86,6 +85,7 @@ export type ProductCountAggregateOutputType = {
   deletedBy: number
   deleteReason: number
   isDeleted: number
+  image: number
   _all: number
 }
 
@@ -136,7 +136,6 @@ export type ProductCountAggregateInputType = {
   id?: true
   tenantId?: true
   name?: true
-  image?: true
   baseSku?: true
   modelId?: true
   categoryId?: true
@@ -152,6 +151,7 @@ export type ProductCountAggregateInputType = {
   deletedBy?: true
   deleteReason?: true
   isDeleted?: true
+  image?: true
   _all?: true
 }
 
@@ -231,7 +231,6 @@ export type ProductGroupByOutputType = {
   id: string
   tenantId: string
   name: string
-  image: string[]
   baseSku: string
   modelId: string | null
   categoryId: string | null
@@ -247,6 +246,7 @@ export type ProductGroupByOutputType = {
   deletedBy: string | null
   deleteReason: string | null
   isDeleted: boolean
+  image: string[]
   _count: ProductCountAggregateOutputType | null
   _min: ProductMinAggregateOutputType | null
   _max: ProductMaxAggregateOutputType | null
@@ -274,7 +274,6 @@ export type ProductWhereInput = {
   id?: Prisma.StringFilter<"Product"> | string
   tenantId?: Prisma.StringFilter<"Product"> | string
   name?: Prisma.StringFilter<"Product"> | string
-  image?: Prisma.StringNullableListFilter<"Product">
   baseSku?: Prisma.StringFilter<"Product"> | string
   modelId?: Prisma.StringNullableFilter<"Product"> | string | null
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
@@ -290,24 +289,24 @@ export type ProductWhereInput = {
   deletedBy?: Prisma.StringNullableFilter<"Product"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Product"> | string | null
   isDeleted?: Prisma.BoolFilter<"Product"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  model?: Prisma.XOR<Prisma.ModelNullableScalarRelationFilter, Prisma.ModelWhereInput> | null
-  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
-  variants?: Prisma.ProductVariantListRelationFilter
+  image?: Prisma.StringNullableListFilter<"Product">
   inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  model?: Prisma.XOR<Prisma.ModelNullableScalarRelationFilter, Prisma.ModelWhereInput> | null
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variants?: Prisma.ProductVariantListRelationFilter
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
 }
 
 export type ProductOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   baseSku?: Prisma.SortOrder
   modelId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -323,17 +322,18 @@ export type ProductOrderByWithRelationInput = {
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  model?: Prisma.ModelOrderByWithRelationInput
-  category?: Prisma.CategoryOrderByWithRelationInput
-  variants?: Prisma.ProductVariantOrderByRelationAggregateInput
+  image?: Prisma.SortOrder
   inventoryItems?: Prisma.InventoryItemOrderByRelationAggregateInput
-  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
+  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
+  category?: Prisma.CategoryOrderByWithRelationInput
+  model?: Prisma.ModelOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  variants?: Prisma.ProductVariantOrderByRelationAggregateInput
   rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
   reservationItems?: Prisma.ReservationItemOrderByRelationAggregateInput
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
+  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
   transferItems?: Prisma.TransferItemOrderByRelationAggregateInput
-  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
 }
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -344,7 +344,6 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   tenantId?: Prisma.StringFilter<"Product"> | string
   name?: Prisma.StringFilter<"Product"> | string
-  image?: Prisma.StringNullableListFilter<"Product">
   modelId?: Prisma.StringNullableFilter<"Product"> | string | null
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   description?: Prisma.StringNullableFilter<"Product"> | string | null
@@ -359,24 +358,24 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   deletedBy?: Prisma.StringNullableFilter<"Product"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Product"> | string | null
   isDeleted?: Prisma.BoolFilter<"Product"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  model?: Prisma.XOR<Prisma.ModelNullableScalarRelationFilter, Prisma.ModelWhereInput> | null
-  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
-  variants?: Prisma.ProductVariantListRelationFilter
+  image?: Prisma.StringNullableListFilter<"Product">
   inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  model?: Prisma.XOR<Prisma.ModelNullableScalarRelationFilter, Prisma.ModelWhereInput> | null
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variants?: Prisma.ProductVariantListRelationFilter
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   transferItems?: Prisma.TransferItemListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
 }, "id" | "baseSku">
 
 export type ProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   baseSku?: Prisma.SortOrder
   modelId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -392,6 +391,7 @@ export type ProductOrderByWithAggregationInput = {
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
   _max?: Prisma.ProductMaxOrderByAggregateInput
   _min?: Prisma.ProductMinOrderByAggregateInput
@@ -404,7 +404,6 @@ export type ProductScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Product"> | string
   tenantId?: Prisma.StringWithAggregatesFilter<"Product"> | string
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
-  image?: Prisma.StringNullableListFilter<"Product">
   baseSku?: Prisma.StringWithAggregatesFilter<"Product"> | string
   modelId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   categoryId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
@@ -420,12 +419,12 @@ export type ProductScalarWhereWithAggregatesInput = {
   deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   deleteReason?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   isDeleted?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
+  image?: Prisma.StringNullableListFilter<"Product">
 }
 
 export type ProductCreateInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -439,24 +438,24 @@ export type ProductCreateInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -472,20 +471,20 @@ export type ProductUncheckedCreateInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -499,24 +498,24 @@ export type ProductUpdateInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -532,21 +531,21 @@ export type ProductUncheckedUpdateInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -562,12 +561,12 @@ export type ProductCreateManyInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
 }
 
 export type ProductUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -581,13 +580,13 @@ export type ProductUpdateManyMutationInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
 }
 
 export type ProductUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -603,6 +602,7 @@ export type ProductUncheckedUpdateManyInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
 }
 
 export type ProductListRelationFilter = {
@@ -627,7 +627,6 @@ export type ProductCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  image?: Prisma.SortOrder
   baseSku?: Prisma.SortOrder
   modelId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -643,6 +642,7 @@ export type ProductCountOrderByAggregateInput = {
   deletedBy?: Prisma.SortOrder
   deleteReason?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
+  image?: Prisma.SortOrder
 }
 
 export type ProductMaxOrderByAggregateInput = {
@@ -942,7 +942,6 @@ export type ProductUpdateOneRequiredWithoutInventoryMovementsNestedInput = {
 export type ProductCreateWithoutCategoryInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -956,23 +955,23 @@ export type ProductCreateWithoutCategoryInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCategoryInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   description?: string | null
@@ -987,14 +986,15 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -1030,7 +1030,6 @@ export type ProductScalarWhereInput = {
   id?: Prisma.StringFilter<"Product"> | string
   tenantId?: Prisma.StringFilter<"Product"> | string
   name?: Prisma.StringFilter<"Product"> | string
-  image?: Prisma.StringNullableListFilter<"Product">
   baseSku?: Prisma.StringFilter<"Product"> | string
   modelId?: Prisma.StringNullableFilter<"Product"> | string | null
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
@@ -1046,12 +1045,12 @@ export type ProductScalarWhereInput = {
   deletedBy?: Prisma.StringNullableFilter<"Product"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Product"> | string | null
   isDeleted?: Prisma.BoolFilter<"Product"> | boolean
+  image?: Prisma.StringNullableListFilter<"Product">
 }
 
 export type ProductCreateWithoutModelInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1065,23 +1064,23 @@ export type ProductCreateWithoutModelInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutModelInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   categoryId?: string | null
   description?: string | null
@@ -1096,14 +1095,15 @@ export type ProductUncheckedCreateWithoutModelInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutModelInput = {
@@ -1135,7 +1135,6 @@ export type ProductUpdateManyWithWhereWithoutModelInput = {
 export type ProductCreateWithoutVariantsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1149,23 +1148,23 @@ export type ProductCreateWithoutVariantsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutVariantsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1181,13 +1180,14 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutVariantsInput = {
@@ -1209,7 +1209,6 @@ export type ProductUpdateToOneWithWhereWithoutVariantsInput = {
 export type ProductUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1223,23 +1222,23 @@ export type ProductUpdateWithoutVariantsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1255,19 +1254,19 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutInventoryItemsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1281,23 +1280,23 @@ export type ProductCreateWithoutInventoryItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  image?: Prisma.ProductCreateimageInput | string[]
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
   variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutInventoryItemsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1313,13 +1312,14 @@ export type ProductUncheckedCreateWithoutInventoryItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
   variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutInventoryItemsInput = {
@@ -1341,7 +1341,6 @@ export type ProductUpdateToOneWithWhereWithoutInventoryItemsInput = {
 export type ProductUpdateWithoutInventoryItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1355,23 +1354,23 @@ export type ProductUpdateWithoutInventoryItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
   variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutInventoryItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1387,19 +1386,19 @@ export type ProductUncheckedUpdateWithoutInventoryItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
   variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutStockLotsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1413,23 +1412,23 @@ export type ProductCreateWithoutStockLotsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutStockLotsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1445,13 +1444,14 @@ export type ProductUncheckedCreateWithoutStockLotsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutStockLotsInput = {
@@ -1473,7 +1473,6 @@ export type ProductUpdateToOneWithWhereWithoutStockLotsInput = {
 export type ProductUpdateWithoutStockLotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1487,23 +1486,23 @@ export type ProductUpdateWithoutStockLotsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutStockLotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1519,19 +1518,19 @@ export type ProductUncheckedUpdateWithoutStockLotsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutRentalItemsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1545,23 +1544,23 @@ export type ProductCreateWithoutRentalItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutRentalItemsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1577,13 +1576,14 @@ export type ProductUncheckedCreateWithoutRentalItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutRentalItemsInput = {
@@ -1605,7 +1605,6 @@ export type ProductUpdateToOneWithWhereWithoutRentalItemsInput = {
 export type ProductUpdateWithoutRentalItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1619,23 +1618,23 @@ export type ProductUpdateWithoutRentalItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutRentalItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1651,19 +1650,19 @@ export type ProductUncheckedUpdateWithoutRentalItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutReservationItemsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1677,23 +1676,23 @@ export type ProductCreateWithoutReservationItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutReservationItemsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1709,13 +1708,14 @@ export type ProductUncheckedCreateWithoutReservationItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutReservationItemsInput = {
@@ -1737,7 +1737,6 @@ export type ProductUpdateToOneWithWhereWithoutReservationItemsInput = {
 export type ProductUpdateWithoutReservationItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1751,23 +1750,23 @@ export type ProductUpdateWithoutReservationItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutReservationItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1783,19 +1782,19 @@ export type ProductUncheckedUpdateWithoutReservationItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutSaleItemsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1809,23 +1808,23 @@ export type ProductCreateWithoutSaleItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSaleItemsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1841,13 +1840,14 @@ export type ProductUncheckedCreateWithoutSaleItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSaleItemsInput = {
@@ -1869,7 +1869,6 @@ export type ProductUpdateToOneWithWhereWithoutSaleItemsInput = {
 export type ProductUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1883,23 +1882,23 @@ export type ProductUpdateWithoutSaleItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1915,19 +1914,19 @@ export type ProductUncheckedUpdateWithoutSaleItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutTenantInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -1941,22 +1940,22 @@ export type ProductCreateWithoutTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutTenantInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -1972,14 +1971,15 @@ export type ProductUncheckedCreateWithoutTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutTenantInput = {
@@ -2011,7 +2011,6 @@ export type ProductUpdateManyWithWhereWithoutTenantInput = {
 export type ProductCreateWithoutTransferItemsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -2025,23 +2024,23 @@ export type ProductCreateWithoutTransferItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutTransferItemsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -2057,13 +2056,14 @@ export type ProductUncheckedCreateWithoutTransferItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutTransferItemsInput = {
@@ -2085,7 +2085,6 @@ export type ProductUpdateToOneWithWhereWithoutTransferItemsInput = {
 export type ProductUpdateWithoutTransferItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2099,23 +2098,23 @@ export type ProductUpdateWithoutTransferItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutTransferItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2131,19 +2130,19 @@ export type ProductUncheckedUpdateWithoutTransferItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutInventoryMovementsInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   description?: string | null
   is_serial: boolean
@@ -2157,15 +2156,16 @@ export type ProductCreateWithoutInventoryMovementsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
-  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
-  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
-  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
+  category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  model?: Prisma.ModelCreateNestedOneWithoutProductsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutProductsInput
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemCreateNestedManyWithoutProductInput
 }
 
@@ -2173,7 +2173,6 @@ export type ProductUncheckedCreateWithoutInventoryMovementsInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -2189,12 +2188,13 @@ export type ProductUncheckedCreateWithoutInventoryMovementsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  image?: Prisma.ProductCreateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutProductInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutProductInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutProductInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutProductInput
   transferItems?: Prisma.TransferItemUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -2217,7 +2217,6 @@ export type ProductUpdateToOneWithWhereWithoutInventoryMovementsInput = {
 export type ProductUpdateWithoutInventoryMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2231,15 +2230,16 @@ export type ProductUpdateWithoutInventoryMovementsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
 }
 
@@ -2247,7 +2247,6 @@ export type ProductUncheckedUpdateWithoutInventoryMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2263,12 +2262,13 @@ export type ProductUncheckedUpdateWithoutInventoryMovementsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2276,7 +2276,6 @@ export type ProductCreateManyCategoryInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   description?: string | null
@@ -2291,12 +2290,12 @@ export type ProductCreateManyCategoryInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
 }
 
 export type ProductUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2310,23 +2309,23 @@ export type ProductUpdateWithoutCategoryInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2341,21 +2340,21 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2370,13 +2369,13 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
 }
 
 export type ProductCreateManyModelInput = {
   id?: string
   tenantId: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   categoryId?: string | null
   description?: string | null
@@ -2391,12 +2390,12 @@ export type ProductCreateManyModelInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
 }
 
 export type ProductUpdateWithoutModelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2410,23 +2409,23 @@ export type ProductUpdateWithoutModelInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutModelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2441,21 +2440,21 @@ export type ProductUncheckedUpdateWithoutModelInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutModelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2470,12 +2469,12 @@ export type ProductUncheckedUpdateManyWithoutModelInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
 }
 
 export type ProductCreateManyTenantInput = {
   id?: string
   name: string
-  image?: Prisma.ProductCreateimageInput | string[]
   baseSku: string
   modelId?: string | null
   categoryId?: string | null
@@ -2491,12 +2490,12 @@ export type ProductCreateManyTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
+  image?: Prisma.ProductCreateimageInput | string[]
 }
 
 export type ProductUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_serial?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2510,22 +2509,22 @@ export type ProductUpdateWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
-  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
+  model?: Prisma.ModelUpdateOneWithoutProductsNestedInput
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2541,20 +2540,20 @@ export type ProductUncheckedUpdateWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  image?: Prisma.ProductUpdateimageInput | string[]
   inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutProductNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutProductNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutProductNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutProductNestedInput
   transferItems?: Prisma.TransferItemUncheckedUpdateManyWithoutProductNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.ProductUpdateimageInput | string[]
   baseSku?: Prisma.StringFieldUpdateOperationsInput | string
   modelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2570,6 +2569,7 @@ export type ProductUncheckedUpdateManyWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.ProductUpdateimageInput | string[]
 }
 
 
@@ -2578,25 +2578,25 @@ export type ProductUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type ProductCountOutputType = {
-  variants: number
   inventoryItems: number
-  stockLots: number
+  inventoryMovements: number
+  variants: number
   rentalItems: number
   reservationItems: number
   saleItems: number
+  stockLots: number
   transferItems: number
-  inventoryMovements: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  variants?: boolean | ProductCountOutputTypeCountVariantsArgs
   inventoryItems?: boolean | ProductCountOutputTypeCountInventoryItemsArgs
-  stockLots?: boolean | ProductCountOutputTypeCountStockLotsArgs
+  inventoryMovements?: boolean | ProductCountOutputTypeCountInventoryMovementsArgs
+  variants?: boolean | ProductCountOutputTypeCountVariantsArgs
   rentalItems?: boolean | ProductCountOutputTypeCountRentalItemsArgs
   reservationItems?: boolean | ProductCountOutputTypeCountReservationItemsArgs
   saleItems?: boolean | ProductCountOutputTypeCountSaleItemsArgs
+  stockLots?: boolean | ProductCountOutputTypeCountStockLotsArgs
   transferItems?: boolean | ProductCountOutputTypeCountTransferItemsArgs
-  inventoryMovements?: boolean | ProductCountOutputTypeCountInventoryMovementsArgs
 }
 
 /**
@@ -2612,13 +2612,6 @@ export type ProductCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * ProductCountOutputType without action
  */
-export type ProductCountOutputTypeCountVariantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProductVariantWhereInput
-}
-
-/**
- * ProductCountOutputType without action
- */
 export type ProductCountOutputTypeCountInventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.InventoryItemWhereInput
 }
@@ -2626,8 +2619,15 @@ export type ProductCountOutputTypeCountInventoryItemsArgs<ExtArgs extends runtim
 /**
  * ProductCountOutputType without action
  */
-export type ProductCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StockLotWhereInput
+export type ProductCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryMovementWhereInput
+}
+
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountVariantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductVariantWhereInput
 }
 
 /**
@@ -2654,15 +2654,15 @@ export type ProductCountOutputTypeCountSaleItemsArgs<ExtArgs extends runtime.Typ
 /**
  * ProductCountOutputType without action
  */
-export type ProductCountOutputTypeCountTransferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransferItemWhereInput
+export type ProductCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockLotWhereInput
 }
 
 /**
  * ProductCountOutputType without action
  */
-export type ProductCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InventoryMovementWhereInput
+export type ProductCountOutputTypeCountTransferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransferItemWhereInput
 }
 
 
@@ -2670,7 +2670,6 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   tenantId?: boolean
   name?: boolean
-  image?: boolean
   baseSku?: boolean
   modelId?: boolean
   categoryId?: boolean
@@ -2686,17 +2685,18 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
-  category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
-  variants?: boolean | Prisma.Product$variantsArgs<ExtArgs>
+  image?: boolean
   inventoryItems?: boolean | Prisma.Product$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.Product$stockLotsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.Product$inventoryMovementsArgs<ExtArgs>
+  category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variants?: boolean | Prisma.Product$variantsArgs<ExtArgs>
   rentalItems?: boolean | Prisma.Product$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.Product$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.Product$saleItemsArgs<ExtArgs>
+  stockLots?: boolean | Prisma.Product$stockLotsArgs<ExtArgs>
   transferItems?: boolean | Prisma.Product$transferItemsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.Product$inventoryMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
@@ -2704,7 +2704,6 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   tenantId?: boolean
   name?: boolean
-  image?: boolean
   baseSku?: boolean
   modelId?: boolean
   categoryId?: boolean
@@ -2720,16 +2719,16 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  image?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
 export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tenantId?: boolean
   name?: boolean
-  image?: boolean
   baseSku?: boolean
   modelId?: boolean
   categoryId?: boolean
@@ -2745,16 +2744,16 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  image?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
 export type ProductSelectScalar = {
   id?: boolean
   tenantId?: boolean
   name?: boolean
-  image?: boolean
   baseSku?: boolean
   modelId?: boolean
   categoryId?: boolean
@@ -2770,54 +2769,54 @@ export type ProductSelectScalar = {
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
+  image?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "image" | "baseSku" | "modelId" | "categoryId" | "description" | "is_serial" | "can_rent" | "can_sell" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy" | "deletedAt" | "deletedBy" | "deleteReason" | "isDeleted", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "baseSku" | "modelId" | "categoryId" | "description" | "is_serial" | "can_rent" | "can_sell" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy" | "deletedAt" | "deletedBy" | "deleteReason" | "isDeleted" | "image", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
-  category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
-  variants?: boolean | Prisma.Product$variantsArgs<ExtArgs>
   inventoryItems?: boolean | Prisma.Product$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.Product$stockLotsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.Product$inventoryMovementsArgs<ExtArgs>
+  category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variants?: boolean | Prisma.Product$variantsArgs<ExtArgs>
   rentalItems?: boolean | Prisma.Product$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.Product$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.Product$saleItemsArgs<ExtArgs>
+  stockLots?: boolean | Prisma.Product$stockLotsArgs<ExtArgs>
   transferItems?: boolean | Prisma.Product$transferItemsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.Product$inventoryMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type ProductIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
+  model?: boolean | Prisma.Product$modelArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Product"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    model: Prisma.$ModelPayload<ExtArgs> | null
-    category: Prisma.$CategoryPayload<ExtArgs> | null
-    variants: Prisma.$ProductVariantPayload<ExtArgs>[]
     inventoryItems: Prisma.$InventoryItemPayload<ExtArgs>[]
-    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
+    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
+    category: Prisma.$CategoryPayload<ExtArgs> | null
+    model: Prisma.$ModelPayload<ExtArgs> | null
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    variants: Prisma.$ProductVariantPayload<ExtArgs>[]
     rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
     reservationItems: Prisma.$ReservationItemPayload<ExtArgs>[]
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
+    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
     transferItems: Prisma.$TransferItemPayload<ExtArgs>[]
-    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
     name: string
-    image: string[]
     baseSku: string
     modelId: string | null
     categoryId: string | null
@@ -2833,6 +2832,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     deletedBy: string | null
     deleteReason: string | null
     isDeleted: boolean
+    image: string[]
   }, ExtArgs["result"]["product"]>
   composites: {}
 }
@@ -3227,17 +3227,17 @@ readonly fields: ProductFieldRefs;
  */
 export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  model<T extends Prisma.Product$modelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$modelArgs<ExtArgs>>): Prisma.Prisma__ModelClient<runtime.Types.Result.GetResult<Prisma.$ModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  category<T extends Prisma.Product$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$categoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  variants<T extends Prisma.Product$variantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryItems<T extends Prisma.Product$inventoryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$inventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  stockLots<T extends Prisma.Product$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryMovements<T extends Prisma.Product$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  category<T extends Prisma.Product$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$categoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  model<T extends Prisma.Product$modelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$modelArgs<ExtArgs>>): Prisma.Prisma__ModelClient<runtime.Types.Result.GetResult<Prisma.$ModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  variants<T extends Prisma.Product$variantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rentalItems<T extends Prisma.Product$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationItems<T extends Prisma.Product$reservationItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$reservationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleItems<T extends Prisma.Product$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockLots<T extends Prisma.Product$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferItems<T extends Prisma.Product$transferItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$transferItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  inventoryMovements<T extends Prisma.Product$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3270,7 +3270,6 @@ export interface ProductFieldRefs {
   readonly id: Prisma.FieldRef<"Product", 'String'>
   readonly tenantId: Prisma.FieldRef<"Product", 'String'>
   readonly name: Prisma.FieldRef<"Product", 'String'>
-  readonly image: Prisma.FieldRef<"Product", 'String[]'>
   readonly baseSku: Prisma.FieldRef<"Product", 'String'>
   readonly modelId: Prisma.FieldRef<"Product", 'String'>
   readonly categoryId: Prisma.FieldRef<"Product", 'String'>
@@ -3286,6 +3285,7 @@ export interface ProductFieldRefs {
   readonly deletedBy: Prisma.FieldRef<"Product", 'String'>
   readonly deleteReason: Prisma.FieldRef<"Product", 'String'>
   readonly isDeleted: Prisma.FieldRef<"Product", 'Boolean'>
+  readonly image: Prisma.FieldRef<"Product", 'String[]'>
 }
     
 
@@ -3682,68 +3682,6 @@ export type ProductDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Product.model
- */
-export type Product$modelArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Model
-   */
-  select?: Prisma.ModelSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Model
-   */
-  omit?: Prisma.ModelOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ModelInclude<ExtArgs> | null
-  where?: Prisma.ModelWhereInput
-}
-
-/**
- * Product.category
- */
-export type Product$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Category
-   */
-  select?: Prisma.CategorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Category
-   */
-  omit?: Prisma.CategoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CategoryInclude<ExtArgs> | null
-  where?: Prisma.CategoryWhereInput
-}
-
-/**
- * Product.variants
- */
-export type Product$variantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ProductVariant
-   */
-  select?: Prisma.ProductVariantSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ProductVariant
-   */
-  omit?: Prisma.ProductVariantOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProductVariantInclude<ExtArgs> | null
-  where?: Prisma.ProductVariantWhereInput
-  orderBy?: Prisma.ProductVariantOrderByWithRelationInput | Prisma.ProductVariantOrderByWithRelationInput[]
-  cursor?: Prisma.ProductVariantWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ProductVariantScalarFieldEnum | Prisma.ProductVariantScalarFieldEnum[]
-}
-
-/**
  * Product.inventoryItems
  */
 export type Product$inventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3768,27 +3706,89 @@ export type Product$inventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * Product.stockLots
+ * Product.inventoryMovements
  */
-export type Product$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Product$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StockLot
+   * Select specific fields to fetch from the InventoryMovement
    */
-  select?: Prisma.StockLotSelect<ExtArgs> | null
+  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StockLot
+   * Omit specific fields from the InventoryMovement
    */
-  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StockLotInclude<ExtArgs> | null
-  where?: Prisma.StockLotWhereInput
-  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
-  cursor?: Prisma.StockLotWhereUniqueInput
+  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
+  where?: Prisma.InventoryMovementWhereInput
+  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryMovementWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
+  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+}
+
+/**
+ * Product.category
+ */
+export type Product$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Category
+   */
+  select?: Prisma.CategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Category
+   */
+  omit?: Prisma.CategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoryInclude<ExtArgs> | null
+  where?: Prisma.CategoryWhereInput
+}
+
+/**
+ * Product.model
+ */
+export type Product$modelArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Model
+   */
+  select?: Prisma.ModelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Model
+   */
+  omit?: Prisma.ModelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ModelInclude<ExtArgs> | null
+  where?: Prisma.ModelWhereInput
+}
+
+/**
+ * Product.variants
+ */
+export type Product$variantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductVariant
+   */
+  select?: Prisma.ProductVariantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductVariant
+   */
+  omit?: Prisma.ProductVariantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductVariantInclude<ExtArgs> | null
+  where?: Prisma.ProductVariantWhereInput
+  orderBy?: Prisma.ProductVariantOrderByWithRelationInput | Prisma.ProductVariantOrderByWithRelationInput[]
+  cursor?: Prisma.ProductVariantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductVariantScalarFieldEnum | Prisma.ProductVariantScalarFieldEnum[]
 }
 
 /**
@@ -3864,6 +3864,30 @@ export type Product$saleItemsArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Product.stockLots
+ */
+export type Product$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
+  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
+  cursor?: Prisma.StockLotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
+}
+
+/**
  * Product.transferItems
  */
 export type Product$transferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3885,30 +3909,6 @@ export type Product$transferItemsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.TransferItemScalarFieldEnum | Prisma.TransferItemScalarFieldEnum[]
-}
-
-/**
- * Product.inventoryMovements
- */
-export type Product$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the InventoryMovement
-   */
-  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the InventoryMovement
-   */
-  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
-  where?: Prisma.InventoryMovementWhereInput
-  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
-  cursor?: Prisma.InventoryMovementWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
 }
 
 /**

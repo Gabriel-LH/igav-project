@@ -18,7 +18,7 @@ export class CreateSaleUseCase {
     operationId: string,
     tenantId: string,
     totalAmount: number,
-    paymentMethod: string,
+    paymentMethodId: string,
   ): Promise<any> {
     const now = new Date();
     const fromReservation =
@@ -37,7 +37,7 @@ export class CreateSaleUseCase {
       totalAmount: totalAmount,
       saleDate: now,
       status: dto.status,
-      paymentMethod: paymentMethod,
+      // paymentMethod: paymentMethodId, // Removed as it is not in schema
       amountRefunded: 0,
       notes: (dto as any).notes || "",
       createdAt: now,
@@ -68,11 +68,16 @@ export class CreateSaleUseCase {
           );
           if (!reservationItem)
             throw new Error(`ReservationItem no encontrado`);
+          
+          const isItemSerial = reservationItem.isSerial || false;
+
           return {
             id: `SITEM-${item.reservationItemId}`,
             saleId: specificData.id,
             productId: reservationItem.productId,
-            stockId: item.stockId,
+            variantId: reservationItem.variantId,
+            stockId: isItemSerial ? undefined : item.stockId,
+            inventoryItemId: isItemSerial ? item.stockId : undefined,
             quantity: reservationItem.quantity ?? 1,
             priceAtMoment: reservationItem.priceAtMoment,
             listPrice: reservationItem.listPrice,
@@ -89,7 +94,9 @@ export class CreateSaleUseCase {
         id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
         saleId: specificData.id,
         productId: item.productId,
-        stockId: item.stockId,
+        variantId: item.variantId,
+        stockId: item.inventoryItemId ? undefined : (item as any).stockId,
+        inventoryItemId: item.inventoryItemId,
         quantity: item.quantity ?? 1,
         priceAtMoment: item.priceAtMoment,
         listPrice: item.listPrice,
@@ -120,14 +127,16 @@ export class CreateSaleUseCase {
           break;
       }
 
-      if (await this.inventoryRepo.isSerial(item.stockId)) {
+      const stockIdToUpdate = item.inventoryItemId || item.stockId;
+
+      if (item.inventoryItemId) {
         await this.inventoryRepo.updateItemStatus(
-          item.stockId,
-          finalStockStatus,
+          item.inventoryItemId,
+          finalStockStatus as any,
           dto.branchId,
           dto.sellerId,
         );
-      } else {
+      } else if (item.stockId) {
         if (
           finalStockStatus === "vendido" ||
           finalStockStatus === "vendido_pendiente_entrega"

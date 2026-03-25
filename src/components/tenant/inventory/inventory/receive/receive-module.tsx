@@ -93,6 +93,9 @@ export const ReceiveModule: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [lastScannedCode, setLastScannedCode] = useState<string>();
   const [lastScanStatus, setLastScanStatus] = useState<"success" | "error">();
+  const [receiveMode, setReceiveMode] = useState<"transit" | "service">(
+    "transit",
+  );
 
   // ── Branch / global store ─────────────────────────────────────────────────
   const storeBranches = useBranchStore((state) => state.branches);
@@ -126,6 +129,10 @@ export const ReceiveModule: React.FC = () => {
 
   const effectiveBranchId = selectedBranchId || branches[0]?.id || "";
   const isGlobal = canUseGlobal && selectedBranchId === GLOBAL_BRANCH_ID;
+  const isTransitMode = receiveMode === "transit";
+  const receiveModeLabel = isTransitMode
+    ? "En tránsito"
+    : "Lavandería / Mantenimiento";
 
   const currentBranch = useMemo(() => {
     if (isGlobal) return "Global";
@@ -149,17 +156,53 @@ export const ReceiveModule: React.FC = () => {
     return result;
   }, [committedSerialIds, localSerialIds]);
 
+  const getLineScannedCount = useCallback(
+    (line: ReceiveLine) => {
+      if (line.type === "stock") {
+        return Math.min(
+          combinedStockCounts[line.id] ?? 0,
+          line.quantityExpected,
+        );
+      }
+      return line.serialItems.filter((s) => combinedSerialIds.has(s.id)).length;
+    },
+    [combinedSerialIds, combinedStockCounts],
+  );
+
+  const getLinePendingCount = useCallback(
+    (line: ReceiveLine) => {
+      if (line.type === "stock") {
+        return Math.max(
+          line.quantityExpected - (combinedStockCounts[line.id] ?? 0),
+          0,
+        );
+      }
+      const scanned = line.serialItems.filter((s) =>
+        combinedSerialIds.has(s.id),
+      ).length;
+      return Math.max(line.serialItems.length - scanned, 0);
+    },
+    [combinedSerialIds, combinedStockCounts],
+  );
+
+  const visibleLines = useMemo(
+    () => receiveLines.filter((line) => getLinePendingCount(line) > 0),
+    [getLinePendingCount, receiveLines],
+  );
+
   const totalExpected = useMemo(() => {
-    return receiveLines.reduce((total, line) => {
+    return visibleLines.reduce((total, line) => {
       if (line.type === "stock") return total + line.quantityExpected;
       return total + line.serialItems.length;
     }, 0);
-  }, [receiveLines]);
+  }, [visibleLines]);
 
   const scannedCount = useMemo(() => {
-    const stockCount = Object.values(combinedStockCounts).reduce((s, v) => s + v, 0);
-    return stockCount + combinedSerialIds.size;
-  }, [combinedStockCounts, combinedSerialIds]);
+    return visibleLines.reduce(
+      (total, line) => total + getLineScannedCount(line),
+      0,
+    );
+  }, [getLineScannedCount, visibleLines]);
 
   // Staged = locally scanned but NOT yet committed
   const stagedCount = useMemo(() => {
@@ -173,7 +216,12 @@ export const ReceiveModule: React.FC = () => {
   if (rawTotal > sessionTotalRef.current) sessionTotalRef.current = rawTotal;
   const progressTotalExpected = sessionTotalRef.current;
 
-  const pendingCount = Math.max(totalExpected, 0);
+  const pendingCount = useMemo(() => {
+    return visibleLines.reduce(
+      (total, line) => total + getLinePendingCount(line),
+      0,
+    );
+  }, [getLinePendingCount, visibleLines]);
   const allSelected = totalExpected === 0 && scannedCount > 0;
 
   // ── Activity ──────────────────────────────────────────────────────────────
@@ -219,7 +267,13 @@ export const ReceiveModule: React.FC = () => {
     if (!effectiveBranchId || isGlobal) { setReceiveLines([]); return; }
     setIsLoading(true);
     const [pendingResult, productsResult] = await Promise.all([
-      listReceivePendingAction({ branchId: effectiveBranchId }),
+      listReceivePendingAction({
+        branchId: effectiveBranchId,
+        lotStatuses: isTransitMode ? ["en_transito"] : [],
+        itemStatuses: isTransitMode
+          ? ["en_transito"]
+          : ["en_lavanderia", "en_mantenimiento"],
+      }),
       loadProducts(),
     ]);
 
@@ -274,23 +328,38 @@ export const ReceiveModule: React.FC = () => {
 
     setReceiveLines([...stockLines, ...Array.from(serializedMap.values())]);
     setIsLoading(false);
-  }, [addActivity, branchNameById, effectiveBranchId, formatVariantName, isGlobal, loadProducts]);
+  }, [
+    addActivity,
+    branchNameById,
+    effectiveBranchId,
+    formatVariantName,
+    isGlobal,
+    isTransitMode,
+    loadProducts,
+  ]);
 
   // ── Session storage ───────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === "undefined" || !effectiveBranchId) return;
-    const key = `receive_local_${effectiveBranchId}`;
+    const key = `receive_local_${effectiveBranchId}_${receiveMode}`;
     sessionStorage.setItem(key, JSON.stringify({
       localStockCounts,
       localSerialIds: Array.from(localSerialIds),
       committedStockCounts,
       committedSerialIds: Array.from(committedSerialIds),
     }));
-  }, [localStockCounts, localSerialIds, committedStockCounts, committedSerialIds, effectiveBranchId]);
+  }, [
+    localStockCounts,
+    localSerialIds,
+    committedStockCounts,
+    committedSerialIds,
+    effectiveBranchId,
+    receiveMode,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !effectiveBranchId) return;
-    const key = `receive_local_${effectiveBranchId}`;
+    const key = `receive_local_${effectiveBranchId}_${receiveMode}`;
     const saved = sessionStorage.getItem(key);
     if (saved) {
       try {
@@ -306,13 +375,14 @@ export const ReceiveModule: React.FC = () => {
       setCommittedStockCounts({});
       setCommittedSerialIds(new Set());
     }
-    const lastLoadAt = lastPendingLoadByBranch.get(effectiveBranchId) ?? 0;
+    const pendingKey = `${effectiveBranchId}:${receiveMode}`;
+    const lastLoadAt = lastPendingLoadByBranch.get(pendingKey) ?? 0;
     if (Date.now() - lastLoadAt > 2000) {
-      lastPendingLoadByBranch.set(effectiveBranchId, Date.now());
+      lastPendingLoadByBranch.set(pendingKey, Date.now());
       sessionTotalRef.current = 0;
       loadPending();
     }
-  }, [effectiveBranchId, loadPending]);
+  }, [effectiveBranchId, loadPending, receiveMode]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LOCAL SCAN — zero server calls, instant UI update
@@ -323,7 +393,7 @@ export const ReceiveModule: React.FC = () => {
     if (!normalized) return;
 
     // --- SERIALIZED ---
-    const serialMatch = receiveLines
+    const serialMatch = visibleLines
       .filter((line): line is ReceiveSerializedLine => line.type === "serialized")
       .flatMap((line) => line.serialItems.map((serial) => ({ line, serial })))
       .find((e) => e.serial.serialCode === normalized);
@@ -364,7 +434,17 @@ export const ReceiveModule: React.FC = () => {
     }
 
     // --- STOCK ---
-    const stockMatch = receiveLines.find(
+    if (!isTransitMode) {
+      setLastScanStatus("error");
+      addActivity(
+        "warning",
+        `Solo se recibe serializados en ${receiveModeLabel}`,
+        normalized,
+      );
+      return;
+    }
+
+    const stockMatch = visibleLines.find(
       (line): line is ReceiveStockLine =>
         line.type === "stock" && line.scanCodes.some((c) => c === normalized),
     );
@@ -420,13 +500,21 @@ export const ReceiveModule: React.FC = () => {
       normalized,
     );
   }, [
-    isGlobal, effectiveBranchId, receiveLines, combinedSerialIds,
-    combinedStockCounts, currentBranch, scanMode, addActivity,
+    isGlobal,
+    effectiveBranchId,
+    visibleLines,
+    combinedSerialIds,
+    combinedStockCounts,
+    currentBranch,
+    scanMode,
+    addActivity,
+    isTransitMode,
+    receiveModeLabel,
   ]);
 
   // Accumulate: adds to existing local count (used by Marcar todo button and scan)
   const handleAddLocalStock = useCallback((stockId: string, quantity: number) => {
-    const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
+    const line = visibleLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
     if (!line) return;
     const current = combinedStockCounts[stockId] ?? 0;
     const maxAdd = line.quantityExpected - current;
@@ -434,17 +522,17 @@ export const ReceiveModule: React.FC = () => {
     if (toAdd <= 0) return;
     setLocalStockCounts((prev) => ({ ...prev, [stockId]: (prev[stockId] ?? 0) + toAdd }));
     addActivity("success", `✔ ${line.productName}  ${current + toAdd}/${line.quantityExpected}`, line.variantCode);
-  }, [receiveLines, combinedStockCounts, addActivity]);
+  }, [visibleLines, combinedStockCounts, addActivity]);
 
   // Replace: sets the local count to an explicit value (used by inline qty input)
   const handleSetLocalStock = useCallback((stockId: string, quantity: number) => {
-    const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
+    const line = visibleLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === stockId);
     if (!line) return;
     const committedCount = (combinedStockCounts[stockId] ?? 0) - (localStockCounts[stockId] ?? 0);
     const maxAllowed = line.quantityExpected - Math.max(committedCount, 0);
     const clamped = Math.max(0, Math.min(quantity, maxAllowed));
     setLocalStockCounts((prev) => ({ ...prev, [stockId]: clamped }));
-  }, [receiveLines, combinedStockCounts, localStockCounts]);
+  }, [visibleLines, combinedStockCounts, localStockCounts]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // BATCH COMMIT — sends everything staged to the server in one shot
@@ -460,13 +548,24 @@ export const ReceiveModule: React.FC = () => {
     setIsCommitting(true);
     try {
       const results = await Promise.allSettled([
-        ...Object.entries(localStockCounts)
-          .filter(([, qty]) => qty > 0)
-          .map(([stockId, quantity]) =>
-            receiveStockQuantityAction({ stockId, quantity }).then((r) => ({ stockId, quantity, ok: r.success, error: r.error })),
-          ),
+        ...(isTransitMode
+          ? Object.entries(localStockCounts)
+              .filter(([, qty]) => qty > 0)
+              .map(([stockId, quantity]) =>
+                receiveStockQuantityAction({ stockId, quantity }).then((r) => ({
+                  stockId,
+                  quantity,
+                  ok: r.success,
+                  error: r.error,
+                })),
+              )
+          : []),
         ...Array.from(localSerialIds).map((itemId) =>
-          markReceiveAvailableAction({ type: "serialized", itemId }).then((r) => ({ itemId, ok: r.success, error: r.error })),
+          markReceiveAvailableAction({ type: "serialized", itemId }).then((r) => ({
+            itemId,
+            ok: r.success,
+            error: r.error,
+          })),
         ),
       ]);
 
@@ -509,16 +608,28 @@ export const ReceiveModule: React.FC = () => {
     } finally {
       setIsCommitting(false);
     }
-  }, [localStockCounts, localSerialIds, committedStockCounts, committedSerialIds, addActivity, loadPending]);
+  }, [
+    localStockCounts,
+    localSerialIds,
+    committedStockCounts,
+    committedSerialIds,
+    addActivity,
+    loadPending,
+    isTransitMode,
+  ]);
 
   // Commit a single line (per-row confirm button)
   const commitLine = useCallback(async (lineId: string) => {
-    const line = receiveLines.find((l) => l.id === lineId);
+    const line = visibleLines.find((l) => l.id === lineId);
     if (!line) return;
 
     setIsCommitting(true);
     try {
       if (line.type === "stock") {
+        if (!isTransitMode) {
+          toast.info("Solo se reciben lotes en tránsito");
+          return;
+        }
         const qty = localStockCounts[lineId] ?? 0;
         if (qty <= 0) { toast.info("Sin cambios por confirmar en esta línea"); return; }
         const result = await receiveStockQuantityAction({ stockId: lineId, quantity: qty });
@@ -549,7 +660,15 @@ export const ReceiveModule: React.FC = () => {
     } finally {
       setIsCommitting(false);
     }
-  }, [receiveLines, localStockCounts, localSerialIds, committedSerialIds, addActivity, loadPending]);
+  }, [
+    visibleLines,
+    localStockCounts,
+    localSerialIds,
+    committedSerialIds,
+    addActivity,
+    loadPending,
+    isTransitMode,
+  ]);
 
   // ───────────────────────────────────────────────────────────────────────────
   const handleToggleSerial = useCallback((serialId: string) => {
@@ -571,7 +690,7 @@ export const ReceiveModule: React.FC = () => {
     const newStockCounts: Record<string, number> = {};
     const newSerialIds = new Set<string>();
 
-    receiveLines.forEach((line) => {
+    visibleLines.forEach((line) => {
       if (line.type === "stock") {
         const alreadyCommitted = committedStockCounts[line.id] ?? 0;
         const remaining = line.quantityExpected - alreadyCommitted;
@@ -586,10 +705,17 @@ export const ReceiveModule: React.FC = () => {
     setLocalStockCounts((prev) => ({ ...prev, ...newStockCounts }));
     setLocalSerialIds((prev) => new Set([...prev, ...newSerialIds]));
     addActivity("info", "Todos los items marcados (sin confirmar aún)");
-  }, [allSelected, receiveLines, committedStockCounts, committedSerialIds, localStockCounts, addActivity]);
+  }, [
+    allSelected,
+    visibleLines,
+    committedStockCounts,
+    committedSerialIds,
+    localStockCounts,
+    addActivity,
+  ]);
 
   const handleCloseAssignment = (action: "mark-lost" | "keep-transit") => {
-    receiveLines.forEach((line) => {
+    visibleLines.forEach((line) => {
       if (line.type === "stock") {
         const received = combinedStockCounts[line.id] ?? 0;
         if (received < line.quantityExpected) {
@@ -615,7 +741,7 @@ export const ReceiveModule: React.FC = () => {
         setLocalSerialIds((prev) => new Set(prev).add(pendingError.serialId!));
       }
       if (pendingError.kind === "stock" && pendingError.stockId) {
-        const line = receiveLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === pendingError.stockId);
+        const line = visibleLines.find((l): l is ReceiveStockLine => l.type === "stock" && l.id === pendingError.stockId);
         if (line) {
           const current = combinedStockCounts[line.id] ?? 0;
           if (current < line.quantityExpected) {
@@ -640,7 +766,9 @@ export const ReceiveModule: React.FC = () => {
             <p className="text-sm font-semibold flex items-center gap-2">
               <Store className="h-4 w-4" />Sucursal de recepción
             </p>
-            <p className="text-xs text-muted-foreground">Valida el stock en tránsito</p>
+            <p className="text-xs text-muted-foreground">
+              Valida el stock {receiveModeLabel.toLowerCase()}
+            </p>
           </div>
           <div className="w-full md:w-[260px]">
             <Select value={effectiveBranchId} onValueChange={setSelectedBranchId}>
@@ -653,11 +781,36 @@ export const ReceiveModule: React.FC = () => {
         </div>
       </Card>
 
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold">Modo de Recepción</p>
+            <p className="text-xs text-muted-foreground">
+              Mezclado de lavandería y mantenimiento en un solo flujo.
+            </p>
+          </div>
+          <Tabs
+            value={receiveMode}
+            onValueChange={(value) => {
+              setReceiveMode(value as "transit" | "service");
+              sessionTotalRef.current = 0;
+              setActiveBatchId(null);
+            }}
+          >
+            <TabsList>
+              <TabsTrigger value="transit">En tránsito</TabsTrigger>
+              <TabsTrigger value="service">Lavandería / Mantenimiento</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </Card>
+
       {/* Stats */}
       <ReceiveStats
         totalExpected={progressTotalExpected}
         scannedCount={scannedCount}
-        pendingCount={totalExpected}
+        pendingCount={pendingCount}
+        modeLabel={isTransitMode ? "En tránsito" : "En servicio"}
       />
 
       {/* Scanner */}
@@ -680,7 +833,7 @@ export const ReceiveModule: React.FC = () => {
 
         <TabsContent value="pending">
           <PendingItemsList
-            lines={receiveLines}
+            lines={visibleLines}
             receivedSerialIds={combinedSerialIds}
             receivedStockCounts={combinedStockCounts}
             localStockCounts={localStockCounts}
@@ -750,6 +903,7 @@ export const ReceiveModule: React.FC = () => {
         open={closeModalOpen}
         onOpenChange={setCloseModalOpen}
         pendingCount={pendingCount}
+        modeLabel={isTransitMode ? "en tránsito" : "en servicio"}
         onConfirm={handleCloseAssignment}
       />
       <WrongBranchModal

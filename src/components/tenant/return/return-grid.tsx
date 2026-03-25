@@ -8,11 +8,16 @@ import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 
-export const ReturnGrid = () => {
+interface Props {
+  attributeTypes?: any[];
+  attributeValues?: any[];
+}
+
+export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props) => {
   const { rentals, rentalItems } = useRentalStore();
   const { guarantees } = useGuaranteeStore(); // Added missing semicolon
 
-  const { products } = useInventoryStore();
+  const { products, productVariants } = useInventoryStore();
 
   const { customers } = useCustomerStore();
 
@@ -76,7 +81,7 @@ export const ReturnGrid = () => {
           );
 
           const realGuarantee = guarantees.find(
-            (g) => g.id === parent?.guaranteeId,
+            (g) => g.id === parent?.guaranteeId || g.operationId === parent?.operationId,
           );
           if (!parent) return null;
 
@@ -98,8 +103,33 @@ export const ReturnGrid = () => {
               id: gItem.id, // ID del RentalItem
               productId: gItem.productId,
               stockId: gItem.stockId,
-              sizeId: (gItem as any).sizeId || (gItem as any).size,
-              colorId: (gItem as any).colorId || (gItem as any).color,
+              sizeId: (gItem as any).sizeId || (gItem as any).size || productVariants.find(v => v.id === gItem.variantId)?.attributes?.["talla"] || (productVariants.find(v => v.id === gItem.variantId)?.attributes as any)?.["size"] || "N/A",
+              colorId: (gItem as any).colorId || (gItem as any).color || productVariants.find(v => v.id === gItem.variantId)?.attributes?.["color"] || "N/A",
+              variantAttributes: (() => {
+                const variant = productVariants.find((v) => v.id === gItem.variantId);
+                const resolved: Record<string, string> = {};
+                if (variant && variant.attributes) {
+                  Object.entries(variant.attributes).forEach(([key, value]) => {
+                    const type = attributeTypes.find(
+                      (t) =>
+                        String(t.id) === String(key) ||
+                        t.name.toLowerCase() === String(key).toLowerCase() ||
+                        t.code.toLowerCase() === String(key).toLowerCase()
+                    );
+                    const keyName = type?.name || String(key);
+
+                    const val = attributeValues.find(
+                      (v) =>
+                        String(v.id) === String(value) ||
+                        v.value.toLowerCase() === String(value).toLowerCase() ||
+                        v.code.toLowerCase() === String(value).toLowerCase()
+                    );
+                    const valName = val?.value || String(value);
+                    resolved[keyName] = valName;
+                  });
+                }
+                return resolved;
+              })(),
               quantity: gItem.quantity, // Should be 1 per item usually
               priceAtMoment: gItem.priceAtMoment,
               productName: productInfo?.name || "Vestido",

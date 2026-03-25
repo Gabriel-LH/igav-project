@@ -5,6 +5,8 @@ import { InventoryItem } from "../../../../types/product/type.inventoryItem";
 export interface ListReceivePendingInput {
   tenantId: string;
   branchId?: string;
+  lotStatuses?: Array<StockLot["status"]>;
+  itemStatuses?: Array<InventoryItem["status"]>;
 }
 
 export interface ListReceivePendingResult {
@@ -23,15 +25,25 @@ export class ListReceivePendingUseCase {
       this.stockRepo.getItemsByTenant(input.tenantId),
     ]);
 
+    const lotStatusFilter =
+      input.lotStatuses === undefined
+        ? new Set<StockLot["status"]>(["en_transito"])
+        : new Set(input.lotStatuses);
+
+    const itemStatusFilter =
+      input.itemStatuses === undefined
+        ? new Set<InventoryItem["status"]>(["en_transito"])
+        : new Set(input.itemStatuses);
+
     const stockLots = lots.filter(
       (lot) =>
-        lot.status === "en_transito" &&
+        lotStatusFilter.has(lot.status) &&
         (!input.branchId || lot.branchId === input.branchId),
     );
 
     const serializedItems = items.filter(
       (item) =>
-        item.status === "en_transito" &&
+        itemStatusFilter.has(item.status) &&
         (!input.branchId || item.branchId === input.branchId),
     );
 

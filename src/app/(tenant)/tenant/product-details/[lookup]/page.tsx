@@ -4,6 +4,7 @@ import {
   getAttributeTypesAction,
   getAttributeValuesAction,
 } from "@/src/app/(tenant)/tenant/actions/attribute.actions";
+import { getPromotionsAction } from "@/src/app/(tenant)/tenant/actions/promotion.actions";
 
 interface ProductDetailsRouteProps {
   params: Promise<{
@@ -21,11 +22,12 @@ export default async function ProductDetailsRoute({
   const resolvedParams = await params;
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
 
-  const [categoriesResult, attributeTypesResult, attributeValuesResult] =
+  const [categoriesResult, attributeTypesResult, attributeValuesResult, promotionsResult] =
     await Promise.all([
       getCategoriesAction(),
       getAttributeTypesAction(),
       getAttributeValuesAction(),
+      getPromotionsAction(),
     ]);
 
   const categories = categoriesResult.success ? (categoriesResult.data ?? []) : [];
@@ -35,6 +37,7 @@ export default async function ProductDetailsRoute({
   const attributeValues = attributeValuesResult.success
     ? (attributeValuesResult.data ?? [])
     : [];
+  const promotions = promotionsResult.success ? (promotionsResult.data ?? []) : [];
 
   return (
     <ProductDetailsPage
@@ -43,6 +46,7 @@ export default async function ProductDetailsRoute({
       categories={categories}
       attributeTypes={attributeTypes}
       attributeValues={attributeValues}
+      initialPromotions={promotions}
     />
   );
 }

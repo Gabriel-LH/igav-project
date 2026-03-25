@@ -16,7 +16,8 @@ export interface SaleDTO extends BaseOperation {
   items: {
     productId: string;
     productName: string;
-    stockId: string;
+    stockId?: string;
+    inventoryItemId?: string;
     quantity: number;
     variantId: string;
     priceAtMoment: number;
@@ -34,7 +35,7 @@ export interface SaleDTO extends BaseOperation {
     totalAmount: number;
     receivedAmount: number;
     keepAsCredit: boolean;
-    paymentMethod: string;
+    paymentMethodId: string;
   };
   notes?: string;
 }

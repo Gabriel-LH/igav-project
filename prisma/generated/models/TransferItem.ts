@@ -236,8 +236,8 @@ export type TransferItemWhereInput = {
   quantitySent?: Prisma.IntFilter<"TransferItem"> | number
   quantityReceived?: Prisma.IntNullableFilter<"TransferItem"> | number | null
   createdAt?: Prisma.DateTimeFilter<"TransferItem"> | Date | string
-  transfer?: Prisma.XOR<Prisma.TransferScalarRelationFilter, Prisma.TransferWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  transfer?: Prisma.XOR<Prisma.TransferScalarRelationFilter, Prisma.TransferWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
 }
 
@@ -249,8 +249,8 @@ export type TransferItemOrderByWithRelationInput = {
   quantitySent?: Prisma.SortOrder
   quantityReceived?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  transfer?: Prisma.TransferOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
+  transfer?: Prisma.TransferOrderByWithRelationInput
   variant?: Prisma.ProductVariantOrderByWithRelationInput
 }
 
@@ -265,8 +265,8 @@ export type TransferItemWhereUniqueInput = Prisma.AtLeast<{
   quantitySent?: Prisma.IntFilter<"TransferItem"> | number
   quantityReceived?: Prisma.IntNullableFilter<"TransferItem"> | number | null
   createdAt?: Prisma.DateTimeFilter<"TransferItem"> | Date | string
-  transfer?: Prisma.XOR<Prisma.TransferScalarRelationFilter, Prisma.TransferWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  transfer?: Prisma.XOR<Prisma.TransferScalarRelationFilter, Prisma.TransferWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
 }, "id">
 
@@ -303,8 +303,8 @@ export type TransferItemCreateInput = {
   quantitySent: number
   quantityReceived?: number | null
   createdAt: Date | string
-  transfer: Prisma.TransferCreateNestedOneWithoutTransferItemsInput
   product: Prisma.ProductCreateNestedOneWithoutTransferItemsInput
+  transfer: Prisma.TransferCreateNestedOneWithoutTransferItemsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutTransferItemsInput
 }
 
@@ -323,8 +323,8 @@ export type TransferItemUpdateInput = {
   quantitySent?: Prisma.IntFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transfer?: Prisma.TransferUpdateOneRequiredWithoutTransferItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutTransferItemsNestedInput
+  transfer?: Prisma.TransferUpdateOneRequiredWithoutTransferItemsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutTransferItemsNestedInput
 }
 
@@ -603,8 +603,8 @@ export type TransferItemCreateWithoutVariantInput = {
   quantitySent: number
   quantityReceived?: number | null
   createdAt: Date | string
-  transfer: Prisma.TransferCreateNestedOneWithoutTransferItemsInput
   product: Prisma.ProductCreateNestedOneWithoutTransferItemsInput
+  transfer: Prisma.TransferCreateNestedOneWithoutTransferItemsInput
 }
 
 export type TransferItemUncheckedCreateWithoutVariantInput = {
@@ -736,8 +736,8 @@ export type TransferItemUpdateWithoutVariantInput = {
   quantitySent?: Prisma.IntFieldUpdateOperationsInput | number
   quantityReceived?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transfer?: Prisma.TransferUpdateOneRequiredWithoutTransferItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutTransferItemsNestedInput
+  transfer?: Prisma.TransferUpdateOneRequiredWithoutTransferItemsNestedInput
 }
 
 export type TransferItemUncheckedUpdateWithoutVariantInput = {
@@ -804,8 +804,8 @@ export type TransferItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   quantitySent?: boolean
   quantityReceived?: boolean
   createdAt?: boolean
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferItem"]>
 
@@ -817,8 +817,8 @@ export type TransferItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   quantitySent?: boolean
   quantityReceived?: boolean
   createdAt?: boolean
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferItem"]>
 
@@ -830,8 +830,8 @@ export type TransferItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   quantitySent?: boolean
   quantityReceived?: boolean
   createdAt?: boolean
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transferItem"]>
 
@@ -847,26 +847,26 @@ export type TransferItemSelectScalar = {
 
 export type TransferItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transferId" | "productId" | "variantId" | "quantitySent" | "quantityReceived" | "createdAt", ExtArgs["result"]["transferItem"]>
 export type TransferItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 export type TransferItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 export type TransferItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  transfer?: boolean | Prisma.TransferDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 
 export type $TransferItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TransferItem"
   objects: {
-    transfer: Prisma.$TransferPayload<ExtArgs>
     product: Prisma.$ProductPayload<ExtArgs>
+    transfer: Prisma.$TransferPayload<ExtArgs>
     variant: Prisma.$ProductVariantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1271,8 +1271,8 @@ readonly fields: TransferItemFieldRefs;
  */
 export interface Prisma__TransferItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  transfer<T extends Prisma.TransferDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransferDefaultArgs<ExtArgs>>): Prisma.Prisma__TransferClient<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  transfer<T extends Prisma.TransferDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransferDefaultArgs<ExtArgs>>): Prisma.Prisma__TransferClient<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

@@ -4,6 +4,7 @@ import { Guarantee } from "../types/guarantee/type.guarantee";
 
 interface GuaranteeStore {
   guarantees: Guarantee[];
+  setGuarantees: (guarantees: Guarantee[]) => void;
   addGuarantee: (guarantee: Guarantee) => void;
   updateGuarantee: (guarantee: Partial<Guarantee>) => void;
   updateGuaranteeStatus: (id: string, status: Guarantee["status"]) => void;
@@ -12,6 +13,7 @@ interface GuaranteeStore {
 
 export const useGuaranteeStore = create<GuaranteeStore>((set) => ({
   guarantees: [],
+  setGuarantees: (guarantees) => set({ guarantees }),
   addGuarantee: (guarantee) =>
     set((state) => {
       console.log("🔵 [addGuarantee] Nueva garantía:", guarantee);

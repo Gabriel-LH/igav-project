@@ -246,23 +246,23 @@ export type UserWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"User"> | string | null
   globalRole?: Prisma.EnumGlobalRoleFilter<"User"> | $Enums.GlobalRole
-  sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  tenants?: Prisma.TenantListRelationFilter
-  operations?: Prisma.OperationListRelationFilter
-  openedCashSessions?: Prisma.CashSessionListRelationFilter
   closedCashSessions?: Prisma.CashSessionListRelationFilter
+  openedCashSessions?: Prisma.CashSessionListRelationFilter
   receivedGuarantees?: Prisma.GuaranteeListRelationFilter
   returnedGuarantees?: Prisma.GuaranteeListRelationFilter
-  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
-  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  invitationsAccepted?: Prisma.InvitationListRelationFilter
+  invitationsSent?: Prisma.InvitationListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
   stockMovements?: Prisma.StockMovementListRelationFilter
+  tenants?: Prisma.TenantListRelationFilter
+  userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
   tenantPolicies?: Prisma.TenantPolicyListRelationFilter
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryListRelationFilter
-  userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
-  invitationsSent?: Prisma.InvitationListRelationFilter
-  invitationsAccepted?: Prisma.InvitationListRelationFilter
+  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -279,23 +279,23 @@ export type UserOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   globalRole?: Prisma.SortOrder
-  sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
-  tenants?: Prisma.TenantOrderByRelationAggregateInput
-  operations?: Prisma.OperationOrderByRelationAggregateInput
-  openedCashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
   closedCashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
+  openedCashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
   receivedGuarantees?: Prisma.GuaranteeOrderByRelationAggregateInput
   returnedGuarantees?: Prisma.GuaranteeOrderByRelationAggregateInput
-  userBranchAccesses?: Prisma.UserBranchAccessOrderByRelationAggregateInput
-  userAttendances?: Prisma.UserAttendanceOrderByRelationAggregateInput
+  invitationsAccepted?: Prisma.InvitationOrderByRelationAggregateInput
+  invitationsSent?: Prisma.InvitationOrderByRelationAggregateInput
+  operations?: Prisma.OperationOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
+  sessions?: Prisma.SessionOrderByRelationAggregateInput
   stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
+  tenants?: Prisma.TenantOrderByRelationAggregateInput
+  userTenantMemberships?: Prisma.UserTenantMembershipOrderByRelationAggregateInput
   tenantPolicies?: Prisma.TenantPolicyOrderByRelationAggregateInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryOrderByRelationAggregateInput
-  userTenantMemberships?: Prisma.UserTenantMembershipOrderByRelationAggregateInput
-  invitationsSent?: Prisma.InvitationOrderByRelationAggregateInput
-  invitationsAccepted?: Prisma.InvitationOrderByRelationAggregateInput
+  userAttendances?: Prisma.UserAttendanceOrderByRelationAggregateInput
+  userBranchAccesses?: Prisma.UserBranchAccessOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -315,23 +315,23 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"User"> | string | null
   globalRole?: Prisma.EnumGlobalRoleFilter<"User"> | $Enums.GlobalRole
-  sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  tenants?: Prisma.TenantListRelationFilter
-  operations?: Prisma.OperationListRelationFilter
-  openedCashSessions?: Prisma.CashSessionListRelationFilter
   closedCashSessions?: Prisma.CashSessionListRelationFilter
+  openedCashSessions?: Prisma.CashSessionListRelationFilter
   receivedGuarantees?: Prisma.GuaranteeListRelationFilter
   returnedGuarantees?: Prisma.GuaranteeListRelationFilter
-  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
-  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  invitationsAccepted?: Prisma.InvitationListRelationFilter
+  invitationsSent?: Prisma.InvitationListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
   stockMovements?: Prisma.StockMovementListRelationFilter
+  tenants?: Prisma.TenantListRelationFilter
+  userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
   tenantPolicies?: Prisma.TenantPolicyListRelationFilter
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryListRelationFilter
-  userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
-  invitationsSent?: Prisma.InvitationListRelationFilter
-  invitationsAccepted?: Prisma.InvitationListRelationFilter
+  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -386,23 +386,23 @@ export type UserCreateInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -419,23 +419,23 @@ export type UserUncheckedCreateInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -452,23 +452,23 @@ export type UserUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -485,23 +485,23 @@ export type UserUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -694,24 +694,16 @@ export type UserUpdateOneRequiredWithoutUserAttendancesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserAttendancesInput, Prisma.UserUpdateWithoutUserAttendancesInput>, Prisma.UserUncheckedUpdateWithoutUserAttendancesInput>
 }
 
-export type UserCreateNestedOneWithoutOpenedCashSessionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOpenedCashSessionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
 export type UserCreateNestedOneWithoutClosedCashSessionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutClosedCashSessionsInput, Prisma.UserUncheckedCreateWithoutClosedCashSessionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutClosedCashSessionsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutOpenedCashSessionsNestedInput = {
+export type UserCreateNestedOneWithoutOpenedCashSessionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOpenedCashSessionsInput
-  upsert?: Prisma.UserUpsertWithoutOpenedCashSessionsInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOpenedCashSessionsInput, Prisma.UserUpdateWithoutOpenedCashSessionsInput>, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
 }
 
 export type UserUpdateOneWithoutClosedCashSessionsNestedInput = {
@@ -722,6 +714,14 @@ export type UserUpdateOneWithoutClosedCashSessionsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClosedCashSessionsInput, Prisma.UserUpdateWithoutClosedCashSessionsInput>, Prisma.UserUncheckedUpdateWithoutClosedCashSessionsInput>
+}
+
+export type UserUpdateOneRequiredWithoutOpenedCashSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOpenedCashSessionsInput
+  upsert?: Prisma.UserUpsertWithoutOpenedCashSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOpenedCashSessionsInput, Prisma.UserUpdateWithoutOpenedCashSessionsInput>, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
 }
 
 export type UserCreateNestedOneWithoutReceivedGuaranteesInput = {
@@ -840,24 +840,16 @@ export type UserUpdateOneRequiredWithoutTenantPolicyHistoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTenantPolicyHistoriesInput, Prisma.UserUpdateWithoutTenantPolicyHistoriesInput>, Prisma.UserUncheckedUpdateWithoutTenantPolicyHistoriesInput>
 }
 
-export type UserCreateNestedOneWithoutInvitationsSentInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitationsSentInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
 export type UserCreateNestedOneWithoutInvitationsAcceptedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutInvitationsAcceptedInput, Prisma.UserUncheckedCreateWithoutInvitationsAcceptedInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitationsAcceptedInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutInvitationsSentNestedInput = {
+export type UserCreateNestedOneWithoutInvitationsSentInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitationsSentInput
-  upsert?: Prisma.UserUpsertWithoutInvitationsSentInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsSentInput, Prisma.UserUpdateWithoutInvitationsSentInput>, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
 }
 
 export type UserUpdateOneWithoutInvitationsAcceptedNestedInput = {
@@ -868,6 +860,14 @@ export type UserUpdateOneWithoutInvitationsAcceptedNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsAcceptedInput, Prisma.UserUpdateWithoutInvitationsAcceptedInput>, Prisma.UserUncheckedUpdateWithoutInvitationsAcceptedInput>
+}
+
+export type UserUpdateOneRequiredWithoutInvitationsSentNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitationsSentInput
+  upsert?: Prisma.UserUpsertWithoutInvitationsSentInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsSentInput, Prisma.UserUpdateWithoutInvitationsSentInput>, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
 }
 
 export type UserCreateNestedOneWithoutUserTenantMembershipsInput = {
@@ -899,21 +899,21 @@ export type UserCreateWithoutSessionsInput = {
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -931,21 +931,21 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -979,21 +979,21 @@ export type UserUpdateWithoutSessionsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1011,21 +1011,21 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1042,22 +1042,22 @@ export type UserCreateWithoutAccountsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1074,22 +1074,22 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1122,22 +1122,22 @@ export type UserUpdateWithoutAccountsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1154,22 +1154,22 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserBranchAccessesInput = {
@@ -1186,22 +1186,22 @@ export type UserCreateWithoutUserBranchAccessesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserBranchAccessesInput = {
@@ -1218,22 +1218,22 @@ export type UserUncheckedCreateWithoutUserBranchAccessesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserBranchAccessesInput = {
@@ -1266,22 +1266,22 @@ export type UserUpdateWithoutUserBranchAccessesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserBranchAccessesInput = {
@@ -1298,22 +1298,22 @@ export type UserUncheckedUpdateWithoutUserBranchAccessesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserAttendancesInput = {
@@ -1330,22 +1330,22 @@ export type UserCreateWithoutUserAttendancesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserAttendancesInput = {
@@ -1362,22 +1362,22 @@ export type UserUncheckedCreateWithoutUserAttendancesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserAttendancesInput = {
@@ -1410,22 +1410,22 @@ export type UserUpdateWithoutUserAttendancesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserAttendancesInput = {
@@ -1442,91 +1442,22 @@ export type UserUncheckedUpdateWithoutUserAttendancesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
-}
-
-export type UserCreateWithoutOpenedCashSessionsInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  status?: $Enums.StatusUser
-  createdBy?: string
-  updatedBy?: string
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
-  receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
-  returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
-}
-
-export type UserUncheckedCreateWithoutOpenedCashSessionsInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  status?: $Enums.StatusUser
-  createdBy?: string
-  updatedBy?: string
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
-  receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
-  returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
-}
-
-export type UserCreateOrConnectWithoutOpenedCashSessionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutClosedCashSessionsInput = {
@@ -1543,22 +1474,22 @@ export type UserCreateWithoutClosedCashSessionsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClosedCashSessionsInput = {
@@ -1575,22 +1506,22 @@ export type UserUncheckedCreateWithoutClosedCashSessionsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClosedCashSessionsInput = {
@@ -1598,79 +1529,73 @@ export type UserCreateOrConnectWithoutClosedCashSessionsInput = {
   create: Prisma.XOR<Prisma.UserCreateWithoutClosedCashSessionsInput, Prisma.UserUncheckedCreateWithoutClosedCashSessionsInput>
 }
 
-export type UserUpsertWithoutOpenedCashSessionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
+export type UserCreateWithoutOpenedCashSessionsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutOpenedCashSessionsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutOpenedCashSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutOpenedCashSessionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
-}
-
-export type UserUpdateWithoutOpenedCashSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
-  receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
-  returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutOpenedCashSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
-  receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
-  returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserUpsertWithoutClosedCashSessionsInput = {
@@ -1698,22 +1623,22 @@ export type UserUpdateWithoutClosedCashSessionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClosedCashSessionsInput = {
@@ -1730,22 +1655,97 @@ export type UserUncheckedUpdateWithoutClosedCashSessionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutOpenedCashSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedCreateWithoutOpenedCashSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOpenedCashSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOpenedCashSessionsInput, Prisma.UserUncheckedUpdateWithoutOpenedCashSessionsInput>
+}
+
+export type UserUpdateWithoutOpenedCashSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOpenedCashSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReceivedGuaranteesInput = {
@@ -1762,22 +1762,22 @@ export type UserCreateWithoutReceivedGuaranteesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReceivedGuaranteesInput = {
@@ -1794,22 +1794,22 @@ export type UserUncheckedCreateWithoutReceivedGuaranteesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReceivedGuaranteesInput = {
@@ -1831,22 +1831,22 @@ export type UserCreateWithoutReturnedGuaranteesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReturnedGuaranteesInput = {
@@ -1863,22 +1863,22 @@ export type UserUncheckedCreateWithoutReturnedGuaranteesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReturnedGuaranteesInput = {
@@ -1911,22 +1911,22 @@ export type UserUpdateWithoutReceivedGuaranteesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReceivedGuaranteesInput = {
@@ -1943,22 +1943,22 @@ export type UserUncheckedUpdateWithoutReceivedGuaranteesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReturnedGuaranteesInput = {
@@ -1986,22 +1986,22 @@ export type UserUpdateWithoutReturnedGuaranteesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReturnedGuaranteesInput = {
@@ -2018,22 +2018,22 @@ export type UserUncheckedUpdateWithoutReturnedGuaranteesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOperationsInput = {
@@ -2050,22 +2050,22 @@ export type UserCreateWithoutOperationsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOperationsInput = {
@@ -2082,22 +2082,22 @@ export type UserUncheckedCreateWithoutOperationsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOperationsInput = {
@@ -2130,22 +2130,22 @@ export type UserUpdateWithoutOperationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOperationsInput = {
@@ -2162,22 +2162,22 @@ export type UserUncheckedUpdateWithoutOperationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPaymentsInput = {
@@ -2194,22 +2194,22 @@ export type UserCreateWithoutPaymentsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -2226,22 +2226,22 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -2274,22 +2274,22 @@ export type UserUpdateWithoutPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -2306,22 +2306,22 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStockMovementsInput = {
@@ -2338,22 +2338,22 @@ export type UserCreateWithoutStockMovementsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStockMovementsInput = {
@@ -2370,22 +2370,22 @@ export type UserUncheckedCreateWithoutStockMovementsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStockMovementsInput = {
@@ -2418,22 +2418,22 @@ export type UserUpdateWithoutStockMovementsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStockMovementsInput = {
@@ -2450,22 +2450,22 @@ export type UserUncheckedUpdateWithoutStockMovementsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantsInput = {
@@ -2482,22 +2482,22 @@ export type UserCreateWithoutTenantsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantsInput = {
@@ -2514,22 +2514,22 @@ export type UserUncheckedCreateWithoutTenantsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantsInput = {
@@ -2562,22 +2562,22 @@ export type UserUpdateWithoutTenantsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantsInput = {
@@ -2594,22 +2594,22 @@ export type UserUncheckedUpdateWithoutTenantsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantPoliciesInput = {
@@ -2626,22 +2626,22 @@ export type UserCreateWithoutTenantPoliciesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantPoliciesInput = {
@@ -2658,22 +2658,22 @@ export type UserUncheckedCreateWithoutTenantPoliciesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantPoliciesInput = {
@@ -2706,22 +2706,22 @@ export type UserUpdateWithoutTenantPoliciesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantPoliciesInput = {
@@ -2738,22 +2738,22 @@ export type UserUncheckedUpdateWithoutTenantPoliciesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantPolicyHistoriesInput = {
@@ -2770,22 +2770,22 @@ export type UserCreateWithoutTenantPolicyHistoriesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantPolicyHistoriesInput = {
@@ -2802,22 +2802,22 @@ export type UserUncheckedCreateWithoutTenantPolicyHistoriesInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantPolicyHistoriesInput = {
@@ -2850,22 +2850,22 @@ export type UserUpdateWithoutTenantPolicyHistoriesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantPolicyHistoriesInput = {
@@ -2882,91 +2882,22 @@ export type UserUncheckedUpdateWithoutTenantPolicyHistoriesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
-}
-
-export type UserCreateWithoutInvitationsSentInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  status?: $Enums.StatusUser
-  createdBy?: string
-  updatedBy?: string
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
-  closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
-  receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
-  returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
-}
-
-export type UserUncheckedCreateWithoutInvitationsSentInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  status?: $Enums.StatusUser
-  createdBy?: string
-  updatedBy?: string
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
-  closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
-  receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
-  returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
-}
-
-export type UserCreateOrConnectWithoutInvitationsSentInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsAcceptedInput = {
@@ -2983,22 +2914,22 @@ export type UserCreateWithoutInvitationsAcceptedInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
@@ -3015,22 +2946,22 @@ export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsAcceptedInput = {
@@ -3038,79 +2969,73 @@ export type UserCreateOrConnectWithoutInvitationsAcceptedInput = {
   create: Prisma.XOR<Prisma.UserCreateWithoutInvitationsAcceptedInput, Prisma.UserUncheckedCreateWithoutInvitationsAcceptedInput>
 }
 
-export type UserUpsertWithoutInvitationsSentInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutInvitationsSentInput, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
+export type UserCreateWithoutInvitationsSentInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
+  receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutInvitationsSentInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutInvitationsSentInput = {
+  where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutInvitationsSentInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutInvitationsSentInput, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
-}
-
-export type UserUpdateWithoutInvitationsSentInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
-  closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
-  receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
-  returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutInvitationsSentInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
-  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
-  closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
-  receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
-  returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
-  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
-  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserUpsertWithoutInvitationsAcceptedInput = {
@@ -3138,22 +3063,22 @@ export type UserUpdateWithoutInvitationsAcceptedInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
@@ -3170,22 +3095,97 @@ export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutInvitationsSentInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInvitationsSentInput, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutInvitationsSentInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInvitationsSentInput, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
+}
+
+export type UserUpdateWithoutInvitationsSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutInvitationsSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserTenantMembershipsInput = {
@@ -3202,22 +3202,22 @@ export type UserCreateWithoutUserTenantMembershipsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserTenantMembershipsInput = {
@@ -3234,22 +3234,22 @@ export type UserUncheckedCreateWithoutUserTenantMembershipsInput = {
   deletedAt?: Date | string | null
   deletedBy?: string | null
   globalRole?: $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
-  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
-  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserTenantMembershipsInput = {
@@ -3282,22 +3282,22 @@ export type UserUpdateWithoutUserTenantMembershipsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserTenantMembershipsInput = {
@@ -3314,22 +3314,22 @@ export type UserUncheckedUpdateWithoutUserTenantMembershipsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
-  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
   receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
   returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
-  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -3338,43 +3338,43 @@ export type UserUncheckedUpdateWithoutUserTenantMembershipsInput = {
  */
 
 export type UserCountOutputType = {
-  sessions: number
   accounts: number
-  tenants: number
-  operations: number
-  openedCashSessions: number
   closedCashSessions: number
+  openedCashSessions: number
   receivedGuarantees: number
   returnedGuarantees: number
-  userBranchAccesses: number
-  userAttendances: number
+  invitationsAccepted: number
+  invitationsSent: number
+  operations: number
   payments: number
+  sessions: number
   stockMovements: number
+  tenants: number
+  userTenantMemberships: number
   tenantPolicies: number
   tenantPolicyHistories: number
-  userTenantMemberships: number
-  invitationsSent: number
-  invitationsAccepted: number
+  userAttendances: number
+  userBranchAccesses: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-  tenants?: boolean | UserCountOutputTypeCountTenantsArgs
-  operations?: boolean | UserCountOutputTypeCountOperationsArgs
-  openedCashSessions?: boolean | UserCountOutputTypeCountOpenedCashSessionsArgs
   closedCashSessions?: boolean | UserCountOutputTypeCountClosedCashSessionsArgs
+  openedCashSessions?: boolean | UserCountOutputTypeCountOpenedCashSessionsArgs
   receivedGuarantees?: boolean | UserCountOutputTypeCountReceivedGuaranteesArgs
   returnedGuarantees?: boolean | UserCountOutputTypeCountReturnedGuaranteesArgs
-  userBranchAccesses?: boolean | UserCountOutputTypeCountUserBranchAccessesArgs
-  userAttendances?: boolean | UserCountOutputTypeCountUserAttendancesArgs
+  invitationsAccepted?: boolean | UserCountOutputTypeCountInvitationsAcceptedArgs
+  invitationsSent?: boolean | UserCountOutputTypeCountInvitationsSentArgs
+  operations?: boolean | UserCountOutputTypeCountOperationsArgs
   payments?: boolean | UserCountOutputTypeCountPaymentsArgs
+  sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   stockMovements?: boolean | UserCountOutputTypeCountStockMovementsArgs
+  tenants?: boolean | UserCountOutputTypeCountTenantsArgs
+  userTenantMemberships?: boolean | UserCountOutputTypeCountUserTenantMembershipsArgs
   tenantPolicies?: boolean | UserCountOutputTypeCountTenantPoliciesArgs
   tenantPolicyHistories?: boolean | UserCountOutputTypeCountTenantPolicyHistoriesArgs
-  userTenantMemberships?: boolean | UserCountOutputTypeCountUserTenantMembershipsArgs
-  invitationsSent?: boolean | UserCountOutputTypeCountInvitationsSentArgs
-  invitationsAccepted?: boolean | UserCountOutputTypeCountInvitationsAcceptedArgs
+  userAttendances?: boolean | UserCountOutputTypeCountUserAttendancesArgs
+  userBranchAccesses?: boolean | UserCountOutputTypeCountUserBranchAccessesArgs
 }
 
 /**
@@ -3390,13 +3390,6 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SessionWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AccountWhereInput
 }
@@ -3404,28 +3397,14 @@ export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountTenantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TenantWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.OperationWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountOpenedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountClosedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CashSessionWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountClosedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountOpenedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CashSessionWhereInput
 }
 
@@ -3446,15 +3425,22 @@ export type UserCountOutputTypeCountReturnedGuaranteesArgs<ExtArgs extends runti
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountUserBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserBranchAccessWhereInput
+export type UserCountOutputTypeCountInvitationsAcceptedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountUserAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserAttendanceWhereInput
+export type UserCountOutputTypeCountInvitationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OperationWhereInput
 }
 
 /**
@@ -3467,8 +3453,29 @@ export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.StockMovementWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTenantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TenantWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserTenantMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserTenantMembershipWhereInput
 }
 
 /**
@@ -3488,22 +3495,15 @@ export type UserCountOutputTypeCountTenantPolicyHistoriesArgs<ExtArgs extends ru
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountUserTenantMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserTenantMembershipWhereInput
+export type UserCountOutputTypeCountUserAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserAttendanceWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountInvitationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InvitationWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountInvitationsAcceptedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InvitationWhereInput
+export type UserCountOutputTypeCountUserBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserBranchAccessWhereInput
 }
 
 
@@ -3521,23 +3521,23 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   deletedAt?: boolean
   deletedBy?: boolean
   globalRole?: boolean
-  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
-  tenants?: boolean | Prisma.User$tenantsArgs<ExtArgs>
-  operations?: boolean | Prisma.User$operationsArgs<ExtArgs>
-  openedCashSessions?: boolean | Prisma.User$openedCashSessionsArgs<ExtArgs>
   closedCashSessions?: boolean | Prisma.User$closedCashSessionsArgs<ExtArgs>
+  openedCashSessions?: boolean | Prisma.User$openedCashSessionsArgs<ExtArgs>
   receivedGuarantees?: boolean | Prisma.User$receivedGuaranteesArgs<ExtArgs>
   returnedGuarantees?: boolean | Prisma.User$returnedGuaranteesArgs<ExtArgs>
-  userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
-  userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
+  invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
+  invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
+  operations?: boolean | Prisma.User$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   stockMovements?: boolean | Prisma.User$stockMovementsArgs<ExtArgs>
+  tenants?: boolean | Prisma.User$tenantsArgs<ExtArgs>
+  userTenantMemberships?: boolean | Prisma.User$userTenantMembershipsArgs<ExtArgs>
   tenantPolicies?: boolean | Prisma.User$tenantPoliciesArgs<ExtArgs>
   tenantPolicyHistories?: boolean | Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>
-  userTenantMemberships?: boolean | Prisma.User$userTenantMembershipsArgs<ExtArgs>
-  invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
-  invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
+  userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
+  userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3591,23 +3591,23 @@ export type UserSelectScalar = {
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "status" | "createdBy" | "updatedBy" | "deletedAt" | "deletedBy" | "globalRole", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
-  tenants?: boolean | Prisma.User$tenantsArgs<ExtArgs>
-  operations?: boolean | Prisma.User$operationsArgs<ExtArgs>
-  openedCashSessions?: boolean | Prisma.User$openedCashSessionsArgs<ExtArgs>
   closedCashSessions?: boolean | Prisma.User$closedCashSessionsArgs<ExtArgs>
+  openedCashSessions?: boolean | Prisma.User$openedCashSessionsArgs<ExtArgs>
   receivedGuarantees?: boolean | Prisma.User$receivedGuaranteesArgs<ExtArgs>
   returnedGuarantees?: boolean | Prisma.User$returnedGuaranteesArgs<ExtArgs>
-  userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
-  userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
+  invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
+  invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
+  operations?: boolean | Prisma.User$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   stockMovements?: boolean | Prisma.User$stockMovementsArgs<ExtArgs>
+  tenants?: boolean | Prisma.User$tenantsArgs<ExtArgs>
+  userTenantMemberships?: boolean | Prisma.User$userTenantMembershipsArgs<ExtArgs>
   tenantPolicies?: boolean | Prisma.User$tenantPoliciesArgs<ExtArgs>
   tenantPolicyHistories?: boolean | Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>
-  userTenantMemberships?: boolean | Prisma.User$userTenantMembershipsArgs<ExtArgs>
-  invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
-  invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
+  userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
+  userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3616,23 +3616,23 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
-    tenants: Prisma.$TenantPayload<ExtArgs>[]
-    operations: Prisma.$OperationPayload<ExtArgs>[]
-    openedCashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
     closedCashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
+    openedCashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
     receivedGuarantees: Prisma.$GuaranteePayload<ExtArgs>[]
     returnedGuarantees: Prisma.$GuaranteePayload<ExtArgs>[]
-    userBranchAccesses: Prisma.$UserBranchAccessPayload<ExtArgs>[]
-    userAttendances: Prisma.$UserAttendancePayload<ExtArgs>[]
+    invitationsAccepted: Prisma.$InvitationPayload<ExtArgs>[]
+    invitationsSent: Prisma.$InvitationPayload<ExtArgs>[]
+    operations: Prisma.$OperationPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
+    sessions: Prisma.$SessionPayload<ExtArgs>[]
     stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
+    tenants: Prisma.$TenantPayload<ExtArgs>[]
+    userTenantMemberships: Prisma.$UserTenantMembershipPayload<ExtArgs>[]
     tenantPolicies: Prisma.$TenantPolicyPayload<ExtArgs>[]
     tenantPolicyHistories: Prisma.$TenantPolicyHistoryPayload<ExtArgs>[]
-    userTenantMemberships: Prisma.$UserTenantMembershipPayload<ExtArgs>[]
-    invitationsSent: Prisma.$InvitationPayload<ExtArgs>[]
-    invitationsAccepted: Prisma.$InvitationPayload<ExtArgs>[]
+    userAttendances: Prisma.$UserAttendancePayload<ExtArgs>[]
+    userBranchAccesses: Prisma.$UserBranchAccessPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4042,23 +4042,23 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  tenants<T extends Prisma.User$tenantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tenantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  operations<T extends Prisma.User$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  openedCashSessions<T extends Prisma.User$openedCashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$openedCashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   closedCashSessions<T extends Prisma.User$closedCashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$closedCashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  openedCashSessions<T extends Prisma.User$openedCashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$openedCashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   receivedGuarantees<T extends Prisma.User$receivedGuaranteesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$receivedGuaranteesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   returnedGuarantees<T extends Prisma.User$returnedGuaranteesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$returnedGuaranteesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userBranchAccesses<T extends Prisma.User$userBranchAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userBranchAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBranchAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userAttendances<T extends Prisma.User$userAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitationsAccepted<T extends Prisma.User$invitationsAcceptedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsAcceptedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitationsSent<T extends Prisma.User$invitationsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operations<T extends Prisma.User$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   stockMovements<T extends Prisma.User$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tenants<T extends Prisma.User$tenantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tenantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userTenantMemberships<T extends Prisma.User$userTenantMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userTenantMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tenantPolicies<T extends Prisma.User$tenantPoliciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tenantPoliciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tenantPolicyHistories<T extends Prisma.User$tenantPolicyHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPolicyHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userTenantMemberships<T extends Prisma.User$userTenantMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userTenantMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  invitationsSent<T extends Prisma.User$invitationsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  invitationsAccepted<T extends Prisma.User$invitationsAcceptedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsAcceptedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userAttendances<T extends Prisma.User$userAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userBranchAccesses<T extends Prisma.User$userBranchAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userBranchAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBranchAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4489,30 +4489,6 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.sessions
- */
-export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Session
-   */
-  select?: Prisma.SessionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Session
-   */
-  omit?: Prisma.SessionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SessionInclude<ExtArgs> | null
-  where?: Prisma.SessionWhereInput
-  orderBy?: Prisma.SessionOrderByWithRelationInput | Prisma.SessionOrderByWithRelationInput[]
-  cursor?: Prisma.SessionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
-}
-
-/**
  * User.accounts
  */
 export type User$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4537,57 +4513,9 @@ export type User$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.tenants
+ * User.closedCashSessions
  */
-export type User$tenantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Tenant
-   */
-  select?: Prisma.TenantSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Tenant
-   */
-  omit?: Prisma.TenantOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TenantInclude<ExtArgs> | null
-  where?: Prisma.TenantWhereInput
-  orderBy?: Prisma.TenantOrderByWithRelationInput | Prisma.TenantOrderByWithRelationInput[]
-  cursor?: Prisma.TenantWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TenantScalarFieldEnum | Prisma.TenantScalarFieldEnum[]
-}
-
-/**
- * User.operations
- */
-export type User$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Operation
-   */
-  select?: Prisma.OperationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Operation
-   */
-  omit?: Prisma.OperationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OperationInclude<ExtArgs> | null
-  where?: Prisma.OperationWhereInput
-  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
-  cursor?: Prisma.OperationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
-}
-
-/**
- * User.openedCashSessions
- */
-export type User$openedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$closedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the CashSession
    */
@@ -4609,9 +4537,9 @@ export type User$openedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * User.closedCashSessions
+ * User.openedCashSessions
  */
-export type User$closedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$openedCashSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the CashSession
    */
@@ -4681,51 +4609,75 @@ export type User$returnedGuaranteesArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * User.userBranchAccesses
+ * User.invitationsAccepted
  */
-export type User$userBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$invitationsAcceptedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserBranchAccess
+   * Select specific fields to fetch from the Invitation
    */
-  select?: Prisma.UserBranchAccessSelect<ExtArgs> | null
+  select?: Prisma.InvitationSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserBranchAccess
+   * Omit specific fields from the Invitation
    */
-  omit?: Prisma.UserBranchAccessOmit<ExtArgs> | null
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserBranchAccessInclude<ExtArgs> | null
-  where?: Prisma.UserBranchAccessWhereInput
-  orderBy?: Prisma.UserBranchAccessOrderByWithRelationInput | Prisma.UserBranchAccessOrderByWithRelationInput[]
-  cursor?: Prisma.UserBranchAccessWhereUniqueInput
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserBranchAccessScalarFieldEnum | Prisma.UserBranchAccessScalarFieldEnum[]
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
 }
 
 /**
- * User.userAttendances
+ * User.invitationsSent
  */
-export type User$userAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$invitationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserAttendance
+   * Select specific fields to fetch from the Invitation
    */
-  select?: Prisma.UserAttendanceSelect<ExtArgs> | null
+  select?: Prisma.InvitationSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserAttendance
+   * Omit specific fields from the Invitation
    */
-  omit?: Prisma.UserAttendanceOmit<ExtArgs> | null
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserAttendanceInclude<ExtArgs> | null
-  where?: Prisma.UserAttendanceWhereInput
-  orderBy?: Prisma.UserAttendanceOrderByWithRelationInput | Prisma.UserAttendanceOrderByWithRelationInput[]
-  cursor?: Prisma.UserAttendanceWhereUniqueInput
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserAttendanceScalarFieldEnum | Prisma.UserAttendanceScalarFieldEnum[]
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
+}
+
+/**
+ * User.operations
+ */
+export type User$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Operation
+   */
+  select?: Prisma.OperationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Operation
+   */
+  omit?: Prisma.OperationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OperationInclude<ExtArgs> | null
+  where?: Prisma.OperationWhereInput
+  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
+  cursor?: Prisma.OperationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
 }
 
 /**
@@ -4753,6 +4705,30 @@ export type User$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
+ * User.sessions
+ */
+export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Session
+   */
+  select?: Prisma.SessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Session
+   */
+  omit?: Prisma.SessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessionInclude<ExtArgs> | null
+  where?: Prisma.SessionWhereInput
+  orderBy?: Prisma.SessionOrderByWithRelationInput | Prisma.SessionOrderByWithRelationInput[]
+  cursor?: Prisma.SessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
  * User.stockMovements
  */
 export type User$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4774,6 +4750,54 @@ export type User$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.StockMovementScalarFieldEnum | Prisma.StockMovementScalarFieldEnum[]
+}
+
+/**
+ * User.tenants
+ */
+export type User$tenantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tenant
+   */
+  select?: Prisma.TenantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tenant
+   */
+  omit?: Prisma.TenantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TenantInclude<ExtArgs> | null
+  where?: Prisma.TenantWhereInput
+  orderBy?: Prisma.TenantOrderByWithRelationInput | Prisma.TenantOrderByWithRelationInput[]
+  cursor?: Prisma.TenantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TenantScalarFieldEnum | Prisma.TenantScalarFieldEnum[]
+}
+
+/**
+ * User.userTenantMemberships
+ */
+export type User$userTenantMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserTenantMembership
+   */
+  select?: Prisma.UserTenantMembershipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserTenantMembership
+   */
+  omit?: Prisma.UserTenantMembershipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTenantMembershipInclude<ExtArgs> | null
+  where?: Prisma.UserTenantMembershipWhereInput
+  orderBy?: Prisma.UserTenantMembershipOrderByWithRelationInput | Prisma.UserTenantMembershipOrderByWithRelationInput[]
+  cursor?: Prisma.UserTenantMembershipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserTenantMembershipScalarFieldEnum | Prisma.UserTenantMembershipScalarFieldEnum[]
 }
 
 /**
@@ -4825,75 +4849,51 @@ export type User$tenantPolicyHistoriesArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
- * User.userTenantMemberships
+ * User.userAttendances
  */
-export type User$userTenantMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$userAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserTenantMembership
+   * Select specific fields to fetch from the UserAttendance
    */
-  select?: Prisma.UserTenantMembershipSelect<ExtArgs> | null
+  select?: Prisma.UserAttendanceSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserTenantMembership
+   * Omit specific fields from the UserAttendance
    */
-  omit?: Prisma.UserTenantMembershipOmit<ExtArgs> | null
+  omit?: Prisma.UserAttendanceOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserTenantMembershipInclude<ExtArgs> | null
-  where?: Prisma.UserTenantMembershipWhereInput
-  orderBy?: Prisma.UserTenantMembershipOrderByWithRelationInput | Prisma.UserTenantMembershipOrderByWithRelationInput[]
-  cursor?: Prisma.UserTenantMembershipWhereUniqueInput
+  include?: Prisma.UserAttendanceInclude<ExtArgs> | null
+  where?: Prisma.UserAttendanceWhereInput
+  orderBy?: Prisma.UserAttendanceOrderByWithRelationInput | Prisma.UserAttendanceOrderByWithRelationInput[]
+  cursor?: Prisma.UserAttendanceWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserTenantMembershipScalarFieldEnum | Prisma.UserTenantMembershipScalarFieldEnum[]
+  distinct?: Prisma.UserAttendanceScalarFieldEnum | Prisma.UserAttendanceScalarFieldEnum[]
 }
 
 /**
- * User.invitationsSent
+ * User.userBranchAccesses
  */
-export type User$invitationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$userBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Invitation
+   * Select specific fields to fetch from the UserBranchAccess
    */
-  select?: Prisma.InvitationSelect<ExtArgs> | null
+  select?: Prisma.UserBranchAccessSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Invitation
+   * Omit specific fields from the UserBranchAccess
    */
-  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  omit?: Prisma.UserBranchAccessOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvitationInclude<ExtArgs> | null
-  where?: Prisma.InvitationWhereInput
-  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
-  cursor?: Prisma.InvitationWhereUniqueInput
+  include?: Prisma.UserBranchAccessInclude<ExtArgs> | null
+  where?: Prisma.UserBranchAccessWhereInput
+  orderBy?: Prisma.UserBranchAccessOrderByWithRelationInput | Prisma.UserBranchAccessOrderByWithRelationInput[]
+  cursor?: Prisma.UserBranchAccessWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
-}
-
-/**
- * User.invitationsAccepted
- */
-export type User$invitationsAcceptedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Invitation
-   */
-  select?: Prisma.InvitationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Invitation
-   */
-  omit?: Prisma.InvitationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.InvitationInclude<ExtArgs> | null
-  where?: Prisma.InvitationWhereInput
-  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
-  cursor?: Prisma.InvitationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
+  distinct?: Prisma.UserBranchAccessScalarFieldEnum | Prisma.UserBranchAccessScalarFieldEnum[]
 }
 
 /**

@@ -24,6 +24,10 @@ import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/retur
 import { PrismaSaleReversalRepository } from "@/src/infrastructure/tenant/repositories/PrismaSaleReversalRepository";
 import { revalidatePath } from "next/cache";
 import { ProcessReturnUseCase, ProcessReturnInput } from "@/src/application/tenant/use-cases/processReturn.usecase";
+import { ListAttributeTypesUseCase } from "@/src/application/tenant/use-cases/attribute/crudAttributeType.usecase";
+import { ListAttributeValuesUseCase } from "@/src/application/tenant/use-cases/attribute/crudAttributeValue.usecase";
+import { PrismaAttributeTypeAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-attribute-type.adapter";
+import { PrismaAttributeValueAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-attribute-value.adapter";
 
 export async function getRentalsGridAction(tenantId: string) {
   const rentalRepo = new PrismaRentalRepository(prisma);
@@ -87,7 +91,8 @@ export async function cancelRentalAction(rentalId: string, reason: string, userI
 export async function deliverRentalAction(
   rentalId: string, 
   guaranteeData: { value: string; type: GuaranteeType }, 
-  userId: string
+  userId: string,
+  selectedIds?: string[]
 ) {
   const rentalRepo = new PrismaRentalRepository(prisma);
   const inventoryRepo = new PrismaInventoryRepository(prisma);
@@ -102,6 +107,7 @@ export async function deliverRentalAction(
   );
 
   await useCase.execute(rentalId, guaranteeData, userId);
+  revalidatePath("/tenant/rentals");
   return { success: true };
 }
 
@@ -185,4 +191,48 @@ export async function processReturnAction(input: ProcessReturnInput) {
   revalidatePath("/tenant/returns");
   revalidatePath("/tenant/rentals");
   return { success: true };
+}
+
+export async function getReturnsDataAction(tenantId: string) {
+  try {
+    const attributeTypeRepo = new PrismaAttributeTypeAdapter();
+    const attributeValueRepo = new PrismaAttributeValueAdapter();
+    const rentalRepo = new PrismaRentalRepository(prisma);
+    const clientRepo = new PrismaClientRepository(prisma, tenantId);
+    const guaranteeRepo = new PrismaGuaranteeRepository(prisma);
+    const inventoryRepo = new PrismaInventoryRepository(prisma);
+    const listTypes = new ListAttributeTypesUseCase(attributeTypeRepo);
+    const listValues = new ListAttributeValuesUseCase(attributeValueRepo);
+
+    const [rentals, rentalItems, products, productVariants, customers, guarantees, types, values] = await Promise.all([
+      rentalRepo.getRentals(),
+      rentalRepo.getRentalItems(),
+      inventoryRepo.getProducts(),
+      inventoryRepo.getProductVariants(),
+      clientRepo.getAllClients(),
+      guaranteeRepo.getGuarantees(tenantId),
+      listTypes.execute(tenantId, { includeInactive: true }),
+      listValues.execute(tenantId, { includeInactive: true }),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        rentals: rentals.filter((r: any) => r.tenantId === tenantId),
+        rentalItems: rentalItems.filter((i: any) => i.tenantId === tenantId),
+        products: products.filter((p: any) => p.tenantId === tenantId),
+        productVariants: productVariants.filter((v: any) => v.tenantId === tenantId),
+        customers,
+        guarantees,
+        attributeTypes: types,
+        attributeValues: values,
+      },
+    };
+  } catch (error) {
+    console.error("Error al obtener datos de devoluciones:", error);
+    return {
+      success: false,
+      error: "Error al obtener datos de devoluciones",
+    };
+  }
 }

@@ -144,32 +144,29 @@ export function ReturnActionCard({ rental }: Props) {
               </span>
             </div>
             <div className="flex gap-2">
-              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
-                <HugeiconsIcon icon={Information} size={12} strokeWidth={2} />
-                {(() => {
-                  const sizes = Array.from(
-                    new Set(
-                      rental.items?.map(
-                        (i) => (i as any).sizeId || (i as any).size,
-                      ),
-                    ),
-                  );
-                  return sizes.length === 1 ? `Talla ${sizes[0]}` : "Mixto";
-                })()}
-              </span>
-              <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1">
-                <HugeiconsIcon icon={ColorsIcon} size={12} strokeWidth={2} />
-                {(() => {
-                  const colors = Array.from(
-                    new Set(
-                      rental.items?.map(
-                        (i) => (i as any).colorId || (i as any).color,
-                      ),
-                    ),
-                  );
-                  return colors.length === 1 ? colors[0] : "Mixto";
-                })()}
-              </span>
+              {Object.entries(rental.items?.[0]?.variantAttributes || {})
+                .slice(0, 2)
+                .map(([key, value], i) => (
+                  <span
+                    key={`${key}-${i}`}
+                    className="px-2 py-1 bg-background border rounded text-[10px] font-bold flex items-center gap-1 min-w-0"
+                  >
+                    <HugeiconsIcon
+                      icon={i === 0 ? Information : ColorsIcon}
+                      size={12}
+                      strokeWidth={2}
+                    />
+                    <span className="truncate">
+                      {key}: {value}
+                    </span>
+                  </span>
+                ))}
+              {Object.keys(rental.items?.[0]?.variantAttributes || {}).length ===
+                0 && (
+                <span className="px-2 py-1 bg-background border rounded text-[10px] font-bold text-muted-foreground italic">
+                  Sin atributos
+                </span>
+              )}
             </div>
           </div>
         </div>

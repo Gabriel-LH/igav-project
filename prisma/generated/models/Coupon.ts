@@ -284,8 +284,8 @@ export type CouponWhereInput = {
   expiresAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Coupon"> | Date | string
   usedAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   assignedClient?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
 export type CouponOrderByWithRelationInput = {
@@ -302,8 +302,8 @@ export type CouponOrderByWithRelationInput = {
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   usedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   assignedClient?: Prisma.ClientOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
 export type CouponWhereUniqueInput = Prisma.AtLeast<{
@@ -323,8 +323,8 @@ export type CouponWhereUniqueInput = Prisma.AtLeast<{
   expiresAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Coupon"> | Date | string
   usedAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   assignedClient?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id" | "code">
 
 export type CouponOrderByWithAggregationInput = {
@@ -379,8 +379,8 @@ export type CouponCreateInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   usedAt?: Date | string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutCouponsInput
   assignedClient: Prisma.ClientCreateNestedOneWithoutCouponsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutCouponsInput
 }
 
 export type CouponUncheckedCreateInput = {
@@ -411,8 +411,8 @@ export type CouponUpdateInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutCouponsNestedInput
   assignedClient?: Prisma.ClientUpdateOneRequiredWithoutCouponsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutCouponsNestedInput
 }
 
 export type CouponUncheckedUpdateInput = {
@@ -908,8 +908,8 @@ export type CouponSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   expiresAt?: boolean
   createdAt?: boolean
   usedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["coupon"]>
 
 export type CouponSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -926,8 +926,8 @@ export type CouponSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   expiresAt?: boolean
   createdAt?: boolean
   usedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["coupon"]>
 
 export type CouponSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -944,8 +944,8 @@ export type CouponSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   expiresAt?: boolean
   createdAt?: boolean
   usedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["coupon"]>
 
 export type CouponSelectScalar = {
@@ -966,23 +966,23 @@ export type CouponSelectScalar = {
 
 export type CouponOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "code" | "discountType" | "discountValue" | "minPurchaseAmount" | "assignedToClientId" | "origin" | "originReferenceId" | "status" | "expiresAt" | "createdAt" | "usedAt", ExtArgs["result"]["coupon"]>
 export type CouponInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type CouponIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type CouponIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   assignedClient?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $CouponPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Coupon"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     assignedClient: Prisma.$ClientPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1392,8 +1392,8 @@ readonly fields: CouponFieldRefs;
  */
 export interface Prisma__CouponClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignedClient<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

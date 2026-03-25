@@ -260,14 +260,9 @@ export type TenantConfigUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type TenantConfigListRelationFilter = {
-  every?: Prisma.TenantConfigWhereInput
-  some?: Prisma.TenantConfigWhereInput
-  none?: Prisma.TenantConfigWhereInput
-}
-
-export type TenantConfigOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type TenantConfigNullableScalarRelationFilter = {
+  is?: Prisma.TenantConfigWhereInput | null
+  isNot?: Prisma.TenantConfigWhereInput | null
 }
 
 export type TenantConfigCountOrderByAggregateInput = {
@@ -289,46 +284,36 @@ export type TenantConfigMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type TenantConfigCreateNestedManyWithoutTenantInput = {
-  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput> | Prisma.TenantConfigCreateWithoutTenantInput[] | Prisma.TenantConfigUncheckedCreateWithoutTenantInput[]
-  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput | Prisma.TenantConfigCreateOrConnectWithoutTenantInput[]
-  createMany?: Prisma.TenantConfigCreateManyTenantInputEnvelope
-  connect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
+export type TenantConfigCreateNestedOneWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
+  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput
+  connect?: Prisma.TenantConfigWhereUniqueInput
 }
 
-export type TenantConfigUncheckedCreateNestedManyWithoutTenantInput = {
-  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput> | Prisma.TenantConfigCreateWithoutTenantInput[] | Prisma.TenantConfigUncheckedCreateWithoutTenantInput[]
-  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput | Prisma.TenantConfigCreateOrConnectWithoutTenantInput[]
-  createMany?: Prisma.TenantConfigCreateManyTenantInputEnvelope
-  connect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
+export type TenantConfigUncheckedCreateNestedOneWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
+  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput
+  connect?: Prisma.TenantConfigWhereUniqueInput
 }
 
-export type TenantConfigUpdateManyWithoutTenantNestedInput = {
-  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput> | Prisma.TenantConfigCreateWithoutTenantInput[] | Prisma.TenantConfigUncheckedCreateWithoutTenantInput[]
-  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput | Prisma.TenantConfigCreateOrConnectWithoutTenantInput[]
-  upsert?: Prisma.TenantConfigUpsertWithWhereUniqueWithoutTenantInput | Prisma.TenantConfigUpsertWithWhereUniqueWithoutTenantInput[]
-  createMany?: Prisma.TenantConfigCreateManyTenantInputEnvelope
-  set?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  disconnect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  delete?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  connect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  update?: Prisma.TenantConfigUpdateWithWhereUniqueWithoutTenantInput | Prisma.TenantConfigUpdateWithWhereUniqueWithoutTenantInput[]
-  updateMany?: Prisma.TenantConfigUpdateManyWithWhereWithoutTenantInput | Prisma.TenantConfigUpdateManyWithWhereWithoutTenantInput[]
-  deleteMany?: Prisma.TenantConfigScalarWhereInput | Prisma.TenantConfigScalarWhereInput[]
+export type TenantConfigUpdateOneWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
+  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput
+  upsert?: Prisma.TenantConfigUpsertWithoutTenantInput
+  disconnect?: Prisma.TenantConfigWhereInput | boolean
+  delete?: Prisma.TenantConfigWhereInput | boolean
+  connect?: Prisma.TenantConfigWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantConfigUpdateToOneWithWhereWithoutTenantInput, Prisma.TenantConfigUpdateWithoutTenantInput>, Prisma.TenantConfigUncheckedUpdateWithoutTenantInput>
 }
 
-export type TenantConfigUncheckedUpdateManyWithoutTenantNestedInput = {
-  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput> | Prisma.TenantConfigCreateWithoutTenantInput[] | Prisma.TenantConfigUncheckedCreateWithoutTenantInput[]
-  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput | Prisma.TenantConfigCreateOrConnectWithoutTenantInput[]
-  upsert?: Prisma.TenantConfigUpsertWithWhereUniqueWithoutTenantInput | Prisma.TenantConfigUpsertWithWhereUniqueWithoutTenantInput[]
-  createMany?: Prisma.TenantConfigCreateManyTenantInputEnvelope
-  set?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  disconnect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  delete?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  connect?: Prisma.TenantConfigWhereUniqueInput | Prisma.TenantConfigWhereUniqueInput[]
-  update?: Prisma.TenantConfigUpdateWithWhereUniqueWithoutTenantInput | Prisma.TenantConfigUpdateWithWhereUniqueWithoutTenantInput[]
-  updateMany?: Prisma.TenantConfigUpdateManyWithWhereWithoutTenantInput | Prisma.TenantConfigUpdateManyWithWhereWithoutTenantInput[]
-  deleteMany?: Prisma.TenantConfigScalarWhereInput | Prisma.TenantConfigScalarWhereInput[]
+export type TenantConfigUncheckedUpdateOneWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
+  connectOrCreate?: Prisma.TenantConfigCreateOrConnectWithoutTenantInput
+  upsert?: Prisma.TenantConfigUpsertWithoutTenantInput
+  disconnect?: Prisma.TenantConfigWhereInput | boolean
+  delete?: Prisma.TenantConfigWhereInput | boolean
+  connect?: Prisma.TenantConfigWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantConfigUpdateToOneWithWhereWithoutTenantInput, Prisma.TenantConfigUpdateWithoutTenantInput>, Prisma.TenantConfigUncheckedUpdateWithoutTenantInput>
 }
 
 export type TenantConfigCreateWithoutTenantInput = {
@@ -348,41 +333,15 @@ export type TenantConfigCreateOrConnectWithoutTenantInput = {
   create: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
 }
 
-export type TenantConfigCreateManyTenantInputEnvelope = {
-  data: Prisma.TenantConfigCreateManyTenantInput | Prisma.TenantConfigCreateManyTenantInput[]
-  skipDuplicates?: boolean
-}
-
-export type TenantConfigUpsertWithWhereUniqueWithoutTenantInput = {
-  where: Prisma.TenantConfigWhereUniqueInput
+export type TenantConfigUpsertWithoutTenantInput = {
   update: Prisma.XOR<Prisma.TenantConfigUpdateWithoutTenantInput, Prisma.TenantConfigUncheckedUpdateWithoutTenantInput>
   create: Prisma.XOR<Prisma.TenantConfigCreateWithoutTenantInput, Prisma.TenantConfigUncheckedCreateWithoutTenantInput>
+  where?: Prisma.TenantConfigWhereInput
 }
 
-export type TenantConfigUpdateWithWhereUniqueWithoutTenantInput = {
-  where: Prisma.TenantConfigWhereUniqueInput
+export type TenantConfigUpdateToOneWithWhereWithoutTenantInput = {
+  where?: Prisma.TenantConfigWhereInput
   data: Prisma.XOR<Prisma.TenantConfigUpdateWithoutTenantInput, Prisma.TenantConfigUncheckedUpdateWithoutTenantInput>
-}
-
-export type TenantConfigUpdateManyWithWhereWithoutTenantInput = {
-  where: Prisma.TenantConfigScalarWhereInput
-  data: Prisma.XOR<Prisma.TenantConfigUpdateManyMutationInput, Prisma.TenantConfigUncheckedUpdateManyWithoutTenantInput>
-}
-
-export type TenantConfigScalarWhereInput = {
-  AND?: Prisma.TenantConfigScalarWhereInput | Prisma.TenantConfigScalarWhereInput[]
-  OR?: Prisma.TenantConfigScalarWhereInput[]
-  NOT?: Prisma.TenantConfigScalarWhereInput | Prisma.TenantConfigScalarWhereInput[]
-  tenantId?: Prisma.StringFilter<"TenantConfig"> | string
-  config?: Prisma.JsonFilter<"TenantConfig">
-  createdAt?: Prisma.DateTimeFilter<"TenantConfig"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"TenantConfig"> | Date | string
-}
-
-export type TenantConfigCreateManyTenantInput = {
-  config: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type TenantConfigUpdateWithoutTenantInput = {
@@ -392,12 +351,6 @@ export type TenantConfigUpdateWithoutTenantInput = {
 }
 
 export type TenantConfigUncheckedUpdateWithoutTenantInput = {
-  config?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type TenantConfigUncheckedUpdateManyWithoutTenantInput = {
   config?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string

@@ -6,8 +6,10 @@ export const reservationItemSchema = z.object({
   operationId: z.string().optional(), //Dejamos si queremos hacer consultas súper rápidas sin pasar por la reserva
   productId: z.string(), // El ID del vestido/traje
   stockId: z.string().optional(),
+  inventoryItemId: z.string().optional(),
   reservationId: z.string(), // Conecta con la Reserva madre
   variantId: z.string(),
+  isSerial: z.boolean().default(false),
 
   // Aquí movimos lo que tenías en "details"
   quantity: z.number().min(1),

@@ -248,8 +248,8 @@ export type TenantPolicyHistoryWhereInput = {
   changedAt?: Prisma.DateTimeFilter<"TenantPolicyHistory"> | Date | string
   changedBy?: Prisma.StringFilter<"TenantPolicyHistory"> | string
   changeReason?: Prisma.StringNullableFilter<"TenantPolicyHistory"> | string | null
-  policy?: Prisma.XOR<Prisma.TenantPolicyScalarRelationFilter, Prisma.TenantPolicyWhereInput>
   changedByUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  policy?: Prisma.XOR<Prisma.TenantPolicyScalarRelationFilter, Prisma.TenantPolicyWhereInput>
 }
 
 export type TenantPolicyHistoryOrderByWithRelationInput = {
@@ -265,8 +265,8 @@ export type TenantPolicyHistoryOrderByWithRelationInput = {
   changedAt?: Prisma.SortOrder
   changedBy?: Prisma.SortOrder
   changeReason?: Prisma.SortOrderInput | Prisma.SortOrder
-  policy?: Prisma.TenantPolicyOrderByWithRelationInput
   changedByUser?: Prisma.UserOrderByWithRelationInput
+  policy?: Prisma.TenantPolicyOrderByWithRelationInput
 }
 
 export type TenantPolicyHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -286,8 +286,8 @@ export type TenantPolicyHistoryWhereUniqueInput = Prisma.AtLeast<{
   changedAt?: Prisma.DateTimeFilter<"TenantPolicyHistory"> | Date | string
   changedBy?: Prisma.StringFilter<"TenantPolicyHistory"> | string
   changeReason?: Prisma.StringNullableFilter<"TenantPolicyHistory"> | string | null
-  policy?: Prisma.XOR<Prisma.TenantPolicyScalarRelationFilter, Prisma.TenantPolicyWhereInput>
   changedByUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  policy?: Prisma.XOR<Prisma.TenantPolicyScalarRelationFilter, Prisma.TenantPolicyWhereInput>
 }, "id" | "policyId_version">
 
 export type TenantPolicyHistoryOrderByWithAggregationInput = {
@@ -339,8 +339,8 @@ export type TenantPolicyHistoryCreateInput = {
   security: Prisma.JsonNullValueInput | runtime.InputJsonValue
   changedAt?: Date | string
   changeReason?: string | null
-  policy: Prisma.TenantPolicyCreateNestedOneWithoutTenantPolicyHistoriesInput
   changedByUser: Prisma.UserCreateNestedOneWithoutTenantPolicyHistoriesInput
+  policy: Prisma.TenantPolicyCreateNestedOneWithoutTenantPolicyHistoriesInput
 }
 
 export type TenantPolicyHistoryUncheckedCreateInput = {
@@ -369,8 +369,8 @@ export type TenantPolicyHistoryUpdateInput = {
   security?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   changedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  policy?: Prisma.TenantPolicyUpdateOneRequiredWithoutTenantPolicyHistoriesNestedInput
   changedByUser?: Prisma.UserUpdateOneRequiredWithoutTenantPolicyHistoriesNestedInput
+  policy?: Prisma.TenantPolicyUpdateOneRequiredWithoutTenantPolicyHistoriesNestedInput
 }
 
 export type TenantPolicyHistoryUncheckedUpdateInput = {
@@ -824,8 +824,8 @@ export type TenantPolicyHistorySelect<ExtArgs extends runtime.Types.Extensions.I
   changedAt?: boolean
   changedBy?: boolean
   changeReason?: boolean
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantPolicyHistory"]>
 
 export type TenantPolicyHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -841,8 +841,8 @@ export type TenantPolicyHistorySelectCreateManyAndReturn<ExtArgs extends runtime
   changedAt?: boolean
   changedBy?: boolean
   changeReason?: boolean
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantPolicyHistory"]>
 
 export type TenantPolicyHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -858,8 +858,8 @@ export type TenantPolicyHistorySelectUpdateManyAndReturn<ExtArgs extends runtime
   changedAt?: boolean
   changedBy?: boolean
   changeReason?: boolean
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantPolicyHistory"]>
 
 export type TenantPolicyHistorySelectScalar = {
@@ -879,23 +879,23 @@ export type TenantPolicyHistorySelectScalar = {
 
 export type TenantPolicyHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "policyId" | "version" | "sales" | "rentals" | "reservations" | "inventory" | "financial" | "security" | "changedAt" | "changedBy" | "changeReason", ExtArgs["result"]["tenantPolicyHistory"]>
 export type TenantPolicyHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }
 export type TenantPolicyHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }
 export type TenantPolicyHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  policy?: boolean | Prisma.TenantPolicyDefaultArgs<ExtArgs>
 }
 
 export type $TenantPolicyHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TenantPolicyHistory"
   objects: {
-    policy: Prisma.$TenantPolicyPayload<ExtArgs>
     changedByUser: Prisma.$UserPayload<ExtArgs>
+    policy: Prisma.$TenantPolicyPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1304,8 +1304,8 @@ readonly fields: TenantPolicyHistoryFieldRefs;
  */
 export interface Prisma__TenantPolicyHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  policy<T extends Prisma.TenantPolicyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantPolicyDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantPolicyClient<runtime.Types.Result.GetResult<Prisma.$TenantPolicyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   changedByUser<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  policy<T extends Prisma.TenantPolicyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantPolicyDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantPolicyClient<runtime.Types.Result.GetResult<Prisma.$TenantPolicyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

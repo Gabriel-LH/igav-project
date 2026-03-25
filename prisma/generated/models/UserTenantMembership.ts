@@ -214,14 +214,14 @@ export type UserTenantMembershipWhereInput = {
   invitedBy?: Prisma.StringFilter<"UserTenantMembership"> | string
   createdAt?: Prisma.DateTimeFilter<"UserTenantMembership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserTenantMembership"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  payrollConfigs?: Prisma.PayrollConfigListRelationFilter
+  payrollItems?: Prisma.PayrollItemListRelationFilter
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
   userShiftAssignments?: Prisma.UserShiftAssignmentListRelationFilter
-  payrollItems?: Prisma.PayrollItemListRelationFilter
-  payrollConfigs?: Prisma.PayrollConfigListRelationFilter
 }
 
 export type UserTenantMembershipOrderByWithRelationInput = {
@@ -234,14 +234,14 @@ export type UserTenantMembershipOrderByWithRelationInput = {
   invitedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  role?: Prisma.RoleOrderByWithRelationInput
+  payrollConfigs?: Prisma.PayrollConfigOrderByRelationAggregateInput
+  payrollItems?: Prisma.PayrollItemOrderByRelationAggregateInput
   branch?: Prisma.BranchOrderByWithRelationInput
+  role?: Prisma.RoleOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryOrderByRelationAggregateInput
   userShiftAssignments?: Prisma.UserShiftAssignmentOrderByRelationAggregateInput
-  payrollItems?: Prisma.PayrollItemOrderByRelationAggregateInput
-  payrollConfigs?: Prisma.PayrollConfigOrderByRelationAggregateInput
 }
 
 export type UserTenantMembershipWhereUniqueInput = Prisma.AtLeast<{
@@ -257,14 +257,14 @@ export type UserTenantMembershipWhereUniqueInput = Prisma.AtLeast<{
   invitedBy?: Prisma.StringFilter<"UserTenantMembership"> | string
   createdAt?: Prisma.DateTimeFilter<"UserTenantMembership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserTenantMembership"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  payrollConfigs?: Prisma.PayrollConfigListRelationFilter
+  payrollItems?: Prisma.PayrollItemListRelationFilter
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
   userShiftAssignments?: Prisma.UserShiftAssignmentListRelationFilter
-  payrollItems?: Prisma.PayrollItemListRelationFilter
-  payrollConfigs?: Prisma.PayrollConfigListRelationFilter
 }, "id">
 
 export type UserTenantMembershipOrderByWithAggregationInput = {
@@ -303,14 +303,14 @@ export type UserTenantMembershipCreateInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateInput = {
@@ -323,10 +323,10 @@ export type UserTenantMembershipUncheckedCreateInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUpdateInput = {
@@ -335,14 +335,14 @@ export type UserTenantMembershipUpdateInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateInput = {
@@ -355,10 +355,10 @@ export type UserTenantMembershipUncheckedUpdateInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipCreateManyInput = {
@@ -678,13 +678,13 @@ export type UserTenantMembershipCreateWithoutUserInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutUserInput = {
@@ -696,10 +696,10 @@ export type UserTenantMembershipUncheckedCreateWithoutUserInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutUserInput = {
@@ -749,13 +749,13 @@ export type UserTenantMembershipCreateWithoutUserRoleBranchHistoriesInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
-  branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
-  userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
+  branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
@@ -768,9 +768,9 @@ export type UserTenantMembershipUncheckedCreateWithoutUserRoleBranchHistoriesInp
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutUserRoleBranchHistoriesInput = {
@@ -795,13 +795,13 @@ export type UserTenantMembershipUpdateWithoutUserRoleBranchHistoriesInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
@@ -814,9 +814,9 @@ export type UserTenantMembershipUncheckedUpdateWithoutUserRoleBranchHistoriesInp
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipCreateWithoutUserShiftAssignmentsInput = {
@@ -825,13 +825,13 @@ export type UserTenantMembershipCreateWithoutUserShiftAssignmentsInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
-  branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
+  branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutUserShiftAssignmentsInput = {
@@ -844,9 +844,9 @@ export type UserTenantMembershipUncheckedCreateWithoutUserShiftAssignmentsInput 
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutUserShiftAssignmentsInput = {
@@ -871,13 +871,13 @@ export type UserTenantMembershipUpdateWithoutUserShiftAssignmentsInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutUserShiftAssignmentsInput = {
@@ -890,9 +890,9 @@ export type UserTenantMembershipUncheckedUpdateWithoutUserShiftAssignmentsInput 
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipCreateWithoutBranchInput = {
@@ -901,13 +901,13 @@ export type UserTenantMembershipCreateWithoutBranchInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutBranchInput = {
@@ -919,10 +919,10 @@ export type UserTenantMembershipUncheckedCreateWithoutBranchInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutBranchInput = {
@@ -957,13 +957,13 @@ export type UserTenantMembershipCreateWithoutPayrollItemsInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutPayrollItemsInput = {
@@ -976,9 +976,9 @@ export type UserTenantMembershipUncheckedCreateWithoutPayrollItemsInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutPayrollItemsInput = {
@@ -1003,13 +1003,13 @@ export type UserTenantMembershipUpdateWithoutPayrollItemsInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutPayrollItemsInput = {
@@ -1022,9 +1022,9 @@ export type UserTenantMembershipUncheckedUpdateWithoutPayrollItemsInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipCreateWithoutPayrollConfigsInput = {
@@ -1033,13 +1033,13 @@ export type UserTenantMembershipCreateWithoutPayrollConfigsInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutPayrollConfigsInput = {
@@ -1052,9 +1052,9 @@ export type UserTenantMembershipUncheckedCreateWithoutPayrollConfigsInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutPayrollConfigsInput = {
@@ -1079,13 +1079,13 @@ export type UserTenantMembershipUpdateWithoutPayrollConfigsInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutPayrollConfigsInput = {
@@ -1098,9 +1098,9 @@ export type UserTenantMembershipUncheckedUpdateWithoutPayrollConfigsInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipCreateWithoutRoleInput = {
@@ -1109,13 +1109,13 @@ export type UserTenantMembershipCreateWithoutRoleInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutRoleInput = {
@@ -1127,10 +1127,10 @@ export type UserTenantMembershipUncheckedCreateWithoutRoleInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutRoleInput = {
@@ -1165,13 +1165,13 @@ export type UserTenantMembershipCreateWithoutTenantInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
-  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
   branch: Prisma.BranchCreateNestedOneWithoutUserTenantMembershipsInput
+  role: Prisma.RoleCreateNestedOneWithoutUserTenantMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutUserTenantMembershipsInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipUncheckedCreateWithoutTenantInput = {
@@ -1183,10 +1183,10 @@ export type UserTenantMembershipUncheckedCreateWithoutTenantInput = {
   invitedBy: string
   createdAt: Date | string
   updatedAt: Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutMembershipInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutMembershipInput
-  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutMembershipInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutMembershipInput
 }
 
 export type UserTenantMembershipCreateOrConnectWithoutTenantInput = {
@@ -1232,13 +1232,13 @@ export type UserTenantMembershipUpdateWithoutUserInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutUserInput = {
@@ -1250,10 +1250,10 @@ export type UserTenantMembershipUncheckedUpdateWithoutUserInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateManyWithoutUserInput = {
@@ -1284,13 +1284,13 @@ export type UserTenantMembershipUpdateWithoutBranchInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutBranchInput = {
@@ -1302,10 +1302,10 @@ export type UserTenantMembershipUncheckedUpdateWithoutBranchInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateManyWithoutBranchInput = {
@@ -1336,13 +1336,13 @@ export type UserTenantMembershipUpdateWithoutRoleInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutRoleInput = {
@@ -1354,10 +1354,10 @@ export type UserTenantMembershipUncheckedUpdateWithoutRoleInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateManyWithoutRoleInput = {
@@ -1388,13 +1388,13 @@ export type UserTenantMembershipUpdateWithoutTenantInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserTenantMembershipsNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateWithoutTenantInput = {
@@ -1406,10 +1406,10 @@ export type UserTenantMembershipUncheckedUpdateWithoutTenantInput = {
   invitedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
   userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutMembershipNestedInput
   userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutMembershipNestedInput
-  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutMembershipNestedInput
 }
 
 export type UserTenantMembershipUncheckedUpdateManyWithoutTenantInput = {
@@ -1429,17 +1429,17 @@ export type UserTenantMembershipUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type UserTenantMembershipCountOutputType = {
+  payrollConfigs: number
+  payrollItems: number
   userRoleBranchHistories: number
   userShiftAssignments: number
-  payrollItems: number
-  payrollConfigs: number
 }
 
 export type UserTenantMembershipCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payrollConfigs?: boolean | UserTenantMembershipCountOutputTypeCountPayrollConfigsArgs
+  payrollItems?: boolean | UserTenantMembershipCountOutputTypeCountPayrollItemsArgs
   userRoleBranchHistories?: boolean | UserTenantMembershipCountOutputTypeCountUserRoleBranchHistoriesArgs
   userShiftAssignments?: boolean | UserTenantMembershipCountOutputTypeCountUserShiftAssignmentsArgs
-  payrollItems?: boolean | UserTenantMembershipCountOutputTypeCountPayrollItemsArgs
-  payrollConfigs?: boolean | UserTenantMembershipCountOutputTypeCountPayrollConfigsArgs
 }
 
 /**
@@ -1450,6 +1450,20 @@ export type UserTenantMembershipCountOutputTypeDefaultArgs<ExtArgs extends runti
    * Select specific fields to fetch from the UserTenantMembershipCountOutputType
    */
   select?: Prisma.UserTenantMembershipCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserTenantMembershipCountOutputType without action
+ */
+export type UserTenantMembershipCountOutputTypeCountPayrollConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PayrollConfigWhereInput
+}
+
+/**
+ * UserTenantMembershipCountOutputType without action
+ */
+export type UserTenantMembershipCountOutputTypeCountPayrollItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PayrollItemWhereInput
 }
 
 /**
@@ -1466,20 +1480,6 @@ export type UserTenantMembershipCountOutputTypeCountUserShiftAssignmentsArgs<Ext
   where?: Prisma.UserShiftAssignmentWhereInput
 }
 
-/**
- * UserTenantMembershipCountOutputType without action
- */
-export type UserTenantMembershipCountOutputTypeCountPayrollItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PayrollItemWhereInput
-}
-
-/**
- * UserTenantMembershipCountOutputType without action
- */
-export type UserTenantMembershipCountOutputTypeCountPayrollConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PayrollConfigWhereInput
-}
-
 
 export type UserTenantMembershipSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1491,14 +1491,14 @@ export type UserTenantMembershipSelect<ExtArgs extends runtime.Types.Extensions.
   invitedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  payrollConfigs?: boolean | Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>
+  payrollItems?: boolean | Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   userRoleBranchHistories?: boolean | Prisma.UserTenantMembership$userRoleBranchHistoriesArgs<ExtArgs>
   userShiftAssignments?: boolean | Prisma.UserTenantMembership$userShiftAssignmentsArgs<ExtArgs>
-  payrollItems?: boolean | Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>
-  payrollConfigs?: boolean | Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>
   _count?: boolean | Prisma.UserTenantMembershipCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userTenantMembership"]>
 
@@ -1512,10 +1512,10 @@ export type UserTenantMembershipSelectCreateManyAndReturn<ExtArgs extends runtim
   invitedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userTenantMembership"]>
 
 export type UserTenantMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1528,10 +1528,10 @@ export type UserTenantMembershipSelectUpdateManyAndReturn<ExtArgs extends runtim
   invitedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userTenantMembership"]>
 
 export type UserTenantMembershipSelectScalar = {
@@ -1548,40 +1548,40 @@ export type UserTenantMembershipSelectScalar = {
 
 export type UserTenantMembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "tenantId" | "roleId" | "defaultBranchId" | "status" | "invitedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["userTenantMembership"]>
 export type UserTenantMembershipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  payrollConfigs?: boolean | Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>
+  payrollItems?: boolean | Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   userRoleBranchHistories?: boolean | Prisma.UserTenantMembership$userRoleBranchHistoriesArgs<ExtArgs>
   userShiftAssignments?: boolean | Prisma.UserTenantMembership$userShiftAssignmentsArgs<ExtArgs>
-  payrollItems?: boolean | Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>
-  payrollConfigs?: boolean | Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>
   _count?: boolean | Prisma.UserTenantMembershipCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserTenantMembershipIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserTenantMembershipIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserTenantMembershipPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserTenantMembership"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    role: Prisma.$RolePayload<ExtArgs>
+    payrollConfigs: Prisma.$PayrollConfigPayload<ExtArgs>[]
+    payrollItems: Prisma.$PayrollItemPayload<ExtArgs>[]
     branch: Prisma.$BranchPayload<ExtArgs>
+    role: Prisma.$RolePayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs>
     userRoleBranchHistories: Prisma.$UserRoleBranchHistoryPayload<ExtArgs>[]
     userShiftAssignments: Prisma.$UserShiftAssignmentPayload<ExtArgs>[]
-    payrollItems: Prisma.$PayrollItemPayload<ExtArgs>[]
-    payrollConfigs: Prisma.$PayrollConfigPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1987,14 +1987,14 @@ readonly fields: UserTenantMembershipFieldRefs;
  */
 export interface Prisma__UserTenantMembershipClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payrollConfigs<T extends Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payrollItems<T extends Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   userRoleBranchHistories<T extends Prisma.UserTenantMembership$userRoleBranchHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$userRoleBranchHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRoleBranchHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userShiftAssignments<T extends Prisma.UserTenantMembership$userShiftAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$userShiftAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserShiftAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  payrollItems<T extends Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$payrollItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  payrollConfigs<T extends Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserTenantMembership$payrollConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2429,6 +2429,54 @@ export type UserTenantMembershipDeleteManyArgs<ExtArgs extends runtime.Types.Ext
 }
 
 /**
+ * UserTenantMembership.payrollConfigs
+ */
+export type UserTenantMembership$payrollConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PayrollConfig
+   */
+  select?: Prisma.PayrollConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PayrollConfig
+   */
+  omit?: Prisma.PayrollConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PayrollConfigInclude<ExtArgs> | null
+  where?: Prisma.PayrollConfigWhereInput
+  orderBy?: Prisma.PayrollConfigOrderByWithRelationInput | Prisma.PayrollConfigOrderByWithRelationInput[]
+  cursor?: Prisma.PayrollConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PayrollConfigScalarFieldEnum | Prisma.PayrollConfigScalarFieldEnum[]
+}
+
+/**
+ * UserTenantMembership.payrollItems
+ */
+export type UserTenantMembership$payrollItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PayrollItem
+   */
+  select?: Prisma.PayrollItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PayrollItem
+   */
+  omit?: Prisma.PayrollItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PayrollItemInclude<ExtArgs> | null
+  where?: Prisma.PayrollItemWhereInput
+  orderBy?: Prisma.PayrollItemOrderByWithRelationInput | Prisma.PayrollItemOrderByWithRelationInput[]
+  cursor?: Prisma.PayrollItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PayrollItemScalarFieldEnum | Prisma.PayrollItemScalarFieldEnum[]
+}
+
+/**
  * UserTenantMembership.userRoleBranchHistories
  */
 export type UserTenantMembership$userRoleBranchHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2474,54 +2522,6 @@ export type UserTenantMembership$userShiftAssignmentsArgs<ExtArgs extends runtim
   take?: number
   skip?: number
   distinct?: Prisma.UserShiftAssignmentScalarFieldEnum | Prisma.UserShiftAssignmentScalarFieldEnum[]
-}
-
-/**
- * UserTenantMembership.payrollItems
- */
-export type UserTenantMembership$payrollItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PayrollItem
-   */
-  select?: Prisma.PayrollItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PayrollItem
-   */
-  omit?: Prisma.PayrollItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PayrollItemInclude<ExtArgs> | null
-  where?: Prisma.PayrollItemWhereInput
-  orderBy?: Prisma.PayrollItemOrderByWithRelationInput | Prisma.PayrollItemOrderByWithRelationInput[]
-  cursor?: Prisma.PayrollItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PayrollItemScalarFieldEnum | Prisma.PayrollItemScalarFieldEnum[]
-}
-
-/**
- * UserTenantMembership.payrollConfigs
- */
-export type UserTenantMembership$payrollConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PayrollConfig
-   */
-  select?: Prisma.PayrollConfigSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PayrollConfig
-   */
-  omit?: Prisma.PayrollConfigOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PayrollConfigInclude<ExtArgs> | null
-  where?: Prisma.PayrollConfigWhereInput
-  orderBy?: Prisma.PayrollConfigOrderByWithRelationInput | Prisma.PayrollConfigOrderByWithRelationInput[]
-  cursor?: Prisma.PayrollConfigWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PayrollConfigScalarFieldEnum | Prisma.PayrollConfigScalarFieldEnum[]
 }
 
 /**

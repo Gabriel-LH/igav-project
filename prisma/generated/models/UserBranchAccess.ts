@@ -230,10 +230,10 @@ export type UserBranchAccessWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"UserBranchAccess"> | Date | string
   createdBy?: Prisma.StringFilter<"UserBranchAccess"> | string
   updatedBy?: Prisma.StringFilter<"UserBranchAccess"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type UserBranchAccessOrderByWithRelationInput = {
@@ -248,10 +248,10 @@ export type UserBranchAccessOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
   role?: Prisma.RoleOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type UserBranchAccessWhereUniqueInput = Prisma.AtLeast<{
@@ -270,10 +270,10 @@ export type UserBranchAccessWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"UserBranchAccess"> | Date | string
   createdBy?: Prisma.StringFilter<"UserBranchAccess"> | string
   updatedBy?: Prisma.StringFilter<"UserBranchAccess"> | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId_branchId">
 
 export type UserBranchAccessOrderByWithAggregationInput = {
@@ -318,10 +318,10 @@ export type UserBranchAccessCreateInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserBranchAccessesInput
-  user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
   role: Prisma.RoleCreateNestedOneWithoutUserBranchAccessesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
+  user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
 }
 
 export type UserBranchAccessUncheckedCreateInput = {
@@ -346,10 +346,10 @@ export type UserBranchAccessUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserBranchAccessesNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserBranchAccessesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
 }
 
 export type UserBranchAccessUncheckedUpdateInput = {
@@ -641,9 +641,9 @@ export type UserBranchAccessCreateWithoutUserInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserBranchAccessesInput
   role: Prisma.RoleCreateNestedOneWithoutUserBranchAccessesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
 }
 
 export type UserBranchAccessUncheckedCreateWithoutUserInput = {
@@ -710,9 +710,9 @@ export type UserBranchAccessCreateWithoutBranchInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
+  role: Prisma.RoleCreateNestedOneWithoutUserBranchAccessesInput
   tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
   user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
-  role: Prisma.RoleCreateNestedOneWithoutUserBranchAccessesInput
 }
 
 export type UserBranchAccessUncheckedCreateWithoutBranchInput = {
@@ -762,8 +762,8 @@ export type UserBranchAccessCreateWithoutRoleInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy: string
-  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
   branch: Prisma.BranchCreateNestedOneWithoutUserBranchAccessesInput
+  tenant: Prisma.TenantCreateNestedOneWithoutUserBranchAccessesInput
   user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
 }
 
@@ -815,8 +815,8 @@ export type UserBranchAccessCreateWithoutTenantInput = {
   createdBy: string
   updatedBy: string
   branch: Prisma.BranchCreateNestedOneWithoutUserBranchAccessesInput
-  user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
   role: Prisma.RoleCreateNestedOneWithoutUserBranchAccessesInput
+  user: Prisma.UserCreateNestedOneWithoutUserBranchAccessesInput
 }
 
 export type UserBranchAccessUncheckedCreateWithoutTenantInput = {
@@ -879,9 +879,9 @@ export type UserBranchAccessUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserBranchAccessesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
 }
 
 export type UserBranchAccessUncheckedUpdateWithoutUserInput = {
@@ -931,9 +931,9 @@ export type UserBranchAccessUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.RoleUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
-  role?: Prisma.RoleUpdateOneRequiredWithoutUserBranchAccessesNestedInput
 }
 
 export type UserBranchAccessUncheckedUpdateWithoutBranchInput = {
@@ -983,8 +983,8 @@ export type UserBranchAccessUpdateWithoutRoleInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserBranchAccessesNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
 }
 
@@ -1036,8 +1036,8 @@ export type UserBranchAccessUpdateWithoutTenantInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutUserBranchAccessesNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserBranchAccessesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutUserBranchAccessesNestedInput
 }
 
 export type UserBranchAccessUncheckedUpdateWithoutTenantInput = {
@@ -1080,10 +1080,10 @@ export type UserBranchAccessSelect<ExtArgs extends runtime.Types.Extensions.Inte
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBranchAccess"]>
 
 export type UserBranchAccessSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1098,10 +1098,10 @@ export type UserBranchAccessSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBranchAccess"]>
 
 export type UserBranchAccessSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1116,10 +1116,10 @@ export type UserBranchAccessSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   updatedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBranchAccess"]>
 
 export type UserBranchAccessSelectScalar = {
@@ -1138,31 +1138,31 @@ export type UserBranchAccessSelectScalar = {
 
 export type UserBranchAccessOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "branchId" | "userId" | "roleId" | "isPrimary" | "status" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["userBranchAccess"]>
 export type UserBranchAccessInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserBranchAccessIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserBranchAccessIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserBranchAccessPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserBranchAccess"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs>
     role: Prisma.$RolePayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1570,10 +1570,10 @@ readonly fields: UserBranchAccessFieldRefs;
  */
 export interface Prisma__UserBranchAccessClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

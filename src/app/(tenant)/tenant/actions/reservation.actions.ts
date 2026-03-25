@@ -11,6 +11,7 @@ import { PrismaPaymentRepository } from "@/src/infrastructure/tenant/repositorie
 import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositories/PrismaOperationRepository";
 import { ConvertReservationUseCase, ConvertReservationInput } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
 import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
+import { makeServerProcessTransaction } from "@/src/infrastructure/tenant/factories/serverProcessTransaction.factory";
 
 export async function convertReservationAction(input: ConvertReservationInput) {
   try {
@@ -26,16 +27,20 @@ export async function convertReservationAction(input: ConvertReservationInput) {
       const guaranteeRepo = new PrismaGuaranteeRepository(tx);
       const rentalRepo = new PrismaRentalRepository(tx);
 
+      const processTransactionUC = makeServerProcessTransaction(tx);
+
       const convertUseCase = new ConvertReservationUseCase(
         reservationRepo,
         inventoryRepo,
         guaranteeRepo,
         rentalRepo,
+        processTransactionUC,
       );
 
       return await convertUseCase.execute({
         ...input,
-        sellerId: user.id,
+        tenantId,
+        sellerId: user.id as string,
       });
     });
 

@@ -46,10 +46,10 @@ export type StockLotMinAggregateOutputType = {
   lotNumber: string | null
   isForRent: boolean | null
   isForSale: boolean | null
-  condition: $Enums.StockLotCondition | null
   status: $Enums.StockLotStatus | null
   createdAt: Date | null
   updatedAt: Date | null
+  condition: $Enums.StockLotCondition | null
 }
 
 export type StockLotMaxAggregateOutputType = {
@@ -64,10 +64,10 @@ export type StockLotMaxAggregateOutputType = {
   lotNumber: string | null
   isForRent: boolean | null
   isForSale: boolean | null
-  condition: $Enums.StockLotCondition | null
   status: $Enums.StockLotStatus | null
   createdAt: Date | null
   updatedAt: Date | null
+  condition: $Enums.StockLotCondition | null
 }
 
 export type StockLotCountAggregateOutputType = {
@@ -82,10 +82,10 @@ export type StockLotCountAggregateOutputType = {
   lotNumber: number
   isForRent: number
   isForSale: number
-  condition: number
   status: number
   createdAt: number
   updatedAt: number
+  condition: number
   _all: number
 }
 
@@ -110,10 +110,10 @@ export type StockLotMinAggregateInputType = {
   lotNumber?: true
   isForRent?: true
   isForSale?: true
-  condition?: true
   status?: true
   createdAt?: true
   updatedAt?: true
+  condition?: true
 }
 
 export type StockLotMaxAggregateInputType = {
@@ -128,10 +128,10 @@ export type StockLotMaxAggregateInputType = {
   lotNumber?: true
   isForRent?: true
   isForSale?: true
-  condition?: true
   status?: true
   createdAt?: true
   updatedAt?: true
+  condition?: true
 }
 
 export type StockLotCountAggregateInputType = {
@@ -146,10 +146,10 @@ export type StockLotCountAggregateInputType = {
   lotNumber?: true
   isForRent?: true
   isForSale?: true
-  condition?: true
   status?: true
   createdAt?: true
   updatedAt?: true
+  condition?: true
   _all?: true
 }
 
@@ -251,10 +251,10 @@ export type StockLotGroupByOutputType = {
   lotNumber: string | null
   isForRent: boolean
   isForSale: boolean
-  condition: $Enums.StockLotCondition
   status: $Enums.StockLotStatus
   createdAt: Date
   updatedAt: Date
+  condition: $Enums.StockLotCondition
   _count: StockLotCountAggregateOutputType | null
   _avg: StockLotAvgAggregateOutputType | null
   _sum: StockLotSumAggregateOutputType | null
@@ -292,19 +292,19 @@ export type StockLotWhereInput = {
   lotNumber?: Prisma.StringNullableFilter<"StockLot"> | string | null
   isForRent?: Prisma.BoolFilter<"StockLot"> | boolean
   isForSale?: Prisma.BoolFilter<"StockLot"> | boolean
-  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFilter<"StockLot"> | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stockMovements?: Prisma.StockMovementListRelationFilter
+  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
-  priceHistories?: Prisma.PriceHistoryListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
+  stockMovements?: Prisma.StockMovementListRelationFilter
 }
 
 export type StockLotOrderByWithRelationInput = {
@@ -319,19 +319,19 @@ export type StockLotOrderByWithRelationInput = {
   lotNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   isForRent?: Prisma.SortOrder
   isForSale?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  branch?: Prisma.BranchOrderByWithRelationInput
-  product?: Prisma.ProductOrderByWithRelationInput
-  variant?: Prisma.ProductVariantOrderByWithRelationInput
-  stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
+  condition?: Prisma.SortOrder
+  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
   rentalItems?: Prisma.RentalItemOrderByRelationAggregateInput
   reservationItems?: Prisma.ReservationItemOrderByRelationAggregateInput
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
-  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
+  branch?: Prisma.BranchOrderByWithRelationInput
+  product?: Prisma.ProductOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  variant?: Prisma.ProductVariantOrderByWithRelationInput
+  stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
 }
 
 export type StockLotWhereUniqueInput = Prisma.AtLeast<{
@@ -349,19 +349,19 @@ export type StockLotWhereUniqueInput = Prisma.AtLeast<{
   lotNumber?: Prisma.StringNullableFilter<"StockLot"> | string | null
   isForRent?: Prisma.BoolFilter<"StockLot"> | boolean
   isForSale?: Prisma.BoolFilter<"StockLot"> | boolean
-  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFilter<"StockLot"> | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stockMovements?: Prisma.StockMovementListRelationFilter
+  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
   rentalItems?: Prisma.RentalItemListRelationFilter
   reservationItems?: Prisma.ReservationItemListRelationFilter
   saleItems?: Prisma.SaleItemListRelationFilter
-  priceHistories?: Prisma.PriceHistoryListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
+  stockMovements?: Prisma.StockMovementListRelationFilter
 }, "id">
 
 export type StockLotOrderByWithAggregationInput = {
@@ -376,10 +376,10 @@ export type StockLotOrderByWithAggregationInput = {
   lotNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   isForRent?: Prisma.SortOrder
   isForSale?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  condition?: Prisma.SortOrder
   _count?: Prisma.StockLotCountOrderByAggregateInput
   _avg?: Prisma.StockLotAvgOrderByAggregateInput
   _max?: Prisma.StockLotMaxOrderByAggregateInput
@@ -402,10 +402,10 @@ export type StockLotScalarWhereWithAggregatesInput = {
   lotNumber?: Prisma.StringNullableWithAggregatesFilter<"StockLot"> | string | null
   isForRent?: Prisma.BoolWithAggregatesFilter<"StockLot"> | boolean
   isForSale?: Prisma.BoolWithAggregatesFilter<"StockLot"> | boolean
-  condition?: Prisma.EnumStockLotConditionWithAggregatesFilter<"StockLot"> | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusWithAggregatesFilter<"StockLot"> | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StockLot"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StockLot"> | Date | string
+  condition?: Prisma.EnumStockLotConditionWithAggregatesFilter<"StockLot"> | $Enums.StockLotCondition
 }
 
 export type StockLotCreateInput = {
@@ -416,19 +416,19 @@ export type StockLotCreateInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateInput = {
@@ -443,15 +443,15 @@ export type StockLotUncheckedCreateInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUpdateInput = {
@@ -462,19 +462,19 @@ export type StockLotUpdateInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateInput = {
@@ -489,15 +489,15 @@ export type StockLotUncheckedUpdateInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateManyInput = {
@@ -512,10 +512,10 @@ export type StockLotCreateManyInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
 }
 
 export type StockLotUpdateManyMutationInput = {
@@ -526,10 +526,10 @@ export type StockLotUpdateManyMutationInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 export type StockLotUncheckedUpdateManyInput = {
@@ -544,10 +544,10 @@ export type StockLotUncheckedUpdateManyInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 export type StockLotListRelationFilter = {
@@ -577,10 +577,10 @@ export type StockLotCountOrderByAggregateInput = {
   lotNumber?: Prisma.SortOrder
   isForRent?: Prisma.SortOrder
   isForSale?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  condition?: Prisma.SortOrder
 }
 
 export type StockLotAvgOrderByAggregateInput = {
@@ -599,10 +599,10 @@ export type StockLotMaxOrderByAggregateInput = {
   lotNumber?: Prisma.SortOrder
   isForRent?: Prisma.SortOrder
   isForSale?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  condition?: Prisma.SortOrder
 }
 
 export type StockLotMinOrderByAggregateInput = {
@@ -617,10 +617,10 @@ export type StockLotMinOrderByAggregateInput = {
   lotNumber?: Prisma.SortOrder
   isForRent?: Prisma.SortOrder
   isForSale?: Prisma.SortOrder
-  condition?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  condition?: Prisma.SortOrder
 }
 
 export type StockLotSumOrderByAggregateInput = {
@@ -774,12 +774,12 @@ export type StockLotUpdateOneWithoutPriceHistoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StockLotUpdateToOneWithWhereWithoutPriceHistoriesInput, Prisma.StockLotUpdateWithoutPriceHistoriesInput>, Prisma.StockLotUncheckedUpdateWithoutPriceHistoriesInput>
 }
 
-export type EnumStockLotConditionFieldUpdateOperationsInput = {
-  set?: $Enums.StockLotCondition
-}
-
 export type EnumStockLotStatusFieldUpdateOperationsInput = {
   set?: $Enums.StockLotStatus
+}
+
+export type EnumStockLotConditionFieldUpdateOperationsInput = {
+  set?: $Enums.StockLotCondition
 }
 
 export type StockLotCreateNestedOneWithoutStockMovementsInput = {
@@ -834,10 +834,12 @@ export type StockLotCreateNestedOneWithoutSaleItemsInput = {
   connect?: Prisma.StockLotWhereUniqueInput
 }
 
-export type StockLotUpdateOneRequiredWithoutSaleItemsNestedInput = {
+export type StockLotUpdateOneWithoutSaleItemsNestedInput = {
   create?: Prisma.XOR<Prisma.StockLotCreateWithoutSaleItemsInput, Prisma.StockLotUncheckedCreateWithoutSaleItemsInput>
   connectOrCreate?: Prisma.StockLotCreateOrConnectWithoutSaleItemsInput
   upsert?: Prisma.StockLotUpsertWithoutSaleItemsInput
+  disconnect?: Prisma.StockLotWhereInput | boolean
+  delete?: Prisma.StockLotWhereInput | boolean
   connect?: Prisma.StockLotWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.StockLotUpdateToOneWithWhereWithoutSaleItemsInput, Prisma.StockLotUpdateWithoutSaleItemsInput>, Prisma.StockLotUncheckedUpdateWithoutSaleItemsInput>
 }
@@ -892,18 +894,18 @@ export type StockLotCreateWithoutBranchInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutBranchInput = {
@@ -917,15 +919,15 @@ export type StockLotUncheckedCreateWithoutBranchInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutBranchInput = {
@@ -969,10 +971,10 @@ export type StockLotScalarWhereInput = {
   lotNumber?: Prisma.StringNullableFilter<"StockLot"> | string | null
   isForRent?: Prisma.BoolFilter<"StockLot"> | boolean
   isForSale?: Prisma.BoolFilter<"StockLot"> | boolean
-  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFilter<"StockLot"> | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StockLot"> | Date | string
+  condition?: Prisma.EnumStockLotConditionFilter<"StockLot"> | $Enums.StockLotCondition
 }
 
 export type StockLotCreateWithoutProductInput = {
@@ -983,18 +985,18 @@ export type StockLotCreateWithoutProductInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutProductInput = {
@@ -1008,15 +1010,15 @@ export type StockLotUncheckedCreateWithoutProductInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutProductInput = {
@@ -1053,18 +1055,18 @@ export type StockLotCreateWithoutVariantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutVariantInput = {
@@ -1078,15 +1080,15 @@ export type StockLotUncheckedCreateWithoutVariantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutVariantInput = {
@@ -1123,18 +1125,18 @@ export type StockLotCreateWithoutPriceHistoriesInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutPriceHistoriesInput = {
@@ -1149,14 +1151,14 @@ export type StockLotUncheckedCreateWithoutPriceHistoriesInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutPriceHistoriesInput = {
@@ -1183,18 +1185,18 @@ export type StockLotUpdateWithoutPriceHistoriesInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutPriceHistoriesInput = {
@@ -1209,14 +1211,14 @@ export type StockLotUncheckedUpdateWithoutPriceHistoriesInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutStockMovementsInput = {
@@ -1227,18 +1229,18 @@ export type StockLotCreateWithoutStockMovementsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
 }
 
 export type StockLotUncheckedCreateWithoutStockMovementsInput = {
@@ -1253,14 +1255,14 @@ export type StockLotUncheckedCreateWithoutStockMovementsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutStockMovementsInput = {
@@ -1287,18 +1289,18 @@ export type StockLotUpdateWithoutStockMovementsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutStockMovementsInput = {
@@ -1313,14 +1315,14 @@ export type StockLotUncheckedUpdateWithoutStockMovementsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutRentalItemsInput = {
@@ -1331,18 +1333,18 @@ export type StockLotCreateWithoutRentalItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutRentalItemsInput = {
@@ -1357,14 +1359,14 @@ export type StockLotUncheckedCreateWithoutRentalItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutRentalItemsInput = {
@@ -1391,18 +1393,18 @@ export type StockLotUpdateWithoutRentalItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutRentalItemsInput = {
@@ -1417,14 +1419,14 @@ export type StockLotUncheckedUpdateWithoutRentalItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutReservationItemsInput = {
@@ -1435,18 +1437,18 @@ export type StockLotCreateWithoutReservationItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutReservationItemsInput = {
@@ -1461,14 +1463,14 @@ export type StockLotUncheckedCreateWithoutReservationItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutReservationItemsInput = {
@@ -1495,18 +1497,18 @@ export type StockLotUpdateWithoutReservationItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutReservationItemsInput = {
@@ -1521,14 +1523,14 @@ export type StockLotUncheckedUpdateWithoutReservationItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutSaleItemsInput = {
@@ -1539,18 +1541,18 @@ export type StockLotCreateWithoutSaleItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
-  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
-  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
-  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutStockLotsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutSaleItemsInput = {
@@ -1565,14 +1567,14 @@ export type StockLotUncheckedCreateWithoutSaleItemsInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutSaleItemsInput = {
@@ -1599,18 +1601,18 @@ export type StockLotUpdateWithoutSaleItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutSaleItemsInput = {
@@ -1625,14 +1627,14 @@ export type StockLotUncheckedUpdateWithoutSaleItemsInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotCreateWithoutTenantInput = {
@@ -1643,18 +1645,18 @@ export type StockLotCreateWithoutTenantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
   branch: Prisma.BranchCreateNestedOneWithoutStockLotsInput
   product: Prisma.ProductCreateNestedOneWithoutStockLotsInput
   variant: Prisma.ProductVariantCreateNestedOneWithoutStockLotsInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutStockLotInput
-  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutStockLotInput
-  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutStockInput
-  saleItems?: Prisma.SaleItemCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotUncheckedCreateWithoutTenantInput = {
@@ -1668,15 +1670,15 @@ export type StockLotUncheckedCreateWithoutTenantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
+  condition?: $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
   rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutStockLotInput
   reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutStockInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutStockInput
-  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutStockLotInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutStockLotInput
 }
 
 export type StockLotCreateOrConnectWithoutTenantInput = {
@@ -1716,10 +1718,10 @@ export type StockLotCreateManyBranchInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
 }
 
 export type StockLotUpdateWithoutBranchInput = {
@@ -1730,18 +1732,18 @@ export type StockLotUpdateWithoutBranchInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutBranchInput = {
@@ -1755,15 +1757,15 @@ export type StockLotUncheckedUpdateWithoutBranchInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutBranchInput = {
@@ -1777,10 +1779,10 @@ export type StockLotUncheckedUpdateManyWithoutBranchInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 export type StockLotCreateManyProductInput = {
@@ -1794,10 +1796,10 @@ export type StockLotCreateManyProductInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
 }
 
 export type StockLotUpdateWithoutProductInput = {
@@ -1808,18 +1810,18 @@ export type StockLotUpdateWithoutProductInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutProductInput = {
@@ -1833,15 +1835,15 @@ export type StockLotUncheckedUpdateWithoutProductInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutProductInput = {
@@ -1855,10 +1857,10 @@ export type StockLotUncheckedUpdateManyWithoutProductInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 export type StockLotCreateManyVariantInput = {
@@ -1872,10 +1874,10 @@ export type StockLotCreateManyVariantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
 }
 
 export type StockLotUpdateWithoutVariantInput = {
@@ -1886,18 +1888,18 @@ export type StockLotUpdateWithoutVariantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
-  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
-  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStockLotsNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutVariantInput = {
@@ -1911,15 +1913,15 @@ export type StockLotUncheckedUpdateWithoutVariantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutVariantInput = {
@@ -1933,10 +1935,10 @@ export type StockLotUncheckedUpdateManyWithoutVariantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 export type StockLotCreateManyTenantInput = {
@@ -1950,10 +1952,10 @@ export type StockLotCreateManyTenantInput = {
   lotNumber?: string | null
   isForRent: boolean
   isForSale: boolean
-  condition?: $Enums.StockLotCondition
   status?: $Enums.StockLotStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  condition?: $Enums.StockLotCondition
 }
 
 export type StockLotUpdateWithoutTenantInput = {
@@ -1964,18 +1966,18 @@ export type StockLotUpdateWithoutTenantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutStockLotsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutStockLotsNestedInput
   variant?: Prisma.ProductVariantUpdateOneRequiredWithoutStockLotsNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutStockLotNestedInput
-  rentalItems?: Prisma.RentalItemUpdateManyWithoutStockLotNestedInput
-  reservationItems?: Prisma.ReservationItemUpdateManyWithoutStockNestedInput
-  saleItems?: Prisma.SaleItemUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateWithoutTenantInput = {
@@ -1989,15 +1991,15 @@ export type StockLotUncheckedUpdateWithoutTenantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
   rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutStockLotNestedInput
   reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutStockNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutStockNestedInput
-  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutStockLotNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutStockLotNestedInput
 }
 
 export type StockLotUncheckedUpdateManyWithoutTenantInput = {
@@ -2011,10 +2013,10 @@ export type StockLotUncheckedUpdateManyWithoutTenantInput = {
   lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isForRent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isForSale?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
   status?: Prisma.EnumStockLotStatusFieldUpdateOperationsInput | $Enums.StockLotStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  condition?: Prisma.EnumStockLotConditionFieldUpdateOperationsInput | $Enums.StockLotCondition
 }
 
 
@@ -2023,19 +2025,19 @@ export type StockLotUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type StockLotCountOutputType = {
-  stockMovements: number
+  priceHistories: number
   rentalItems: number
   reservationItems: number
   saleItems: number
-  priceHistories: number
+  stockMovements: number
 }
 
 export type StockLotCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  stockMovements?: boolean | StockLotCountOutputTypeCountStockMovementsArgs
+  priceHistories?: boolean | StockLotCountOutputTypeCountPriceHistoriesArgs
   rentalItems?: boolean | StockLotCountOutputTypeCountRentalItemsArgs
   reservationItems?: boolean | StockLotCountOutputTypeCountReservationItemsArgs
   saleItems?: boolean | StockLotCountOutputTypeCountSaleItemsArgs
-  priceHistories?: boolean | StockLotCountOutputTypeCountPriceHistoriesArgs
+  stockMovements?: boolean | StockLotCountOutputTypeCountStockMovementsArgs
 }
 
 /**
@@ -2051,8 +2053,8 @@ export type StockLotCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * StockLotCountOutputType without action
  */
-export type StockLotCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StockMovementWhereInput
+export type StockLotCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PriceHistoryWhereInput
 }
 
 /**
@@ -2079,8 +2081,8 @@ export type StockLotCountOutputTypeCountSaleItemsArgs<ExtArgs extends runtime.Ty
 /**
  * StockLotCountOutputType without action
  */
-export type StockLotCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PriceHistoryWhereInput
+export type StockLotCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockMovementWhereInput
 }
 
 
@@ -2096,19 +2098,19 @@ export type StockLotSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   lotNumber?: boolean
   isForRent?: boolean
   isForSale?: boolean
-  condition?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockMovements?: boolean | Prisma.StockLot$stockMovementsArgs<ExtArgs>
+  condition?: boolean
+  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
   rentalItems?: boolean | Prisma.StockLot$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.StockLot$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.StockLot$saleItemsArgs<ExtArgs>
-  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.StockLot$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.StockLotCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockLot"]>
 
@@ -2124,13 +2126,13 @@ export type StockLotSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   lotNumber?: boolean
   isForRent?: boolean
   isForSale?: boolean
-  condition?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  condition?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockLot"]>
 
@@ -2146,13 +2148,13 @@ export type StockLotSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   lotNumber?: boolean
   isForRent?: boolean
   isForSale?: boolean
-  condition?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  condition?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockLot"]>
 
@@ -2168,50 +2170,50 @@ export type StockLotSelectScalar = {
   lotNumber?: boolean
   isForRent?: boolean
   isForSale?: boolean
-  condition?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  condition?: boolean
 }
 
-export type StockLotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantId" | "branchId" | "quantity" | "barcode" | "expirationDate" | "lotNumber" | "isForRent" | "isForSale" | "condition" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["stockLot"]>
+export type StockLotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "productId" | "variantId" | "branchId" | "quantity" | "barcode" | "expirationDate" | "lotNumber" | "isForRent" | "isForSale" | "status" | "createdAt" | "updatedAt" | "condition", ExtArgs["result"]["stockLot"]>
 export type StockLotInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stockMovements?: boolean | Prisma.StockLot$stockMovementsArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
   rentalItems?: boolean | Prisma.StockLot$rentalItemsArgs<ExtArgs>
   reservationItems?: boolean | Prisma.StockLot$reservationItemsArgs<ExtArgs>
   saleItems?: boolean | Prisma.StockLot$saleItemsArgs<ExtArgs>
-  priceHistories?: boolean | Prisma.StockLot$priceHistoriesArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.StockLot$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.StockLotCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StockLotIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 export type StockLotIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 
 export type $StockLotPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StockLot"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    branch: Prisma.$BranchPayload<ExtArgs>
-    product: Prisma.$ProductPayload<ExtArgs>
-    variant: Prisma.$ProductVariantPayload<ExtArgs>
-    stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
+    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
     rentalItems: Prisma.$RentalItemPayload<ExtArgs>[]
     reservationItems: Prisma.$ReservationItemPayload<ExtArgs>[]
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
-    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
+    branch: Prisma.$BranchPayload<ExtArgs>
+    product: Prisma.$ProductPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    variant: Prisma.$ProductVariantPayload<ExtArgs>
+    stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2225,10 +2227,10 @@ export type $StockLotPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     lotNumber: string | null
     isForRent: boolean
     isForSale: boolean
-    condition: $Enums.StockLotCondition
     status: $Enums.StockLotStatus
     createdAt: Date
     updatedAt: Date
+    condition: $Enums.StockLotCondition
   }, ExtArgs["result"]["stockLot"]>
   composites: {}
 }
@@ -2623,15 +2625,15 @@ readonly fields: StockLotFieldRefs;
  */
 export interface Prisma__StockLotClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  stockMovements<T extends Prisma.StockLot$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  priceHistories<T extends Prisma.StockLot$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rentalItems<T extends Prisma.StockLot$rentalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$rentalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationItems<T extends Prisma.StockLot$reservationItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$reservationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleItems<T extends Prisma.StockLot$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  priceHistories<T extends Prisma.StockLot$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  stockMovements<T extends Prisma.StockLot$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLot$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2672,10 +2674,10 @@ export interface StockLotFieldRefs {
   readonly lotNumber: Prisma.FieldRef<"StockLot", 'String'>
   readonly isForRent: Prisma.FieldRef<"StockLot", 'Boolean'>
   readonly isForSale: Prisma.FieldRef<"StockLot", 'Boolean'>
-  readonly condition: Prisma.FieldRef<"StockLot", 'StockLotCondition'>
   readonly status: Prisma.FieldRef<"StockLot", 'StockLotStatus'>
   readonly createdAt: Prisma.FieldRef<"StockLot", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"StockLot", 'DateTime'>
+  readonly condition: Prisma.FieldRef<"StockLot", 'StockLotCondition'>
 }
     
 
@@ -3072,27 +3074,27 @@ export type StockLotDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * StockLot.stockMovements
+ * StockLot.priceHistories
  */
-export type StockLot$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type StockLot$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StockMovement
+   * Select specific fields to fetch from the PriceHistory
    */
-  select?: Prisma.StockMovementSelect<ExtArgs> | null
+  select?: Prisma.PriceHistorySelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StockMovement
+   * Omit specific fields from the PriceHistory
    */
-  omit?: Prisma.StockMovementOmit<ExtArgs> | null
+  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StockMovementInclude<ExtArgs> | null
-  where?: Prisma.StockMovementWhereInput
-  orderBy?: Prisma.StockMovementOrderByWithRelationInput | Prisma.StockMovementOrderByWithRelationInput[]
-  cursor?: Prisma.StockMovementWhereUniqueInput
+  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
+  where?: Prisma.PriceHistoryWhereInput
+  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.PriceHistoryWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StockMovementScalarFieldEnum | Prisma.StockMovementScalarFieldEnum[]
+  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**
@@ -3168,27 +3170,27 @@ export type StockLot$saleItemsArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * StockLot.priceHistories
+ * StockLot.stockMovements
  */
-export type StockLot$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type StockLot$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the PriceHistory
+   * Select specific fields to fetch from the StockMovement
    */
-  select?: Prisma.PriceHistorySelect<ExtArgs> | null
+  select?: Prisma.StockMovementSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the PriceHistory
+   * Omit specific fields from the StockMovement
    */
-  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
+  omit?: Prisma.StockMovementOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
-  where?: Prisma.PriceHistoryWhereInput
-  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.PriceHistoryWhereUniqueInput
+  include?: Prisma.StockMovementInclude<ExtArgs> | null
+  where?: Prisma.StockMovementWhereInput
+  orderBy?: Prisma.StockMovementOrderByWithRelationInput | Prisma.StockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.StockMovementWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
+  distinct?: Prisma.StockMovementScalarFieldEnum | Prisma.StockMovementScalarFieldEnum[]
 }
 
 /**

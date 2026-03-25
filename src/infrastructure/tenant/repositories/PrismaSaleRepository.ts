@@ -1,7 +1,7 @@
 import { SaleRepository } from "@/src/domain/tenant/repositories/SaleRepository";
 import { Sale } from "@/src/types/sales/type.sale";
 import { SaleItem } from "@/src/types/sales/type.saleItem";
-import { PrismaClient, Prisma, SaleStatus, ItemCondition } from "@/prisma/generated/client";
+import { PrismaClient, Prisma, SaleStatus } from "@/prisma/generated/client";
 
 export class PrismaSaleRepository implements SaleRepository {
   constructor(
@@ -9,6 +9,34 @@ export class PrismaSaleRepository implements SaleRepository {
   ) {}
 
   async addSale(sale: Sale, saleItems: SaleItem[]): Promise<void> {
+    const itemsData = saleItems.map((item) => {
+      const data: any = {
+        id: item.id,
+        tenant: { connect: { id: sale.tenantId } },
+        product: { connect: { id: item.productId } },
+        variant: { connect: { id: item.variantId } },
+        quantity: item.quantity,
+        priceAtMoment: item.priceAtMoment,
+        listPrice: item.listPrice ?? null,
+        discountAmount: item.discountAmount ?? 0,
+        discountReason: item.discountReason ?? null,
+        bundleId: item.bundleId ?? null,
+        isReturned: item.isReturned ?? false,
+      };
+
+      if (item.stockId) {
+        data.stock = { connect: { id: item.stockId } };
+      }
+      if (item.inventoryItemId) {
+        data.inventoryItem = { connect: { id: item.inventoryItemId } };
+      }
+      if (item.promotionId) {
+        data.promotion = { connect: { id: item.promotionId } };
+      }
+
+      return data;
+    });
+
     await this.prisma.sale.create({
       data: {
         id: sale.id,
@@ -26,21 +54,7 @@ export class PrismaSaleRepository implements SaleRepository {
         createdAt: sale.createdAt,
         updatedAt: sale.updatedAt,
         items: {
-          create: saleItems.map((item) => ({
-            id: item.id,
-            tenantId: sale.tenantId,
-            productId: item.productId,
-            variantId: item.variantId || "",
-            stockId: item.stockId,
-            quantity: item.quantity,
-            priceAtMoment: item.priceAtMoment,
-            listPrice: item.listPrice,
-            discountAmount: item.discountAmount,
-            discountReason: item.discountReason,
-            bundleId: item.bundleId,
-            promotionId: item.promotionId,
-            isReturned: item.isReturned,
-          })),
+          create: itemsData,
         },
       },
     });
@@ -57,45 +71,31 @@ export class PrismaSaleRepository implements SaleRepository {
     const sale = await this.prisma.sale.findUnique({
       where: { id },
       include: {
-        items: {
-          select: {
-            id: true,
-            tenantId: true,
-            saleId: true,
-            productId: true,
-            stockId: true,
-            variantId: true,
-            priceAtMoment: true,
-            listPrice: true,
-            quantity: true,
-            discountAmount: true,
-            discountReason: true,
-            bundleId: true,
-            promotionId: true,
-            productName: true,
-            variantCode: true,
-            serialCode: true,
-            isSerial: true,
-            isReturned: true,
-            returnedAt: true,
-            returnCondition: true,
-          },
-        },
+        items: true,
       },
     });
-    if (!sale) throw new Error("Sale not found");
-    const { items, ...rest } = sale;
+
+    if (!sale) return undefined as any;
+
     return {
-      ...rest,
-      items: items as unknown as SaleItem[],
-    } as unknown as { items: SaleItem[] } & Sale;
+      ...(sale as unknown as Sale),
+      items: (sale as any).items.map((item: any) => ({
+        ...item,
+        stockId: item.stockId || item.inventoryItemId,
+      })),
+    } as any;
   }
 
-  async getSaleByOperationId(operationId: string): Promise<Sale | undefined> {
-    const sale = await this.prisma.sale.findFirst({
-      where: { operationId },
+  async getSales(): Promise<Sale[]> {
+    const sales = await this.prisma.sale.findMany({
+      orderBy: { saleDate: "desc" },
     });
-    return sale as unknown as Sale;
+    return sales as unknown as Sale[];
+  }
+
+  async getSaleItems(): Promise<SaleItem[]> {
+    const items = await this.prisma.saleItem.findMany();
+    return items as unknown as SaleItem[];
   }
 
   async updateSale(id: string, data: Partial<Sale>): Promise<void> {
@@ -113,48 +113,19 @@ export class PrismaSaleRepository implements SaleRepository {
       where: { id },
       data: {
         ...(data as any),
-        returnCondition: data.returnCondition ? (data.returnCondition as ItemCondition) : undefined,
       },
     });
   }
 
-  async getSalesByOperation(operationId: string): Promise<Sale[]> {
-    const sales = await this.prisma.sale.findMany({
+  async getSaleByOperationId(operationId: string): Promise<Sale | undefined> {
+    const sale = await this.prisma.sale.findFirst({
       where: { operationId },
     });
-    return sales as unknown as Sale[];
+    return sale as unknown as Sale;
   }
 
-  async getSales(): Promise<Sale[]> {
-    const sales = await this.prisma.sale.findMany();
-    return sales as unknown as Sale[];
-  }
-
-  async getSaleItems(): Promise<SaleItem[]> {
-    const items = await this.prisma.saleItem.findMany({
-      select: {
-        id: true,
-        tenantId: true,
-        saleId: true,
-        productId: true,
-        stockId: true,
-        variantId: true,
-        priceAtMoment: true,
-        listPrice: true,
-        quantity: true,
-        discountAmount: true,
-        discountReason: true,
-        bundleId: true,
-        promotionId: true,
-        productName: true,
-        variantCode: true,
-        serialCode: true,
-        isSerial: true,
-        isReturned: true,
-        returnedAt: true,
-        returnCondition: true,
-      },
-    });
-    return items as unknown as SaleItem[];
+  // legacy helper if needed
+  async updateStatus(id: string, status: SaleStatus): Promise<void> {
+    await this.updateSale(id, { status: status as any });
   }
 }

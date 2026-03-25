@@ -46,7 +46,7 @@ export class ProcessTransactionUseCase {
 
       await this.processPaymentUC.execute({
         downPayment: financials.downPayment,
-        paymentMethod: financials.paymentMethod,
+        paymentMethodId: financials.paymentMethodId,
         operationId,
         branchId: dto.branchId,
         sellerId: dto.sellerId,
@@ -90,7 +90,7 @@ export class ProcessTransactionUseCase {
           financials.downPayment > 0
             ? {
                 amount: financials.downPayment,
-                paymentMethodId: financials.paymentMethod,
+                paymentMethodId: financials.paymentMethodId,
               }
             : null,
         details,

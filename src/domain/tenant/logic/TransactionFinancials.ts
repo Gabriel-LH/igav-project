@@ -1,6 +1,6 @@
 export interface IFinancialData {
   totalAmount: number;
-  paymentMethod: string;
+  paymentMethodId: string;
   receivedAmount?: number;
   keepAsCredit?: boolean;
 }
@@ -8,13 +8,13 @@ export interface IFinancialData {
 export class TransactionFinancials {
   public readonly totalAmount: number;
   public readonly downPayment: number;
-  public readonly paymentMethod: string;
+  public readonly paymentMethodId: string;
   public readonly receivedAmount: number;
   public readonly keepAsCredit: boolean;
 
   constructor(data: IFinancialData) {
     this.totalAmount = data.totalAmount;
-    this.paymentMethod = data.paymentMethod;
+    this.paymentMethodId = data.paymentMethodId;
     this.downPayment = data.receivedAmount ?? 0;
     this.receivedAmount = data.receivedAmount ?? 0;
     this.keepAsCredit = data.keepAsCredit ?? false;

@@ -16,6 +16,7 @@ interface CloseAssignmentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   pendingCount: number;
+  modeLabel?: string;
   onConfirm: (action: "mark-lost" | "keep-transit") => void;
 }
 
@@ -23,8 +24,16 @@ export const CloseReceiveModal: React.FC<CloseAssignmentModalProps> = ({
   open,
   onOpenChange,
   pendingCount,
+  modeLabel = "en tránsito",
   onConfirm,
 }) => {
+  const keepLabel =
+    modeLabel === "en tránsito" ? "Mantener en tránsito" : "Mantener en servicio";
+  const keepDescription =
+    modeLabel === "en tránsito"
+      ? "Los items seguirán pendientes para próxima recepción"
+      : "Los items seguirán pendientes para próxima revisión";
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -63,9 +72,9 @@ export const CloseReceiveModal: React.FC<CloseAssignmentModalProps> = ({
               }}
             >
               <div className="text-left">
-                <p className="font-medium">Mantener en tránsito</p>
+                <p className="font-medium">{keepLabel}</p>
                 <p className="text-xs text-muted-foreground">
-                  Los items seguirán pendientes para próxima recepción
+                  {keepDescription}
                 </p>
               </div>
             </Button>

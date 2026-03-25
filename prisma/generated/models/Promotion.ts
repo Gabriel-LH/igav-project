@@ -380,9 +380,9 @@ export type PromotionWhereInput = {
   createdBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
   branchRelations?: Prisma.PromotionBranchListRelationFilter
   usageRecords?: Prisma.PromotionUsageListRelationFilter
+  tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
   saleItems?: Prisma.SaleItemListRelationFilter
 }
 
@@ -413,9 +413,9 @@ export type PromotionOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
   branchRelations?: Prisma.PromotionBranchOrderByRelationAggregateInput
   usageRecords?: Prisma.PromotionUsageOrderByRelationAggregateInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   saleItems?: Prisma.SaleItemOrderByRelationAggregateInput
 }
 
@@ -449,9 +449,9 @@ export type PromotionWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
-  tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
   branchRelations?: Prisma.PromotionBranchListRelationFilter
   usageRecords?: Prisma.PromotionUsageListRelationFilter
+  tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
   saleItems?: Prisma.SaleItemListRelationFilter
 }, "id" | "code">
 
@@ -547,9 +547,9 @@ export type PromotionCreateInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
+  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
 }
 
@@ -611,9 +611,9 @@ export type PromotionUpdateInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
+  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
 }
 
@@ -1007,8 +1007,8 @@ export type PromotionCreateWithoutBranchRelationsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
+  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
 }
 
@@ -1085,8 +1085,8 @@ export type PromotionUpdateWithoutBranchRelationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
+  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
 }
 
@@ -1147,8 +1147,8 @@ export type PromotionCreateWithoutUsageRecordsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
+  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
 }
 
@@ -1225,8 +1225,8 @@ export type PromotionUpdateWithoutUsageRecordsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
+  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
 }
 
@@ -1287,9 +1287,9 @@ export type PromotionCreateWithoutSaleItemsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
-  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
+  tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
 }
 
 export type PromotionUncheckedCreateWithoutSaleItemsInput = {
@@ -1365,9 +1365,9 @@ export type PromotionUpdateWithoutSaleItemsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
+  tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
 }
 
 export type PromotionUncheckedUpdateWithoutSaleItemsInput = {
@@ -1715,9 +1715,9 @@ export type PromotionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
-  tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
   branchRelations?: boolean | Prisma.Promotion$branchRelationsArgs<ExtArgs>
   usageRecords?: boolean | Prisma.Promotion$usageRecordsArgs<ExtArgs>
+  tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
   saleItems?: boolean | Prisma.Promotion$saleItemsArgs<ExtArgs>
   _count?: boolean | Prisma.PromotionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotion"]>
@@ -1813,9 +1813,9 @@ export type PromotionSelectScalar = {
 
 export type PromotionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "type" | "scope" | "value" | "appliesTo" | "bundleConfig" | "isExclusive" | "code" | "targetIds" | "startDate" | "endDate" | "isActive" | "branchIds" | "minPurchaseAmount" | "maxUses" | "usedCount" | "combinable" | "requiresCode" | "singleUsePerCustomer" | "usageType" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy", ExtArgs["result"]["promotion"]>
 export type PromotionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
   branchRelations?: boolean | Prisma.Promotion$branchRelationsArgs<ExtArgs>
   usageRecords?: boolean | Prisma.Promotion$usageRecordsArgs<ExtArgs>
+  tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
   saleItems?: boolean | Prisma.Promotion$saleItemsArgs<ExtArgs>
   _count?: boolean | Prisma.PromotionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1829,9 +1829,9 @@ export type PromotionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $PromotionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Promotion"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs> | null
     branchRelations: Prisma.$PromotionBranchPayload<ExtArgs>[]
     usageRecords: Prisma.$PromotionUsagePayload<ExtArgs>[]
+    tenant: Prisma.$TenantPayload<ExtArgs> | null
     saleItems: Prisma.$SaleItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2255,9 +2255,9 @@ readonly fields: PromotionFieldRefs;
  */
 export interface Prisma__PromotionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.Promotion$tenantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Promotion$tenantArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   branchRelations<T extends Prisma.Promotion$branchRelationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Promotion$branchRelationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   usageRecords<T extends Prisma.Promotion$usageRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Promotion$usageRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tenant<T extends Prisma.Promotion$tenantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Promotion$tenantArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   saleItems<T extends Prisma.Promotion$saleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Promotion$saleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2710,25 +2710,6 @@ export type PromotionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Promotion.tenant
- */
-export type Promotion$tenantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Tenant
-   */
-  select?: Prisma.TenantSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Tenant
-   */
-  omit?: Prisma.TenantOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TenantInclude<ExtArgs> | null
-  where?: Prisma.TenantWhereInput
-}
-
-/**
  * Promotion.branchRelations
  */
 export type Promotion$branchRelationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2774,6 +2755,25 @@ export type Promotion$usageRecordsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.PromotionUsageScalarFieldEnum | Prisma.PromotionUsageScalarFieldEnum[]
+}
+
+/**
+ * Promotion.tenant
+ */
+export type Promotion$tenantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tenant
+   */
+  select?: Prisma.TenantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tenant
+   */
+  omit?: Prisma.TenantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TenantInclude<ExtArgs> | null
+  where?: Prisma.TenantWhereInput
 }
 
 /**

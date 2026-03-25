@@ -302,11 +302,11 @@ export type RentalWhereInput = {
   deletedBy?: Prisma.StringNullableFilter<"Rental"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Rental"> | string | null
   isDeleted?: Prisma.BoolFilter<"Rental"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  items?: Prisma.RentalItemListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   charges?: Prisma.RentalChargeListRelationFilter
+  items?: Prisma.RentalItemListRelationFilter
   rentalStatusHistories?: Prisma.RentalStatusHistoryListRelationFilter
 }
 
@@ -331,11 +331,11 @@ export type RentalOrderByWithRelationInput = {
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  operation?: Prisma.OperationOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
-  items?: Prisma.RentalItemOrderByRelationAggregateInput
+  operation?: Prisma.OperationOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
   charges?: Prisma.RentalChargeOrderByRelationAggregateInput
+  items?: Prisma.RentalItemOrderByRelationAggregateInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryOrderByRelationAggregateInput
 }
 
@@ -363,11 +363,11 @@ export type RentalWhereUniqueInput = Prisma.AtLeast<{
   deletedBy?: Prisma.StringNullableFilter<"Rental"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Rental"> | string | null
   isDeleted?: Prisma.BoolFilter<"Rental"> | boolean
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  items?: Prisma.RentalItemListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   charges?: Prisma.RentalChargeListRelationFilter
+  items?: Prisma.RentalItemListRelationFilter
   rentalStatusHistories?: Prisma.RentalStatusHistoryListRelationFilter
 }, "id">
 
@@ -441,11 +441,11 @@ export type RentalCreateInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
-  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
-  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
 
@@ -470,8 +470,8 @@ export type RentalUncheckedCreateInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   charges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutRentalInput
 }
 
@@ -493,11 +493,11 @@ export type RentalUpdateInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
-  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
 
@@ -522,8 +522,8 @@ export type RentalUncheckedUpdateInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   charges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutRentalNestedInput
 }
 
@@ -867,10 +867,10 @@ export type RentalCreateWithoutBranchInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
-  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
 
@@ -894,8 +894,8 @@ export type RentalUncheckedCreateWithoutBranchInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   charges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutRentalInput
 }
 
@@ -969,10 +969,10 @@ export type RentalCreateWithoutOperationInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
-  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
 
@@ -996,8 +996,8 @@ export type RentalUncheckedCreateWithoutOperationInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   charges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutRentalInput
 }
 
@@ -1045,9 +1045,9 @@ export type RentalCreateWithoutItemsInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
-  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
@@ -1111,9 +1111,9 @@ export type RentalUpdateWithoutItemsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
@@ -1161,9 +1161,9 @@ export type RentalCreateWithoutChargesInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
-  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
@@ -1227,9 +1227,9 @@ export type RentalUpdateWithoutChargesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
@@ -1277,11 +1277,11 @@ export type RentalCreateWithoutRentalStatusHistoriesInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
-  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
-  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
 }
 
 export type RentalUncheckedCreateWithoutRentalStatusHistoriesInput = {
@@ -1305,8 +1305,8 @@ export type RentalUncheckedCreateWithoutRentalStatusHistoriesInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   charges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
 }
 
 export type RentalCreateOrConnectWithoutRentalStatusHistoriesInput = {
@@ -1343,11 +1343,11 @@ export type RentalUpdateWithoutRentalStatusHistoriesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
-  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
-  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
 }
 
 export type RentalUncheckedUpdateWithoutRentalStatusHistoriesInput = {
@@ -1371,8 +1371,8 @@ export type RentalUncheckedUpdateWithoutRentalStatusHistoriesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   charges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
 }
 
 export type RentalCreateWithoutTenantInput = {
@@ -1393,10 +1393,10 @@ export type RentalCreateWithoutTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   branch: Prisma.BranchCreateNestedOneWithoutRentalsInput
-  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
+  operation: Prisma.OperationCreateNestedOneWithoutRentalsInput
   charges?: Prisma.RentalChargeCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutRentalInput
 }
 
@@ -1420,8 +1420,8 @@ export type RentalUncheckedCreateWithoutTenantInput = {
   deletedBy?: string | null
   deleteReason?: string | null
   isDeleted?: boolean
-  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   charges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutRentalInput
+  items?: Prisma.RentalItemUncheckedCreateNestedManyWithoutRentalInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutRentalInput
 }
 
@@ -1491,10 +1491,10 @@ export type RentalUpdateWithoutBranchInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
-  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
 
@@ -1518,8 +1518,8 @@ export type RentalUncheckedUpdateWithoutBranchInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   charges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutRentalNestedInput
 }
 
@@ -1585,10 +1585,10 @@ export type RentalUpdateWithoutOperationInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
-  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
 
@@ -1612,8 +1612,8 @@ export type RentalUncheckedUpdateWithoutOperationInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   charges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutRentalNestedInput
 }
 
@@ -1679,10 +1679,10 @@ export type RentalUpdateWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutRentalsNestedInput
-  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
+  operation?: Prisma.OperationUpdateOneRequiredWithoutRentalsNestedInput
   charges?: Prisma.RentalChargeUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutRentalNestedInput
 }
 
@@ -1706,8 +1706,8 @@ export type RentalUncheckedUpdateWithoutTenantInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   charges?: Prisma.RentalChargeUncheckedUpdateManyWithoutRentalNestedInput
+  items?: Prisma.RentalItemUncheckedUpdateManyWithoutRentalNestedInput
   rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutRentalNestedInput
 }
 
@@ -1739,14 +1739,14 @@ export type RentalUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type RentalCountOutputType = {
-  items: number
   charges: number
+  items: number
   rentalStatusHistories: number
 }
 
 export type RentalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  items?: boolean | RentalCountOutputTypeCountItemsArgs
   charges?: boolean | RentalCountOutputTypeCountChargesArgs
+  items?: boolean | RentalCountOutputTypeCountItemsArgs
   rentalStatusHistories?: boolean | RentalCountOutputTypeCountRentalStatusHistoriesArgs
 }
 
@@ -1763,15 +1763,15 @@ export type RentalCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
 /**
  * RentalCountOutputType without action
  */
-export type RentalCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RentalItemWhereInput
+export type RentalCountOutputTypeCountChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalChargeWhereInput
 }
 
 /**
  * RentalCountOutputType without action
  */
-export type RentalCountOutputTypeCountChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RentalChargeWhereInput
+export type RentalCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalItemWhereInput
 }
 
 /**
@@ -1803,11 +1803,11 @@ export type RentalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  items?: boolean | Prisma.Rental$itemsArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   charges?: boolean | Prisma.Rental$chargesArgs<ExtArgs>
+  items?: boolean | Prisma.Rental$itemsArgs<ExtArgs>
   rentalStatusHistories?: boolean | Prisma.Rental$rentalStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.RentalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rental"]>
@@ -1833,9 +1833,9 @@ export type RentalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rental"]>
 
 export type RentalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1859,9 +1859,9 @@ export type RentalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   deletedBy?: boolean
   deleteReason?: boolean
   isDeleted?: boolean
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rental"]>
 
 export type RentalSelectScalar = {
@@ -1889,33 +1889,33 @@ export type RentalSelectScalar = {
 
 export type RentalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "operationId" | "reservationId" | "customerId" | "branchId" | "outDate" | "expectedReturnDate" | "actualReturnDate" | "cancelDate" | "status" | "guaranteeId" | "notes" | "createdAt" | "updatedAt" | "updatedBy" | "deletedAt" | "deletedBy" | "deleteReason" | "isDeleted", ExtArgs["result"]["rental"]>
 export type RentalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  items?: boolean | Prisma.Rental$itemsArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   charges?: boolean | Prisma.Rental$chargesArgs<ExtArgs>
+  items?: boolean | Prisma.Rental$itemsArgs<ExtArgs>
   rentalStatusHistories?: boolean | Prisma.Rental$rentalStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.RentalCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RentalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 export type RentalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
 
 export type $RentalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Rental"
   objects: {
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    operation: Prisma.$OperationPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs>
-    items: Prisma.$RentalItemPayload<ExtArgs>[]
+    operation: Prisma.$OperationPayload<ExtArgs>
+    tenant: Prisma.$TenantPayload<ExtArgs>
     charges: Prisma.$RentalChargePayload<ExtArgs>[]
+    items: Prisma.$RentalItemPayload<ExtArgs>[]
     rentalStatusHistories: Prisma.$RentalStatusHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2333,11 +2333,11 @@ readonly fields: RentalFieldRefs;
  */
 export interface Prisma__RentalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  items<T extends Prisma.Rental$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rental$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   charges<T extends Prisma.Rental$chargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rental$chargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  items<T extends Prisma.Rental$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rental$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rentalStatusHistories<T extends Prisma.Rental$rentalStatusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rental$rentalStatusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2784,30 +2784,6 @@ export type RentalDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Rental.items
- */
-export type Rental$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RentalItem
-   */
-  select?: Prisma.RentalItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RentalItem
-   */
-  omit?: Prisma.RentalItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RentalItemInclude<ExtArgs> | null
-  where?: Prisma.RentalItemWhereInput
-  orderBy?: Prisma.RentalItemOrderByWithRelationInput | Prisma.RentalItemOrderByWithRelationInput[]
-  cursor?: Prisma.RentalItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RentalItemScalarFieldEnum | Prisma.RentalItemScalarFieldEnum[]
-}
-
-/**
  * Rental.charges
  */
 export type Rental$chargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2829,6 +2805,30 @@ export type Rental$chargesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.RentalChargeScalarFieldEnum | Prisma.RentalChargeScalarFieldEnum[]
+}
+
+/**
+ * Rental.items
+ */
+export type Rental$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RentalItem
+   */
+  select?: Prisma.RentalItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RentalItem
+   */
+  omit?: Prisma.RentalItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RentalItemInclude<ExtArgs> | null
+  where?: Prisma.RentalItemWhereInput
+  orderBy?: Prisma.RentalItemOrderByWithRelationInput | Prisma.RentalItemOrderByWithRelationInput[]
+  cursor?: Prisma.RentalItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RentalItemScalarFieldEnum | Prisma.RentalItemScalarFieldEnum[]
 }
 
 /**

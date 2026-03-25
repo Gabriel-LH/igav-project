@@ -267,28 +267,28 @@ export type BranchWhereInput = {
   createdBy?: Prisma.StringNullableFilter<"Branch"> | string | null
   updatedBy?: Prisma.StringNullableFilter<"Branch"> | string | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
-  operations?: Prisma.OperationListRelationFilter
-  sales?: Prisma.SaleListRelationFilter
-  rentals?: Prisma.RentalListRelationFilter
-  cashSessions?: Prisma.CashSessionListRelationFilter
   branchConfigs?: Prisma.BranchConfigListRelationFilter
-  originTransfers?: Prisma.TransferListRelationFilter
-  destinationTransfers?: Prisma.TransferListRelationFilter
-  originRoutes?: Prisma.TransferRouteListRelationFilter
-  destinationRoutes?: Prisma.TransferRouteListRelationFilter
-  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
-  userAttendances?: Prisma.UserAttendanceListRelationFilter
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
+  cashSessions?: Prisma.CashSessionListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
+  inventoryItems?: Prisma.InventoryItemListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   payrollRuns?: Prisma.PayrollRunListRelationFilter
   promotionBranches?: Prisma.PromotionBranchListRelationFilter
+  rentals?: Prisma.RentalListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
-  invitations?: Prisma.InvitationListRelationFilter
+  destinationTransfers?: Prisma.TransferListRelationFilter
+  originTransfers?: Prisma.TransferListRelationFilter
+  destinationRoutes?: Prisma.TransferRouteListRelationFilter
+  originRoutes?: Prisma.TransferRouteListRelationFilter
+  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
 }
 
 export type BranchOrderByWithRelationInput = {
@@ -309,28 +309,28 @@ export type BranchOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
-  inventoryItems?: Prisma.InventoryItemOrderByRelationAggregateInput
-  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
-  operations?: Prisma.OperationOrderByRelationAggregateInput
-  sales?: Prisma.SaleOrderByRelationAggregateInput
-  rentals?: Prisma.RentalOrderByRelationAggregateInput
-  cashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
   branchConfigs?: Prisma.BranchConfigOrderByRelationAggregateInput
-  originTransfers?: Prisma.TransferOrderByRelationAggregateInput
-  destinationTransfers?: Prisma.TransferOrderByRelationAggregateInput
-  originRoutes?: Prisma.TransferRouteOrderByRelationAggregateInput
-  destinationRoutes?: Prisma.TransferRouteOrderByRelationAggregateInput
-  userBranchAccesses?: Prisma.UserBranchAccessOrderByRelationAggregateInput
-  userAttendances?: Prisma.UserAttendanceOrderByRelationAggregateInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryOrderByRelationAggregateInput
+  cashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
   guarantees?: Prisma.GuaranteeOrderByRelationAggregateInput
+  inventoryItems?: Prisma.InventoryItemOrderByRelationAggregateInput
+  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
+  invitations?: Prisma.InvitationOrderByRelationAggregateInput
+  operations?: Prisma.OperationOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   payrollRuns?: Prisma.PayrollRunOrderByRelationAggregateInput
   promotionBranches?: Prisma.PromotionBranchOrderByRelationAggregateInput
+  rentals?: Prisma.RentalOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
+  sales?: Prisma.SaleOrderByRelationAggregateInput
+  stockLots?: Prisma.StockLotOrderByRelationAggregateInput
   userTenantMemberships?: Prisma.UserTenantMembershipOrderByRelationAggregateInput
-  inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
-  invitations?: Prisma.InvitationOrderByRelationAggregateInput
+  destinationTransfers?: Prisma.TransferOrderByRelationAggregateInput
+  originTransfers?: Prisma.TransferOrderByRelationAggregateInput
+  destinationRoutes?: Prisma.TransferRouteOrderByRelationAggregateInput
+  originRoutes?: Prisma.TransferRouteOrderByRelationAggregateInput
+  userAttendances?: Prisma.UserAttendanceOrderByRelationAggregateInput
+  userBranchAccesses?: Prisma.UserBranchAccessOrderByRelationAggregateInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryOrderByRelationAggregateInput
 }
 
 export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -354,28 +354,28 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.StringNullableFilter<"Branch"> | string | null
   updatedBy?: Prisma.StringNullableFilter<"Branch"> | string | null
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  inventoryItems?: Prisma.InventoryItemListRelationFilter
-  stockLots?: Prisma.StockLotListRelationFilter
-  operations?: Prisma.OperationListRelationFilter
-  sales?: Prisma.SaleListRelationFilter
-  rentals?: Prisma.RentalListRelationFilter
-  cashSessions?: Prisma.CashSessionListRelationFilter
   branchConfigs?: Prisma.BranchConfigListRelationFilter
-  originTransfers?: Prisma.TransferListRelationFilter
-  destinationTransfers?: Prisma.TransferListRelationFilter
-  originRoutes?: Prisma.TransferRouteListRelationFilter
-  destinationRoutes?: Prisma.TransferRouteListRelationFilter
-  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
-  userAttendances?: Prisma.UserAttendanceListRelationFilter
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
+  cashSessions?: Prisma.CashSessionListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
+  inventoryItems?: Prisma.InventoryItemListRelationFilter
+  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
+  operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   payrollRuns?: Prisma.PayrollRunListRelationFilter
   promotionBranches?: Prisma.PromotionBranchListRelationFilter
+  rentals?: Prisma.RentalListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
+  stockLots?: Prisma.StockLotListRelationFilter
   userTenantMemberships?: Prisma.UserTenantMembershipListRelationFilter
-  inventoryMovements?: Prisma.InventoryMovementListRelationFilter
-  invitations?: Prisma.InvitationListRelationFilter
+  destinationTransfers?: Prisma.TransferListRelationFilter
+  originTransfers?: Prisma.TransferListRelationFilter
+  destinationRoutes?: Prisma.TransferRouteListRelationFilter
+  originRoutes?: Prisma.TransferRouteListRelationFilter
+  userAttendances?: Prisma.UserAttendanceListRelationFilter
+  userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryListRelationFilter
 }, "id">
 
 export type BranchOrderByWithAggregationInput = {
@@ -439,28 +439,28 @@ export type BranchCreateInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateInput = {
@@ -480,28 +480,28 @@ export type BranchUncheckedCreateInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUpdateInput = {
@@ -521,28 +521,28 @@ export type BranchUpdateInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateInput = {
@@ -562,28 +562,28 @@ export type BranchUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyInput = {
@@ -992,24 +992,16 @@ export type BranchUpdateOneRequiredWithoutUserTenantMembershipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutUserTenantMembershipsInput, Prisma.BranchUpdateWithoutUserTenantMembershipsInput>, Prisma.BranchUncheckedUpdateWithoutUserTenantMembershipsInput>
 }
 
-export type BranchCreateNestedOneWithoutOriginTransfersInput = {
-  create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
-  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginTransfersInput
-  connect?: Prisma.BranchWhereUniqueInput
-}
-
 export type BranchCreateNestedOneWithoutDestinationTransfersInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutDestinationTransfersInput, Prisma.BranchUncheckedCreateWithoutDestinationTransfersInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutDestinationTransfersInput
   connect?: Prisma.BranchWhereUniqueInput
 }
 
-export type BranchUpdateOneRequiredWithoutOriginTransfersNestedInput = {
+export type BranchCreateNestedOneWithoutOriginTransfersInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginTransfersInput
-  upsert?: Prisma.BranchUpsertWithoutOriginTransfersInput
   connect?: Prisma.BranchWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutOriginTransfersInput, Prisma.BranchUpdateWithoutOriginTransfersInput>, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
 }
 
 export type BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput = {
@@ -1020,10 +1012,12 @@ export type BranchUpdateOneRequiredWithoutDestinationTransfersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutDestinationTransfersInput, Prisma.BranchUpdateWithoutDestinationTransfersInput>, Prisma.BranchUncheckedUpdateWithoutDestinationTransfersInput>
 }
 
-export type BranchCreateNestedOneWithoutOriginRoutesInput = {
-  create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
-  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginRoutesInput
+export type BranchUpdateOneRequiredWithoutOriginTransfersNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginTransfersInput
+  upsert?: Prisma.BranchUpsertWithoutOriginTransfersInput
   connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutOriginTransfersInput, Prisma.BranchUpdateWithoutOriginTransfersInput>, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
 }
 
 export type BranchCreateNestedOneWithoutDestinationRoutesInput = {
@@ -1032,12 +1026,10 @@ export type BranchCreateNestedOneWithoutDestinationRoutesInput = {
   connect?: Prisma.BranchWhereUniqueInput
 }
 
-export type BranchUpdateOneRequiredWithoutOriginRoutesNestedInput = {
+export type BranchCreateNestedOneWithoutOriginRoutesInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginRoutesInput
-  upsert?: Prisma.BranchUpsertWithoutOriginRoutesInput
   connect?: Prisma.BranchWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutOriginRoutesInput, Prisma.BranchUpdateWithoutOriginRoutesInput>, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
 }
 
 export type BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput = {
@@ -1046,6 +1038,14 @@ export type BranchUpdateOneRequiredWithoutDestinationRoutesNestedInput = {
   upsert?: Prisma.BranchUpsertWithoutDestinationRoutesInput
   connect?: Prisma.BranchWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutDestinationRoutesInput, Prisma.BranchUpdateWithoutDestinationRoutesInput>, Prisma.BranchUncheckedUpdateWithoutDestinationRoutesInput>
+}
+
+export type BranchUpdateOneRequiredWithoutOriginRoutesNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutOriginRoutesInput
+  upsert?: Prisma.BranchUpsertWithoutOriginRoutesInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutOriginRoutesInput, Prisma.BranchUpdateWithoutOriginRoutesInput>, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
 }
 
 export type BranchCreateNestedOneWithoutInventoryMovementsInput = {
@@ -1079,27 +1079,27 @@ export type BranchCreateWithoutUserBranchAccessesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserBranchAccessesInput = {
@@ -1119,27 +1119,27 @@ export type BranchUncheckedCreateWithoutUserBranchAccessesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserBranchAccessesInput = {
@@ -1175,27 +1175,27 @@ export type BranchUpdateWithoutUserBranchAccessesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserBranchAccessesInput = {
@@ -1215,27 +1215,27 @@ export type BranchUncheckedUpdateWithoutUserBranchAccessesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutUserAttendancesInput = {
@@ -1255,27 +1255,27 @@ export type BranchCreateWithoutUserAttendancesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserAttendancesInput = {
@@ -1295,27 +1295,27 @@ export type BranchUncheckedCreateWithoutUserAttendancesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserAttendancesInput = {
@@ -1351,27 +1351,27 @@ export type BranchUpdateWithoutUserAttendancesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserAttendancesInput = {
@@ -1391,27 +1391,27 @@ export type BranchUncheckedUpdateWithoutUserAttendancesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutUserRoleBranchHistoriesInput = {
@@ -1431,27 +1431,27 @@ export type BranchCreateWithoutUserRoleBranchHistoriesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
@@ -1471,27 +1471,27 @@ export type BranchUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserRoleBranchHistoriesInput = {
@@ -1527,27 +1527,27 @@ export type BranchUpdateWithoutUserRoleBranchHistoriesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
@@ -1567,27 +1567,27 @@ export type BranchUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutBranchConfigsInput = {
@@ -1607,27 +1607,27 @@ export type BranchCreateWithoutBranchConfigsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutBranchConfigsInput = {
@@ -1647,27 +1647,27 @@ export type BranchUncheckedCreateWithoutBranchConfigsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutBranchConfigsInput = {
@@ -1703,27 +1703,27 @@ export type BranchUpdateWithoutBranchConfigsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutBranchConfigsInput = {
@@ -1743,27 +1743,27 @@ export type BranchUncheckedUpdateWithoutBranchConfigsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCashSessionsInput = {
@@ -1783,27 +1783,27 @@ export type BranchCreateWithoutCashSessionsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCashSessionsInput = {
@@ -1823,27 +1823,27 @@ export type BranchUncheckedCreateWithoutCashSessionsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCashSessionsInput = {
@@ -1879,27 +1879,27 @@ export type BranchUpdateWithoutCashSessionsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCashSessionsInput = {
@@ -1919,27 +1919,27 @@ export type BranchUncheckedUpdateWithoutCashSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutGuaranteesInput = {
@@ -1959,27 +1959,27 @@ export type BranchCreateWithoutGuaranteesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutGuaranteesInput = {
@@ -1999,27 +1999,27 @@ export type BranchUncheckedCreateWithoutGuaranteesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutGuaranteesInput = {
@@ -2055,27 +2055,27 @@ export type BranchUpdateWithoutGuaranteesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutGuaranteesInput = {
@@ -2095,27 +2095,27 @@ export type BranchUncheckedUpdateWithoutGuaranteesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutOperationsInput = {
@@ -2135,27 +2135,27 @@ export type BranchCreateWithoutOperationsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutOperationsInput = {
@@ -2175,27 +2175,27 @@ export type BranchUncheckedCreateWithoutOperationsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutOperationsInput = {
@@ -2231,27 +2231,27 @@ export type BranchUpdateWithoutOperationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutOperationsInput = {
@@ -2271,27 +2271,27 @@ export type BranchUncheckedUpdateWithoutOperationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPaymentsInput = {
@@ -2311,27 +2311,27 @@ export type BranchCreateWithoutPaymentsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPaymentsInput = {
@@ -2351,27 +2351,27 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPaymentsInput = {
@@ -2407,27 +2407,27 @@ export type BranchUpdateWithoutPaymentsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPaymentsInput = {
@@ -2447,27 +2447,27 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPayrollRunsInput = {
@@ -2487,27 +2487,27 @@ export type BranchCreateWithoutPayrollRunsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPayrollRunsInput = {
@@ -2527,27 +2527,27 @@ export type BranchUncheckedCreateWithoutPayrollRunsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPayrollRunsInput = {
@@ -2583,27 +2583,27 @@ export type BranchUpdateWithoutPayrollRunsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPayrollRunsInput = {
@@ -2623,27 +2623,27 @@ export type BranchUncheckedUpdateWithoutPayrollRunsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInventoryItemsInput = {
@@ -2663,27 +2663,27 @@ export type BranchCreateWithoutInventoryItemsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInventoryItemsInput = {
@@ -2703,27 +2703,27 @@ export type BranchUncheckedCreateWithoutInventoryItemsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInventoryItemsInput = {
@@ -2759,27 +2759,27 @@ export type BranchUpdateWithoutInventoryItemsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInventoryItemsInput = {
@@ -2799,27 +2799,27 @@ export type BranchUncheckedUpdateWithoutInventoryItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStockLotsInput = {
@@ -2839,27 +2839,27 @@ export type BranchCreateWithoutStockLotsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStockLotsInput = {
@@ -2879,27 +2879,27 @@ export type BranchUncheckedCreateWithoutStockLotsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStockLotsInput = {
@@ -2935,27 +2935,27 @@ export type BranchUpdateWithoutStockLotsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStockLotsInput = {
@@ -2975,27 +2975,27 @@ export type BranchUncheckedUpdateWithoutStockLotsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPromotionBranchesInput = {
@@ -3015,27 +3015,27 @@ export type BranchCreateWithoutPromotionBranchesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPromotionBranchesInput = {
@@ -3055,27 +3055,27 @@ export type BranchUncheckedCreateWithoutPromotionBranchesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPromotionBranchesInput = {
@@ -3111,27 +3111,27 @@ export type BranchUpdateWithoutPromotionBranchesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPromotionBranchesInput = {
@@ -3151,27 +3151,27 @@ export type BranchUncheckedUpdateWithoutPromotionBranchesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutRentalsInput = {
@@ -3191,27 +3191,27 @@ export type BranchCreateWithoutRentalsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutRentalsInput = {
@@ -3231,27 +3231,27 @@ export type BranchUncheckedCreateWithoutRentalsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutRentalsInput = {
@@ -3287,27 +3287,27 @@ export type BranchUpdateWithoutRentalsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutRentalsInput = {
@@ -3327,27 +3327,27 @@ export type BranchUncheckedUpdateWithoutRentalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutReservationsInput = {
@@ -3367,27 +3367,27 @@ export type BranchCreateWithoutReservationsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutReservationsInput = {
@@ -3407,27 +3407,27 @@ export type BranchUncheckedCreateWithoutReservationsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutReservationsInput = {
@@ -3463,27 +3463,27 @@ export type BranchUpdateWithoutReservationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutReservationsInput = {
@@ -3503,27 +3503,27 @@ export type BranchUncheckedUpdateWithoutReservationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSalesInput = {
@@ -3543,27 +3543,27 @@ export type BranchCreateWithoutSalesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSalesInput = {
@@ -3583,27 +3583,27 @@ export type BranchUncheckedCreateWithoutSalesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSalesInput = {
@@ -3639,27 +3639,27 @@ export type BranchUpdateWithoutSalesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSalesInput = {
@@ -3679,27 +3679,27 @@ export type BranchUncheckedUpdateWithoutSalesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutTenantInput = {
@@ -3718,28 +3718,28 @@ export type BranchCreateWithoutTenantInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutTenantInput = {
@@ -3758,28 +3758,28 @@ export type BranchUncheckedCreateWithoutTenantInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutTenantInput = {
@@ -3847,27 +3847,27 @@ export type BranchCreateWithoutInvitationsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInvitationsInput = {
@@ -3887,27 +3887,27 @@ export type BranchUncheckedCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInvitationsInput = {
@@ -3943,27 +3943,27 @@ export type BranchUpdateWithoutInvitationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInvitationsInput = {
@@ -3983,27 +3983,27 @@ export type BranchUncheckedUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutUserTenantMembershipsInput = {
@@ -4023,27 +4023,27 @@ export type BranchCreateWithoutUserTenantMembershipsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUserTenantMembershipsInput = {
@@ -4063,27 +4063,27 @@ export type BranchUncheckedCreateWithoutUserTenantMembershipsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUserTenantMembershipsInput = {
@@ -4119,27 +4119,27 @@ export type BranchUpdateWithoutUserTenantMembershipsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUserTenantMembershipsInput = {
@@ -4159,112 +4159,27 @@ export type BranchUncheckedUpdateWithoutUserTenantMembershipsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
-}
-
-export type BranchCreateWithoutOriginTransfersInput = {
-  id?: string
-  code: string
-  name: string
-  city: string
-  address: string
-  phone?: string | null
-  email?: string | null
-  timezone?: string
-  isPrimary?: boolean
-  status?: $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
-  branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
-  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
-}
-
-export type BranchUncheckedCreateWithoutOriginTransfersInput = {
-  id?: string
-  tenantId: string
-  code: string
-  name: string
-  city: string
-  address: string
-  phone?: string | null
-  email?: string | null
-  timezone?: string
-  isPrimary?: boolean
-  status?: $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
-  branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
-  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
-}
-
-export type BranchCreateOrConnectWithoutOriginTransfersInput = {
-  where: Prisma.BranchWhereUniqueInput
-  create: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutDestinationTransfersInput = {
@@ -4284,27 +4199,27 @@ export type BranchCreateWithoutDestinationTransfersInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutDestinationTransfersInput = {
@@ -4324,27 +4239,27 @@ export type BranchUncheckedCreateWithoutDestinationTransfersInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutDestinationTransfersInput = {
@@ -4352,95 +4267,89 @@ export type BranchCreateOrConnectWithoutDestinationTransfersInput = {
   create: Prisma.XOR<Prisma.BranchCreateWithoutDestinationTransfersInput, Prisma.BranchUncheckedCreateWithoutDestinationTransfersInput>
 }
 
-export type BranchUpsertWithoutOriginTransfersInput = {
-  update: Prisma.XOR<Prisma.BranchUpdateWithoutOriginTransfersInput, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
+export type BranchCreateWithoutOriginTransfersInput = {
+  id?: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
+  branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutOriginTransfersInput = {
+  id?: string
+  tenantId: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutOriginTransfersInput = {
+  where: Prisma.BranchWhereUniqueInput
   create: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
-  where?: Prisma.BranchWhereInput
-}
-
-export type BranchUpdateToOneWithWhereWithoutOriginTransfersInput = {
-  where?: Prisma.BranchWhereInput
-  data: Prisma.XOR<Prisma.BranchUpdateWithoutOriginTransfersInput, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
-}
-
-export type BranchUpdateWithoutOriginTransfersInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timezone?: Prisma.StringFieldUpdateOperationsInput | string
-  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
-  branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
-  guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
-}
-
-export type BranchUncheckedUpdateWithoutOriginTransfersInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timezone?: Prisma.StringFieldUpdateOperationsInput | string
-  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
-  branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
-  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUpsertWithoutDestinationTransfersInput = {
@@ -4471,27 +4380,27 @@ export type BranchUpdateWithoutDestinationTransfersInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutDestinationTransfersInput = {
@@ -4511,112 +4420,118 @@ export type BranchUncheckedUpdateWithoutDestinationTransfersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUpsertWithoutOriginTransfersInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutOriginTransfersInput, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutOriginTransfersInput, Prisma.BranchUncheckedCreateWithoutOriginTransfersInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutOriginTransfersInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutOriginTransfersInput, Prisma.BranchUncheckedUpdateWithoutOriginTransfersInput>
+}
+
+export type BranchUpdateWithoutOriginTransfersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
+  branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutOriginTransfersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
-}
-
-export type BranchCreateWithoutOriginRoutesInput = {
-  id?: string
-  code: string
-  name: string
-  city: string
-  address: string
-  phone?: string | null
-  email?: string | null
-  timezone?: string
-  isPrimary?: boolean
-  status?: $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
-  branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
-  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
-}
-
-export type BranchUncheckedCreateWithoutOriginRoutesInput = {
-  id?: string
-  tenantId: string
-  code: string
-  name: string
-  city: string
-  address: string
-  phone?: string | null
-  email?: string | null
-  timezone?: string
-  isPrimary?: boolean
-  status?: $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
-  branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
-  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
-  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
-}
-
-export type BranchCreateOrConnectWithoutOriginRoutesInput = {
-  where: Prisma.BranchWhereUniqueInput
-  create: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutDestinationRoutesInput = {
@@ -4636,27 +4551,27 @@ export type BranchCreateWithoutDestinationRoutesInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutDestinationRoutesInput = {
@@ -4676,27 +4591,27 @@ export type BranchUncheckedCreateWithoutDestinationRoutesInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutDestinationRoutesInput = {
@@ -4704,95 +4619,89 @@ export type BranchCreateOrConnectWithoutDestinationRoutesInput = {
   create: Prisma.XOR<Prisma.BranchCreateWithoutDestinationRoutesInput, Prisma.BranchUncheckedCreateWithoutDestinationRoutesInput>
 }
 
-export type BranchUpsertWithoutOriginRoutesInput = {
-  update: Prisma.XOR<Prisma.BranchUpdateWithoutOriginRoutesInput, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
+export type BranchCreateWithoutOriginRoutesInput = {
+  id?: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
+  branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutOriginRoutesInput = {
+  id?: string
+  tenantId: string
+  code: string
+  name: string
+  city: string
+  address: string
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutOriginRoutesInput = {
+  where: Prisma.BranchWhereUniqueInput
   create: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
-  where?: Prisma.BranchWhereInput
-}
-
-export type BranchUpdateToOneWithWhereWithoutOriginRoutesInput = {
-  where?: Prisma.BranchWhereInput
-  data: Prisma.XOR<Prisma.BranchUpdateWithoutOriginRoutesInput, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
-}
-
-export type BranchUpdateWithoutOriginRoutesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timezone?: Prisma.StringFieldUpdateOperationsInput | string
-  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
-  branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
-  guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
-}
-
-export type BranchUncheckedUpdateWithoutOriginRoutesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  city?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timezone?: Prisma.StringFieldUpdateOperationsInput | string
-  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
-  branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
-  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
-  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
-  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
-  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUpsertWithoutDestinationRoutesInput = {
@@ -4823,27 +4732,27 @@ export type BranchUpdateWithoutDestinationRoutesInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutDestinationRoutesInput = {
@@ -4863,27 +4772,118 @@ export type BranchUncheckedUpdateWithoutDestinationRoutesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUpsertWithoutOriginRoutesInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutOriginRoutesInput, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutOriginRoutesInput, Prisma.BranchUncheckedCreateWithoutOriginRoutesInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutOriginRoutesInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutOriginRoutesInput, Prisma.BranchUncheckedUpdateWithoutOriginRoutesInput>
+}
+
+export type BranchUpdateWithoutOriginRoutesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
+  branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutOriginRoutesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
+  promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInventoryMovementsInput = {
@@ -4903,27 +4903,27 @@ export type BranchCreateWithoutInventoryMovementsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   tenant: Prisma.TenantCreateNestedOneWithoutBranchesInput
-  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInventoryMovementsInput = {
@@ -4943,27 +4943,27 @@ export type BranchUncheckedCreateWithoutInventoryMovementsInput = {
   updatedAt?: Date | string
   createdBy?: string | null
   updatedBy?: string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
-  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
-  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
-  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
-  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
-  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   branchConfigs?: Prisma.BranchConfigUncheckedCreateNestedManyWithoutBranchInput
-  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
-  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
-  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
-  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutBranchInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutBranchInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutBranchInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
   payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutBranchInput
   promotionBranches?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutBranchInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutBranchInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutBranchInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutBranchInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutBranchInput
+  destinationTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchDestinationInput
+  originTransfers?: Prisma.TransferUncheckedCreateNestedManyWithoutBranchOriginInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutDestinationBranchInput
+  originRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutOriginBranchInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutBranchInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInventoryMovementsInput = {
@@ -4999,27 +4999,27 @@ export type BranchUpdateWithoutInventoryMovementsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tenant?: Prisma.TenantUpdateOneRequiredWithoutBranchesNestedInput
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -5039,27 +5039,27 @@ export type BranchUncheckedUpdateWithoutInventoryMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyTenantInput = {
@@ -5096,28 +5096,28 @@ export type BranchUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutTenantInput = {
@@ -5136,28 +5136,28 @@ export type BranchUncheckedUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
-  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
-  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
-  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
-  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
-  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   branchConfigs?: Prisma.BranchConfigUncheckedUpdateManyWithoutBranchNestedInput
-  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
-  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
-  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
-  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
-  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
-  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
-  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutBranchNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutBranchNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
   payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutBranchNestedInput
   promotionBranches?: Prisma.PromotionBranchUncheckedUpdateManyWithoutBranchNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutBranchNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutBranchNestedInput
   userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutBranchNestedInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutBranchNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutBranchNestedInput
+  destinationTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchDestinationNestedInput
+  originTransfers?: Prisma.TransferUncheckedUpdateManyWithoutBranchOriginNestedInput
+  destinationRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutDestinationBranchNestedInput
+  originRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutOriginBranchNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutBranchNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateManyWithoutTenantInput = {
@@ -5184,53 +5184,53 @@ export type BranchUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type BranchCountOutputType = {
-  inventoryItems: number
-  stockLots: number
-  operations: number
-  sales: number
-  rentals: number
-  cashSessions: number
   branchConfigs: number
-  originTransfers: number
-  destinationTransfers: number
-  originRoutes: number
-  destinationRoutes: number
-  userBranchAccesses: number
-  userAttendances: number
-  userRoleBranchHistories: number
+  cashSessions: number
   guarantees: number
+  inventoryItems: number
+  inventoryMovements: number
+  invitations: number
+  operations: number
   payments: number
   payrollRuns: number
   promotionBranches: number
+  rentals: number
   reservations: number
+  sales: number
+  stockLots: number
   userTenantMemberships: number
-  inventoryMovements: number
-  invitations: number
+  destinationTransfers: number
+  originTransfers: number
+  destinationRoutes: number
+  originRoutes: number
+  userAttendances: number
+  userBranchAccesses: number
+  userRoleBranchHistories: number
 }
 
 export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  inventoryItems?: boolean | BranchCountOutputTypeCountInventoryItemsArgs
-  stockLots?: boolean | BranchCountOutputTypeCountStockLotsArgs
-  operations?: boolean | BranchCountOutputTypeCountOperationsArgs
-  sales?: boolean | BranchCountOutputTypeCountSalesArgs
-  rentals?: boolean | BranchCountOutputTypeCountRentalsArgs
-  cashSessions?: boolean | BranchCountOutputTypeCountCashSessionsArgs
   branchConfigs?: boolean | BranchCountOutputTypeCountBranchConfigsArgs
-  originTransfers?: boolean | BranchCountOutputTypeCountOriginTransfersArgs
-  destinationTransfers?: boolean | BranchCountOutputTypeCountDestinationTransfersArgs
-  originRoutes?: boolean | BranchCountOutputTypeCountOriginRoutesArgs
-  destinationRoutes?: boolean | BranchCountOutputTypeCountDestinationRoutesArgs
-  userBranchAccesses?: boolean | BranchCountOutputTypeCountUserBranchAccessesArgs
-  userAttendances?: boolean | BranchCountOutputTypeCountUserAttendancesArgs
-  userRoleBranchHistories?: boolean | BranchCountOutputTypeCountUserRoleBranchHistoriesArgs
+  cashSessions?: boolean | BranchCountOutputTypeCountCashSessionsArgs
   guarantees?: boolean | BranchCountOutputTypeCountGuaranteesArgs
+  inventoryItems?: boolean | BranchCountOutputTypeCountInventoryItemsArgs
+  inventoryMovements?: boolean | BranchCountOutputTypeCountInventoryMovementsArgs
+  invitations?: boolean | BranchCountOutputTypeCountInvitationsArgs
+  operations?: boolean | BranchCountOutputTypeCountOperationsArgs
   payments?: boolean | BranchCountOutputTypeCountPaymentsArgs
   payrollRuns?: boolean | BranchCountOutputTypeCountPayrollRunsArgs
   promotionBranches?: boolean | BranchCountOutputTypeCountPromotionBranchesArgs
+  rentals?: boolean | BranchCountOutputTypeCountRentalsArgs
   reservations?: boolean | BranchCountOutputTypeCountReservationsArgs
+  sales?: boolean | BranchCountOutputTypeCountSalesArgs
+  stockLots?: boolean | BranchCountOutputTypeCountStockLotsArgs
   userTenantMemberships?: boolean | BranchCountOutputTypeCountUserTenantMembershipsArgs
-  inventoryMovements?: boolean | BranchCountOutputTypeCountInventoryMovementsArgs
-  invitations?: boolean | BranchCountOutputTypeCountInvitationsArgs
+  destinationTransfers?: boolean | BranchCountOutputTypeCountDestinationTransfersArgs
+  originTransfers?: boolean | BranchCountOutputTypeCountOriginTransfersArgs
+  destinationRoutes?: boolean | BranchCountOutputTypeCountDestinationRoutesArgs
+  originRoutes?: boolean | BranchCountOutputTypeCountOriginRoutesArgs
+  userAttendances?: boolean | BranchCountOutputTypeCountUserAttendancesArgs
+  userBranchAccesses?: boolean | BranchCountOutputTypeCountUserBranchAccessesArgs
+  userRoleBranchHistories?: boolean | BranchCountOutputTypeCountUserRoleBranchHistoriesArgs
 }
 
 /**
@@ -5246,36 +5246,8 @@ export type BranchCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
 /**
  * BranchCountOutputType without action
  */
-export type BranchCountOutputTypeCountInventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InventoryItemWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StockLotWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.OperationWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SaleWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountRentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RentalWhereInput
+export type BranchCountOutputTypeCountBranchConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BranchConfigWhereInput
 }
 
 /**
@@ -5288,64 +5260,36 @@ export type BranchCountOutputTypeCountCashSessionsArgs<ExtArgs extends runtime.T
 /**
  * BranchCountOutputType without action
  */
-export type BranchCountOutputTypeCountBranchConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BranchConfigWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountOriginTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransferWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountDestinationTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransferWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountOriginRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransferRouteWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountDestinationRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransferRouteWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountUserBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserBranchAccessWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountUserAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserAttendanceWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
-export type BranchCountOutputTypeCountUserRoleBranchHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserRoleBranchHistoryWhereInput
-}
-
-/**
- * BranchCountOutputType without action
- */
 export type BranchCountOutputTypeCountGuaranteesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GuaranteeWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountInventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryItemWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryMovementWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OperationWhereInput
 }
 
 /**
@@ -5372,8 +5316,29 @@ export type BranchCountOutputTypeCountPromotionBranchesArgs<ExtArgs extends runt
 /**
  * BranchCountOutputType without action
  */
+export type BranchCountOutputTypeCountRentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RentalWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
 export type BranchCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ReservationWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountStockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockLotWhereInput
 }
 
 /**
@@ -5386,15 +5351,50 @@ export type BranchCountOutputTypeCountUserTenantMembershipsArgs<ExtArgs extends 
 /**
  * BranchCountOutputType without action
  */
-export type BranchCountOutputTypeCountInventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InventoryMovementWhereInput
+export type BranchCountOutputTypeCountDestinationTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransferWhereInput
 }
 
 /**
  * BranchCountOutputType without action
  */
-export type BranchCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InvitationWhereInput
+export type BranchCountOutputTypeCountOriginTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransferWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountDestinationRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransferRouteWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountOriginRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransferRouteWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountUserAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserAttendanceWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountUserBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserBranchAccessWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountUserRoleBranchHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserRoleBranchHistoryWhereInput
 }
 
 
@@ -5416,28 +5416,28 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdBy?: boolean
   updatedBy?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  inventoryItems?: boolean | Prisma.Branch$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.Branch$stockLotsArgs<ExtArgs>
-  operations?: boolean | Prisma.Branch$operationsArgs<ExtArgs>
-  sales?: boolean | Prisma.Branch$salesArgs<ExtArgs>
-  rentals?: boolean | Prisma.Branch$rentalsArgs<ExtArgs>
-  cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   branchConfigs?: boolean | Prisma.Branch$branchConfigsArgs<ExtArgs>
-  originTransfers?: boolean | Prisma.Branch$originTransfersArgs<ExtArgs>
-  destinationTransfers?: boolean | Prisma.Branch$destinationTransfersArgs<ExtArgs>
-  originRoutes?: boolean | Prisma.Branch$originRoutesArgs<ExtArgs>
-  destinationRoutes?: boolean | Prisma.Branch$destinationRoutesArgs<ExtArgs>
-  userBranchAccesses?: boolean | Prisma.Branch$userBranchAccessesArgs<ExtArgs>
-  userAttendances?: boolean | Prisma.Branch$userAttendancesArgs<ExtArgs>
-  userRoleBranchHistories?: boolean | Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>
+  cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   guarantees?: boolean | Prisma.Branch$guaranteesArgs<ExtArgs>
+  inventoryItems?: boolean | Prisma.Branch$inventoryItemsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
+  operations?: boolean | Prisma.Branch$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.Branch$paymentsArgs<ExtArgs>
   payrollRuns?: boolean | Prisma.Branch$payrollRunsArgs<ExtArgs>
   promotionBranches?: boolean | Prisma.Branch$promotionBranchesArgs<ExtArgs>
+  rentals?: boolean | Prisma.Branch$rentalsArgs<ExtArgs>
   reservations?: boolean | Prisma.Branch$reservationsArgs<ExtArgs>
+  sales?: boolean | Prisma.Branch$salesArgs<ExtArgs>
+  stockLots?: boolean | Prisma.Branch$stockLotsArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Branch$userTenantMembershipsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
-  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
+  destinationTransfers?: boolean | Prisma.Branch$destinationTransfersArgs<ExtArgs>
+  originTransfers?: boolean | Prisma.Branch$originTransfersArgs<ExtArgs>
+  destinationRoutes?: boolean | Prisma.Branch$destinationRoutesArgs<ExtArgs>
+  originRoutes?: boolean | Prisma.Branch$originRoutesArgs<ExtArgs>
+  userAttendances?: boolean | Prisma.Branch$userAttendancesArgs<ExtArgs>
+  userBranchAccesses?: boolean | Prisma.Branch$userBranchAccessesArgs<ExtArgs>
+  userRoleBranchHistories?: boolean | Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["branch"]>
 
@@ -5503,28 +5503,28 @@ export type BranchSelectScalar = {
 export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "code" | "name" | "city" | "address" | "phone" | "email" | "timezone" | "isPrimary" | "status" | "metadata" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["branch"]>
 export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  inventoryItems?: boolean | Prisma.Branch$inventoryItemsArgs<ExtArgs>
-  stockLots?: boolean | Prisma.Branch$stockLotsArgs<ExtArgs>
-  operations?: boolean | Prisma.Branch$operationsArgs<ExtArgs>
-  sales?: boolean | Prisma.Branch$salesArgs<ExtArgs>
-  rentals?: boolean | Prisma.Branch$rentalsArgs<ExtArgs>
-  cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   branchConfigs?: boolean | Prisma.Branch$branchConfigsArgs<ExtArgs>
-  originTransfers?: boolean | Prisma.Branch$originTransfersArgs<ExtArgs>
-  destinationTransfers?: boolean | Prisma.Branch$destinationTransfersArgs<ExtArgs>
-  originRoutes?: boolean | Prisma.Branch$originRoutesArgs<ExtArgs>
-  destinationRoutes?: boolean | Prisma.Branch$destinationRoutesArgs<ExtArgs>
-  userBranchAccesses?: boolean | Prisma.Branch$userBranchAccessesArgs<ExtArgs>
-  userAttendances?: boolean | Prisma.Branch$userAttendancesArgs<ExtArgs>
-  userRoleBranchHistories?: boolean | Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>
+  cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   guarantees?: boolean | Prisma.Branch$guaranteesArgs<ExtArgs>
+  inventoryItems?: boolean | Prisma.Branch$inventoryItemsArgs<ExtArgs>
+  inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
+  operations?: boolean | Prisma.Branch$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.Branch$paymentsArgs<ExtArgs>
   payrollRuns?: boolean | Prisma.Branch$payrollRunsArgs<ExtArgs>
   promotionBranches?: boolean | Prisma.Branch$promotionBranchesArgs<ExtArgs>
+  rentals?: boolean | Prisma.Branch$rentalsArgs<ExtArgs>
   reservations?: boolean | Prisma.Branch$reservationsArgs<ExtArgs>
+  sales?: boolean | Prisma.Branch$salesArgs<ExtArgs>
+  stockLots?: boolean | Prisma.Branch$stockLotsArgs<ExtArgs>
   userTenantMemberships?: boolean | Prisma.Branch$userTenantMembershipsArgs<ExtArgs>
-  inventoryMovements?: boolean | Prisma.Branch$inventoryMovementsArgs<ExtArgs>
-  invitations?: boolean | Prisma.Branch$invitationsArgs<ExtArgs>
+  destinationTransfers?: boolean | Prisma.Branch$destinationTransfersArgs<ExtArgs>
+  originTransfers?: boolean | Prisma.Branch$originTransfersArgs<ExtArgs>
+  destinationRoutes?: boolean | Prisma.Branch$destinationRoutesArgs<ExtArgs>
+  originRoutes?: boolean | Prisma.Branch$originRoutesArgs<ExtArgs>
+  userAttendances?: boolean | Prisma.Branch$userAttendancesArgs<ExtArgs>
+  userBranchAccesses?: boolean | Prisma.Branch$userBranchAccessesArgs<ExtArgs>
+  userRoleBranchHistories?: boolean | Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BranchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5538,28 +5538,28 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name: "Branch"
   objects: {
     tenant: Prisma.$TenantPayload<ExtArgs>
-    inventoryItems: Prisma.$InventoryItemPayload<ExtArgs>[]
-    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
-    operations: Prisma.$OperationPayload<ExtArgs>[]
-    sales: Prisma.$SalePayload<ExtArgs>[]
-    rentals: Prisma.$RentalPayload<ExtArgs>[]
-    cashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
     branchConfigs: Prisma.$BranchConfigPayload<ExtArgs>[]
-    originTransfers: Prisma.$TransferPayload<ExtArgs>[]
-    destinationTransfers: Prisma.$TransferPayload<ExtArgs>[]
-    originRoutes: Prisma.$TransferRoutePayload<ExtArgs>[]
-    destinationRoutes: Prisma.$TransferRoutePayload<ExtArgs>[]
-    userBranchAccesses: Prisma.$UserBranchAccessPayload<ExtArgs>[]
-    userAttendances: Prisma.$UserAttendancePayload<ExtArgs>[]
-    userRoleBranchHistories: Prisma.$UserRoleBranchHistoryPayload<ExtArgs>[]
+    cashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
     guarantees: Prisma.$GuaranteePayload<ExtArgs>[]
+    inventoryItems: Prisma.$InventoryItemPayload<ExtArgs>[]
+    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
+    invitations: Prisma.$InvitationPayload<ExtArgs>[]
+    operations: Prisma.$OperationPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     payrollRuns: Prisma.$PayrollRunPayload<ExtArgs>[]
     promotionBranches: Prisma.$PromotionBranchPayload<ExtArgs>[]
+    rentals: Prisma.$RentalPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
+    sales: Prisma.$SalePayload<ExtArgs>[]
+    stockLots: Prisma.$StockLotPayload<ExtArgs>[]
     userTenantMemberships: Prisma.$UserTenantMembershipPayload<ExtArgs>[]
-    inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
-    invitations: Prisma.$InvitationPayload<ExtArgs>[]
+    destinationTransfers: Prisma.$TransferPayload<ExtArgs>[]
+    originTransfers: Prisma.$TransferPayload<ExtArgs>[]
+    destinationRoutes: Prisma.$TransferRoutePayload<ExtArgs>[]
+    originRoutes: Prisma.$TransferRoutePayload<ExtArgs>[]
+    userAttendances: Prisma.$UserAttendancePayload<ExtArgs>[]
+    userBranchAccesses: Prisma.$UserBranchAccessPayload<ExtArgs>[]
+    userRoleBranchHistories: Prisma.$UserRoleBranchHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5973,28 +5973,28 @@ readonly fields: BranchFieldRefs;
 export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  inventoryItems<T extends Prisma.Branch$inventoryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  stockLots<T extends Prisma.Branch$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  operations<T extends Prisma.Branch$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  sales<T extends Prisma.Branch$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  rentals<T extends Prisma.Branch$rentalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$rentalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  cashSessions<T extends Prisma.Branch$cashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$cashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branchConfigs<T extends Prisma.Branch$branchConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$branchConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  originTransfers<T extends Prisma.Branch$originTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$originTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  destinationTransfers<T extends Prisma.Branch$destinationTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$destinationTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  originRoutes<T extends Prisma.Branch$originRoutesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$originRoutesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferRoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  destinationRoutes<T extends Prisma.Branch$destinationRoutesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$destinationRoutesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferRoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userBranchAccesses<T extends Prisma.Branch$userBranchAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userBranchAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBranchAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userAttendances<T extends Prisma.Branch$userAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userRoleBranchHistories<T extends Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRoleBranchHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashSessions<T extends Prisma.Branch$cashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$cashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   guarantees<T extends Prisma.Branch$guaranteesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$guaranteesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GuaranteePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryItems<T extends Prisma.Branch$inventoryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryMovements<T extends Prisma.Branch$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.Branch$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operations<T extends Prisma.Branch$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.Branch$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payrollRuns<T extends Prisma.Branch$payrollRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$payrollRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   promotionBranches<T extends Prisma.Branch$promotionBranchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$promotionBranchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rentals<T extends Prisma.Branch$rentalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$rentalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RentalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.Branch$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sales<T extends Prisma.Branch$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockLots<T extends Prisma.Branch$stockLotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$stockLotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userTenantMemberships<T extends Prisma.Branch$userTenantMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userTenantMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTenantMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  inventoryMovements<T extends Prisma.Branch$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  invitations<T extends Prisma.Branch$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  destinationTransfers<T extends Prisma.Branch$destinationTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$destinationTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  originTransfers<T extends Prisma.Branch$originTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$originTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  destinationRoutes<T extends Prisma.Branch$destinationRoutesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$destinationRoutesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferRoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  originRoutes<T extends Prisma.Branch$originRoutesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$originRoutesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferRoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userAttendances<T extends Prisma.Branch$userAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userBranchAccesses<T extends Prisma.Branch$userBranchAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userBranchAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBranchAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userRoleBranchHistories<T extends Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$userRoleBranchHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRoleBranchHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6436,123 +6436,27 @@ export type BranchDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Branch.inventoryItems
+ * Branch.branchConfigs
  */
-export type Branch$inventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Branch$branchConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InventoryItem
+   * Select specific fields to fetch from the BranchConfig
    */
-  select?: Prisma.InventoryItemSelect<ExtArgs> | null
+  select?: Prisma.BranchConfigSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InventoryItem
+   * Omit specific fields from the BranchConfig
    */
-  omit?: Prisma.InventoryItemOmit<ExtArgs> | null
+  omit?: Prisma.BranchConfigOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InventoryItemInclude<ExtArgs> | null
-  where?: Prisma.InventoryItemWhereInput
-  orderBy?: Prisma.InventoryItemOrderByWithRelationInput | Prisma.InventoryItemOrderByWithRelationInput[]
-  cursor?: Prisma.InventoryItemWhereUniqueInput
+  include?: Prisma.BranchConfigInclude<ExtArgs> | null
+  where?: Prisma.BranchConfigWhereInput
+  orderBy?: Prisma.BranchConfigOrderByWithRelationInput | Prisma.BranchConfigOrderByWithRelationInput[]
+  cursor?: Prisma.BranchConfigWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.InventoryItemScalarFieldEnum | Prisma.InventoryItemScalarFieldEnum[]
-}
-
-/**
- * Branch.stockLots
- */
-export type Branch$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StockLot
-   */
-  select?: Prisma.StockLotSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StockLot
-   */
-  omit?: Prisma.StockLotOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StockLotInclude<ExtArgs> | null
-  where?: Prisma.StockLotWhereInput
-  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
-  cursor?: Prisma.StockLotWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
-}
-
-/**
- * Branch.operations
- */
-export type Branch$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Operation
-   */
-  select?: Prisma.OperationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Operation
-   */
-  omit?: Prisma.OperationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OperationInclude<ExtArgs> | null
-  where?: Prisma.OperationWhereInput
-  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
-  cursor?: Prisma.OperationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
-}
-
-/**
- * Branch.sales
- */
-export type Branch$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Sale
-   */
-  select?: Prisma.SaleSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Sale
-   */
-  omit?: Prisma.SaleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SaleInclude<ExtArgs> | null
-  where?: Prisma.SaleWhereInput
-  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
-  cursor?: Prisma.SaleWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
-}
-
-/**
- * Branch.rentals
- */
-export type Branch$rentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Rental
-   */
-  select?: Prisma.RentalSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Rental
-   */
-  omit?: Prisma.RentalOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RentalInclude<ExtArgs> | null
-  where?: Prisma.RentalWhereInput
-  orderBy?: Prisma.RentalOrderByWithRelationInput | Prisma.RentalOrderByWithRelationInput[]
-  cursor?: Prisma.RentalWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RentalScalarFieldEnum | Prisma.RentalScalarFieldEnum[]
+  distinct?: Prisma.BranchConfigScalarFieldEnum | Prisma.BranchConfigScalarFieldEnum[]
 }
 
 /**
@@ -6580,198 +6484,6 @@ export type Branch$cashSessionsArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Branch.branchConfigs
- */
-export type Branch$branchConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the BranchConfig
-   */
-  select?: Prisma.BranchConfigSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the BranchConfig
-   */
-  omit?: Prisma.BranchConfigOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BranchConfigInclude<ExtArgs> | null
-  where?: Prisma.BranchConfigWhereInput
-  orderBy?: Prisma.BranchConfigOrderByWithRelationInput | Prisma.BranchConfigOrderByWithRelationInput[]
-  cursor?: Prisma.BranchConfigWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.BranchConfigScalarFieldEnum | Prisma.BranchConfigScalarFieldEnum[]
-}
-
-/**
- * Branch.originTransfers
- */
-export type Branch$originTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Transfer
-   */
-  select?: Prisma.TransferSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Transfer
-   */
-  omit?: Prisma.TransferOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransferInclude<ExtArgs> | null
-  where?: Prisma.TransferWhereInput
-  orderBy?: Prisma.TransferOrderByWithRelationInput | Prisma.TransferOrderByWithRelationInput[]
-  cursor?: Prisma.TransferWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TransferScalarFieldEnum | Prisma.TransferScalarFieldEnum[]
-}
-
-/**
- * Branch.destinationTransfers
- */
-export type Branch$destinationTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Transfer
-   */
-  select?: Prisma.TransferSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Transfer
-   */
-  omit?: Prisma.TransferOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransferInclude<ExtArgs> | null
-  where?: Prisma.TransferWhereInput
-  orderBy?: Prisma.TransferOrderByWithRelationInput | Prisma.TransferOrderByWithRelationInput[]
-  cursor?: Prisma.TransferWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TransferScalarFieldEnum | Prisma.TransferScalarFieldEnum[]
-}
-
-/**
- * Branch.originRoutes
- */
-export type Branch$originRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TransferRoute
-   */
-  select?: Prisma.TransferRouteSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TransferRoute
-   */
-  omit?: Prisma.TransferRouteOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransferRouteInclude<ExtArgs> | null
-  where?: Prisma.TransferRouteWhereInput
-  orderBy?: Prisma.TransferRouteOrderByWithRelationInput | Prisma.TransferRouteOrderByWithRelationInput[]
-  cursor?: Prisma.TransferRouteWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TransferRouteScalarFieldEnum | Prisma.TransferRouteScalarFieldEnum[]
-}
-
-/**
- * Branch.destinationRoutes
- */
-export type Branch$destinationRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TransferRoute
-   */
-  select?: Prisma.TransferRouteSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TransferRoute
-   */
-  omit?: Prisma.TransferRouteOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransferRouteInclude<ExtArgs> | null
-  where?: Prisma.TransferRouteWhereInput
-  orderBy?: Prisma.TransferRouteOrderByWithRelationInput | Prisma.TransferRouteOrderByWithRelationInput[]
-  cursor?: Prisma.TransferRouteWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TransferRouteScalarFieldEnum | Prisma.TransferRouteScalarFieldEnum[]
-}
-
-/**
- * Branch.userBranchAccesses
- */
-export type Branch$userBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserBranchAccess
-   */
-  select?: Prisma.UserBranchAccessSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the UserBranchAccess
-   */
-  omit?: Prisma.UserBranchAccessOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserBranchAccessInclude<ExtArgs> | null
-  where?: Prisma.UserBranchAccessWhereInput
-  orderBy?: Prisma.UserBranchAccessOrderByWithRelationInput | Prisma.UserBranchAccessOrderByWithRelationInput[]
-  cursor?: Prisma.UserBranchAccessWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserBranchAccessScalarFieldEnum | Prisma.UserBranchAccessScalarFieldEnum[]
-}
-
-/**
- * Branch.userAttendances
- */
-export type Branch$userAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserAttendance
-   */
-  select?: Prisma.UserAttendanceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the UserAttendance
-   */
-  omit?: Prisma.UserAttendanceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserAttendanceInclude<ExtArgs> | null
-  where?: Prisma.UserAttendanceWhereInput
-  orderBy?: Prisma.UserAttendanceOrderByWithRelationInput | Prisma.UserAttendanceOrderByWithRelationInput[]
-  cursor?: Prisma.UserAttendanceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserAttendanceScalarFieldEnum | Prisma.UserAttendanceScalarFieldEnum[]
-}
-
-/**
- * Branch.userRoleBranchHistories
- */
-export type Branch$userRoleBranchHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserRoleBranchHistory
-   */
-  select?: Prisma.UserRoleBranchHistorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the UserRoleBranchHistory
-   */
-  omit?: Prisma.UserRoleBranchHistoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserRoleBranchHistoryInclude<ExtArgs> | null
-  where?: Prisma.UserRoleBranchHistoryWhereInput
-  orderBy?: Prisma.UserRoleBranchHistoryOrderByWithRelationInput | Prisma.UserRoleBranchHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.UserRoleBranchHistoryWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserRoleBranchHistoryScalarFieldEnum | Prisma.UserRoleBranchHistoryScalarFieldEnum[]
-}
-
-/**
  * Branch.guarantees
  */
 export type Branch$guaranteesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6793,6 +6505,102 @@ export type Branch$guaranteesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.GuaranteeScalarFieldEnum | Prisma.GuaranteeScalarFieldEnum[]
+}
+
+/**
+ * Branch.inventoryItems
+ */
+export type Branch$inventoryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryItem
+   */
+  select?: Prisma.InventoryItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryItem
+   */
+  omit?: Prisma.InventoryItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryItemInclude<ExtArgs> | null
+  where?: Prisma.InventoryItemWhereInput
+  orderBy?: Prisma.InventoryItemOrderByWithRelationInput | Prisma.InventoryItemOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InventoryItemScalarFieldEnum | Prisma.InventoryItemScalarFieldEnum[]
+}
+
+/**
+ * Branch.inventoryMovements
+ */
+export type Branch$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryMovement
+   */
+  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryMovement
+   */
+  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
+  where?: Prisma.InventoryMovementWhereInput
+  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+}
+
+/**
+ * Branch.invitations
+ */
+export type Branch$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
+}
+
+/**
+ * Branch.operations
+ */
+export type Branch$operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Operation
+   */
+  select?: Prisma.OperationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Operation
+   */
+  omit?: Prisma.OperationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OperationInclude<ExtArgs> | null
+  where?: Prisma.OperationWhereInput
+  orderBy?: Prisma.OperationOrderByWithRelationInput | Prisma.OperationOrderByWithRelationInput[]
+  cursor?: Prisma.OperationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OperationScalarFieldEnum | Prisma.OperationScalarFieldEnum[]
 }
 
 /**
@@ -6868,6 +6676,30 @@ export type Branch$promotionBranchesArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * Branch.rentals
+ */
+export type Branch$rentalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Rental
+   */
+  select?: Prisma.RentalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Rental
+   */
+  omit?: Prisma.RentalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RentalInclude<ExtArgs> | null
+  where?: Prisma.RentalWhereInput
+  orderBy?: Prisma.RentalOrderByWithRelationInput | Prisma.RentalOrderByWithRelationInput[]
+  cursor?: Prisma.RentalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RentalScalarFieldEnum | Prisma.RentalScalarFieldEnum[]
+}
+
+/**
  * Branch.reservations
  */
 export type Branch$reservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6889,6 +6721,54 @@ export type Branch$reservationsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.ReservationScalarFieldEnum | Prisma.ReservationScalarFieldEnum[]
+}
+
+/**
+ * Branch.sales
+ */
+export type Branch$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
+  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
+  cursor?: Prisma.SaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
+ * Branch.stockLots
+ */
+export type Branch$stockLotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
+  orderBy?: Prisma.StockLotOrderByWithRelationInput | Prisma.StockLotOrderByWithRelationInput[]
+  cursor?: Prisma.StockLotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockLotScalarFieldEnum | Prisma.StockLotScalarFieldEnum[]
 }
 
 /**
@@ -6916,51 +6796,171 @@ export type Branch$userTenantMembershipsArgs<ExtArgs extends runtime.Types.Exten
 }
 
 /**
- * Branch.inventoryMovements
+ * Branch.destinationTransfers
  */
-export type Branch$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Branch$destinationTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InventoryMovement
+   * Select specific fields to fetch from the Transfer
    */
-  select?: Prisma.InventoryMovementSelect<ExtArgs> | null
+  select?: Prisma.TransferSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InventoryMovement
+   * Omit specific fields from the Transfer
    */
-  omit?: Prisma.InventoryMovementOmit<ExtArgs> | null
+  omit?: Prisma.TransferOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InventoryMovementInclude<ExtArgs> | null
-  where?: Prisma.InventoryMovementWhereInput
-  orderBy?: Prisma.InventoryMovementOrderByWithRelationInput | Prisma.InventoryMovementOrderByWithRelationInput[]
-  cursor?: Prisma.InventoryMovementWhereUniqueInput
+  include?: Prisma.TransferInclude<ExtArgs> | null
+  where?: Prisma.TransferWhereInput
+  orderBy?: Prisma.TransferOrderByWithRelationInput | Prisma.TransferOrderByWithRelationInput[]
+  cursor?: Prisma.TransferWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.InventoryMovementScalarFieldEnum | Prisma.InventoryMovementScalarFieldEnum[]
+  distinct?: Prisma.TransferScalarFieldEnum | Prisma.TransferScalarFieldEnum[]
 }
 
 /**
- * Branch.invitations
+ * Branch.originTransfers
  */
-export type Branch$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Branch$originTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Invitation
+   * Select specific fields to fetch from the Transfer
    */
-  select?: Prisma.InvitationSelect<ExtArgs> | null
+  select?: Prisma.TransferSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Invitation
+   * Omit specific fields from the Transfer
    */
-  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  omit?: Prisma.TransferOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvitationInclude<ExtArgs> | null
-  where?: Prisma.InvitationWhereInput
-  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
-  cursor?: Prisma.InvitationWhereUniqueInput
+  include?: Prisma.TransferInclude<ExtArgs> | null
+  where?: Prisma.TransferWhereInput
+  orderBy?: Prisma.TransferOrderByWithRelationInput | Prisma.TransferOrderByWithRelationInput[]
+  cursor?: Prisma.TransferWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
+  distinct?: Prisma.TransferScalarFieldEnum | Prisma.TransferScalarFieldEnum[]
+}
+
+/**
+ * Branch.destinationRoutes
+ */
+export type Branch$destinationRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TransferRoute
+   */
+  select?: Prisma.TransferRouteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TransferRoute
+   */
+  omit?: Prisma.TransferRouteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransferRouteInclude<ExtArgs> | null
+  where?: Prisma.TransferRouteWhereInput
+  orderBy?: Prisma.TransferRouteOrderByWithRelationInput | Prisma.TransferRouteOrderByWithRelationInput[]
+  cursor?: Prisma.TransferRouteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TransferRouteScalarFieldEnum | Prisma.TransferRouteScalarFieldEnum[]
+}
+
+/**
+ * Branch.originRoutes
+ */
+export type Branch$originRoutesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TransferRoute
+   */
+  select?: Prisma.TransferRouteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TransferRoute
+   */
+  omit?: Prisma.TransferRouteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransferRouteInclude<ExtArgs> | null
+  where?: Prisma.TransferRouteWhereInput
+  orderBy?: Prisma.TransferRouteOrderByWithRelationInput | Prisma.TransferRouteOrderByWithRelationInput[]
+  cursor?: Prisma.TransferRouteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TransferRouteScalarFieldEnum | Prisma.TransferRouteScalarFieldEnum[]
+}
+
+/**
+ * Branch.userAttendances
+ */
+export type Branch$userAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserAttendance
+   */
+  select?: Prisma.UserAttendanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserAttendance
+   */
+  omit?: Prisma.UserAttendanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserAttendanceInclude<ExtArgs> | null
+  where?: Prisma.UserAttendanceWhereInput
+  orderBy?: Prisma.UserAttendanceOrderByWithRelationInput | Prisma.UserAttendanceOrderByWithRelationInput[]
+  cursor?: Prisma.UserAttendanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserAttendanceScalarFieldEnum | Prisma.UserAttendanceScalarFieldEnum[]
+}
+
+/**
+ * Branch.userBranchAccesses
+ */
+export type Branch$userBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserBranchAccess
+   */
+  select?: Prisma.UserBranchAccessSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserBranchAccess
+   */
+  omit?: Prisma.UserBranchAccessOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserBranchAccessInclude<ExtArgs> | null
+  where?: Prisma.UserBranchAccessWhereInput
+  orderBy?: Prisma.UserBranchAccessOrderByWithRelationInput | Prisma.UserBranchAccessOrderByWithRelationInput[]
+  cursor?: Prisma.UserBranchAccessWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserBranchAccessScalarFieldEnum | Prisma.UserBranchAccessScalarFieldEnum[]
+}
+
+/**
+ * Branch.userRoleBranchHistories
+ */
+export type Branch$userRoleBranchHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserRoleBranchHistory
+   */
+  select?: Prisma.UserRoleBranchHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserRoleBranchHistory
+   */
+  omit?: Prisma.UserRoleBranchHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserRoleBranchHistoryInclude<ExtArgs> | null
+  where?: Prisma.UserRoleBranchHistoryWhereInput
+  orderBy?: Prisma.UserRoleBranchHistoryOrderByWithRelationInput | Prisma.UserRoleBranchHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.UserRoleBranchHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserRoleBranchHistoryScalarFieldEnum | Prisma.UserRoleBranchHistoryScalarFieldEnum[]
 }
 
 /**

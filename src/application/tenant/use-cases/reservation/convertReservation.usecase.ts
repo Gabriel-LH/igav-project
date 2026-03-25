@@ -2,7 +2,7 @@ import { Reservation } from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { RentalFromReservationDTO } from "@/src/application/dtos/RentalFromReservationDTO";
 import { SaleFromReservationDTO } from "@/src/application/dtos/SaleFromReservationDTO";
-import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { ProcessTransactionUseCase } from "@/src/application/tenant/use-cases/process-transaction/ProcessTransaction.usecase";
 import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
 import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { GuaranteeRepository } from "@/src/domain/tenant/repositories/GuaranteeRepository";
@@ -14,6 +14,7 @@ export interface ConvertReservationInput {
   reservationItems: ReservationItem[];
   selectedStocks: Record<string, string>;
   sellerId: string;
+  tenantId: string;
   totalCalculated: number;
   totalPaid: number;
   isCredit: boolean;
@@ -33,6 +34,7 @@ export class ConvertReservationUseCase {
     private inventoryRepo: InventoryRepository,
     private guaranteeRepo: GuaranteeRepository,
     private rentalRepo: RentalRepository,
+    private processTransactionUC: ProcessTransactionUseCase,
   ) {}
 
   async execute(input: ConvertReservationInput): Promise<{
@@ -54,6 +56,7 @@ export class ConvertReservationUseCase {
     if (reservation.operationType === "alquiler") {
       const rentalDTO: RentalFromReservationDTO = {
         type: "alquiler",
+        tenantId: input.tenantId,
         customerId: reservation.customerId,
         sellerId: input.sellerId,
         branchId: reservation.branchId,
@@ -88,9 +91,8 @@ export class ConvertReservationUseCase {
           ? `GUA-${crypto.randomUUID()}`
           : undefined;
 
-      const res = await processTransactionAction(rentalDTO as any);
-      if (!res.success) throw new Error(res.error);
-      const result = res.data;
+      const res = await this.processTransactionUC.execute(rentalDTO as any);
+      const result = res;
 
       if (guaranteeInput && guaranteeId && guaranteeInput.type !== "no_aplica") {
         const guarantee = guaranteeSchema.parse({
@@ -136,6 +138,7 @@ export class ConvertReservationUseCase {
     if (reservation.operationType === "venta") {
       const saleDTO: SaleFromReservationDTO = {
         type: "venta",
+        tenantId: input.tenantId,
         status: input.shouldDeliverImmediately
           ? "vendido"
           : "pendiente_entrega",
@@ -159,9 +162,8 @@ export class ConvertReservationUseCase {
         notes: input.notes,
       };
 
-      const res = await processTransactionAction(saleDTO as any);
-      if (!res.success) throw new Error(res.error);
-      const result = res.data;
+      const res = await this.processTransactionUC.execute(saleDTO as any);
+      const result = res;
 
       await this.reservationRepo.updateStatus(
         reservation.id,

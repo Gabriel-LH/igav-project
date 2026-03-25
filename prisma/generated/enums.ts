@@ -112,7 +112,6 @@ export type StockLotCondition = (typeof StockLotCondition)[keyof typeof StockLot
 
 
 export const InventoryStatus = {
-  en_transito: 'en_transito',
   disponible: 'disponible',
   en_mantenimiento: 'en_mantenimiento',
   alquilado: 'alquilado',
@@ -121,17 +120,18 @@ export const InventoryStatus = {
   vendido_pendiente_entrega: 'vendido_pendiente_entrega',
   en_lavanderia: 'en_lavanderia',
   retirado: 'retirado',
-  vendido: 'vendido'
+  vendido: 'vendido',
+  en_transito: 'en_transito'
 } as const
 
 export type InventoryStatus = (typeof InventoryStatus)[keyof typeof InventoryStatus]
 
 
 export const StockLotStatus = {
-  en_transito: 'en_transito',
   disponible: 'disponible',
   bajo_pedido: 'bajo_pedido',
   discontinuado: 'discontinuado',
+  en_transito: 'en_transito',
   alquilado: 'alquilado',
   vendido: 'vendido'
 } as const
@@ -140,11 +140,11 @@ export type StockLotStatus = (typeof StockLotStatus)[keyof typeof StockLotStatus
 
 
 export const RentUnit = {
-  hora: 'hora',
   dia: 'dia',
+  evento: 'evento',
+  hora: 'hora',
   semana: 'semana',
-  mes: 'mes',
-  evento: 'evento'
+  mes: 'mes'
 } as const
 
 export type RentUnit = (typeof RentUnit)[keyof typeof RentUnit]
@@ -385,26 +385,26 @@ export type PayScheduleType = (typeof PayScheduleType)[keyof typeof PayScheduleT
 export const PlanFeatureKey = {
   sales: 'sales',
   rentals: 'rentals',
-  reservations: 'reservations',
   inventory: 'inventory',
   products: 'products',
-  inventoryItems: 'inventoryItems',
-  clients: 'clients',
   payments: 'payments',
+  userAttendance: 'userAttendance',
   users: 'users',
   branches: 'branches',
-  userAttendance: 'userAttendance',
-  shifts: 'shifts',
-  payroll: 'payroll',
   permissions: 'permissions',
+  tenants: 'tenants',
   analytics: 'analytics',
-  reports: 'reports',
   promotions: 'promotions',
   referrals: 'referrals',
+  reservations: 'reservations',
   referralRewards: 'referralRewards',
   loyalty: 'loyalty',
-  tenants: 'tenants',
-  subscriptions: 'subscriptions'
+  clients: 'clients',
+  inventoryItems: 'inventoryItems',
+  subscriptions: 'subscriptions',
+  shifts: 'shifts',
+  payroll: 'payroll',
+  reports: 'reports'
 } as const
 
 export type PlanFeatureKey = (typeof PlanFeatureKey)[keyof typeof PlanFeatureKey]
@@ -437,8 +437,6 @@ export type PlanModuleKey = (typeof PlanModuleKey)[keyof typeof PlanModuleKey]
 
 export const StockMovementType = {
   stock_inicial: 'stock_inicial',
-  recepcion_transito: 'recepcion_transito',
-  recepcion_disponible: 'recepcion_disponible',
   salida_alquiler: 'salida_alquiler',
   retorno_alquiler: 'retorno_alquiler',
   vendido: 'vendido',
@@ -448,7 +446,9 @@ export const StockMovementType = {
   mantenimiento_salida: 'mantenimiento_salida',
   mantenimiento_retorno: 'mantenimiento_retorno',
   ajuste_incremento: 'ajuste_incremento',
-  ajuste_decremento: 'ajuste_decremento'
+  ajuste_decremento: 'ajuste_decremento',
+  recepcion_transito: 'recepcion_transito',
+  recepcion_disponible: 'recepcion_disponible'
 } as const
 
 export type StockMovementType = (typeof StockMovementType)[keyof typeof StockMovementType]

@@ -22,8 +22,10 @@ export interface RentalDTO extends BaseOperation {
     productId: string;
     productName: string;
     stockId: string;
+    inventoryItemId?: string;
     quantity: number;
     variantId: string;
+    variantAttributes?: Record<string, string>;
     priceAtMoment: number;
     listPrice?: number;
     discountAmount?: number;
@@ -38,7 +40,7 @@ export interface RentalDTO extends BaseOperation {
     totalAmount: number;
     keepAsCredit: boolean;
     receivedAmount: number;
-    paymentMethod: string;
+    paymentMethodId: string;
   };
   guarantee?: {
     type?: GuaranteeType | "por_cobrar";

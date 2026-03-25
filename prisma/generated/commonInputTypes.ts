@@ -1058,13 +1058,6 @@ export type EnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
 }
 
-export type EnumStockLotConditionFilter<$PrismaModel = never> = {
-  equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
-  in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel> | $Enums.StockLotCondition
-}
-
 export type EnumStockLotStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.StockLotStatus | Prisma.EnumStockLotStatusFieldRefInput<$PrismaModel>
   in?: $Enums.StockLotStatus[] | Prisma.ListEnumStockLotStatusFieldRefInput<$PrismaModel>
@@ -1072,14 +1065,11 @@ export type EnumStockLotStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel> | $Enums.StockLotStatus
 }
 
-export type EnumStockLotConditionWithAggregatesFilter<$PrismaModel = never> = {
+export type EnumStockLotConditionFilter<$PrismaModel = never> = {
   equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
   in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
   notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel> | $Enums.StockLotCondition
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
+  not?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel> | $Enums.StockLotCondition
 }
 
 export type EnumStockLotStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -1090,6 +1080,16 @@ export type EnumStockLotStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel>
+}
+
+export type EnumStockLotConditionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
+  in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel> | $Enums.StockLotCondition
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
 }
 
 export type EnumStockMovementTypeFilter<$PrismaModel = never> = {
@@ -2600,13 +2600,6 @@ export type NestedEnumPriceHistoryReasonWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumPriceHistoryReasonFilter<$PrismaModel>
 }
 
-export type NestedEnumStockLotConditionFilter<$PrismaModel = never> = {
-  equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
-  in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel> | $Enums.StockLotCondition
-}
-
 export type NestedEnumStockLotStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.StockLotStatus | Prisma.EnumStockLotStatusFieldRefInput<$PrismaModel>
   in?: $Enums.StockLotStatus[] | Prisma.ListEnumStockLotStatusFieldRefInput<$PrismaModel>
@@ -2614,14 +2607,11 @@ export type NestedEnumStockLotStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel> | $Enums.StockLotStatus
 }
 
-export type NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel = never> = {
+export type NestedEnumStockLotConditionFilter<$PrismaModel = never> = {
   equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
   in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
   notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel> | $Enums.StockLotCondition
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
+  not?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel> | $Enums.StockLotCondition
 }
 
 export type NestedEnumStockLotStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -2632,6 +2622,16 @@ export type NestedEnumStockLotStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumStockLotStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StockLotCondition | Prisma.EnumStockLotConditionFieldRefInput<$PrismaModel>
+  in?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StockLotCondition[] | Prisma.ListEnumStockLotConditionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStockLotConditionWithAggregatesFilter<$PrismaModel> | $Enums.StockLotCondition
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStockLotConditionFilter<$PrismaModel>
 }
 
 export type NestedEnumStockMovementTypeFilter<$PrismaModel = never> = {

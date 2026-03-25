@@ -240,8 +240,8 @@ export type SaleReversalWhereInput = {
   totalRefunded?: Prisma.DecimalFilter<"SaleReversal"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"SaleReversal"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"SaleReversal"> | string | null
-  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
   items?: Prisma.ReversalItemListRelationFilter
+  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }
 
@@ -254,8 +254,8 @@ export type SaleReversalOrderByWithRelationInput = {
   totalRefunded?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  sale?: Prisma.SaleOrderByWithRelationInput
   items?: Prisma.ReversalItemOrderByRelationAggregateInput
+  sale?: Prisma.SaleOrderByWithRelationInput
   tenant?: Prisma.TenantOrderByWithRelationInput
 }
 
@@ -271,8 +271,8 @@ export type SaleReversalWhereUniqueInput = Prisma.AtLeast<{
   totalRefunded?: Prisma.DecimalFilter<"SaleReversal"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"SaleReversal"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"SaleReversal"> | string | null
-  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
   items?: Prisma.ReversalItemListRelationFilter
+  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
 }, "id">
 
@@ -313,8 +313,8 @@ export type SaleReversalCreateInput = {
   totalRefunded: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   createdBy?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutSaleReversalsInput
   items?: Prisma.ReversalItemCreateNestedManyWithoutReversalInput
+  sale: Prisma.SaleCreateNestedOneWithoutSaleReversalsInput
   tenant: Prisma.TenantCreateNestedOneWithoutSaleReversalsInput
 }
 
@@ -337,8 +337,8 @@ export type SaleReversalUpdateInput = {
   totalRefunded?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutSaleReversalsNestedInput
   items?: Prisma.ReversalItemUpdateManyWithoutReversalNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutSaleReversalsNestedInput
   tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleReversalsNestedInput
 }
 
@@ -672,8 +672,8 @@ export type SaleReversalCreateWithoutTenantInput = {
   totalRefunded: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   createdBy?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutSaleReversalsInput
   items?: Prisma.ReversalItemCreateNestedManyWithoutReversalInput
+  sale: Prisma.SaleCreateNestedOneWithoutSaleReversalsInput
 }
 
 export type SaleReversalUncheckedCreateWithoutTenantInput = {
@@ -772,8 +772,8 @@ export type SaleReversalUpdateWithoutTenantInput = {
   totalRefunded?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutSaleReversalsNestedInput
   items?: Prisma.ReversalItemUpdateManyWithoutReversalNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutSaleReversalsNestedInput
 }
 
 export type SaleReversalUncheckedUpdateWithoutTenantInput = {
@@ -837,8 +837,8 @@ export type SaleReversalSelect<ExtArgs extends runtime.Types.Extensions.Internal
   totalRefunded?: boolean
   createdAt?: boolean
   createdBy?: boolean
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
   items?: boolean | Prisma.SaleReversal$itemsArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SaleReversalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["saleReversal"]>
@@ -882,8 +882,8 @@ export type SaleReversalSelectScalar = {
 
 export type SaleReversalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "saleId" | "type" | "reason" | "totalRefunded" | "createdAt" | "createdBy", ExtArgs["result"]["saleReversal"]>
 export type SaleReversalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
   items?: boolean | Prisma.SaleReversal$itemsArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SaleReversalCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -899,8 +899,8 @@ export type SaleReversalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type $SaleReversalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SaleReversal"
   objects: {
-    sale: Prisma.$SalePayload<ExtArgs>
     items: Prisma.$ReversalItemPayload<ExtArgs>[]
+    sale: Prisma.$SalePayload<ExtArgs>
     tenant: Prisma.$TenantPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1306,8 +1306,8 @@ readonly fields: SaleReversalFieldRefs;
  */
 export interface Prisma__SaleReversalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  sale<T extends Prisma.SaleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleDefaultArgs<ExtArgs>>): Prisma.Prisma__SaleClient<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.SaleReversal$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleReversal$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReversalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sale<T extends Prisma.SaleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleDefaultArgs<ExtArgs>>): Prisma.Prisma__SaleClient<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

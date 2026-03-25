@@ -46,6 +46,7 @@ export type SaleItemMinAggregateOutputType = {
   saleId: string | null
   productId: string | null
   stockId: string | null
+  inventoryItemId: string | null
   variantId: string | null
   priceAtMoment: number | null
   listPrice: number | null
@@ -69,6 +70,7 @@ export type SaleItemMaxAggregateOutputType = {
   saleId: string | null
   productId: string | null
   stockId: string | null
+  inventoryItemId: string | null
   variantId: string | null
   priceAtMoment: number | null
   listPrice: number | null
@@ -92,6 +94,7 @@ export type SaleItemCountAggregateOutputType = {
   saleId: number
   productId: number
   stockId: number
+  inventoryItemId: number
   variantId: number
   priceAtMoment: number
   listPrice: number
@@ -131,6 +134,7 @@ export type SaleItemMinAggregateInputType = {
   saleId?: true
   productId?: true
   stockId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   listPrice?: true
@@ -154,6 +158,7 @@ export type SaleItemMaxAggregateInputType = {
   saleId?: true
   productId?: true
   stockId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   listPrice?: true
@@ -177,6 +182,7 @@ export type SaleItemCountAggregateInputType = {
   saleId?: true
   productId?: true
   stockId?: true
+  inventoryItemId?: true
   variantId?: true
   priceAtMoment?: true
   listPrice?: true
@@ -286,7 +292,8 @@ export type SaleItemGroupByOutputType = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId: string | null
+  inventoryItemId: string | null
   variantId: string
   priceAtMoment: number
   listPrice: number | null
@@ -332,7 +339,8 @@ export type SaleItemWhereInput = {
   tenantId?: Prisma.StringFilter<"SaleItem"> | string
   saleId?: Prisma.StringFilter<"SaleItem"> | string
   productId?: Prisma.StringFilter<"SaleItem"> | string
-  stockId?: Prisma.StringFilter<"SaleItem"> | string
+  stockId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
   variantId?: Prisma.StringFilter<"SaleItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"SaleItem"> | number
   listPrice?: Prisma.FloatNullableFilter<"SaleItem"> | number | null
@@ -348,14 +356,15 @@ export type SaleItemWhereInput = {
   isReturned?: Prisma.BoolFilter<"SaleItem"> | boolean
   returnedAt?: Prisma.DateTimeNullableFilter<"SaleItem"> | Date | string | null
   returnCondition?: Prisma.StringNullableFilter<"SaleItem"> | string | null
-  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stock?: Prisma.XOR<Prisma.StockLotScalarRelationFilter, Prisma.StockLotWhereInput>
-  promotion?: Prisma.XOR<Prisma.PromotionNullableScalarRelationFilter, Prisma.PromotionWhereInput> | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  saleCharges?: Prisma.SaleChargeListRelationFilter
   reversalItems?: Prisma.ReversalItemListRelationFilter
+  saleCharges?: Prisma.SaleChargeListRelationFilter
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  promotion?: Prisma.XOR<Prisma.PromotionNullableScalarRelationFilter, Prisma.PromotionWhereInput> | null
+  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
+  stock?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryListRelationFilter
 }
 
@@ -364,7 +373,8 @@ export type SaleItemOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder
   saleId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrderInput | Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   listPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -380,14 +390,15 @@ export type SaleItemOrderByWithRelationInput = {
   isReturned?: Prisma.SortOrder
   returnedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   returnCondition?: Prisma.SortOrderInput | Prisma.SortOrder
-  sale?: Prisma.SaleOrderByWithRelationInput
-  product?: Prisma.ProductOrderByWithRelationInput
-  variant?: Prisma.ProductVariantOrderByWithRelationInput
-  stock?: Prisma.StockLotOrderByWithRelationInput
-  promotion?: Prisma.PromotionOrderByWithRelationInput
-  tenant?: Prisma.TenantOrderByWithRelationInput
-  saleCharges?: Prisma.SaleChargeOrderByRelationAggregateInput
   reversalItems?: Prisma.ReversalItemOrderByRelationAggregateInput
+  saleCharges?: Prisma.SaleChargeOrderByRelationAggregateInput
+  inventoryItem?: Prisma.InventoryItemOrderByWithRelationInput
+  product?: Prisma.ProductOrderByWithRelationInput
+  promotion?: Prisma.PromotionOrderByWithRelationInput
+  sale?: Prisma.SaleOrderByWithRelationInput
+  stock?: Prisma.StockLotOrderByWithRelationInput
+  tenant?: Prisma.TenantOrderByWithRelationInput
+  variant?: Prisma.ProductVariantOrderByWithRelationInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryOrderByRelationAggregateInput
 }
 
@@ -399,7 +410,8 @@ export type SaleItemWhereUniqueInput = Prisma.AtLeast<{
   tenantId?: Prisma.StringFilter<"SaleItem"> | string
   saleId?: Prisma.StringFilter<"SaleItem"> | string
   productId?: Prisma.StringFilter<"SaleItem"> | string
-  stockId?: Prisma.StringFilter<"SaleItem"> | string
+  stockId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
   variantId?: Prisma.StringFilter<"SaleItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"SaleItem"> | number
   listPrice?: Prisma.FloatNullableFilter<"SaleItem"> | number | null
@@ -415,14 +427,15 @@ export type SaleItemWhereUniqueInput = Prisma.AtLeast<{
   isReturned?: Prisma.BoolFilter<"SaleItem"> | boolean
   returnedAt?: Prisma.DateTimeNullableFilter<"SaleItem"> | Date | string | null
   returnCondition?: Prisma.StringNullableFilter<"SaleItem"> | string | null
-  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-  stock?: Prisma.XOR<Prisma.StockLotScalarRelationFilter, Prisma.StockLotWhereInput>
-  promotion?: Prisma.XOR<Prisma.PromotionNullableScalarRelationFilter, Prisma.PromotionWhereInput> | null
-  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
-  saleCharges?: Prisma.SaleChargeListRelationFilter
   reversalItems?: Prisma.ReversalItemListRelationFilter
+  saleCharges?: Prisma.SaleChargeListRelationFilter
+  inventoryItem?: Prisma.XOR<Prisma.InventoryItemNullableScalarRelationFilter, Prisma.InventoryItemWhereInput> | null
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  promotion?: Prisma.XOR<Prisma.PromotionNullableScalarRelationFilter, Prisma.PromotionWhereInput> | null
+  sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
+  stock?: Prisma.XOR<Prisma.StockLotNullableScalarRelationFilter, Prisma.StockLotWhereInput> | null
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
+  variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryListRelationFilter
 }, "id">
 
@@ -431,7 +444,8 @@ export type SaleItemOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder
   saleId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  stockId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrderInput | Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   listPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -462,7 +476,8 @@ export type SaleItemScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringWithAggregatesFilter<"SaleItem"> | string
   saleId?: Prisma.StringWithAggregatesFilter<"SaleItem"> | string
   productId?: Prisma.StringWithAggregatesFilter<"SaleItem"> | string
-  stockId?: Prisma.StringWithAggregatesFilter<"SaleItem"> | string
+  stockId?: Prisma.StringNullableWithAggregatesFilter<"SaleItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableWithAggregatesFilter<"SaleItem"> | string | null
   variantId?: Prisma.StringWithAggregatesFilter<"SaleItem"> | string
   priceAtMoment?: Prisma.FloatWithAggregatesFilter<"SaleItem"> | number
   listPrice?: Prisma.FloatNullableWithAggregatesFilter<"SaleItem"> | number | null
@@ -495,14 +510,15 @@ export type SaleItemCreateInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -511,7 +527,8 @@ export type SaleItemUncheckedCreateInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -527,8 +544,8 @@ export type SaleItemUncheckedCreateInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -547,14 +564,15 @@ export type SaleItemUpdateInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -563,7 +581,8 @@ export type SaleItemUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -579,8 +598,8 @@ export type SaleItemUncheckedUpdateInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -589,7 +608,8 @@ export type SaleItemCreateManyInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -629,7 +649,8 @@ export type SaleItemUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -663,6 +684,7 @@ export type SaleItemCountOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   stockId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   listPrice?: Prisma.SortOrder
@@ -693,6 +715,7 @@ export type SaleItemMaxOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   stockId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   listPrice?: Prisma.SortOrder
@@ -716,6 +739,7 @@ export type SaleItemMinOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   stockId?: Prisma.SortOrder
+  inventoryItemId?: Prisma.SortOrder
   variantId?: Prisma.SortOrder
   priceAtMoment?: Prisma.SortOrder
   listPrice?: Prisma.SortOrder
@@ -826,6 +850,48 @@ export type SaleItemUncheckedUpdateManyWithoutVariantNestedInput = {
   connect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
   update?: Prisma.SaleItemUpdateWithWhereUniqueWithoutVariantInput | Prisma.SaleItemUpdateWithWhereUniqueWithoutVariantInput[]
   updateMany?: Prisma.SaleItemUpdateManyWithWhereWithoutVariantInput | Prisma.SaleItemUpdateManyWithWhereWithoutVariantInput[]
+  deleteMany?: Prisma.SaleItemScalarWhereInput | Prisma.SaleItemScalarWhereInput[]
+}
+
+export type SaleItemCreateNestedManyWithoutInventoryItemInput = {
+  create?: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput> | Prisma.SaleItemCreateWithoutInventoryItemInput[] | Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput | Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput[]
+  createMany?: Prisma.SaleItemCreateManyInventoryItemInputEnvelope
+  connect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+}
+
+export type SaleItemUncheckedCreateNestedManyWithoutInventoryItemInput = {
+  create?: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput> | Prisma.SaleItemCreateWithoutInventoryItemInput[] | Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput | Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput[]
+  createMany?: Prisma.SaleItemCreateManyInventoryItemInputEnvelope
+  connect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+}
+
+export type SaleItemUpdateManyWithoutInventoryItemNestedInput = {
+  create?: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput> | Prisma.SaleItemCreateWithoutInventoryItemInput[] | Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput | Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput[]
+  upsert?: Prisma.SaleItemUpsertWithWhereUniqueWithoutInventoryItemInput | Prisma.SaleItemUpsertWithWhereUniqueWithoutInventoryItemInput[]
+  createMany?: Prisma.SaleItemCreateManyInventoryItemInputEnvelope
+  set?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  disconnect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  delete?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  connect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  update?: Prisma.SaleItemUpdateWithWhereUniqueWithoutInventoryItemInput | Prisma.SaleItemUpdateWithWhereUniqueWithoutInventoryItemInput[]
+  updateMany?: Prisma.SaleItemUpdateManyWithWhereWithoutInventoryItemInput | Prisma.SaleItemUpdateManyWithWhereWithoutInventoryItemInput[]
+  deleteMany?: Prisma.SaleItemScalarWhereInput | Prisma.SaleItemScalarWhereInput[]
+}
+
+export type SaleItemUncheckedUpdateManyWithoutInventoryItemNestedInput = {
+  create?: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput> | Prisma.SaleItemCreateWithoutInventoryItemInput[] | Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput[]
+  connectOrCreate?: Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput | Prisma.SaleItemCreateOrConnectWithoutInventoryItemInput[]
+  upsert?: Prisma.SaleItemUpsertWithWhereUniqueWithoutInventoryItemInput | Prisma.SaleItemUpsertWithWhereUniqueWithoutInventoryItemInput[]
+  createMany?: Prisma.SaleItemCreateManyInventoryItemInputEnvelope
+  set?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  disconnect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  delete?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  connect?: Prisma.SaleItemWhereUniqueInput | Prisma.SaleItemWhereUniqueInput[]
+  update?: Prisma.SaleItemUpdateWithWhereUniqueWithoutInventoryItemInput | Prisma.SaleItemUpdateWithWhereUniqueWithoutInventoryItemInput[]
+  updateMany?: Prisma.SaleItemUpdateManyWithWhereWithoutInventoryItemInput | Prisma.SaleItemUpdateManyWithWhereWithoutInventoryItemInput[]
   deleteMany?: Prisma.SaleItemScalarWhereInput | Prisma.SaleItemScalarWhereInput[]
 }
 
@@ -1054,13 +1120,14 @@ export type SaleItemCreateWithoutProductInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1068,7 +1135,8 @@ export type SaleItemUncheckedCreateWithoutProductInput = {
   id?: string
   tenantId: string
   saleId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1084,8 +1152,8 @@ export type SaleItemUncheckedCreateWithoutProductInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1123,7 +1191,8 @@ export type SaleItemScalarWhereInput = {
   tenantId?: Prisma.StringFilter<"SaleItem"> | string
   saleId?: Prisma.StringFilter<"SaleItem"> | string
   productId?: Prisma.StringFilter<"SaleItem"> | string
-  stockId?: Prisma.StringFilter<"SaleItem"> | string
+  stockId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
+  inventoryItemId?: Prisma.StringNullableFilter<"SaleItem"> | string | null
   variantId?: Prisma.StringFilter<"SaleItem"> | string
   priceAtMoment?: Prisma.FloatFilter<"SaleItem"> | number
   listPrice?: Prisma.FloatNullableFilter<"SaleItem"> | number | null
@@ -1156,13 +1225,14 @@ export type SaleItemCreateWithoutVariantInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1171,7 +1241,8 @@ export type SaleItemUncheckedCreateWithoutVariantInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   priceAtMoment: number
   listPrice?: number | null
   quantity?: number
@@ -1186,8 +1257,8 @@ export type SaleItemUncheckedCreateWithoutVariantInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1217,7 +1288,7 @@ export type SaleItemUpdateManyWithWhereWithoutVariantInput = {
   data: Prisma.XOR<Prisma.SaleItemUpdateManyMutationInput, Prisma.SaleItemUncheckedUpdateManyWithoutVariantInput>
 }
 
-export type SaleItemCreateWithoutStockInput = {
+export type SaleItemCreateWithoutInventoryItemInput = {
   id?: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1232,21 +1303,23 @@ export type SaleItemCreateWithoutStockInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
-export type SaleItemUncheckedCreateWithoutStockInput = {
+export type SaleItemUncheckedCreateWithoutInventoryItemInput = {
   id?: string
   tenantId: string
   saleId: string
   productId: string
+  stockId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1262,8 +1335,86 @@ export type SaleItemUncheckedCreateWithoutStockInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
+}
+
+export type SaleItemCreateOrConnectWithoutInventoryItemInput = {
+  where: Prisma.SaleItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput>
+}
+
+export type SaleItemCreateManyInventoryItemInputEnvelope = {
+  data: Prisma.SaleItemCreateManyInventoryItemInput | Prisma.SaleItemCreateManyInventoryItemInput[]
+  skipDuplicates?: boolean
+}
+
+export type SaleItemUpsertWithWhereUniqueWithoutInventoryItemInput = {
+  where: Prisma.SaleItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.SaleItemUpdateWithoutInventoryItemInput, Prisma.SaleItemUncheckedUpdateWithoutInventoryItemInput>
+  create: Prisma.XOR<Prisma.SaleItemCreateWithoutInventoryItemInput, Prisma.SaleItemUncheckedCreateWithoutInventoryItemInput>
+}
+
+export type SaleItemUpdateWithWhereUniqueWithoutInventoryItemInput = {
+  where: Prisma.SaleItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.SaleItemUpdateWithoutInventoryItemInput, Prisma.SaleItemUncheckedUpdateWithoutInventoryItemInput>
+}
+
+export type SaleItemUpdateManyWithWhereWithoutInventoryItemInput = {
+  where: Prisma.SaleItemScalarWhereInput
+  data: Prisma.XOR<Prisma.SaleItemUpdateManyMutationInput, Prisma.SaleItemUncheckedUpdateManyWithoutInventoryItemInput>
+}
+
+export type SaleItemCreateWithoutStockInput = {
+  id?: string
+  priceAtMoment: number
+  listPrice?: number | null
+  quantity?: number
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  isReturned?: boolean
+  returnedAt?: Date | string | null
+  returnCondition?: string | null
+  reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
+}
+
+export type SaleItemUncheckedCreateWithoutStockInput = {
+  id?: string
+  tenantId: string
+  saleId: string
+  productId: string
+  inventoryItemId?: string | null
+  variantId: string
+  priceAtMoment: number
+  listPrice?: number | null
+  quantity?: number
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  promotionId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  isReturned?: boolean
+  returnedAt?: Date | string | null
+  returnCondition?: string | null
+  reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1308,13 +1459,14 @@ export type SaleItemCreateWithoutPromotionInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1323,7 +1475,8 @@ export type SaleItemUncheckedCreateWithoutPromotionInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1338,8 +1491,8 @@ export type SaleItemUncheckedCreateWithoutPromotionInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1384,13 +1537,14 @@ export type SaleItemCreateWithoutSaleInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1398,7 +1552,8 @@ export type SaleItemUncheckedCreateWithoutSaleInput = {
   id?: string
   tenantId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1414,8 +1569,8 @@ export type SaleItemUncheckedCreateWithoutSaleInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1460,13 +1615,14 @@ export type SaleItemCreateWithoutSaleChargesInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1475,7 +1631,8 @@ export type SaleItemUncheckedCreateWithoutSaleChargesInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1526,13 +1683,14 @@ export type SaleItemUpdateWithoutSaleChargesInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -1541,7 +1699,8 @@ export type SaleItemUncheckedUpdateWithoutSaleChargesInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1576,13 +1735,14 @@ export type SaleItemCreateWithoutReversalItemsInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
   saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1591,7 +1751,8 @@ export type SaleItemUncheckedCreateWithoutReversalItemsInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1642,13 +1803,14 @@ export type SaleItemUpdateWithoutReversalItemsInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -1657,7 +1819,8 @@ export type SaleItemUncheckedUpdateWithoutReversalItemsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1692,14 +1855,15 @@ export type SaleItemCreateWithoutSaleItemStatusHistoriesInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  tenant: Prisma.TenantCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
 }
 
 export type SaleItemUncheckedCreateWithoutSaleItemStatusHistoriesInput = {
@@ -1707,7 +1871,8 @@ export type SaleItemUncheckedCreateWithoutSaleItemStatusHistoriesInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1723,8 +1888,8 @@ export type SaleItemUncheckedCreateWithoutSaleItemStatusHistoriesInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
 export type SaleItemCreateOrConnectWithoutSaleItemStatusHistoriesInput = {
@@ -1758,14 +1923,15 @@ export type SaleItemUpdateWithoutSaleItemStatusHistoriesInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
 }
 
 export type SaleItemUncheckedUpdateWithoutSaleItemStatusHistoriesInput = {
@@ -1773,7 +1939,8 @@ export type SaleItemUncheckedUpdateWithoutSaleItemStatusHistoriesInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1789,8 +1956,8 @@ export type SaleItemUncheckedUpdateWithoutSaleItemStatusHistoriesInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
 export type SaleItemCreateWithoutTenantInput = {
@@ -1808,13 +1975,14 @@ export type SaleItemCreateWithoutTenantInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
-  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
-  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
-  stock: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
-  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
-  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutSaleItemInput
+  inventoryItem?: Prisma.InventoryItemCreateNestedOneWithoutSaleItemsInput
+  product: Prisma.ProductCreateNestedOneWithoutSaleItemsInput
+  promotion?: Prisma.PromotionCreateNestedOneWithoutSaleItemsInput
+  sale: Prisma.SaleCreateNestedOneWithoutItemsInput
+  stock?: Prisma.StockLotCreateNestedOneWithoutSaleItemsInput
+  variant: Prisma.ProductVariantCreateNestedOneWithoutSaleItemsInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1822,7 +1990,8 @@ export type SaleItemUncheckedCreateWithoutTenantInput = {
   id?: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1838,8 +2007,8 @@ export type SaleItemUncheckedCreateWithoutTenantInput = {
   isReturned?: boolean
   returnedAt?: Date | string | null
   returnCondition?: string | null
-  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutSaleItemInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutSaleItemInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutSaleItemInput
 }
 
@@ -1873,7 +2042,8 @@ export type SaleItemCreateManyProductInput = {
   id?: string
   tenantId: string
   saleId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -1906,13 +2076,14 @@ export type SaleItemUpdateWithoutProductInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -1920,7 +2091,8 @@ export type SaleItemUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1936,8 +2108,8 @@ export type SaleItemUncheckedUpdateWithoutProductInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -1945,7 +2117,8 @@ export type SaleItemUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1968,7 +2141,8 @@ export type SaleItemCreateManyVariantInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   priceAtMoment: number
   listPrice?: number | null
   quantity?: number
@@ -2000,13 +2174,14 @@ export type SaleItemUpdateWithoutVariantInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2015,7 +2190,8 @@ export type SaleItemUncheckedUpdateWithoutVariantInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2030,8 +2206,8 @@ export type SaleItemUncheckedUpdateWithoutVariantInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2040,7 +2216,106 @@ export type SaleItemUncheckedUpdateManyWithoutVariantInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SaleItemCreateManyInventoryItemInput = {
+  id?: string
+  tenantId: string
+  saleId: string
+  productId: string
+  stockId?: string | null
+  variantId: string
+  priceAtMoment: number
+  listPrice?: number | null
+  quantity?: number
+  discountAmount?: number
+  discountReason?: string | null
+  bundleId?: string | null
+  promotionId?: string | null
+  productName?: string | null
+  variantCode?: string | null
+  serialCode?: string | null
+  isSerial?: boolean
+  isReturned?: boolean
+  returnedAt?: Date | string | null
+  returnCondition?: string | null
+}
+
+export type SaleItemUpdateWithoutInventoryItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
+}
+
+export type SaleItemUncheckedUpdateWithoutInventoryItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  saleId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
+  priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
+  listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  discountAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  discountReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bundleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promotionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSerial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
+}
+
+export type SaleItemUncheckedUpdateManyWithoutInventoryItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  saleId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2062,6 +2337,7 @@ export type SaleItemCreateManyStockInput = {
   tenantId: string
   saleId: string
   productId: string
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -2094,13 +2370,14 @@ export type SaleItemUpdateWithoutStockInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2109,6 +2386,7 @@ export type SaleItemUncheckedUpdateWithoutStockInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2124,8 +2402,8 @@ export type SaleItemUncheckedUpdateWithoutStockInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2134,6 +2412,7 @@ export type SaleItemUncheckedUpdateManyWithoutStockInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2156,7 +2435,8 @@ export type SaleItemCreateManyPromotionInput = {
   tenantId: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -2188,13 +2468,14 @@ export type SaleItemUpdateWithoutPromotionInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2203,7 +2484,8 @@ export type SaleItemUncheckedUpdateWithoutPromotionInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2218,8 +2500,8 @@ export type SaleItemUncheckedUpdateWithoutPromotionInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2228,7 +2510,8 @@ export type SaleItemUncheckedUpdateManyWithoutPromotionInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2249,7 +2532,8 @@ export type SaleItemCreateManySaleInput = {
   id?: string
   tenantId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -2282,13 +2566,14 @@ export type SaleItemUpdateWithoutSaleInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2296,7 +2581,8 @@ export type SaleItemUncheckedUpdateWithoutSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2312,8 +2598,8 @@ export type SaleItemUncheckedUpdateWithoutSaleInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2321,7 +2607,8 @@ export type SaleItemUncheckedUpdateManyWithoutSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2343,7 +2630,8 @@ export type SaleItemCreateManyTenantInput = {
   id?: string
   saleId: string
   productId: string
-  stockId: string
+  stockId?: string | null
+  inventoryItemId?: string | null
   variantId: string
   priceAtMoment: number
   listPrice?: number | null
@@ -2376,13 +2664,14 @@ export type SaleItemUpdateWithoutTenantInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
-  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
-  stock?: Prisma.StockLotUpdateOneRequiredWithoutSaleItemsNestedInput
-  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
-  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutSaleItemNestedInput
+  inventoryItem?: Prisma.InventoryItemUpdateOneWithoutSaleItemsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSaleItemsNestedInput
+  promotion?: Prisma.PromotionUpdateOneWithoutSaleItemsNestedInput
+  sale?: Prisma.SaleUpdateOneRequiredWithoutItemsNestedInput
+  stock?: Prisma.StockLotUpdateOneWithoutSaleItemsNestedInput
+  variant?: Prisma.ProductVariantUpdateOneRequiredWithoutSaleItemsNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2390,7 +2679,8 @@ export type SaleItemUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2406,8 +2696,8 @@ export type SaleItemUncheckedUpdateWithoutTenantInput = {
   isReturned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   returnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutSaleItemNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutSaleItemNestedInput
   saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutSaleItemNestedInput
 }
 
@@ -2415,7 +2705,8 @@ export type SaleItemUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
-  stockId?: Prisma.StringFieldUpdateOperationsInput | string
+  stockId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inventoryItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   variantId?: Prisma.StringFieldUpdateOperationsInput | string
   priceAtMoment?: Prisma.FloatFieldUpdateOperationsInput | number
   listPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -2439,14 +2730,14 @@ export type SaleItemUncheckedUpdateManyWithoutTenantInput = {
  */
 
 export type SaleItemCountOutputType = {
-  saleCharges: number
   reversalItems: number
+  saleCharges: number
   saleItemStatusHistories: number
 }
 
 export type SaleItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  saleCharges?: boolean | SaleItemCountOutputTypeCountSaleChargesArgs
   reversalItems?: boolean | SaleItemCountOutputTypeCountReversalItemsArgs
+  saleCharges?: boolean | SaleItemCountOutputTypeCountSaleChargesArgs
   saleItemStatusHistories?: boolean | SaleItemCountOutputTypeCountSaleItemStatusHistoriesArgs
 }
 
@@ -2463,15 +2754,15 @@ export type SaleItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * SaleItemCountOutputType without action
  */
-export type SaleItemCountOutputTypeCountSaleChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SaleChargeWhereInput
+export type SaleItemCountOutputTypeCountReversalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReversalItemWhereInput
 }
 
 /**
  * SaleItemCountOutputType without action
  */
-export type SaleItemCountOutputTypeCountReversalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ReversalItemWhereInput
+export type SaleItemCountOutputTypeCountSaleChargesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleChargeWhereInput
 }
 
 /**
@@ -2488,6 +2779,7 @@ export type SaleItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   saleId?: boolean
   productId?: boolean
   stockId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   listPrice?: boolean
@@ -2503,14 +2795,15 @@ export type SaleItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   isReturned?: boolean
   returnedAt?: boolean
   returnCondition?: boolean
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
-  promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  saleCharges?: boolean | Prisma.SaleItem$saleChargesArgs<ExtArgs>
   reversalItems?: boolean | Prisma.SaleItem$reversalItemsArgs<ExtArgs>
+  saleCharges?: boolean | Prisma.SaleItem$saleChargesArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   saleItemStatusHistories?: boolean | Prisma.SaleItem$saleItemStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.SaleItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["saleItem"]>
@@ -2521,6 +2814,7 @@ export type SaleItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   saleId?: boolean
   productId?: boolean
   stockId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   listPrice?: boolean
@@ -2536,12 +2830,13 @@ export type SaleItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   isReturned?: boolean
   returnedAt?: boolean
   returnCondition?: boolean
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
   promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["saleItem"]>
 
 export type SaleItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2550,6 +2845,7 @@ export type SaleItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   saleId?: boolean
   productId?: boolean
   stockId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   listPrice?: boolean
@@ -2565,12 +2861,13 @@ export type SaleItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   isReturned?: boolean
   returnedAt?: boolean
   returnCondition?: boolean
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
   promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["saleItem"]>
 
 export type SaleItemSelectScalar = {
@@ -2579,6 +2876,7 @@ export type SaleItemSelectScalar = {
   saleId?: boolean
   productId?: boolean
   stockId?: boolean
+  inventoryItemId?: boolean
   variantId?: boolean
   priceAtMoment?: boolean
   listPrice?: boolean
@@ -2596,47 +2894,51 @@ export type SaleItemSelectScalar = {
   returnCondition?: boolean
 }
 
-export type SaleItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "saleId" | "productId" | "stockId" | "variantId" | "priceAtMoment" | "listPrice" | "quantity" | "discountAmount" | "discountReason" | "bundleId" | "promotionId" | "productName" | "variantCode" | "serialCode" | "isSerial" | "isReturned" | "returnedAt" | "returnCondition", ExtArgs["result"]["saleItem"]>
+export type SaleItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "saleId" | "productId" | "stockId" | "inventoryItemId" | "variantId" | "priceAtMoment" | "listPrice" | "quantity" | "discountAmount" | "discountReason" | "bundleId" | "promotionId" | "productName" | "variantCode" | "serialCode" | "isSerial" | "isReturned" | "returnedAt" | "returnCondition", ExtArgs["result"]["saleItem"]>
 export type SaleItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
-  promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
-  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
-  saleCharges?: boolean | Prisma.SaleItem$saleChargesArgs<ExtArgs>
   reversalItems?: boolean | Prisma.SaleItem$reversalItemsArgs<ExtArgs>
+  saleCharges?: boolean | Prisma.SaleItem$saleChargesArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
   saleItemStatusHistories?: boolean | Prisma.SaleItem$saleItemStatusHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.SaleItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SaleItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
   promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 export type SaleItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  inventoryItem?: boolean | Prisma.SaleItem$inventoryItemArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
-  stock?: boolean | Prisma.StockLotDefaultArgs<ExtArgs>
   promotion?: boolean | Prisma.SaleItem$promotionArgs<ExtArgs>
+  sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.SaleItem$stockArgs<ExtArgs>
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
+  variant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
 
 export type $SaleItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SaleItem"
   objects: {
-    sale: Prisma.$SalePayload<ExtArgs>
-    product: Prisma.$ProductPayload<ExtArgs>
-    variant: Prisma.$ProductVariantPayload<ExtArgs>
-    stock: Prisma.$StockLotPayload<ExtArgs>
-    promotion: Prisma.$PromotionPayload<ExtArgs> | null
-    tenant: Prisma.$TenantPayload<ExtArgs>
-    saleCharges: Prisma.$SaleChargePayload<ExtArgs>[]
     reversalItems: Prisma.$ReversalItemPayload<ExtArgs>[]
+    saleCharges: Prisma.$SaleChargePayload<ExtArgs>[]
+    inventoryItem: Prisma.$InventoryItemPayload<ExtArgs> | null
+    product: Prisma.$ProductPayload<ExtArgs>
+    promotion: Prisma.$PromotionPayload<ExtArgs> | null
+    sale: Prisma.$SalePayload<ExtArgs>
+    stock: Prisma.$StockLotPayload<ExtArgs> | null
+    tenant: Prisma.$TenantPayload<ExtArgs>
+    variant: Prisma.$ProductVariantPayload<ExtArgs>
     saleItemStatusHistories: Prisma.$SaleItemStatusHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2644,7 +2946,8 @@ export type $SaleItemPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tenantId: string
     saleId: string
     productId: string
-    stockId: string
+    stockId: string | null
+    inventoryItemId: string | null
     variantId: string
     priceAtMoment: number
     listPrice: number | null
@@ -3054,14 +3357,15 @@ readonly fields: SaleItemFieldRefs;
  */
 export interface Prisma__SaleItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  sale<T extends Prisma.SaleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleDefaultArgs<ExtArgs>>): Prisma.Prisma__SaleClient<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  stock<T extends Prisma.StockLotDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockLotDefaultArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  promotion<T extends Prisma.SaleItem$promotionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$promotionArgs<ExtArgs>>): Prisma.Prisma__PromotionClient<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  saleCharges<T extends Prisma.SaleItem$saleChargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$saleChargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reversalItems<T extends Prisma.SaleItem$reversalItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$reversalItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReversalItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  saleCharges<T extends Prisma.SaleItem$saleChargesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$saleChargesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryItem<T extends Prisma.SaleItem$inventoryItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$inventoryItemArgs<ExtArgs>>): Prisma.Prisma__InventoryItemClient<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  promotion<T extends Prisma.SaleItem$promotionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$promotionArgs<ExtArgs>>): Prisma.Prisma__PromotionClient<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sale<T extends Prisma.SaleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleDefaultArgs<ExtArgs>>): Prisma.Prisma__SaleClient<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  stock<T extends Prisma.SaleItem$stockArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$stockArgs<ExtArgs>>): Prisma.Prisma__StockLotClient<runtime.Types.Result.GetResult<Prisma.$StockLotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  variant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   saleItemStatusHistories<T extends Prisma.SaleItem$saleItemStatusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SaleItem$saleItemStatusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3097,6 +3401,7 @@ export interface SaleItemFieldRefs {
   readonly saleId: Prisma.FieldRef<"SaleItem", 'String'>
   readonly productId: Prisma.FieldRef<"SaleItem", 'String'>
   readonly stockId: Prisma.FieldRef<"SaleItem", 'String'>
+  readonly inventoryItemId: Prisma.FieldRef<"SaleItem", 'String'>
   readonly variantId: Prisma.FieldRef<"SaleItem", 'String'>
   readonly priceAtMoment: Prisma.FieldRef<"SaleItem", 'Float'>
   readonly listPrice: Prisma.FieldRef<"SaleItem", 'Float'>
@@ -3508,22 +3813,27 @@ export type SaleItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * SaleItem.promotion
+ * SaleItem.reversalItems
  */
-export type SaleItem$promotionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type SaleItem$reversalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Promotion
+   * Select specific fields to fetch from the ReversalItem
    */
-  select?: Prisma.PromotionSelect<ExtArgs> | null
+  select?: Prisma.ReversalItemSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Promotion
+   * Omit specific fields from the ReversalItem
    */
-  omit?: Prisma.PromotionOmit<ExtArgs> | null
+  omit?: Prisma.ReversalItemOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PromotionInclude<ExtArgs> | null
-  where?: Prisma.PromotionWhereInput
+  include?: Prisma.ReversalItemInclude<ExtArgs> | null
+  where?: Prisma.ReversalItemWhereInput
+  orderBy?: Prisma.ReversalItemOrderByWithRelationInput | Prisma.ReversalItemOrderByWithRelationInput[]
+  cursor?: Prisma.ReversalItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReversalItemScalarFieldEnum | Prisma.ReversalItemScalarFieldEnum[]
 }
 
 /**
@@ -3551,27 +3861,60 @@ export type SaleItem$saleChargesArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * SaleItem.reversalItems
+ * SaleItem.inventoryItem
  */
-export type SaleItem$reversalItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type SaleItem$inventoryItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ReversalItem
+   * Select specific fields to fetch from the InventoryItem
    */
-  select?: Prisma.ReversalItemSelect<ExtArgs> | null
+  select?: Prisma.InventoryItemSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ReversalItem
+   * Omit specific fields from the InventoryItem
    */
-  omit?: Prisma.ReversalItemOmit<ExtArgs> | null
+  omit?: Prisma.InventoryItemOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReversalItemInclude<ExtArgs> | null
-  where?: Prisma.ReversalItemWhereInput
-  orderBy?: Prisma.ReversalItemOrderByWithRelationInput | Prisma.ReversalItemOrderByWithRelationInput[]
-  cursor?: Prisma.ReversalItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ReversalItemScalarFieldEnum | Prisma.ReversalItemScalarFieldEnum[]
+  include?: Prisma.InventoryItemInclude<ExtArgs> | null
+  where?: Prisma.InventoryItemWhereInput
+}
+
+/**
+ * SaleItem.promotion
+ */
+export type SaleItem$promotionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Promotion
+   */
+  select?: Prisma.PromotionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Promotion
+   */
+  omit?: Prisma.PromotionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PromotionInclude<ExtArgs> | null
+  where?: Prisma.PromotionWhereInput
+}
+
+/**
+ * SaleItem.stock
+ */
+export type SaleItem$stockArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockLot
+   */
+  select?: Prisma.StockLotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockLot
+   */
+  omit?: Prisma.StockLotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockLotInclude<ExtArgs> | null
+  where?: Prisma.StockLotWhereInput
 }
 
 /**
