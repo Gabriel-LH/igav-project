@@ -7,9 +7,1706 @@ datasource db {
   provider = "postgresql"
 }
 
-// ------------------------------------------------------
-// ENUMS
-// ------------------------------------------------------
+model User {
+  id                    String                 @id
+  name                  String
+  email                 String                 @unique
+  emailVerified         Boolean                @default(false)
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  status                StatusUser             @default(active)
+  createdBy             String                 @default("system")
+  updatedBy             String                 @default("system")
+  deletedAt             DateTime?
+  deletedBy             String?
+  globalRole            GlobalRole             @default(USER)
+  accounts              Account[]
+  closedCashSessions    CashSession[]          @relation("SessionCloser")
+  openedCashSessions    CashSession[]          @relation("SessionOpener")
+  receivedGuarantees    Guarantee[]            @relation("GuaranteeReceiver")
+  returnedGuarantees    Guarantee[]            @relation("GuaranteeReturner")
+  invitationsAccepted   Invitation[]           @relation("InvitationsAccepted")
+  invitationsSent       Invitation[]           @relation("InvitationsSent")
+  operations            Operation[]
+  payments              Payment[]
+  sessions              Session[]
+  stockMovements        StockMovement[]
+  tenants               Tenant[]               @relation("TenantOwner")
+  userTenantMemberships UserTenantMembership[]
+  tenantPolicies        TenantPolicy[]
+  tenantPolicyHistories TenantPolicyHistory[]
+  userAttendances       UserAttendance[]
+  userBranchAccesses    UserBranchAccess[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Jwks {
+  id         String   @id
+  publicKey  String   @unique
+  privateKey String
+  createdAt  DateTime @default(now())
+
+  @@map("jwks")
+}
+
+model UserBranchAccess {
+  id        String       @id @default(uuid())
+  tenantId  String
+  branchId  String
+  userId    String
+  roleId    String
+  isPrimary Boolean      @default(false)
+  status    BranchStatus @default(active)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String
+  updatedBy String
+  branch    Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  role      Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+  @@index([tenantId])
+  @@index([branchId])
+  @@index([userId])
+  @@map("user_branch_access")
+}
+
+model UserAttendance {
+  id           String       @id @default(uuid())
+  tenantId     String
+  branchId     String
+  userId       String
+  shiftId      String
+  checkIn      DateTime
+  checkOut     DateTime?
+  notes        String?
+  createdBy    String
+  status       BranchStatus @default(active)
+  source       String
+  lateMinutes  Int
+  extraMinutes Int
+  workDate     DateTime
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  shift        Shift        @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_attendance")
+}
+
+model UserRoleBranchHistory {
+  id           String               @id @default(uuid())
+  tenantId     String
+  membershipId String
+  roleId       String
+  branchId     String
+  shiftId      String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String
+  updatedBy    String
+  branch       Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  membership   UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  role         Role                 @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  shift        Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("user_role_branch_history")
+}
+
+model UserShiftAssignment {
+  id           String               @id @default(uuid())
+  tenantId     String
+  membershipId String
+  shiftId      String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String
+  updatedBy    String
+  membership   UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  shift        Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("user_shift_assignment")
+}
+
+model AttributeType {
+  id              String             @id @default(uuid())
+  tenantId        String
+  name            String
+  code            String
+  inputType       AttributeInputType
+  isVariant       Boolean
+  affectsSku      Boolean
+  isActive        Boolean            @default(true)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  attributeValues AttributeValue[]
+
+  @@map("attribute_type")
+}
+
+model AttributeValue {
+  id              String        @id @default(uuid())
+  tenantId        String
+  code            String
+  value           String
+  attributeTypeId String
+  hexColor        String
+  isActive        Boolean
+  attributeType   AttributeType @relation(fields: [attributeTypeId], references: [id], onDelete: Cascade)
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("attribute_value")
+}
+
+model Branch {
+  id                      String                  @id @default(uuid())
+  tenantId                String
+  code                    String
+  name                    String
+  city                    String
+  address                 String
+  phone                   String?
+  email                   String?
+  timezone                String                  @default("America/Lima")
+  isPrimary               Boolean                 @default(false)
+  status                  BranchStatus            @default(active)
+  metadata                Json?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  createdBy               String?
+  updatedBy               String?
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branchConfigs           BranchConfig[]
+  cashSessions            CashSession[]
+  guarantees              Guarantee[]
+  inventoryItems          InventoryItem[]
+  inventoryMovements      InventoryMovement[]
+  invitations             Invitation[]
+  operations              Operation[]
+  payments                Payment[]
+  payrollRuns             PayrollRun[]
+  promotionBranches       PromotionBranch[]
+  rentals                 Rental[]
+  reservations            Reservation[]
+  sales                   Sale[]
+  stockLots               StockLot[]
+  userTenantMemberships   UserTenantMembership[]
+  destinationTransfers    Transfer[]              @relation("DestinationTransfers")
+  originTransfers         Transfer[]              @relation("OriginTransfers")
+  destinationRoutes       TransferRoute[]         @relation("DestinationRoutes")
+  originRoutes            TransferRoute[]         @relation("OriginRoutes")
+  userAttendances         UserAttendance[]
+  userBranchAccesses      UserBranchAccess[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+
+  @@map("branch")
+}
+
+model BranchConfig {
+  id                String   @id @default(uuid())
+  branchId          String
+  openHours         Json
+  daysInLaundry     Int
+  daysInMaintenance Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  branch            Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@map("branch_configs")
+}
+
+model Brand {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  models      Model[]
+
+  @@map("brand")
+}
+
+model CashSession {
+  id                    String            @id @default(uuid())
+  tenantId              String
+  branchId              String
+  openedById            String
+  closedById            String?
+  openedAt              DateTime
+  closedAt              DateTime?
+  sessionNumber         String
+  status                CashSessionStatus
+  openingAmount         Float             @default(0)
+  closingExpectedAmount Float?
+  closingCountedAmount  Float?
+  closingDifference     Float?
+  notes                 String?
+  branch                Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  closedBy              User?             @relation("SessionCloser", fields: [closedById], references: [id], onDelete: Restrict)
+  openedBy              User              @relation("SessionOpener", fields: [openedById], references: [id])
+  tenant                Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments              Payment[]
+
+  @@map("cash_session")
+}
+
+model Category {
+  id                String     @id @default(uuid())
+  tenantId          String
+  name              String
+  description       String?
+  parentId          String?
+  level             Int        @default(0)
+  path              String?
+  image             String?
+  color             String?
+  icon              String?
+  slug              String?    @unique
+  order             Int        @default(0)
+  isActive          Boolean    @default(true)
+  showInPos         Boolean    @default(true)
+  showInEcommerce   Boolean    @default(true)
+  productCount      Int        @default(0)
+  totalProductCount Int        @default(0)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  parent            Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Restrict)
+  children          Category[] @relation("CategoryToCategory")
+  tenant            Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products          Product[]
+
+  @@map("category")
+}
+
+model Client {
+  id                 String                @id @default(uuid())
+  tenantId           String
+  userName           String?
+  firstName          String
+  lastName           String
+  dni                String                @unique
+  email              String?
+  phone              String
+  address            String
+  city               String
+  province           String?
+  zipCode            String?
+  type               ClientType            @default(individual)
+  walletBalance      Float                 @default(0)
+  loyaltyPoints      Int                   @default(0)
+  referralCode       String                @unique
+  referredByClientId String?
+  status             ClientStatus          @default(active)
+  internalNotes      String?
+  metadata           Json?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  isDeleted          Boolean               @default(false)
+  deletedAt          DateTime?
+  deletedBy          String?
+  deleteReason       String?
+  referredBy         Client?               @relation("ClientReferrals", fields: [referredByClientId], references: [id])
+  referredClients    Client[]              @relation("ClientReferrals")
+  tenant             Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creditLedger       ClientCreditLedger[]
+  loyaltyLedger      ClientLoyaltyLedger[]
+  coupons            Coupon[]
+  operations         Operation[]
+  referralReceived   Referral?             @relation("ReceivedReferral")
+  referralsMade      Referral[]            @relation("MadeReferrals")
+  reservations       Reservation[]
+
+  @@map("client")
+}
+
+model ClientCreditLedger {
+  id          String                      @id @default(uuid())
+  tenantId    String
+  clientId    String
+  amount      Float                       @default(0)
+  direction   ClientCreditLedgerDirection @default(credit)
+  status      ClientCreditLedgerStatus    @default(confirmed)
+  reason      ClientCreditLedgerReason    @default(manual_adjustment)
+  operationId String?
+  createdAt   DateTime                    @default(now())
+  client      Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  operation   Operation?                  @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant      Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("client_credit_ledger")
+}
+
+model ClientLoyaltyLedger {
+  id          String                       @id @default(uuid())
+  tenantId    String
+  clientId    String
+  amount      Float                        @default(0)
+  direction   ClientLoyaltyLedgerDirection @default(credit)
+  status      ClientLoyaltyLedgerStatus    @default(confirmed)
+  type        ClientLoyaltyLedgerType      @default(manual_adjustment)
+  operationId String?
+  description String?
+  createdAt   DateTime                     @default(now())
+  createdBy   String?
+  expiresAt   DateTime?
+  client      Client                       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  operation   Operation?                   @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant      Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("client_loyalty_ledger")
+}
+
+model Coupon {
+  id                 String       @id @default(uuid())
+  tenantId           String
+  code               String       @unique
+  discountType       DiscountType
+  discountValue      Float
+  minPurchaseAmount  Float?
+  assignedToClientId String
+  origin             CouponOrigin
+  originReferenceId  String?
+  status             CouponStatus @default(available)
+  expiresAt          DateTime?
+  createdAt          DateTime     @default(now())
+  usedAt             DateTime?
+  assignedClient     Client       @relation(fields: [assignedToClientId], references: [id], onDelete: Cascade)
+  tenant             Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("coupon")
+}
+
+model Guarantee {
+  id                       String                   @id @default(uuid())
+  tenantId                 String
+  operationId              String
+  branchId                 String
+  type                     GuaranteeType
+  value                    String
+  description              String
+  status                   GuaranteeStatus
+  receivedById             String
+  returnedById             String?
+  createdAt                DateTime                 @default(now())
+  returnedAt               DateTime?
+  createdBy                String?
+  updatedAt                DateTime                 @updatedAt
+  updatedBy                String?
+  guaranteeStatusHistories GuaranteeStatusHistory[]
+  branch                   Branch                   @relation(fields: [branchId], references: [id])
+  operation                Operation                @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  receivedBy               User                     @relation("GuaranteeReceiver", fields: [receivedById], references: [id])
+  returnedBy               User?                    @relation("GuaranteeReturner", fields: [returnedById], references: [id], onDelete: Restrict)
+  tenant                   Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("guarantee")
+}
+
+model GuaranteeStatusHistory {
+  id          String          @id @default(uuid())
+  tenantId    String
+  guaranteeId String
+  fromStatus  GuaranteeStatus
+  toStatus    GuaranteeStatus
+  reason      String?
+  changedBy   String?
+  createdAt   DateTime        @default(now())
+  guarantee   Guarantee       @relation(fields: [guaranteeId], references: [id], onDelete: Cascade)
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Model {
+  id          String    @id @default(uuid())
+  tenantId    String
+  brandId     String
+  name        String
+  slug        String    @unique
+  description String?
+  year        Int?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@map("model")
+}
+
+model Module {
+  id             String          @id @default(uuid())
+  tenantId       String
+  name           String
+  slug           String          @unique
+  description    String?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  tenantModules  TenantModule[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  moduleFeatures ModuleFeature[]
+
+  @@map("module")
+}
+
+model ModuleFeature {
+  id         String   @id @default(uuid())
+  tenantId   String
+  moduleId   String
+  featureKey String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("module_feature")
+}
+
+model Operation {
+  id                   String                @id @default(uuid())
+  tenantId             String
+  referenceCode        String                @unique
+  branchId             String
+  sellerId             String
+  type                 OperationType
+  customerMode         CustomerMode          @default(registered)
+  customerId           String?
+  status               OperationStatus
+  paymentStatus        PaymentStatus
+  subtotal             Float?
+  discountAmount       Float?
+  totalAmount          Float
+  date                 DateTime
+  createdAt            DateTime              @default(now())
+  clientCreditLedgers  ClientCreditLedger[]
+  clientLoyaltyLedgers ClientLoyaltyLedger[]
+  guarantees           Guarantee[]
+  branch               Branch                @relation(fields: [branchId], references: [id])
+  customer             Client?               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  seller               User                  @relation(fields: [sellerId], references: [id])
+  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments             Payment[]
+  rentals              Rental[]
+  rentalCharges        RentalCharge[]
+  rentalItems          RentalItem[]
+  reservations         Reservation[]
+  reservationItems     ReservationItem[]
+  sales                Sale[]
+  saleCharges          SaleCharge[]
+  stockMovements       StockMovement[]
+
+  @@map("operation")
+}
+
+model PaymentMethod {
+  id           String            @id @default(uuid())
+  name         String
+  type         PaymentMethodType
+  active       Boolean           @default(true)
+  allowsChange Boolean           @default(false)
+  requiresPin  Boolean           @default(false)
+  icon         String?
+  payments     Payment[]
+
+  @@map("payment_method")
+}
+
+model Payment {
+  id                String           @id @default(uuid())
+  tenantId          String
+  operationId       String
+  branchId          String
+  receivedById      String
+  amount            Float
+  direction         PaymentDirection
+  paymentMethodId   String
+  cashSessionId     String?
+  createdAt         DateTime         @default(now())
+  currency          String           @default("PEN")
+  status            PaymentStatusLog @default(pending)
+  category          PaymentCategory
+  originalPaymentId String?
+  reference         String?
+  date              DateTime
+  notes             String?
+  branch            Branch           @relation(fields: [branchId], references: [id])
+  cashSession       CashSession?     @relation(fields: [cashSessionId], references: [id])
+  operation         Operation        @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  paymentMethod     PaymentMethod    @relation(fields: [paymentMethodId], references: [id])
+  receivedBy        User             @relation(fields: [receivedById], references: [id])
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payment")
+}
+
+model PayrollRun {
+  id           String           @id @default(uuid())
+  tenantId     String
+  branchId     String
+  periodStart  DateTime
+  periodEnd    DateTime
+  payDate      DateTime
+  status       PayrollRunStatus
+  createdAt    DateTime         @default(now())
+  payrollItems PayrollItem[]
+  branch       Branch           @relation(fields: [branchId], references: [id])
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_run")
+}
+
+model PayrollItem {
+  id             String               @id @default(uuid())
+  tenantId       String
+  payrollRunId   String
+  membershipId   String
+  grossTotal     Float
+  deductionTotal Float
+  netTotal       Float
+  status         PayrollItemStatus
+  membership     UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  payrollRun     PayrollRun           @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lineItems      PayrollLineItem[]
+
+  @@map("payroll_item")
+}
+
+model PayrollLineItem {
+  id            String              @id @default(uuid())
+  tenantId      String
+  payrollItemId String
+  type          PayrollItemType
+  category      PayrollItemCategory
+  name          String
+  amount        Float
+  quantity      Int?
+  rate          Float?
+  createdAt     DateTime            @default(now())
+  payrollItem   PayrollItem         @relation(fields: [payrollItemId], references: [id], onDelete: Cascade)
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_line_item")
+}
+
+model PayrollPolicy {
+  id                 String   @id @default(uuid())
+  tenantId           String
+  deductions         Json
+  overtimeMultiplier Float
+  createdAt          DateTime @default(now())
+  createdBy          String
+  updatedAt          DateTime @updatedAt
+  updatedBy          String
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_policy")
+}
+
+model PayrollConfig {
+  id                   String               @id @default(uuid())
+  tenantId             String
+  membershipId         String
+  salaryType           String
+  baseSalary           Float
+  hourlyRate           Float
+  paySchedule          PayScheduleType
+  applyOvertime        Boolean
+  applyHealthInsurance Boolean
+  applyPension         Boolean
+  applyTax             Boolean
+  otherDeductions      Float
+  createdAt            DateTime             @default(now())
+  createdBy            String
+  updatedAt            DateTime             @updatedAt
+  updatedBy            String
+  membership           UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  tenant               Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_config")
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  module      String
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  tenantId    String?
+  tenant      Tenant?          @relation(fields: [tenantId], references: [id])
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id                      String                  @id @default(cuid())
+  tenantId                String
+  name                    String                  @db.VarChar(50)
+  description             String?
+  isSystem                Boolean                 @default(false)
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  invitations             Invitation[]
+  permissions             RolePermission[]
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userTenantMemberships   UserTenantMembership[]
+  userBranchAccesses      UserBranchAccess[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+
+  @@unique([tenantId, name])
+  @@map("roles")
+}
+
+model RolePermission {
+  tenantId     String
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Plan {
+  id                  String               @id @default(cuid())
+  tenantId            String
+  name                String               @db.VarChar(100)
+  description         String?
+  currency            String               @default("PEN")
+  priceMonthly        Decimal              @db.Decimal(10, 2)
+  priceYearly         Decimal?             @db.Decimal(10, 2)
+  trialDays           Int?
+  isActive            Boolean              @default(true)
+  sortOrder           Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  features            PlanFeature[]
+  limits              PlanLimit[]
+  modules             PlanModule[]
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantSubscriptions TenantSubscription[]
+
+  @@map("plans")
+}
+
+model PlanFeature {
+  id         String         @id @default(cuid())
+  tenantId   String
+  planId     String
+  featureKey PlanFeatureKey
+  plan       Plan           @relation(fields: [planId], references: [id])
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureKey])
+  @@map("plan_features")
+}
+
+model PlanLimit {
+  id       String       @id @default(cuid())
+  tenantId String
+  planId   String
+  limitKey PlanLimitKey
+  limit    Int
+  plan     Plan         @relation(fields: [planId], references: [id])
+  tenant   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, limitKey])
+  @@map("plan_limits")
+}
+
+model PlanModule {
+  id        String        @id @default(cuid())
+  tenantId  String
+  planId    String
+  moduleKey PlanModuleKey
+  plan      Plan          @relation(fields: [planId], references: [id])
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, moduleKey])
+  @@map("plan_modules")
+}
+
+model Product {
+  id                 String              @id @default(uuid())
+  tenantId           String
+  name               String
+  baseSku            String              @unique
+  modelId            String?
+  categoryId         String?
+  description        String?
+  is_serial          Boolean
+  can_rent           Boolean
+  can_sell           Boolean
+  createdAt          DateTime            @default(now())
+  createdBy          String?
+  updatedAt          DateTime            @updatedAt
+  updatedBy          String?
+  deletedAt          DateTime?
+  deletedBy          String?
+  deleteReason       String?
+  isDeleted          Boolean             @default(false)
+  image              String[]            @default([])
+  inventoryItems     InventoryItem[]
+  inventoryMovements InventoryMovement[]
+  category           Category?           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  model              Model?              @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variants           ProductVariant[]
+  rentalItems        RentalItem[]
+  reservationItems   ReservationItem[]
+  saleItems          SaleItem[]
+  stockLots          StockLot[]
+  transferItems      TransferItem[]
+
+  @@map("product")
+}
+
+model ProductVariant {
+  id                 String              @id @default(uuid())
+  tenantId           String
+  productId          String
+  variantCode        String              @unique
+  barcode            String?
+  attributes         Json                @default("{}")
+  priceSell          Float?
+  priceRent          Float?
+  rentUnit           RentUnit?
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  purchasePrice      Float?              @default(0)
+  image              String[]            @default([])
+  variantSignature   String              @default("")
+  inventoryItems     InventoryItem[]
+  inventoryMovements InventoryMovement[]
+  priceHistories     PriceHistory[]
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rentalItems        RentalItem[]
+  reservationItems   ReservationItem[]
+  saleItems          SaleItem[]
+  stockLots          StockLot[]
+  transferItems      TransferItem[]
+
+  @@map("product_variant")
+}
+
+model InventoryItem {
+  id                           String                       @id @default(uuid())
+  tenantId                     String
+  serialCode                   String                       @unique
+  variantId                    String
+  productId                    String
+  branchId                     String
+  isForRent                    Boolean
+  isForSale                    Boolean
+  usageCount                   Int                          @default(0)
+  lastMaintenance              DateTime?
+  condition                    InventoryCondition
+  status                       InventoryStatus
+  damageNotes                  String?
+  createdAt                    DateTime                     @default(now())
+  updatedAt                    DateTime                     @updatedAt
+  branch                       Branch                       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product                      Product                      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant                       Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                      ProductVariant               @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  inventoryItemStatusHistories InventoryItemStatusHistory[]
+  priceHistories               PriceHistory[]
+  rentalItems                  RentalItem[]
+
+  @@map("inventory_item")
+}
+
+model InventoryItemStatusHistory {
+  id              String          @id @default(uuid())
+  tenantId        String
+  inventoryItemId String
+  fromStatus      InventoryStatus
+  toStatus        InventoryStatus
+  reason          String?
+  operationId     String?
+  changedBy       String?
+  createdAt       DateTime        @default(now())
+  inventoryItem   InventoryItem   @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_item_status_history")
+}
+
+model PriceHistory {
+  id              String             @id @default(uuid())
+  tenantId        String
+  variantId       String
+  stockLotId      String?
+  inventoryItemId String?
+  oldPrice        Float
+  newPrice        Float
+  reason          PriceHistoryReason
+  createdAt       DateTime           @default(now())
+  userId          String
+  inventoryItem   InventoryItem?     @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  stockLot        StockLot?          @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant         ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@map("price_history")
+}
+
+model StockLot {
+  id               String            @id @default(uuid())
+  tenantId         String
+  productId        String
+  variantId        String
+  branchId         String
+  quantity         Int               @default(0)
+  barcode          String?
+  expirationDate   DateTime?
+  lotNumber        String?
+  isForRent        Boolean
+  isForSale        Boolean
+  status           StockLotStatus    @default(disponible)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  condition        StockLotCondition @default(Nuevo)
+  priceHistories   PriceHistory[]
+  rentalItems      RentalItem[]
+  reservationItems ReservationItem[]
+  saleItems        SaleItem[]
+  branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant          ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  stockMovements   StockMovement[]
+
+  @@map("stock_lot")
+}
+
+model StockMovement {
+  id            String            @id @default(uuid())
+  tenantId      String
+  stockLotId    String
+  type          StockMovementType
+  reason        String?
+  operationId   String?
+  changedBy     String?
+  createdAt     DateTime          @default(now())
+  quantity      Int
+  changedByUser User?             @relation(fields: [changedBy], references: [id], onDelete: Cascade)
+  operation     Operation?        @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  stockLot      StockLot          @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movement")
+}
+
+model Promotion {
+  id                   String            @id @default(cuid())
+  tenantId             String?
+  name                 String
+  type                 PromotionType
+  scope                PromotionScope
+  value                Float?
+  appliesTo            AppliesToType[]
+  bundleConfig         Json?
+  isExclusive          Boolean           @default(true)
+  code                 String?           @unique
+  targetIds            String[]
+  startDate            DateTime
+  endDate              DateTime?
+  isActive             Boolean           @default(true)
+  branchIds            String[]
+  minPurchaseAmount    Float?
+  maxUses              Int?
+  usedCount            Int               @default(0)
+  combinable           Boolean           @default(true)
+  requiresCode         Boolean           @default(false)
+  singleUsePerCustomer Boolean           @default(false)
+  usageType            UsageType         @default(automatic)
+  createdAt            DateTime          @default(now())
+  createdBy            String?
+  updatedAt            DateTime          @updatedAt
+  updatedBy            String?
+  branchRelations      PromotionBranch[]
+  usageRecords         PromotionUsage[]
+  tenant               Tenant?           @relation(fields: [tenantId], references: [id])
+  saleItems            SaleItem[]
+
+  @@map("promotions")
+}
+
+model PromotionBranch {
+  promotionId String
+  branchId    String
+  branch      Branch    @relation(fields: [branchId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@id([promotionId, branchId])
+  @@map("promotion_branches")
+}
+
+model PromotionUsage {
+  id          String    @id @default(cuid())
+  tenantId    String
+  promotionId String
+  customerId  String?
+  orderId     String?
+  usedAt      DateTime  @default(now())
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("promotion_usages")
+}
+
+model Referral {
+  id               String           @id @default(uuid())
+  tenantId         String
+  referrerClientId String
+  referredClientId String           @unique
+  status           ReferralStatus
+  createdAt        DateTime         @default(now())
+  rewardedAt       DateTime?
+  referredClient   Client           @relation("ReceivedReferral", fields: [referredClientId], references: [id])
+  referrer         Client           @relation("MadeReferrals", fields: [referrerClientId], references: [id])
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  referralRewards  ReferralReward[]
+
+  @@map("referral")
+}
+
+model ReferralProgram {
+  id               String                   @id @default(uuid())
+  tenantId         String
+  isActive         Boolean                  @default(true)
+  rewardType       ReferralRewardType
+  rewardValue      Float
+  triggerCondition ReferralTriggerCondition
+  expiresInDays    Int?
+  createdAt        DateTime                 @default(now())
+  tenant           Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("referral_program")
+}
+
+model ReferralReward {
+  id         String               @id @default(uuid())
+  tenantId   String
+  referralId String
+  rewardType ReferralRewardType
+  amount     Float
+  status     ReferralRewardStatus
+  createdAt  DateTime             @default(now())
+  referral   Referral             @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("referral_reward")
+}
+
+model Rental {
+  id                    String                @id @default(uuid())
+  tenantId              String
+  operationId           String
+  reservationId         String?
+  customerId            String
+  branchId              String
+  outDate               DateTime
+  expectedReturnDate    DateTime
+  actualReturnDate      DateTime?
+  cancelDate            DateTime?
+  status                RentalStatus
+  guaranteeId           String?
+  notes                 String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  updatedBy             String?
+  deletedAt             DateTime?
+  deletedBy             String?
+  deleteReason          String?
+  isDeleted             Boolean               @default(false)
+  branch                Branch                @relation(fields: [branchId], references: [id])
+  operation             Operation             @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  charges               RentalCharge[]
+  items                 RentalItem[]
+  rentalStatusHistories RentalStatusHistory[]
+
+  @@map("rental")
+}
+
+model RentalItem {
+  id                        String                    @id @default(uuid())
+  tenantId                  String
+  rentalId                  String
+  operationId               String
+  productId                 String
+  variantId                 String
+  priceAtMoment             Float
+  quantity                  Int                       @default(1)
+  conditionOut              String
+  conditionIn               String?
+  isDamaged                 Boolean                   @default(false)
+  damageNotes               String?
+  discountAmount            Float                     @default(0)
+  discountReason            String?
+  bundleId                  String?
+  promotionId               String?
+  productName               String?
+  variantCode               String?
+  serialCode                String?
+  isSerial                  Boolean                   @default(false)
+  notes                     String?
+  listPrice                 Float
+  itemStatus                RentalItemStatus
+  inventoryItemId           String?
+  stockLotId                String?
+  rentalCharges             RentalCharge[]
+  inventoryItem             InventoryItem?            @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  operation                 Operation                 @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  product                   Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rental                    Rental                    @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  stockLot                  StockLot?                 @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant                    Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                   ProductVariant            @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  rentalItemStatusHistories RentalItemStatusHistory[]
+
+  @@map("rental_item")
+}
+
+model RentalCharge {
+  id                     String             @id @default(uuid())
+  tenantId               String
+  rentalId               String
+  rentalItemId           String
+  operationId            String
+  type                   RentalChargeType
+  description            String
+  amount                 Float
+  guaranteeCoveredAmount Float
+  remainingAmount        Float
+  status                 RentalChargeStatus
+  createdAt              DateTime           @default(now())
+  createdBy              String?
+  updatedAt              DateTime           @updatedAt
+  updatedBy              String?
+  operation              Operation          @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  rental                 Rental             @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  rentalItem             RentalItem         @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
+  tenant                 Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_charge")
+}
+
+model RentalStatusHistory {
+  id         String       @id @default(uuid())
+  tenantId   String
+  rentalId   String
+  fromStatus RentalStatus
+  toStatus   RentalStatus
+  reason     String?
+  changedBy  String?
+  createdAt  DateTime     @default(now())
+  rental     Rental       @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_status_history")
+}
+
+model RentalItemStatusHistory {
+  id           String           @id @default(uuid())
+  tenantId     String
+  rentalItemId String
+  fromStatus   RentalItemStatus
+  toStatus     RentalItemStatus
+  reason       String?
+  changedBy    String?
+  createdAt    DateTime         @default(now())
+  rentalItem   RentalItem       @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_item_status_history")
+}
+
+model Reservation {
+  id            String            @id @default(uuid())
+  tenantId      String
+  operationId   String
+  customerId    String
+  branchId      String
+  startDate     DateTime
+  endDate       DateTime
+  hour          String
+  createdAt     DateTime          @default(now())
+  createdBy     String?
+  updatedAt     DateTime          @updatedAt
+  updatedBy     String?
+  deletedAt     DateTime?
+  status        ReservationStatus
+  operationType OperationType
+  branch        Branch            @relation(fields: [branchId], references: [id])
+  customer      Client            @relation(fields: [customerId], references: [id])
+  operation     Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items         ReservationItem[]
+
+  @@map("reservation")
+}
+
+model ReservationItem {
+  id                             String                         @id @default(uuid())
+  tenantId                       String
+  operationId                    String?
+  productId                      String
+  stockId                        String?
+  reservationId                  String
+  variantId                      String
+  quantity                       Int                            @default(1)
+  priceAtMoment                  Float
+  listPrice                      Float?
+  discountAmount                 Float                          @default(0)
+  discountReason                 String?
+  bundleId                       String?
+  promotionId                    String?
+  notes                          String?
+  itemStatus                     ReservationStatus
+  operation                      Operation?                     @relation(fields: [operationId], references: [id])
+  product                        Product                        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reservation                    Reservation                    @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  stock                          StockLot?                      @relation(fields: [stockId], references: [id])
+  tenant                         Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                        ProductVariant                 @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  reservationItemStatusHistories ReservationItemStatusHistory[]
+
+  @@map("reservation_item")
+}
+
+model ReservationItemStatusHistory {
+  id                String            @id @default(uuid())
+  tenantId          String
+  reservationItemId String
+  fromStatus        ReservationStatus
+  toStatus          ReservationStatus
+  reason            String?
+  changedBy         String?
+  createdAt         DateTime          @default(now())
+  reservationItem   ReservationItem   @relation(fields: [reservationItemId], references: [id], onDelete: Cascade)
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("reservation_item_status_history")
+}
+
+model Sale {
+  id             String         @id @default(uuid())
+  tenantId       String
+  operationId    String
+  customerMode   CustomerMode   @default(registered)
+  customerId     String?        @default("")
+  branchId       String
+  sellerId       String
+  reservationId  String?
+  totalAmount    Float
+  saleDate       DateTime
+  subTotal       Float?
+  totalDiscount  Float          @default(0)
+  status         SaleStatus
+  notes          String?
+  outDate        DateTime?
+  realOutDate    DateTime?
+  canceledAt     DateTime?
+  returnedAt     DateTime?
+  amountRefunded Float          @default(0)
+  createdAt      DateTime       @default(now())
+  createdBy      String?
+  updatedAt      DateTime       @updatedAt
+  updatedBy      String?
+  deletedAt      DateTime?
+  branch         Branch         @relation(fields: [branchId], references: [id])
+  operation      Operation      @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  charges        SaleCharge[]
+  items          SaleItem[]
+  saleReversals  SaleReversal[]
+
+  @@map("sale")
+}
+
+model SaleItem {
+  id                      String                  @id @default(uuid())
+  tenantId                String
+  saleId                  String
+  productId               String
+  stockId                 String
+  variantId               String
+  priceAtMoment           Float
+  listPrice               Float?
+  quantity                Int                     @default(1)
+  discountAmount          Float                   @default(0)
+  discountReason          String?
+  bundleId                String?
+  promotionId             String?
+  productName             String?
+  variantCode             String?
+  serialCode              String?
+  isSerial                Boolean                 @default(false)
+  isReturned              Boolean                 @default(false)
+  returnedAt              DateTime?
+  returnCondition         String?
+  reversalItems           ReversalItem[]
+  saleCharges             SaleCharge[]
+  product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  promotion               Promotion?              @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  sale                    Sale                    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  stock                   StockLot                @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                 ProductVariant          @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  saleItemStatusHistories SaleItemStatusHistory[]
+
+  @@map("sale_item")
+}
+
+model SaleCharge {
+  id          String       @id @default(uuid())
+  tenantId    String
+  saleId      String
+  saleItemId  String
+  operationId String
+  type        ChargeType
+  description String
+  amount      Float
+  reason      String?
+  status      ChargeStatus
+  createdAt   DateTime     @default(now())
+  createdBy   String?
+  operation   Operation    @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  sale        Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  saleItem    SaleItem     @relation(fields: [saleItemId], references: [id], onDelete: Cascade)
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_charge")
+}
+
+model SaleReversal {
+  id            String         @id @default(cuid())
+  tenantId      String
+  saleId        String
+  type          ReversalType
+  reason        String
+  totalRefunded Decimal        @db.Decimal(10, 2)
+  createdAt     DateTime       @default(now())
+  createdBy     String?
+  items         ReversalItem[]
+  sale          Sale           @relation(fields: [saleId], references: [id])
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_reversals")
+}
+
+model ReversalItem {
+  id             String         @id @default(cuid())
+  tenantId       String
+  reversalId     String
+  saleItemId     String
+  condition      ItemCondition?
+  restockingFee  Decimal        @default(0) @db.Decimal(10, 2)
+  refundedAmount Decimal        @db.Decimal(10, 2)
+  reversal       SaleReversal   @relation(fields: [reversalId], references: [id])
+  saleItem       SaleItem       @relation(fields: [saleItemId], references: [id])
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([reversalId, saleItemId])
+  @@map("reversal_items")
+}
+
+model SaleItemStatusHistory {
+  id         String         @id @default(cuid())
+  tenantId   String
+  saleItemId String
+  fromStatus SaleItemStatus
+  toStatus   SaleItemStatus
+  reason     String?
+  changedBy  String?
+  createdAt  DateTime       @default(now())
+  createdBy  String?
+  saleItem   SaleItem       @relation(fields: [saleItemId], references: [id])
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_item_status_history")
+}
+
+model Shift {
+  id                      String                  @id @default(cuid())
+  tenantId                String
+  name                    String
+  startTime               DateTime
+  endTime                 DateTime?
+  toleranceMinutes        Int
+  workingDays             Int[]
+  status                  ShiftStatus
+  createdAt               DateTime                @default(now())
+  createdBy               String?
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userAttendances         UserAttendance[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+  userShiftAssignments    UserShiftAssignment[]
+
+  @@map("shift")
+}
+
+model Tenant {
+  id                             String                         @id @default(uuid())
+  name                           String
+  slug                           String                         @unique
+  ownerId                        String
+  status                         TenantStatus                   @default(active)
+  tenantConfig                   Json?
+  currentSubscriptionId          String?
+  metadata                       Json?
+  createdAt                      DateTime                       @default(now())
+  updatedAt                      DateTime                       @updatedAt
+  guaranteeStatusHistories       GuaranteeStatusHistory[]
+  tenantModules                  TenantModule[]
+  attributeTypes                 AttributeType[]
+  attributeValues                AttributeValue[]
+  branches                       Branch[]
+  brands                         Brand[]
+  cashSessions                   CashSession[]
+  categories                     Category[]
+  clients                        Client[]
+  clientCreditLedgers            ClientCreditLedger[]
+  clientLoyaltyLedgers           ClientLoyaltyLedger[]
+  coupons                        Coupon[]
+  guarantees                     Guarantee[]
+  inventoryItems                 InventoryItem[]
+  inventoryItemStatusHistories   InventoryItemStatusHistory[]
+  inventoryMovements             InventoryMovement[]
+  invitations                    Invitation[]
+  models                         Model[]
+  modules                        Module[]
+  moduleFeatures                 ModuleFeature[]
+  operations                     Operation[]
+  payments                       Payment[]
+  payrollConfigs                 PayrollConfig[]
+  payrollItems                   PayrollItem[]
+  payrollLineItems               PayrollLineItem[]
+  payrollPolicies                PayrollPolicy[]
+  payrollRuns                    PayrollRun[]
+  permissions                    Permission[]
+  planFeatures                   PlanFeature[]
+  planLimits                     PlanLimit[]
+  planModules                    PlanModule[]
+  plans                          Plan[]
+  priceHistories                 PriceHistory[]
+  products                       Product[]
+  productVariants                ProductVariant[]
+  promotionUsages                PromotionUsage[]
+  promotions                     Promotion[]
+  referrals                      Referral[]
+  referralPrograms               ReferralProgram[]
+  referralRewards                ReferralReward[]
+  rentals                        Rental[]
+  rentalCharges                  RentalCharge[]
+  rentalItems                    RentalItem[]
+  rentalItemStatusHistories      RentalItemStatusHistory[]
+  rentalStatusHistories          RentalStatusHistory[]
+  reservations                   Reservation[]
+  reservationItems               ReservationItem[]
+  reservationItemStatusHistories ReservationItemStatusHistory[]
+  reversalItems                  ReversalItem[]
+  rolePermissions                RolePermission[]
+  roles                          Role[]
+  sales                          Sale[]
+  saleCharges                    SaleCharge[]
+  saleItems                      SaleItem[]
+  saleItemStatusHistories        SaleItemStatusHistory[]
+  saleReversals                  SaleReversal[]
+  shifts                         Shift[]
+  stockLots                      StockLot[]
+  stockMovements                 StockMovement[]
+  owner                          User                           @relation("TenantOwner", fields: [ownerId], references: [id])
+  tenantConfigs                  TenantConfig?
+  userTenantMemberships          UserTenantMembership[]
+  tenantPolicies                 TenantPolicy[]
+  tenantSubscriptions            TenantSubscription[]
+  transfers                      Transfer[]
+  transferRoutes                 TransferRoute[]
+  userAttendances                UserAttendance[]
+  userBranchAccesses             UserBranchAccess[]
+  userRoleBranchHistories        UserRoleBranchHistory[]
+  userShiftAssignments           UserShiftAssignment[]
+
+  @@map("tenant")
+}
+
+model TenantConfig {
+  tenantId  String   @id
+  config    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_configs")
+}
+
+model TenantSubscription {
+  id                     String                   @id @default(uuid())
+  tenantId               String
+  planId                 String
+  status                 TenantSubsCriptionStatus
+  billingCycle           BillingCycle             @default(monthly)
+  startedAt              DateTime
+  trialEndsAt            DateTime?
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  provider               Provider
+  externalSubscriptionId String?
+  createdAt              DateTime                 @default(now())
+  createdBy              String?
+  plan                   Plan                     @relation(fields: [planId], references: [id])
+  tenant                 Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_subscriptions")
+}
+
+model TenantModule {
+  id        String             @id @default(uuid())
+  tenantId  String
+  moduleId  String
+  status    TenantModuleStatus
+  staterdAt DateTime
+  module    Module             @relation(fields: [moduleId], references: [id])
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantPolicy {
+  id                    String                @id @default(cuid())
+  tenantId              String
+  version               Int
+  isActive              Boolean               @default(true)
+  createdAt             DateTime              @default(now())
+  updatedBy             String
+  changeReason          String?
+  sales                 Json
+  rentals               Json
+  reservations          Json
+  inventory             Json
+  financial             Json
+  security              Json
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  updatedByUser         User                  @relation(fields: [updatedBy], references: [id])
+  tenantPolicyHistories TenantPolicyHistory[]
+
+  @@unique([tenantId, version])
+  @@map("tenant_policies")
+}
+
+model TenantPolicyHistory {
+  id            String       @id @default(uuid())
+  policyId      String
+  version       Int
+  sales         Json
+  rentals       Json
+  reservations  Json
+  inventory     Json
+  financial     Json
+  security      Json
+  changedAt     DateTime     @default(now())
+  changedBy     String
+  changeReason  String?
+  changedByUser User         @relation(fields: [changedBy], references: [id])
+  policy        TenantPolicy @relation(fields: [policyId], references: [id])
+
+  @@unique([policyId, version])
+  @@map("tenant_policy_history")
+}
+
+model Invitation {
+  id               String           @id @default(uuid())
+  tenantId         String
+  branchId         String
+  roleId           String
+  email            String
+  token            String           @unique @default(uuid())
+  status           InvitationStatus @default(pending)
+  invitedById      String
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  acceptedBy       User?            @relation("InvitationsAccepted", fields: [acceptedByUserId], references: [id])
+  branch           Branch           @relation(fields: [branchId], references: [id])
+  invitedBy        User             @relation("InvitationsSent", fields: [invitedById], references: [id])
+  role             Role             @relation(fields: [roleId], references: [id])
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([token])
+  @@index([email])
+  @@map("invitation")
+}
+
+model UserTenantMembership {
+  id                      String                  @id @default(uuid())
+  userId                  String
+  tenantId                String
+  roleId                  String
+  defaultBranchId         String
+  status                  TenantMemberShipStatus
+  invitedBy               String
+  createdAt               DateTime
+  updatedAt               DateTime
+  payrollConfigs          PayrollConfig[]
+  payrollItems            PayrollItem[]
+  branch                  Branch                  @relation(fields: [defaultBranchId], references: [id])
+  role                    Role                    @relation(fields: [roleId], references: [id])
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user                    User                    @relation(fields: [userId], references: [id])
+  userRoleBranchHistories UserRoleBranchHistory[]
+  userShiftAssignments    UserShiftAssignment[]
+
+  @@map("tenant_member_ship")
+}
+
+model Transfer {
+  id                  String         @id @default(uuid())
+  tenantId            String
+  originBranchId      String
+  destinationBranchId String
+  status              TransferStatus
+  sentAt              DateTime
+  receivedAt          DateTime
+  notes               String
+  createdAt           DateTime
+  createdBy           String
+  transferItems       TransferItem[]
+  branchDestination   Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
+  branchOrigin        Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
+  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("transfer")
+}
+
+model TransferItem {
+  id               String         @id @default(uuid())
+  transferId       String
+  productId        String
+  variantId        String
+  quantitySent     Int
+  quantityReceived Int?
+  createdAt        DateTime
+  product          Product        @relation(fields: [productId], references: [id])
+  transfer         Transfer       @relation(fields: [transferId], references: [id])
+  variant          ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@map("tranfer_item")
+}
+
+model TransferRoute {
+  id                  String              @id @default(uuid())
+  tenantId            String
+  originBranchId      String
+  destinationBranchId String
+  estimatedTimeHours  Int
+  status              TransferRouteStatus
+  createdAt           DateTime
+  destinationBranch   Branch              @relation("DestinationRoutes", fields: [destinationBranchId], references: [id])
+  originBranch        Branch              @relation("OriginRoutes", fields: [originBranchId], references: [id])
+  tenant              Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("transfer_route")
+}
+
+model InventoryMovement {
+  id            String                         @id @default(uuid())
+  tenantId      String
+  branchId      String
+  productId     String
+  variantId     String?
+  type          InventoryMovementType
+  referenceType InventoryMovementReferenceType
+  referenceId   String
+  quantity      Int
+  unitCost      Float
+  createdBy     DateTime
+  createdAt     DateTime
+  branch        Branch                         @relation(fields: [branchId], references: [id])
+  product       Product                        @relation(fields: [productId], references: [id])
+  tenant        Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant       ProductVariant?                @relation(fields: [variantId], references: [id])
+
+  @@map("inventory_movement")
+}
 
 enum TenantStatus {
   active
@@ -81,7 +1778,6 @@ enum StockLotCondition {
 }
 
 enum InventoryStatus {
-  en_transito
   disponible
   en_mantenimiento
   alquilado
@@ -91,23 +1787,24 @@ enum InventoryStatus {
   en_lavanderia
   retirado
   vendido
+  en_transito
 }
 
 enum StockLotStatus {
-  en_transito
   disponible
   bajo_pedido
   discontinuado
+  en_transito
   alquilado
   vendido
 }
 
 enum RentUnit {
-  hora
   dia
+  evento
+  hora
   semana
   mes
-  evento
 }
 
 enum StatusUser {
@@ -122,209 +1819,6 @@ enum GlobalRole {
   USER
 }
 
-// ------------------------------------------------------
-// BETTER-AUTH MODELS (Do not modify core fields)
-// ------------------------------------------------------
-
-model User {
-  id            String      @id
-  name          String
-  email         String      @unique
-  emailVerified Boolean     @default(false)
-  image         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  status        StatusUser  @default(active)
-  createdBy     String      @default("system")
-  updatedBy     String      @default("system")
-  deletedAt     DateTime?
-  deletedBy     String?
-  sessions      Session[]
-  accounts      Account[]
-  globalRole    GlobalRole  @default(USER)
-  // Custom IGAV relations
-  tenants       Tenant[]    @relation("TenantOwner")
-  operations    Operation[]
-
-  openedCashSessions CashSession[] @relation("SessionOpener")
-  closedCashSessions CashSession[] @relation("SessionCloser")
-
-  receivedGuarantees    Guarantee[]            @relation("GuaranteeReceiver")
-  returnedGuarantees    Guarantee[]            @relation("GuaranteeReturner")
-  userBranchAccesses    UserBranchAccess[]
-  userAttendances       UserAttendance[]
-  payments              Payment[]
-  stockMovements        StockMovement[]
-  tenantPolicies        TenantPolicy[]
-  tenantPolicyHistories TenantPolicyHistory[]
-  userTenantMemberships UserTenantMembership[]
-  invitationsSent       Invitation[]           @relation("InvitationsSent")
-  invitationsAccepted   Invitation[]           @relation("InvitationsAccepted")
-
-  @@map("user")
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("session")
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?   @db.Text
-  refreshToken          String?   @db.Text
-  idToken               String?   @db.Text
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@index([userId])
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([identifier])
-  @@map("verification")
-}
-
-model Jwks {
-  id         String   @id
-  publicKey  String   @unique
-  privateKey String
-  createdAt  DateTime @default(now())
-
-  @@map("jwks")
-}
-
-// ------------------------------------------------------
-// IGAV DOMAIN MODELS
-// ------------------------------------------------------
-
-//-------------------------------------------------------
-// MORE USER MODELS
-//-------------------------------------------------------
-
-model UserBranchAccess {
-  id        String       @id @default(uuid())
-  tenantId  String
-  branchId  String
-  userId    String
-  roleId    String
-  isPrimary Boolean      @default(false)
-  status    BranchStatus @default(active)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  createdBy String
-  updatedBy String
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, branchId])
-  @@index([tenantId])
-  @@index([branchId])
-  @@index([userId])
-  @@map("user_branch_access")
-}
-
-model UserAttendance {
-  id           String       @id @default(uuid())
-  tenantId     String
-  branchId     String
-  userId       String
-  shiftId      String
-  checkIn      DateTime
-  checkOut     DateTime?
-  notes        String?
-  createdBy    String
-  status       BranchStatus @default(active)
-  source       String
-  lateMinutes  Int
-  extraMinutes Int
-  workDate     DateTime
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shift  Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-
-  @@map("user_attendance")
-}
-
-model UserRoleBranchHistory {
-  id           String   @id @default(uuid())
-  tenantId     String
-  membershipId String
-  roleId       String
-  branchId     String
-  shiftId      String
-  startDate    DateTime
-  endDate      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    String
-  updatedBy    String
-
-  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  membership UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  role       Role                 @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  branch     Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  shift      Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-
-  @@map("user_role_branch_history")
-}
-
-model UserShiftAssignment {
-  id           String   @id @default(uuid())
-  tenantId     String
-  membershipId String
-  shiftId      String
-  startDate    DateTime
-  endDate      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    String
-  updatedBy    String
-
-  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  membership UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  shift      Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-
-  @@map("user_shift_assignment")
-}
-
-// ------------------------------------------------------
-// ATTRIBUTES
-// ------------------------------------------------------
-
 enum AttributeInputType {
   text
   number
@@ -334,245 +1828,10 @@ enum AttributeInputType {
   date
 }
 
-model AttributeType {
-  id         String             @id @default(uuid())
-  tenantId   String
-  name       String
-  code       String
-  inputType  AttributeInputType
-  isVariant  Boolean
-  affectsSku Boolean
-  isActive   Boolean            @default(true)
-
-  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  attributeValues AttributeValue[]
-
-  @@map("attribute_type")
-}
-
-model AttributeValue {
-  id              String  @id @default(uuid())
-  tenantId        String
-  code            String
-  value           String
-  attributeTypeId String
-  hexColor        String
-  isActive        Boolean
-
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  attributeType AttributeType @relation(fields: [attributeTypeId], references: [id], onDelete: Cascade)
-
-  @@map("attribute_value")
-}
-
-// ------------------------------------------------------
-// BRANCH
-// ------------------------------------------------------
-
-model Branch {
-  id        String       @id @default(uuid())
-  tenantId  String
-  code      String
-  name      String
-  city      String
-  address   String
-  phone     String?
-  email     String?
-  timezone  String       @default("America/Lima")
-  isPrimary Boolean      @default(false)
-  status    BranchStatus @default(active)
-  metadata  Json?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  createdBy String?
-  updatedBy String?
-
-  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  inventoryItems InventoryItem[]
-  stockLots      StockLot[]
-  operations     Operation[]
-  sales          Sale[]
-  rentals        Rental[]
-  cashSessions   CashSession[]
-  branchConfigs  BranchConfig[]
-
-  originTransfers         Transfer[]              @relation("OriginTransfers")
-  destinationTransfers    Transfer[]              @relation("DestinationTransfers")
-  originRoutes            TransferRoute[]         @relation("OriginRoutes")
-  destinationRoutes       TransferRoute[]         @relation("DestinationRoutes")
-  userBranchAccesses      UserBranchAccess[]
-  userAttendances         UserAttendance[]
-  userRoleBranchHistories UserRoleBranchHistory[]
-  guarantees              Guarantee[]
-  payments                Payment[]
-  payrollRuns             PayrollRun[]
-  promotionBranches       PromotionBranch[]
-  reservations            Reservation[]
-  userTenantMemberships   UserTenantMembership[]
-  inventoryMovements      InventoryMovement[]
-  invitations             Invitation[]
-
-  @@map("branch")
-}
-
-model BranchConfig {
-  id                String   @id @default(uuid())
-  branchId          String
-  openHours         Json // Aquí se guardará { open: "09:00", close: "18:00" }
-  daysInLaundry     Int
-  daysInMaintenance Int
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  @@map("branch_configs")
-}
-
-//----------------------------------------------------
-// BRAND
-//----------------------------------------------------
-
-model Brand {
-  id          String   @id @default(uuid())
-  tenantId    String
-  name        String
-  slug        String   @unique
-  description String?
-  logo        String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  models Model[]
-
-  @@map("brand")
-}
-
-// ------------------------------------------------------
-// CASH MANAGEMENT
-// ------------------------------------------------------
-
 enum CashSessionStatus {
   open
   closed
 }
-
-model CashSession {
-  id                    String            @id @default(uuid())
-  tenantId              String
-  branchId              String
-  openedById            String
-  closedById            String?
-  openedAt              DateTime
-  closedAt              DateTime?
-  sessionNumber         String
-  status                CashSessionStatus
-  openingAmount         Float             @default(0)
-  closingExpectedAmount Float?
-  closingCountedAmount  Float?
-  closingDifference     Float?
-  notes                 String?
-
-  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  openedBy User   @relation("SessionOpener", fields: [openedById], references: [id], onDelete: Restrict)
-  closedBy User?  @relation("SessionCloser", fields: [closedById], references: [id], onDelete: Restrict)
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  payments Payment[]
-
-  @@map("cash_session")
-}
-
-//----------------------------------------------
-//Category
-//----------------------------------------------
-
-model Category {
-  id                String   @id @default(uuid())
-  tenantId          String
-  name              String
-  description       String?
-  parentId          String?
-  level             Int      @default(0)
-  path              String?
-  image             String?
-  color             String?
-  icon              String?
-  slug              String?  @unique
-  order             Int      @default(0)
-  isActive          Boolean  @default(true)
-  showInPos         Boolean  @default(true)
-  showInEcommerce   Boolean  @default(true)
-  productCount      Int      @default(0)
-  totalProductCount Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  createdBy         String?
-  updatedBy         String?
-
-  tenant   Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Restrict)
-  children Category[] @relation("CategoryToCategory")
-  products Product[]
-
-  @@map("category")
-}
-
-//-----------------------------------------------
-//Client
-//-----------------------------------------------
-
-model Client {
-  id                 String       @id @default(uuid())
-  tenantId           String
-  userName           String?
-  firstName          String
-  lastName           String
-  dni                String       @unique
-  email              String?
-  phone              String
-  address            String
-  city               String
-  province           String?
-  zipCode            String?
-  type               ClientType   @default(individual)
-  walletBalance      Float        @default(0)
-  loyaltyPoints      Int          @default(0)
-  referralCode       String       @unique
-  referredByClientId String?
-  status             ClientStatus @default(active)
-  internalNotes      String?
-  metadata           Json?
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-  createdBy          String?
-  updatedBy          String?
-  isDeleted          Boolean      @default(false)
-  deletedAt          DateTime?
-  deletedBy          String?
-  deleteReason       String?
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  // Relación de referidos
-  referredBy       Client?               @relation("ClientReferrals", fields: [referredByClientId], references: [id])
-  referredClients  Client[]              @relation("ClientReferrals")
-  referralsMade    Referral[]            @relation("MadeReferrals") // Las referencias que hizo este cliente
-  referralReceived Referral?             @relation("ReceivedReferral") // La referencia que trajo a este client
-  operations       Operation[]
-  loyaltyLedger    ClientLoyaltyLedger[]
-  creditLedger     ClientCreditLedger[]
-  coupons          Coupon[]
-  reservations     Reservation[]
-
-  @@map("client")
-}
-
-//-----------------------------------------------
-//Client Credit Ledger
-//-----------------------------------------------
 
 enum ClientCreditLedgerDirection {
   credit
@@ -590,28 +1849,6 @@ enum ClientCreditLedgerReason {
   manual_adjustment
   refund
 }
-
-model ClientCreditLedger {
-  id          String                      @id @default(uuid())
-  tenantId    String
-  clientId    String
-  amount      Float                       @default(0)
-  direction   ClientCreditLedgerDirection @default(credit)
-  status      ClientCreditLedgerStatus    @default(confirmed)
-  reason      ClientCreditLedgerReason    @default(manual_adjustment)
-  operationId String?
-  createdAt   DateTime                    @default(now())
-
-  client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  operation Operation? @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("client_credit_ledger")
-}
-
-//-----------------------------------------------
-//Client Loyalty Ledger
-//-----------------------------------------------
 
 enum ClientLoyaltyLedgerDirection {
   credit
@@ -631,31 +1868,6 @@ enum ClientLoyaltyLedgerType {
   bonus_referral
 }
 
-model ClientLoyaltyLedger {
-  id          String                       @id @default(uuid())
-  tenantId    String
-  clientId    String
-  amount      Float                        @default(0)
-  direction   ClientLoyaltyLedgerDirection @default(credit)
-  status      ClientLoyaltyLedgerStatus    @default(confirmed)
-  type        ClientLoyaltyLedgerType      @default(manual_adjustment)
-  operationId String?
-  description String?
-  createdAt   DateTime                     @default(now())
-  createdBy   String?
-  expiresAt   DateTime?
-
-  client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  operation Operation? @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("client_loyalty_ledger")
-}
-
-// ------------------------------------------------------
-// COUPONS
-// ------------------------------------------------------
-
 enum DiscountType {
   percentage
   fixed_amount
@@ -674,31 +1886,6 @@ enum CouponStatus {
   expired
 }
 
-model Coupon {
-  id                 String       @id @default(uuid())
-  tenantId           String
-  code               String       @unique
-  discountType       DiscountType
-  discountValue      Float
-  minPurchaseAmount  Float?
-  assignedToClientId String
-  origin             CouponOrigin
-  originReferenceId  String?
-  status             CouponStatus @default(available)
-  expiresAt          DateTime?
-  createdAt          DateTime     @default(now())
-  usedAt             DateTime?
-
-  tenant         Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  assignedClient Client @relation(fields: [assignedToClientId], references: [id], onDelete: Cascade)
-
-  @@map("coupon")
-}
-
-// ------------------------------------------------------
-// GUARANTEES
-// ------------------------------------------------------
-
 enum GuaranteeType {
   dinero
   dni
@@ -716,143 +1903,6 @@ enum GuaranteeStatus {
   devuelta
   retenida
 }
-
-model Guarantee {
-  id           String          @id @default(uuid())
-  tenantId     String
-  operationId  String
-  branchId     String
-  type         GuaranteeType
-  // Value could be number or string inside JSON depending on type (e.g., money amount vs item description)
-  value        String
-  description  String
-  status       GuaranteeStatus
-  receivedById String
-  returnedById String?
-  createdAt    DateTime        @default(now())
-  returnedAt   DateTime?
-  createdBy    String?
-  updatedAt    DateTime        @updatedAt
-  updatedBy    String?
-
-  operation                Operation                @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  branch                   Branch                   @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  receivedBy               User                     @relation("GuaranteeReceiver", fields: [receivedById], references: [id], onDelete: Restrict)
-  returnedBy               User?                    @relation("GuaranteeReturner", fields: [returnedById], references: [id], onDelete: Restrict)
-  tenant                   Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  guaranteeStatusHistories GuaranteeStatusHistory[]
-
-  @@map("guarantee")
-}
-
-model GuaranteeStatusHistory {
-  id          String          @id @default(uuid())
-  tenantId    String
-  guaranteeId String
-  fromStatus  GuaranteeStatus
-  toStatus    GuaranteeStatus
-  reason      String?
-  changedBy   String?
-  createdAt   DateTime        @default(now())
-
-  guarantee Guarantee @relation(fields: [guaranteeId], references: [id], onDelete: Cascade)
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-}
-
-model Model {
-  id          String   @id @default(uuid())
-  tenantId    String
-  brandId     String
-  name        String
-  slug        String   @unique
-  description String?
-  year        Int?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  brand    Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  products Product[]
-
-  @@map("model")
-}
-
-//----------------------------------------------------
-// MODULE para superadmin its system modules
-//----------------------------------------------------
-model Module {
-  id          String   @id @default(uuid())
-  tenantId    String
-  name        String
-  slug        String   @unique
-  description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  moduleFeatures ModuleFeature[]
-  tenantModules  TenantModule[]
-
-  @@map("module")
-}
-
-model ModuleFeature {
-  id         String   @id @default(uuid())
-  tenantId   String
-  moduleId   String
-  featureKey String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("module_feature")
-}
-
-model Operation {
-  id             String          @id @default(uuid())
-  tenantId       String
-  referenceCode  String          @unique
-  branchId       String
-  sellerId       String
-  type           OperationType
-  customerMode   CustomerMode    @default(registered)
-  customerId     String?
-  status         OperationStatus
-  paymentStatus  PaymentStatus
-  subtotal       Float?
-  discountAmount Float?
-  totalAmount    Float
-  date           DateTime
-  createdAt      DateTime        @default(now())
-
-  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch   Branch  @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  seller   User    @relation(fields: [sellerId], references: [id], onDelete: Restrict)
-  customer Client? @relation(fields: [customerId], references: [id], onDelete: Restrict)
-
-  sales                Sale[]
-  rentals              Rental[]
-  clientCreditLedgers  ClientCreditLedger[]
-  clientLoyaltyLedgers ClientLoyaltyLedger[]
-  guarantees           Guarantee[]
-  payments             Payment[]
-  stockMovements       StockMovement[]
-  rentalItems          RentalItem[]
-  rentalCharges        RentalCharge[]
-  reservations         Reservation[]
-  reservationItems     ReservationItem[]
-  saleCharges          SaleCharge[]
-
-  @@map("operation")
-}
-
-// ------------------------------------------------------
-// PAYMENTS & METHODS
-// ------------------------------------------------------
 
 enum PaymentMethodType {
   cash
@@ -877,53 +1927,6 @@ enum PaymentCategory {
   correction
 }
 
-model PaymentMethod {
-  id           String            @id @default(uuid())
-  name         String
-  type         PaymentMethodType
-  active       Boolean           @default(true)
-  allowsChange Boolean           @default(false)
-  requiresPin  Boolean           @default(false)
-  icon         String?
-
-  payments Payment[]
-
-  @@map("payment_method")
-}
-
-model Payment {
-  id                String           @id @default(uuid())
-  tenantId          String
-  operationId       String
-  branchId          String
-  receivedById      String
-  amount            Float
-  direction         PaymentDirection
-  paymentMethodId   String
-  cashSessionId     String?
-  createdAt         DateTime         @default(now())
-  currency          String           @default("PEN")
-  status            PaymentStatusLog @default(pending)
-  category          PaymentCategory
-  originalPaymentId String?
-  reference         String?
-  date              DateTime
-  notes             String?
-
-  operation     Operation     @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  receivedBy    User          @relation(fields: [receivedById], references: [id], onDelete: Restrict)
-  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
-  cashSession   CashSession?  @relation(fields: [cashSessionId], references: [id], onDelete: SetNull)
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payment")
-}
-
-//----------------------------------------------------
-// PAYROLL
-//----------------------------------------------------
-
 enum PayrollRunStatus {
   draft
   processing
@@ -931,45 +1934,10 @@ enum PayrollRunStatus {
   paid
 }
 
-model PayrollRun {
-  id          String           @id @default(uuid())
-  tenantId    String
-  branchId    String
-  periodStart DateTime
-  periodEnd   DateTime
-  payDate     DateTime
-  status      PayrollRunStatus
-  createdAt   DateTime         @default(now())
-
-  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  payrollItems PayrollItem[]
-  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payroll_run")
-}
-
 enum PayrollItemStatus {
   draft
   calculated
   paid
-}
-
-model PayrollItem {
-  id             String            @id @default(uuid())
-  tenantId       String
-  payrollRunId   String
-  membershipId   String
-  grossTotal     Float
-  deductionTotal Float
-  netTotal       Float
-  status         PayrollItemStatus
-
-  payrollRun PayrollRun           @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
-  membership UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  lineItems  PayrollLineItem[]
-  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payroll_item")
 }
 
 enum PayrollItemType {
@@ -991,39 +1959,6 @@ enum PayrollItemCategory {
   adjustment
 }
 
-model PayrollLineItem {
-  id            String              @id @default(uuid())
-  tenantId      String
-  payrollItemId String
-  type          PayrollItemType
-  category      PayrollItemCategory
-  name          String
-  amount        Float
-  quantity      Int?
-  rate          Float?
-  createdAt     DateTime            @default(now())
-
-  payrollItem PayrollItem @relation(fields: [payrollItemId], references: [id], onDelete: Cascade)
-  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payroll_line_item")
-}
-
-model PayrollPolicy {
-  id                 String   @id @default(uuid())
-  tenantId           String
-  deductions         Json
-  overtimeMultiplier Float
-  createdAt          DateTime @default(now())
-  createdBy          String
-  updatedAt          DateTime @updatedAt
-  updatedBy          String
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payroll_policy")
-}
-
 enum PayScheduleType {
   weekly
   biweekly
@@ -1032,115 +1967,29 @@ enum PayScheduleType {
   manual
 }
 
-model PayrollConfig {
-  id                   String          @id @default(uuid())
-  tenantId             String
-  membershipId         String
-  salaryType           String
-  baseSalary           Float
-  hourlyRate           Float
-  paySchedule          PayScheduleType
-  applyOvertime        Boolean
-  applyHealthInsurance Boolean
-  applyPension         Boolean
-  applyTax             Boolean
-  otherDeductions      Float
-
-  createdAt DateTime @default(now())
-  createdBy String
-  updatedAt DateTime @updatedAt
-  updatedBy String
-
-  membership UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("payroll_config")
-}
-
-//----------------------------------------------------
-// ROLES & PERMISSIONS
-//----------------------------------------------------
-
-model Permission {
-  id          String   @id @default(cuid())
-  key         String   @unique // "sales.create"
-  module      String // sales, rentals, inventory, etc.
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  roles    RolePermission[]
-  tenant   Tenant?          @relation(fields: [tenantId], references: [id])
-  tenantId String?
-
-  @@map("permissions")
-}
-
-// Tabla de roles
-model Role {
-  id          String   @id @default(cuid())
-  tenantId    String
-  name        String   @db.VarChar(50)
-  description String?
-  isSystem    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relaciones
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  permissions             RolePermission[]
-  userBranchAccesses      UserBranchAccess[]
-  userRoleBranchHistories UserRoleBranchHistory[]
-  userTenantMemberships   UserTenantMembership[]
-  invitations             Invitation[]
-
-  @@unique([tenantId, name]) // Un nombre de rol único por tenant
-  @@map("roles")
-}
-
-// Tabla intermedia para la relación muchos a muchos entre roles y permisos
-model RolePermission {
-  tenantId     String
-  roleId       String
-  permissionId String
-  createdAt    DateTime @default(now())
-
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
-  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-  @@map("role_permissions")
-}
-
-//----------------------------------------------------
-// PLANS
-//----------------------------------------------------
-
-// ENUMS para los keys (opcional pero recomendado)
 enum PlanFeatureKey {
   sales
   rentals
-  reservations
   inventory
   products
-  inventoryItems
-  clients
   payments
+  userAttendance
   users
   branches
-  userAttendance
-  shifts
-  payroll
   permissions
+  tenants
   analytics
-  reports
   promotions
   referrals
+  reservations
   referralRewards
   loyalty
-  tenants
+  clients
+  inventoryItems
   subscriptions
+  shifts
+  payroll
+  reports
 }
 
 enum PlanLimitKey {
@@ -1162,200 +2011,20 @@ enum PlanModuleKey {
   rentals
 }
 
-// Tabla principal de Planes
-model Plan {
-  id           String   @id @default(cuid())
-  tenantId     String
-  name         String   @db.VarChar(100)
-  description  String?
-  currency     String   @default("PEN")
-  priceMonthly Decimal  @db.Decimal(10, 2) // Usar Decimal para precios
-  priceYearly  Decimal? @db.Decimal(10, 2)
-  trialDays    Int?
-  isActive     Boolean  @default(true)
-  sortOrder    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  features            PlanFeature[]
-  limits              PlanLimit[]
-  modules             PlanModule[]
-  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  tenantSubscriptions TenantSubscription[]
-
-  @@map("plans")
-}
-
-model PlanFeature {
-  id         String         @id @default(cuid())
-  tenantId   String
-  planId     String
-  featureKey PlanFeatureKey // Usando enum
-  // Relación
-  plan       Plan           @relation(fields: [planId], references: [id])
-  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, featureKey]) // Evitar duplicados
-  @@map("plan_features")
-}
-
-model PlanLimit {
-  id       String       @id @default(cuid())
-  tenantId String
-  planId   String
-  limitKey PlanLimitKey
-  limit    Int // -1 = ilimitado, 0 = bloqueado, >0 = límite específico
-  plan     Plan         @relation(fields: [planId], references: [id])
-  tenant   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, limitKey]) // Evitar duplicados
-  @@map("plan_limits")
-}
-
-// Módulos específicos (sales, rentals)
-model PlanModule {
-  id        String        @id @default(cuid())
-  tenantId  String
-  planId    String
-  moduleKey PlanModuleKey // Usando enum
-
-  plan   Plan   @relation(fields: [planId], references: [id])
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, moduleKey]) // Evitar duplicados
-  @@map("plan_modules")
-}
-
-//----------------------------------------------------
-// PRODUCT
-//----------------------------------------------------
-
 enum StockMovementType {
-  stock_inicial // carga inicial
-  recepcion_transito // recepción parcial desde tránsito
-  recepcion_disponible // recepción completa
-  salida_alquiler // se alquila
-  retorno_alquiler // se devuelve
-  vendido // venta confirmada
-  vendido_pendiente_entrega // vendido pendiente entrega
-  reservado // reserva
-  liberacion_reserva // liberación de reserva
-  mantenimiento_salida // sale a mantenimiento
-  mantenimiento_retorno // vuelve de mantenimiento
-  ajuste_incremento // ajuste manual +
-  ajuste_decremento // ajuste manual -
-}
-
-model Product {
-  id           String    @id @default(uuid())
-  tenantId     String
-  name         String
-  image        String[]  @default([])
-  baseSku      String    @unique
-  modelId      String?
-  categoryId   String?
-  description  String?
-  is_serial    Boolean
-  can_rent     Boolean
-  can_sell     Boolean
-  createdAt    DateTime  @default(now())
-  createdBy    String?
-  updatedAt    DateTime  @updatedAt
-  updatedBy    String?
-  deletedAt    DateTime?
-  deletedBy    String?
-  deleteReason String?
-  isDeleted    Boolean   @default(false)
-
-  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  model              Model?              @relation(fields: [modelId], references: [id], onDelete: Restrict)
-  category           Category?           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  variants           ProductVariant[]
-  inventoryItems     InventoryItem[]
-  stockLots          StockLot[]
-  rentalItems        RentalItem[]
-  reservationItems   ReservationItem[]
-  saleItems          SaleItem[]
-  transferItems      TransferItem[]
-  inventoryMovements InventoryMovement[]
-
-  @@map("product")
-}
-
-model ProductVariant {
-  id               String    @id @default(uuid())
-  tenantId         String
-  productId        String
-  variantCode      String    @unique
-  variantSignature String    @default("")
-  barcode          String?
-  attributes       Json      @default("{}")
-  purchasePrice    Float?    @default(0)
-  priceSell        Float?
-  priceRent        Float?
-  rentUnit         RentUnit?
-  image            String[]  @default([])
-  isActive         Boolean   @default(true)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
-  inventoryItems     InventoryItem[]
-  stockLots          StockLot[]
-  rentalItems        RentalItem[]
-  reservationItems   ReservationItem[]
-  saleItems          SaleItem[]
-  transferItems      TransferItem[]
-  inventoryMovements InventoryMovement[]
-  priceHistories     PriceHistory[]
-
-  @@map("product_variant")
-}
-
-model InventoryItem {
-  id              String             @id @default(uuid())
-  tenantId        String
-  serialCode      String             @unique
-  variantId       String
-  productId       String
-  branchId        String
-  isForRent       Boolean
-  isForSale       Boolean
-  usageCount      Int                @default(0)
-  lastMaintenance DateTime?
-  condition       InventoryCondition
-  status          InventoryStatus
-  damageNotes     String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-
-  tenant                       Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch                       Branch                       @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  product                      Product                      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant                      ProductVariant               @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  inventoryItemStatusHistories InventoryItemStatusHistory[]
-  priceHistories               PriceHistory[]
-  rentalItems                  RentalItem[]
-
-  @@map("inventory_item")
-}
-
-model InventoryItemStatusHistory {
-  id              String          @id @default(uuid())
-  tenantId        String
-  inventoryItemId String
-  fromStatus      InventoryStatus
-  toStatus        InventoryStatus
-  reason          String?
-  operationId     String?
-  changedBy       String?
-  createdAt       DateTime        @default(now())
-
-  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("inventory_item_status_history")
+  stock_inicial
+  salida_alquiler
+  retorno_alquiler
+  vendido
+  vendido_pendiente_entrega
+  reservado
+  liberacion_reserva
+  mantenimiento_salida
+  mantenimiento_retorno
+  ajuste_incremento
+  ajuste_decremento
+  recepcion_transito
+  recepcion_disponible
 }
 
 enum PriceHistoryReason {
@@ -1365,80 +2034,6 @@ enum PriceHistoryReason {
   restock_return
 }
 
-model PriceHistory {
-  id              String             @id @default(uuid())
-  tenantId        String
-  variantId       String
-  stockLotId      String?
-  inventoryItemId String?
-  oldPrice        Float
-  newPrice        Float
-  reason          PriceHistoryReason
-  createdAt       DateTime           @default(now())
-  userId          String
-
-  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  variant       ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  stockLot      StockLot?      @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
-  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
-
-  @@map("price_history")
-}
-
-model StockLot {
-  id             String            @id @default(uuid())
-  tenantId       String
-  productId      String
-  variantId      String
-  branchId       String
-  quantity       Int               @default(0)
-  barcode        String?
-  expirationDate DateTime?
-  lotNumber      String?
-  isForRent      Boolean
-  isForSale      Boolean
-  condition      StockLotCondition @default(Nuevo)
-  status         StockLotStatus    @default(disponible)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-
-  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant          ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  stockMovements   StockMovement[]
-  rentalItems      RentalItem[]
-  reservationItems ReservationItem[]
-  saleItems        SaleItem[]
-  priceHistories   PriceHistory[]
-
-  @@map("stock_lot")
-}
-
-model StockMovement {
-  id          String            @id @default(uuid())
-  tenantId    String
-  stockLotId  String
-  type        StockMovementType
-  quantity    Int
-  reason      String?
-  operationId String?
-  changedBy   String?
-  createdAt   DateTime          @default(now())
-
-  stockLot      StockLot   @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
-  operation     Operation? @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  changedByUser User?      @relation(fields: [changedBy], references: [id], onDelete: Cascade)
-
-  @@map("stock_movement")
-}
-
-//---------------------------------------------------
-//PROMOTION
-//---------------------------------------------------
-
-// Definir todos los enums primero
 enum PromotionType {
   percentage
   fixed_amount
@@ -1468,76 +2063,6 @@ enum UsageType {
   referral
 }
 
-// Modelo principal
-model Promotion {
-  id        String          @id @default(cuid())
-  tenantId  String?
-  name      String
-  type      PromotionType
-  scope     PromotionScope
-  value     Float? // Para percentage o fixed_amount
-  appliesTo AppliesToType[] // Usar array de enums
-
-  // Bundle config como JSON (para mantener la estructura anidada)
-  bundleConfig Json? // { requiredProductIds: string[], bundlePrice: number, prorateStrategy: "proportional"|"equal" }
-
-  isExclusive          Boolean   @default(true)
-  code                 String?   @unique
-  targetIds            String[] // IDs de categorías, productos, etc.
-  startDate            DateTime
-  endDate              DateTime?
-  isActive             Boolean   @default(true)
-  branchIds            String[]
-  minPurchaseAmount    Float?
-  maxUses              Int?
-  usedCount            Int       @default(0)
-  combinable           Boolean   @default(true)
-  requiresCode         Boolean   @default(false)
-  singleUsePerCustomer Boolean   @default(false)
-  usageType            UsageType @default(automatic)
-  createdAt            DateTime  @default(now())
-  createdBy            String?
-  updatedAt            DateTime  @updatedAt
-  updatedBy            String?
-
-  // Relaciones
-  tenant          Tenant?           @relation(fields: [tenantId], references: [id])
-  branchRelations PromotionBranch[] // Para manejar branches si necesitas consultas complejas
-  usageRecords    PromotionUsage[]
-  saleItems       SaleItem[]
-
-  @@map("promotions")
-}
-
-// Si necesitas consultas complejas con branches (opcional)
-model PromotionBranch {
-  promotionId String
-  branchId    String
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
-  branch      Branch    @relation(fields: [branchId], references: [id])
-
-  @@id([promotionId, branchId])
-  @@map("promotion_branches")
-}
-
-// Para tracking de usos (opcional)
-model PromotionUsage {
-  id          String    @id @default(cuid())
-  tenantId    String
-  promotionId String
-  customerId  String?
-  orderId     String?
-  usedAt      DateTime  @default(now())
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
-  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("promotion_usages")
-}
-
-// ------------------------------------------------------
-// REFERRALS
-// ------------------------------------------------------
-
 enum ReferralStatus {
   pending
   qualified
@@ -1561,57 +2086,6 @@ enum ReferralRewardStatus {
   used
   expired
 }
-
-model Referral {
-  id               String         @id @default(uuid())
-  tenantId         String
-  referrerClientId String
-  referredClientId String         @unique // A client can only be referred once
-  status           ReferralStatus
-  createdAt        DateTime       @default(now())
-  rewardedAt       DateTime?
-
-  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  referrer        Client           @relation("MadeReferrals", fields: [referrerClientId], references: [id])
-  referredClient  Client?          @relation("ReceivedReferral", fields: [referredClientId], references: [id])
-  referralRewards ReferralReward[]
-
-  @@map("referral")
-}
-
-model ReferralProgram {
-  id               String                   @id @default(uuid())
-  tenantId         String
-  isActive         Boolean                  @default(true)
-  rewardType       ReferralRewardType
-  rewardValue      Float
-  triggerCondition ReferralTriggerCondition
-  expiresInDays    Int?
-  createdAt        DateTime                 @default(now())
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("referral_program")
-}
-
-model ReferralReward {
-  id         String               @id @default(uuid())
-  tenantId   String
-  referralId String
-  rewardType ReferralRewardType
-  amount     Float
-  status     ReferralRewardStatus
-  createdAt  DateTime             @default(now())
-
-  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  referral Referral @relation(fields: [referralId], references: [id], onDelete: Cascade)
-
-  @@map("referral_reward")
-}
-
-//--------------------------------------------------
-//RENTAL
-//--------------------------------------------------
 
 enum RentalStatus {
   alquilado
@@ -1648,260 +2122,11 @@ enum RentalChargeStatus {
   cancelled
 }
 
-model Rental {
-  id                 String       @id @default(uuid())
-  tenantId           String
-  operationId        String
-  reservationId      String?
-  customerId         String
-  branchId           String
-  outDate            DateTime
-  expectedReturnDate DateTime
-  actualReturnDate   DateTime?
-  cancelDate         DateTime?
-  status             RentalStatus
-  guaranteeId        String?
-  notes              String?
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-  updatedBy          String?
-  deletedAt          DateTime?
-  deletedBy          String?
-  deleteReason       String?
-  isDeleted          Boolean      @default(false)
-
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  branch    Branch    @relation(fields: [branchId], references: [id], onDelete: Restrict)
-
-  items                 RentalItem[]
-  charges               RentalCharge[]
-  rentalStatusHistories RentalStatusHistory[]
-
-  @@map("rental")
-}
-
-model RentalItem {
-  id              String           @id @default(uuid())
-  tenantId        String
-  rentalId        String
-  operationId     String
-  productId       String
-  stockLotId      String?
-  inventoryItemId String?
-  variantId       String
-  priceAtMoment   Float
-  quantity        Int              @default(1)
-  conditionOut    String
-  conditionIn     String?
-  isDamaged       Boolean          @default(false)
-  damageNotes     String?
-  discountAmount  Float            @default(0)
-  discountReason  String?
-  bundleId        String?
-  promotionId     String?
-  productName     String?
-  variantCode     String?
-  serialCode      String?
-  isSerial        Boolean          @default(false)
-  notes           String?
-  listPrice       Float
-  itemStatus      RentalItemStatus
-
-  rental        Rental         @relation(fields: [rentalId], references: [id], onDelete: Cascade)
-  operation     Operation      @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  stockLot      StockLot?      @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
-  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
-  variant       ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  rentalCharges             RentalCharge[]
-  rentalItemStatusHistories RentalItemStatusHistory[]
-
-  @@map("rental_item")
-}
-
-model RentalCharge {
-  id           String           @id @default(uuid())
-  tenantId     String
-  rentalId     String
-  rentalItemId String
-  operationId  String
-  type         RentalChargeType
-  description  String
-
-  amount                 Float
-  guaranteeCoveredAmount Float
-  remainingAmount        Float
-  status                 RentalChargeStatus
-  createdAt              DateTime           @default(now())
-  createdBy              String?
-  updatedAt              DateTime           @updatedAt
-  updatedBy              String?
-
-  rental     Rental     @relation(fields: [rentalId], references: [id], onDelete: Cascade)
-  rentalItem RentalItem @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
-  operation  Operation  @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("rental_charge")
-}
-
-model RentalStatusHistory {
-  id         String       @id @default(uuid())
-  tenantId   String
-  rentalId   String
-  fromStatus RentalStatus
-  toStatus   RentalStatus
-  reason     String?
-  changedBy  String?
-  createdAt  DateTime     @default(now())
-
-  rental Rental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("rental_status_history")
-}
-
-model RentalItemStatusHistory {
-  id           String           @id @default(uuid())
-  tenantId     String
-  rentalItemId String
-  fromStatus   RentalItemStatus
-  toStatus     RentalItemStatus
-  reason       String?
-  changedBy    String?
-  createdAt    DateTime         @default(now())
-
-  rentalItem RentalItem @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
-  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("rental_item_status_history")
-}
-
-// ------------------------------------------------------
-// RESERVATIONS
-// ------------------------------------------------------
-
 enum ReservationStatus {
   confirmada
   cancelada
   convertida
   expirada
-}
-
-model Reservation {
-  id            String            @id @default(uuid())
-  tenantId      String
-  operationId   String
-  customerId    String
-  branchId      String
-  startDate     DateTime
-  endDate       DateTime
-  hour          String
-  createdAt     DateTime          @default(now())
-  createdBy     String?
-  updatedAt     DateTime          @updatedAt
-  updatedBy     String?
-  deletedAt     DateTime?
-  status        ReservationStatus
-  operationType OperationType
-
-  operation Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  customer  Client            @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  branch    Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  tenant    Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  items     ReservationItem[]
-
-  @@map("reservation")
-}
-
-model ReservationItem {
-  id             String            @id @default(uuid())
-  tenantId       String
-  operationId    String?
-  productId      String
-  stockId        String?
-  reservationId  String
-  variantId      String
-  quantity       Int               @default(1)
-  priceAtMoment  Float
-  listPrice      Float?
-  discountAmount Float             @default(0)
-  discountReason String?
-  bundleId       String?
-  promotionId    String?
-  notes          String?
-  itemStatus     ReservationStatus
-
-  reservation                    Reservation                    @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-  operation                      Operation?                     @relation(fields: [operationId], references: [id])
-  product                        Product                        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant                        ProductVariant                 @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  // Assuming optional stock connection
-  stock                          StockLot?                      @relation(fields: [stockId], references: [id], onDelete: SetNull)
-  tenant                         Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  reservationItemStatusHistories ReservationItemStatusHistory[]
-
-  @@map("reservation_item")
-}
-
-model ReservationItemStatusHistory {
-  id                String            @id @default(uuid())
-  tenantId          String
-  reservationItemId String
-  fromStatus        ReservationStatus
-  toStatus          ReservationStatus
-  reason            String?
-  changedBy         String?
-  createdAt         DateTime          @default(now())
-
-  reservationItem ReservationItem @relation(fields: [reservationItemId], references: [id], onDelete: Cascade)
-  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("reservation_item_status_history")
-}
-
-//---------------------------------------------------
-//SALES
-//---------------------------------------------------
-
-model Sale {
-  id             String       @id @default(uuid())
-  tenantId       String
-  operationId    String
-  customerMode   CustomerMode @default(registered)
-  customerId     String?      @default("")
-  branchId       String
-  sellerId       String
-  reservationId  String?
-  totalAmount    Float
-  saleDate       DateTime
-  subTotal       Float?
-  totalDiscount  Float        @default(0)
-  status         SaleStatus
-  notes          String?
-  outDate        DateTime?
-  realOutDate    DateTime?
-  canceledAt     DateTime?
-  returnedAt     DateTime?
-  amountRefunded Float        @default(0)
-  createdAt      DateTime     @default(now())
-  createdBy      String?
-  updatedAt      DateTime     @updatedAt
-  updatedBy      String?
-  deletedAt      DateTime?
-
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  branch    Branch    @relation(fields: [branchId], references: [id], onDelete: Restrict)
-
-  items         SaleItem[]
-  charges       SaleCharge[]
-  saleReversals SaleReversal[]
-
-  @@map("sale")
 }
 
 enum SaleItemStatus {
@@ -1912,42 +2137,6 @@ enum SaleItemStatus {
   cancelado
   baja
   devuelto
-}
-
-model SaleItem {
-  id             String  @id @default(uuid())
-  tenantId       String
-  saleId         String
-  productId      String
-  stockId        String
-  variantId      String
-  priceAtMoment  Float
-  listPrice      Float?
-  quantity       Int     @default(1)
-  discountAmount Float   @default(0)
-  discountReason String?
-  bundleId       String?
-  promotionId    String?
-  productName    String?
-  variantCode    String?
-  serialCode     String?
-  isSerial       Boolean @default(false)
-
-  isReturned      Boolean   @default(false)
-  returnedAt      DateTime?
-  returnCondition String?
-
-  sale                    Sale                    @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant                 ProductVariant          @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  stock                   StockLot                @relation(fields: [stockId], references: [id], onDelete: Cascade)
-  promotion               Promotion?              @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  saleCharges             SaleCharge[]
-  reversalItems           ReversalItem[]
-  saleItemStatusHistories SaleItemStatusHistory[]
-
-  @@map("sale_item")
 }
 
 enum ChargeType {
@@ -1965,29 +2154,6 @@ enum ChargeStatus {
   cancelled
 }
 
-model SaleCharge {
-  id          String       @id @default(uuid())
-  tenantId    String
-  saleId      String
-  saleItemId  String
-  operationId String
-  type        ChargeType
-  description String
-  amount      Float
-  reason      String?
-  status      ChargeStatus
-  createdAt   DateTime     @default(now())
-  createdBy   String?
-
-  sale      Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  saleItem  SaleItem  @relation(fields: [saleItemId], references: [id], onDelete: Cascade)
-  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("sale_charge")
-}
-
-// Enums
 enum ReversalType {
   annulment
   return
@@ -1995,194 +2161,13 @@ enum ReversalType {
 
 enum ItemCondition {
   perfecto
-  dañado
+  // dañado
   manchado
 }
-
-// Modelo principal de reversión
-model SaleReversal {
-  id            String       @id @default(cuid())
-  tenantId      String
-  saleId        String
-  type          ReversalType
-  reason        String
-  totalRefunded Decimal      @db.Decimal(10, 2)
-  createdAt     DateTime     @default(now())
-  createdBy     String?
-
-  // Relaciones
-  sale   Sale           @relation(fields: [saleId], references: [id])
-  items  ReversalItem[]
-  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("sale_reversals")
-}
-
-// Modelo para los items revertidos
-model ReversalItem {
-  id             String         @id @default(cuid())
-  tenantId       String
-  reversalId     String
-  saleItemId     String
-  condition      ItemCondition? // perfecto, dañado, manchado
-  restockingFee  Decimal        @default(0) @db.Decimal(10, 2)
-  refundedAmount Decimal        @db.Decimal(10, 2)
-
-  // Relaciones
-  reversal SaleReversal @relation(fields: [reversalId], references: [id])
-  saleItem SaleItem     @relation(fields: [saleItemId], references: [id])
-  tenant   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([reversalId, saleItemId]) // Evitar duplicados
-  @@map("reversal_items")
-}
-
-model SaleItemStatusHistory {
-  id         String         @id @default(cuid())
-  tenantId   String
-  saleItemId String
-  fromStatus SaleItemStatus
-  toStatus   SaleItemStatus
-  reason     String?
-  changedBy  String?
-  createdAt  DateTime       @default(now())
-  createdBy  String?
-
-  saleItem SaleItem @relation(fields: [saleItemId], references: [id])
-  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("sale_item_status_history")
-}
-
-//--------------------------------------------------
-// SHIFT
-//---------------------------------------------------
 
 enum ShiftStatus {
   active
   inactive
-}
-
-model Shift {
-  id               String      @id @default(cuid())
-  tenantId         String
-  name             String
-  startTime        DateTime
-  endTime          DateTime?
-  toleranceMinutes Int
-  workingDays      Int[]
-  status           ShiftStatus
-  createdAt        DateTime    @default(now())
-  createdBy        String?
-
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  userAttendances         UserAttendance[]
-  userRoleBranchHistories UserRoleBranchHistory[]
-  userShiftAssignments    UserShiftAssignment[]
-
-  @@map("shift")
-}
-
-//----------------------------------------------------
-// TENANT
-//----------------------------------------------------
-
-model Tenant {
-  id                    String       @id @default(uuid())
-  name                  String
-  slug                  String       @unique
-  ownerId               String
-  status                TenantStatus @default(active)
-  tenantConfig          Json?
-  currentSubscriptionId String?
-  metadata              Json?
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-
-  owner                          User                           @relation("TenantOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  branches                       Branch[]
-  brands                         Brand[]
-  categories                     Category[]
-  models                         Model[]
-  products                       Product[]
-  clients                        Client[]
-  operations                     Operation[]
-  sales                          Sale[]
-  rentals                        Rental[]
-  productVariants                ProductVariant[]
-  inventoryItems                 InventoryItem[]
-  stockLots                      StockLot[]
-  coupons                        Coupon[]
-  userBranchAccesses             UserBranchAccess[]
-  userAttendances                UserAttendance[]
-  userRoleBranchHistories        UserRoleBranchHistory[]
-  userShiftAssignments           UserShiftAssignment[]
-  attributeTypes                 AttributeType[]
-  attributeValues                AttributeValue[]
-  cashSessions                   CashSession[]
-  clientCreditLedgers            ClientCreditLedger[]
-  clientLoyaltyLedgers           ClientLoyaltyLedger[]
-  guarantees                     Guarantee[]
-  guaranteeStatusHistories       GuaranteeStatusHistory[]
-  modules                        Module[]
-  moduleFeatures                 ModuleFeature[]
-  payments                       Payment[]
-  payrollRuns                    PayrollRun[]
-  payrollItems                   PayrollItem[]
-  payrollLineItems               PayrollLineItem[]
-  payrollPolicies                PayrollPolicy[]
-  payrollConfigs                 PayrollConfig[]
-  permissions                    Permission[]
-  roles                          Role[]
-  rolePermissions                RolePermission[]
-  plans                          Plan[]
-  planFeatures                   PlanFeature[]
-  planLimits                     PlanLimit[]
-  planModules                    PlanModule[]
-  inventoryItemStatusHistories   InventoryItemStatusHistory[]
-  stockMovements                 StockMovement[]
-  promotions                     Promotion[]
-  promotionUsages                PromotionUsage[]
-  referrals                      Referral[]
-  referralPrograms               ReferralProgram[]
-  referralRewards                ReferralReward[]
-  rentalItems                    RentalItem[]
-  rentalCharges                  RentalCharge[]
-  rentalStatusHistories          RentalStatusHistory[]
-  rentalItemStatusHistories      RentalItemStatusHistory[]
-  reservations                   Reservation[]
-  reservationItems               ReservationItem[]
-  reservationItemStatusHistories ReservationItemStatusHistory[]
-  saleItems                      SaleItem[]
-  saleCharges                    SaleCharge[]
-  saleReversals                  SaleReversal[]
-  reversalItems                  ReversalItem[]
-  saleItemStatusHistories        SaleItemStatusHistory[]
-  shifts                         Shift[]
-  tenantConfigs                  TenantConfig[]
-  tenantSubscriptions            TenantSubscription[]
-  tenantModules                  TenantModule[]
-  tenantPolicies                 TenantPolicy[]
-  userTenantMemberships          UserTenantMembership[]
-  invitations                    Invitation[]
-  transfers                      Transfer[]
-  transferRoutes                 TransferRoute[]
-  inventoryMovements             InventoryMovement[]
-  priceHistories                 PriceHistory[]
-
-  @@map("tenant")
-}
-
-model TenantConfig {
-  tenantId  String   @id // Relación 1-1 con Tenant
-  config    Json // Aquí va todo el objeto completo
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relación
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("tenant_configs")
 }
 
 enum Provider {
@@ -2203,98 +2188,14 @@ enum TenantSubsCriptionStatus {
   canceled
 }
 
-model TenantSubscription {
-  id                 String                   @id @default(uuid())
-  tenantId           String
-  planId             String
-  status             TenantSubsCriptionStatus
-  billingCycle       BillingCycle             @default(monthly)
-  startedAt          DateTime
-  trialEndsAt        DateTime?
-  currentPeriodStart DateTime
-  currentPeriodEnd   DateTime
-
-  provider               Provider
-  externalSubscriptionId String?
-
-  createdAt DateTime @default(now())
-  createdBy String?
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  plan   Plan   @relation(fields: [planId], references: [id])
-
-  @@map("tenant_subscriptions")
-}
-
 enum TenantModuleStatus {
   active
   canceled
 }
 
-model TenantModule {
-  id        String             @id @default(uuid())
-  tenantId  String
-  moduleId  String
-  status    TenantModuleStatus
-  staterdAt DateTime
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  module Module @relation(fields: [moduleId], references: [id])
-}
-
-// Enums para valores fijos si los necesitas
 enum YesNo {
   YES
   NO
-}
-
-// Modelo principal de políticas con versionamiento
-model TenantPolicy {
-  id           String   @id @default(cuid())
-  tenantId     String
-  version      Int
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedBy    String
-  changeReason String?
-
-  // Políticas como JSON (cada módulo es un objeto)
-  sales        Json // { allowReturns: true, maxReturnDays: 30, ... }
-  rentals      Json // { allowLateReturn: true, lateToleranceHours: 24, ... }
-  reservations Json // { autoExpireReservations: true, expireAfterHours: 2, ... }
-  inventory    Json // { allowManualAdjustments: true, ... }
-  financial    Json // { allowNegativeBalance: false, ... }
-  security     Json // { requirePinForHighDiscount: true, ... }
-
-  // Relaciones
-  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  updatedByUser         User                  @relation(fields: [updatedBy], references: [id])
-  tenantPolicyHistories TenantPolicyHistory[]
-
-  @@unique([tenantId, version])
-  @@map("tenant_policies")
-}
-
-// Para trackear el historial de cambios (opcional pero recomendado)
-model TenantPolicyHistory {
-  id           String   @id @default(uuid())
-  policyId     String
-  version      Int
-  sales        Json
-  rentals      Json
-  reservations Json
-  inventory    Json
-  financial    Json
-  security     Json
-  changedAt    DateTime @default(now())
-  changedBy    String
-  changeReason String?
-
-  policy        TenantPolicy @relation(fields: [policyId], references: [id])
-  changedByUser User         @relation(fields: [changedBy], references: [id])
-
-  @@unique([policyId, version])
-  @@map("tenant_policy_history")
 }
 
 enum TenantMemberShipStatus {
@@ -2303,70 +2204,12 @@ enum TenantMemberShipStatus {
   suspended
 }
 
-// ---------------------------------------------------------------
-// Invitation (tenant worker invitation via link token)
-// ---------------------------------------------------------------
-
 enum InvitationStatus {
   pending
   accepted
   expired
   revoked
 }
-
-model Invitation {
-  id               String           @id @default(uuid())
-  tenantId         String
-  branchId         String
-  roleId           String
-  email            String
-  token            String           @unique @default(uuid())
-  status           InvitationStatus @default(pending)
-  invitedById      String
-  expiresAt        DateTime
-  acceptedAt       DateTime?
-  acceptedByUserId String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  tenant     Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch     Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  role       Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
-  invitedBy  User   @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Restrict)
-  acceptedBy User?  @relation("InvitationsAccepted", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
-
-  @@index([tenantId])
-  @@index([token])
-  @@index([email])
-  @@map("invitation")
-}
-
-model UserTenantMembership {
-  id              String                 @id @default(uuid())
-  userId          String
-  tenantId        String
-  roleId          String
-  defaultBranchId String
-  status          TenantMemberShipStatus
-  invitedBy       String
-  createdAt       DateTime
-  updatedAt       DateTime
-
-  user                    User                    @relation(fields: [userId], references: [id])
-  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  role                    Role                    @relation(fields: [roleId], references: [id])
-  branch                  Branch                  @relation(fields: [defaultBranchId], references: [id])
-  userRoleBranchHistories UserRoleBranchHistory[]
-  userShiftAssignments    UserShiftAssignment[]
-  payrollItems            PayrollItem[]
-  payrollConfigs          PayrollConfig[]
-
-  @@map("tenant_member_ship")
-}
-
-//--------------------------------------
-// Transfer 
-//--------------------------------------
 
 enum TransferStatus {
   draft
@@ -2376,62 +2219,9 @@ enum TransferStatus {
   canceled
 }
 
-model Transfer {
-  id                  String         @id @default(uuid())
-  tenantId            String
-  originBranchId      String
-  destinationBranchId String
-  status              TransferStatus
-  sentAt              DateTime
-  receivedAt          DateTime
-  notes               String
-  createdAt           DateTime
-  createdBy           String
-
-  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branchOrigin      Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
-  branchDestination Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
-  transferItems     TransferItem[]
-
-  @@map("transfer")
-}
-
-model TransferItem {
-  id               String   @id @default(uuid())
-  transferId       String
-  productId        String
-  variantId        String
-  quantitySent     Int
-  quantityReceived Int?
-  createdAt        DateTime
-
-  transfer Transfer       @relation(fields: [transferId], references: [id])
-  product  Product        @relation(fields: [productId], references: [id])
-  variant  ProductVariant @relation(fields: [variantId], references: [id])
-
-  @@map("tranfer_item")
-}
-
 enum TransferRouteStatus {
   active
   inactive
-}
-
-model TransferRoute {
-  id                  String              @id @default(uuid())
-  tenantId            String
-  originBranchId      String
-  destinationBranchId String
-  estimatedTimeHours  Int
-  status              TransferRouteStatus
-
-  createdAt DateTime
-
-  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  originBranch      Branch @relation("OriginRoutes", fields: [originBranchId], references: [id])
-  destinationBranch Branch @relation("DestinationRoutes", fields: [destinationBranchId], references: [id])
-
-  @@map("transfer_route")
 }
 
 enum InventoryMovementType {
@@ -2452,29 +2242,4 @@ enum InventoryMovementReferenceType {
   transfer
   adjustment
   rental
-}
-
-model InventoryMovement {
-  id            String                         @id @default(uuid())
-  tenantId      String
-  branchId      String
-  productId     String
-  variantId     String?
-  type          InventoryMovementType
-  referenceType InventoryMovementReferenceType
-  referenceId   String
-
-  quantity Int // + entra, - sale
-
-  unitCost Float // importante para valorización
-
-  createdBy DateTime
-  createdAt DateTime
-
-  tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  branch  Branch          @relation(fields: [branchId], references: [id])
-  product Product         @relation(fields: [productId], references: [id])
-  variant ProductVariant? @relation(fields: [variantId], references: [id])
-
-  @@map("inventory_movement")
 }

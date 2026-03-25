@@ -17,7 +17,13 @@ import { CancelRentalUseCase } from "@/src/application/tenant/use-cases/cancelRe
 
 import { PrismaReservationRepository } from "@/src/infrastructure/tenant/repositories/PrismaReservationRepository";
 import { DeliverRentalUseCase } from "@/src/application/tenant/use-cases/deliverRental.usecase";
+import { DeliverSaleUseCase } from "@/src/application/tenant/use-cases/sale/deliverSale.usecase";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
+import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
+import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/returnSaleItems.usecase";
+import { PrismaSaleReversalRepository } from "@/src/infrastructure/tenant/repositories/PrismaSaleReversalRepository";
+import { revalidatePath } from "next/cache";
+import { ProcessReturnUseCase, ProcessReturnInput } from "@/src/application/tenant/use-cases/processReturn.usecase";
 
 export async function getRentalsGridAction(tenantId: string) {
   const rentalRepo = new PrismaRentalRepository(prisma);
@@ -96,5 +102,87 @@ export async function deliverRentalAction(
   );
 
   await useCase.execute(rentalId, guaranteeData, userId);
+  return { success: true };
+}
+
+export async function cancelSaleAction(saleId: string, reason: string, userId: string) {
+  const saleRepo = new PrismaSaleRepository(prisma);
+  const reversalRepo = new PrismaSaleReversalRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
+  const paymentRepo = new PrismaPaymentRepository(prisma);
+  const operationRepo = new PrismaOperationRepository(prisma);
+
+  const useCase = new CancelSaleUseCase(
+    saleRepo,
+    reversalRepo,
+    inventoryRepo,
+    paymentRepo,
+    operationRepo
+  );
+
+  await useCase.execute({ saleId, reason, userId });
+  revalidatePath("/tenant/sales");
+  return { success: true };
+}
+
+export async function returnSaleItemsAction(
+  saleId: string,
+  reason: string,
+  items: {
+    saleItemId: string;
+    condition?: "perfecto" | "dañado" | "manchado";
+    restockingFee: number;
+  }[],
+  userId: string
+) {
+  const saleRepo = new PrismaSaleRepository(prisma);
+  const reversalRepo = new PrismaSaleReversalRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
+  const paymentRepo = new PrismaPaymentRepository(prisma);
+
+  const useCase = new ReturnSaleItemsUseCase(
+    saleRepo,
+    reversalRepo,
+    inventoryRepo,
+    paymentRepo
+  );
+
+  await useCase.execute({ saleId, reason, items, userId });
+  revalidatePath("/tenant/sales");
+  return { success: true };
+}
+
+export async function deliverSaleAction(saleId: string, userId: string) {
+  const saleRepo = new PrismaSaleRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
+  const reservationRepo = new PrismaReservationRepository(prisma);
+
+  const useCase = new DeliverSaleUseCase(
+    saleRepo,
+    inventoryRepo,
+    reservationRepo
+  );
+
+  await useCase.execute(saleId, userId);
+  revalidatePath("/tenant/sales");
+  return { success: true };
+}
+
+export async function processReturnAction(input: ProcessReturnInput) {
+  const rentalRepo = new PrismaRentalRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
+  const guaranteeRepo = new PrismaGuaranteeRepository(prisma);
+  const operationRepo = new PrismaOperationRepository(prisma);
+
+  const useCase = new ProcessReturnUseCase(
+    rentalRepo,
+    inventoryRepo,
+    guaranteeRepo,
+    operationRepo
+  );
+
+  await useCase.execute(input);
+  revalidatePath("/tenant/returns");
+  revalidatePath("/tenant/rentals");
   return { success: true };
 }

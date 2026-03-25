@@ -19,7 +19,10 @@ export class ApplyBundleUseCase {
   }
 
   async getBundleDefinitions(tenantId?: string): Promise<BundleDefinition[]> {
-    const promotions = this.promotionRepo.getPromotions();
+    const promotions = tenantId 
+      ? await this.promotionRepo.getPromotionsByTenant(tenantId) 
+      : this.promotionRepo.getPromotions(); // Fallback for Zustand if no tenantId
+    
     const products = await this.inventoryRepo.getProducts();
 
     return this.bundleDomainService.createBundleDefinitionsFromPromotions(
@@ -38,7 +41,7 @@ export class ApplyBundleUseCase {
     endDate: Date,
     config: TenantConfig,
   ) {
-    const promotions = this.promotionRepo.getPromotions();
+    const promotions = await this.promotionRepo.getPromotionsByTenant(tenantId);
     const inventoryItems = await this.inventoryRepo.getInventoryItems();
     const stockLots = await this.inventoryRepo.getStockLots();
     const productVariants = await this.inventoryRepo.getProductVariants();

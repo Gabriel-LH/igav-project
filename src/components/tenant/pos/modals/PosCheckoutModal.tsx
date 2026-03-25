@@ -19,8 +19,8 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
-import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
-import { ZustandLoyaltyRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandLoyaltyRepository";
+import { processTransactionAction, reserveBundlesAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { redeemPointsAction } from "@/src/app/(tenant)/tenant/actions/loyalty.actions";
 import { useTenantConfigStore, DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { SaleDTO } from "@/src/application/dtos/SaleDTO";
@@ -38,8 +38,6 @@ import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
 import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBundle.usecase";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { UseCouponComponent } from "../ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
 import { useCouponStore } from "@/src/store/useCouponStore";
@@ -273,17 +271,14 @@ export function PosCheckoutModal({
       if (items.some((item) => item.bundleId)) {
         const tenantId = activeTenantId ?? items[0]?.product.tenantId;
         if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-        const bundleOrchestrator = new ApplyBundleUseCase(
-          new ZustandInventoryRepository(),
-          new ZustandPromotionRepository(),
-        );
-        await bundleOrchestrator.reserveBundledItems(
+        const resBundle = await reserveBundlesAction(
           items,
           tenantId,
           currentBranchId,
           dateRange.from,
-          dateRange.to,
+          dateRange.to
         );
+        if (!resBundle.success) throw new Error(resBundle.error);
       }
 
       const { stockLots } = useInventoryStore.getState();
@@ -459,11 +454,9 @@ export function PosCheckoutModal({
       }
 
       if (usePoints && pointsConsumed > 0) {
-        new ZustandLoyaltyRepository().addPoints(
+        await redeemPointsAction(
           selectedCustomer.id,
           pointsConsumed,
-          "redeemed",
-          undefined,
           "Canje de puntos en POS",
         );
       }

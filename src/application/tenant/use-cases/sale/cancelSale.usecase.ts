@@ -22,8 +22,8 @@ export class CancelSaleUseCase {
     private operationRepo: OperationRepository,
   ) {}
 
-  execute({ saleId, reason, userId }: CancelSaleInput): void {
-    const sale = this.saleRepo.getSaleById(saleId);
+  async execute({ saleId, reason, userId }: CancelSaleInput): Promise<void> {
+    const sale = await this.saleRepo.getSaleById(saleId);
     if (!sale) throw new Error("Venta no encontrada");
 
     if (sale.status === "cancelado") {
@@ -39,11 +39,12 @@ export class CancelSaleUseCase {
       throw new Error("Solo se puede anular ventas dentro de las 24h");
     }
 
-    const saleWithItems = this.saleRepo.getSaleWithItems(saleId);
+    const saleWithItems = await this.saleRepo.getSaleWithItems(saleId);
 
     const reversal: SaleReversal = {
       id: `REV-${crypto.randomUUID()}`,
       saleId: sale.id,
+      tenantId: sale.tenantId,
       type: "annulment" as const,
       reason,
       totalRefunded: sale.totalAmount,
@@ -52,19 +53,19 @@ export class CancelSaleUseCase {
       items: [],
     };
 
-    this.reversalRepo.addReversal(reversal);
+    await this.reversalRepo.addReversal(reversal);
 
     // 2️⃣ Stock vuelve a disponible (por item)
-    saleWithItems.items.forEach((item) => {
-      this.inventoryRepo.updateItemStatus(
+    for (const item of saleWithItems.items) {
+      await this.inventoryRepo.updateItemStatus(
         item.stockId,
         "disponible",
         sale.branchId,
         userId,
       );
-    });
+    }
 
-    this.saleRepo.updateSale(sale.id, {
+    await this.saleRepo.updateSale(sale.id, {
       status: "cancelado",
       canceledAt: new Date(),
       amountRefunded: sale.totalAmount,
@@ -72,12 +73,12 @@ export class CancelSaleUseCase {
       updatedBy: userId,
     });
 
-    const payments = this.paymentRepo.getPaymentsByOperationId(
+    const payments = await this.paymentRepo.getPaymentsByOperationId(
       sale.operationId,
     );
 
-    payments.forEach((payment) => {
-      this.paymentRepo.addPayment({
+    for (const payment of payments) {
+      await this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
         tenantId: sale.tenantId,
         operationId: sale.operationId,
@@ -92,8 +93,8 @@ export class CancelSaleUseCase {
         receivedById: userId,
         branchId: sale.branchId,
       } as Payment);
-    });
+    }
 
-    this.operationRepo.updateOperationStatus(sale.operationId, "cancelado");
+    await this.operationRepo.updateOperationStatus(sale.operationId, "cancelado");
   }
 }

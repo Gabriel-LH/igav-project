@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "vestidosboutique.com",
       },
+      {
+        protocol: "https",
+        hostname: "tse2.mm.bing.net",
+      },
     ],
   },
 };

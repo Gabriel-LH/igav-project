@@ -1,7 +1,7 @@
 import { RentalRepository } from "@/src/domain/tenant/repositories/RentalRepository";
 import { Rental } from "@/src/types/rentals/type.rentals";
 import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
-import { PrismaClient, Prisma } from "@/prisma/generated/client";
+import { PrismaClient, Prisma, RentalItemStatus, RentalStatus } from "@/prisma/generated/client";
 
 export class PrismaRentalRepository implements RentalRepository {
   constructor(
@@ -11,11 +11,8 @@ export class PrismaRentalRepository implements RentalRepository {
   async addRental(rental: Rental, rentalItems: RentalItem[]): Promise<void> {
     const rentalItemData = await Promise.all(
       rentalItems.map(async (item) => {
-        const serialMatch = await this.prisma.inventoryItem.findUnique({
-          where: { id: item.stockId },
-          select: { id: true },
-        });
-        const isSerial = item.isSerial ?? !!serialMatch;
+        const resolvedIds = await this.resolveRentalItemIds(item);
+        const isSerial = item.isSerial ?? Boolean(resolvedIds.inventoryItemId);
 
         return {
           id: item.id,
@@ -24,16 +21,16 @@ export class PrismaRentalRepository implements RentalRepository {
           operationId: rental.operationId,
           productId: item.productId,
           variantId: item.variantId || "",
-          stockLotId: isSerial ? null : item.stockId,
-          inventoryItemId: isSerial ? item.stockId : null,
+          inventoryItemId: resolvedIds.inventoryItemId,
+          stockLotId: resolvedIds.stockLotId,
           quantity: item.quantity,
           priceAtMoment: item.priceAtMoment,
           discountAmount: item.discountAmount ?? 0,
           discountReason: item.discountReason ?? null,
           bundleId: item.bundleId ?? null,
           promotionId: item.promotionId ?? null,
-          conditionOut: item.conditionOut as any,
-          itemStatus: item.itemStatus as any,
+          conditionOut: item.conditionOut,
+          itemStatus: item.itemStatus as RentalItemStatus,
           notes: item.notes || "",
           listPrice: item.listPrice,
           isSerial,
@@ -53,7 +50,7 @@ export class PrismaRentalRepository implements RentalRepository {
         outDate: rental.outDate,
         expectedReturnDate: rental.expectedReturnDate,
         actualReturnDate: rental.actualReturnDate,
-        status: rental.status as any,
+        status: rental.status as RentalStatus,
         notes: rental.notes || "",
         createdAt: rental.createdAt,
         updatedAt: rental.updatedAt,
@@ -73,7 +70,35 @@ export class PrismaRentalRepository implements RentalRepository {
   }
 
   async getRentalItems(): Promise<RentalItem[]> {
-    const items = await this.prisma.rentalItem.findMany();
+    const items = await this.prisma.rentalItem.findMany({
+      select: {
+        id: true,
+        tenantId: true,
+        rentalId: true,
+        operationId: true,
+        productId: true,
+        variantId: true,
+        priceAtMoment: true,
+        quantity: true,
+        conditionOut: true,
+        conditionIn: true,
+        isDamaged: true,
+        damageNotes: true,
+        discountAmount: true,
+        discountReason: true,
+        bundleId: true,
+        promotionId: true,
+        productName: true,
+        variantCode: true,
+        serialCode: true,
+        isSerial: true,
+        notes: true,
+        listPrice: true,
+        itemStatus: true,
+        stockLotId: true,
+        inventoryItemId: true,
+      },
+    });
     return items.map(this.mapRentalItem);
   }
 
@@ -129,19 +154,77 @@ export class PrismaRentalRepository implements RentalRepository {
   async getRentalItemsByRentalId(rentalId: string): Promise<RentalItem[]> {
     const items = await this.prisma.rentalItem.findMany({
       where: { rentalId },
+      select: {
+        id: true,
+        tenantId: true,
+        rentalId: true,
+        operationId: true,
+        productId: true,
+        variantId: true,
+        priceAtMoment: true,
+        quantity: true,
+        conditionOut: true,
+        conditionIn: true,
+        isDamaged: true,
+        damageNotes: true,
+        discountAmount: true,
+        discountReason: true,
+        bundleId: true,
+        promotionId: true,
+        productName: true,
+        variantCode: true,
+        serialCode: true,
+        isSerial: true,
+        notes: true,
+        listPrice: true,
+        itemStatus: true,
+        stockLotId: true,
+        inventoryItemId: true,
+      },
     });
     return items.map(this.mapRentalItem);
   }
 
-  private mapRentalItem(
-    item: Prisma.RentalItemGetPayload<{}>,
-  ): RentalItem {
+  private mapRentalItem(item: any): RentalItem {
     const stockId = item.inventoryItemId ?? item.stockLotId ?? "";
+
     return {
       ...(item as unknown as RentalItem),
       stockId,
       isSerial: item.isSerial ?? Boolean(item.inventoryItemId),
     };
+  }
+
+  private async resolveRentalItemIds(item: RentalItem): Promise<{
+    inventoryItemId: string | null;
+    stockLotId: string | null;
+  }> {
+    if (item.inventoryItemId || item.stockLotId) {
+      return {
+        inventoryItemId: item.inventoryItemId ?? null,
+        stockLotId: item.stockLotId ?? null,
+      };
+    }
+
+    const inventoryItem = await this.prisma.inventoryItem.findUnique({
+      where: { id: item.stockId },
+      select: { id: true },
+    });
+
+    if (inventoryItem) {
+      return { inventoryItemId: inventoryItem.id, stockLotId: null };
+    }
+
+    const stockLot = await this.prisma.stockLot.findUnique({
+      where: { id: item.stockId },
+      select: { id: true },
+    });
+
+    if (stockLot) {
+      return { inventoryItemId: null, stockLotId: stockLot.id };
+    }
+
+    throw new Error(`Stock no encontrado para rental item ${item.id}`);
   }
 
   async processReturnItem(itemId: string, status: string): Promise<void> {

@@ -52,14 +52,16 @@ export class DeliverRentalUseCase {
         throw new Error(`Item ${item.id} no tiene stock asignado`);
       }
 
-      await this.inventoryRepo.updateItemStatus(
-        item.stockId,
-        "alquilado",
-        rental.branchId,
-        userId,
-      );
-
-      await this.inventoryRepo.decreaseLotQuantity(item.stockId, 1);
+      if (item.isSerial) {
+        await this.inventoryRepo.updateItemStatus(
+          item.stockId,
+          "alquilado",
+          rental.branchId,
+          userId,
+        );
+      } else {
+        await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+      }
     }
 
     await this.rentalRepo.updateRental(rental.id, {

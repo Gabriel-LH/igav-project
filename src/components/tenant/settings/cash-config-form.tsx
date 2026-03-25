@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -19,7 +19,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   Table,
@@ -48,7 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/badge";
 import { Separator } from "@/components/ui/separator";
-import { HelpCircle, Plus, Pencil, Trash2, X } from "lucide-react";
+import { HelpCircle, Plus, Pencil, Trash2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -56,7 +55,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CashierIcon, Money01Icon, BankIcon } from "@hugeicons/core-free-icons";
+import { CashierIcon, Money01Icon } from "@hugeicons/core-free-icons";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
@@ -64,16 +63,6 @@ const cashFormSchema = z.object({
   openingCashRequired: z.boolean(),
   requireClosingReport: z.boolean(),
   allowNegativeCash: z.boolean(),
-});
-
-const paymentMethodSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, "El nombre es requerido"),
-  type: z.enum(["cash", "digital", "card", "transfer"]),
-  active: z.boolean().default(true),
-  allowsChange: z.boolean().default(false),
-  requiresPin: z.boolean().default(false),
-  icon: z.string().optional(),
 });
 
 type CashFormValues = z.infer<typeof cashFormSchema>;

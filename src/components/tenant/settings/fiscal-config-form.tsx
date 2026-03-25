@@ -1,12 +1,18 @@
 // components/tenant-config/FiscalConfigForm.tsx
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Info, HelpCircle } from 'lucide-react';
-import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Info, HelpCircle } from "lucide-react";
+import { z } from "zod";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,31 +21,31 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
-import type { TenantConfig } from '@/src/types/tenant/type.tenantConfig'; 
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 
 const fiscalFormSchema = z.object({
   currency: z.string(),
   rate: z.number().min(0).max(100),
-  calculationMode: z.enum(['TAX_INCLUDED', 'TAX_EXCLUDED']),
-  strategy: z.enum(['HALF_UP', 'HALF_EVEN', 'FLOOR', 'CEIL']),
-  applyOn: z.enum(['LINE', 'TOTAL']),
+  calculationMode: z.enum(["TAX_INCLUDED", "TAX_EXCLUDED"]),
+  strategy: z.enum(["HALF_UP", "HALF_EVEN", "FLOOR", "CEIL"]),
+  applyOn: z.enum(["LINE", "TOTAL"]),
   roundTo: z.number(),
 });
 
@@ -47,7 +53,7 @@ type FiscalFormValues = z.infer<typeof fiscalFormSchema>;
 
 interface FiscalConfigFormProps {
   config: TenantConfig;
-  onChange: (values: Partial<TenantConfig['tax']>) => void;
+  onChange: (values: Partial<TenantConfig["tax"]>) => void;
 }
 
 export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
@@ -68,7 +74,9 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
     const subscription = form.watch((values) => {
       onChange({
         rate: (values.rate || 0) / 100,
-        calculationMode: values.calculationMode as 'TAX_INCLUDED' | 'TAX_EXCLUDED',
+        calculationMode: values.calculationMode as
+          | "TAX_INCLUDED"
+          | "TAX_EXCLUDED",
         rounding: {
           strategy: values.strategy as any,
           applyOn: values.applyOn as any,
@@ -80,17 +88,32 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
   }, [form, onChange]);
 
   const roundingStrategies = [
-    { value: 'HALF_UP', label: 'HALF_UP (Redondear hacia arriba .5)', desc: 'Estándar comercial: 2.5 → 3' },
-    { value: 'HALF_EVEN', label: 'HALF_EVEN (Redondeo bancario)', desc: 'Redondeo al par más cercano: 2.5 → 2' },
-    { value: 'FLOOR', label: 'FLOOR (Redondear hacia abajo)', desc: 'Siempre hacia abajo: 2.9 → 2' },
-    { value: 'CEIL', label: 'CEIL (Redondear hacia arriba)', desc: 'Siempre hacia arriba: 2.1 → 3' },
+    {
+      value: "HALF_UP",
+      label: "HALF_UP (Redondear hacia arriba .5)",
+      desc: "Estándar comercial: 2.5 → 3",
+    },
+    {
+      value: "HALF_EVEN",
+      label: "HALF_EVEN (Redondeo bancario)",
+      desc: "Redondeo al par más cercano: 2.5 → 2",
+    },
+    {
+      value: "FLOOR",
+      label: "FLOOR (Redondear hacia abajo)",
+      desc: "Siempre hacia abajo: 2.9 → 2",
+    },
+    {
+      value: "CEIL",
+      label: "CEIL (Redondear hacia arriba)",
+      desc: "Siempre hacia arriba: 2.1 → 3",
+    },
   ];
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="drop-shadow-2xl">
+      <CardHeader className="mt-3">
         <CardTitle className="flex items-center gap-2">
-          <span>💰</span>
           Información Fiscal
         </CardTitle>
         <CardDescription>
@@ -100,75 +123,82 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
       <CardContent>
         <Form {...form}>
           <form className="space-y-6">
-            {/* Moneda */}
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    Moneda
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Moneda oficial para transacciones</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar moneda" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="PEN">PEN (Soles)</SelectItem>
-                      <SelectItem value="USD">USD (Dólares)</SelectItem>
-                      <SelectItem value="EUR">EUR (Euros)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="w-full md:grid-cols-2 grid gap-4 items-center">
+              {/* Moneda */}
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      Moneda
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Moneda oficial para transacciones</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar moneda" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="PEN">PEN (Soles)</SelectItem>
+                        <SelectItem value="USD">USD (Dólares)</SelectItem>
+                        <SelectItem value="EUR">EUR (Euros)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Tasa IGV */}
-            <FormField
-              control={form.control}
-              name="rate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    Tasa de IGV (%)
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Porcentaje de Impuesto General a las Ventas</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      {...field}
-                      onChange={e => field.onChange(parseFloat(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Tasa IGV */}
+              <FormField
+                control={form.control}
+                name="rate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      Tasa de IGV (%)
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Porcentaje de Impuesto General a las Ventas</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="100"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Modo de cálculo */}
             <FormField
@@ -221,9 +251,8 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
             <Separator />
 
             {/* Configuración de redondeo */}
-            <div className="space-y-4">
+            <div className="space-y-4 mb-3">
               <h3 className="font-medium flex items-center gap-2">
-                <span>🔄</span>
                 Configuración de Redondeo
                 <TooltipProvider>
                   <Tooltip>
@@ -231,7 +260,10 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-sm">
-                      <p>El redondeo afecta cómo se calculan los totales y puede tener impacto contable significativo</p>
+                      <p>
+                        El redondeo afecta cómo se calculan los totales y puede
+                        tener impacto contable significativo
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -244,7 +276,10 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Estrategia de redondeo</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Seleccionar estrategia" />
@@ -252,7 +287,10 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       </FormControl>
                       <SelectContent>
                         {roundingStrategies.map((strategy) => (
-                          <SelectItem key={strategy.value} value={strategy.value}>
+                          <SelectItem
+                            key={strategy.value}
+                            value={strategy.value}
+                          >
                             <div>
                               <span>{strategy.label}</span>
                               <span className="text-xs text-muted-foreground ml-2">
@@ -264,7 +302,10 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      {roundingStrategies.find(s => s.value === field.value)?.desc}
+                      {
+                        roundingStrategies.find((s) => s.value === field.value)
+                          ?.desc
+                      }
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -314,8 +355,10 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Redondear a</FormLabel>
-                    <Select 
-                      onValueChange={(value) => field.onChange(parseFloat(value))} 
+                    <Select
+                      onValueChange={(value) =>
+                        field.onChange(parseFloat(value))
+                      }
                       defaultValue={field.value.toString()}
                     >
                       <FormControl>
@@ -325,7 +368,9 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="0.01">0.01 (Centésimos)</SelectItem>
-                        <SelectItem value="0.05">0.05 (Medio décimo)</SelectItem>
+                        <SelectItem value="0.05">
+                          0.05 (Medio décimo)
+                        </SelectItem>
                         <SelectItem value="0.10">0.10 (Décimos)</SelectItem>
                       </SelectContent>
                     </Select>

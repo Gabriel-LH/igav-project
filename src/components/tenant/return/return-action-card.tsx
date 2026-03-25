@@ -10,7 +10,7 @@ import {
   ShoppingBag02Icon,
 } from "@hugeicons/core-free-icons";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { CLIENTS_MOCK } from "@/src/mocks/mock.client";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { ReturnInspectionDrawer } from "./return-inspector-action";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 
@@ -19,8 +19,9 @@ interface Props {
 }
 
 export function ReturnActionCard({ rental }: Props) {
+  const { customers } = useCustomerStore();
   // 1. HIDRATACIÓN: Buscamos al cliente
-  const client = CLIENTS_MOCK.find((c) => c.id === rental.customerId);
+  const client = customers.find((c) => c.id === rental.customerId);
 
   const guarantee = rental.guarantee;
 
@@ -177,7 +178,7 @@ export function ReturnActionCard({ rental }: Props) {
         <div className="py-2">
           <ReturnInspectionDrawer
             rental={rental}
-            client={client}
+            client={client || null}
             isOverdue={isOverdue}
           />
         </div>

@@ -28,59 +28,63 @@ export class ProcessReturnUseCase {
     private operationRepo: OperationRepository,
   ) {}
 
-  execute(input: ProcessReturnInput): void {
+  async execute(input: ProcessReturnInput): Promise<void> {
     const now = new Date();
 
-    const rental = this.rentalRepo.getRentalById(input.rentalId);
+    const rental = await this.rentalRepo.getRentalById(input.rentalId);
     if (!rental) throw new Error("Rental no encontrado");
 
-    input.items.forEach((itemInput) => {
-      this.rentalRepo.processReturnItem(
-        itemInput.rentalItemId,
-        itemInput.itemStatus,
-      );
-    });
+    await Promise.all(
+      input.items.map((itemInput) =>
+        this.rentalRepo.processReturnItem(
+          itemInput.rentalItemId,
+          itemInput.itemStatus,
+        ),
+      ),
+    );
 
-    this.rentalRepo.updateRental(rental.id, {
+    await this.rentalRepo.updateRental(rental.id, {
       status: input.rentalStatus,
       actualReturnDate: now,
       notes: input.notes,
     });
 
-    input.items.forEach((itemInput) => {
-      const rentalItem = this.rentalRepo.getRentalItemById(
-        itemInput.rentalItemId,
-      );
-      if (!rentalItem) return;
-
-      const isSerial = this.inventoryRepo.isSerial(rentalItem.stockId);
-
-      if (isSerial) {
-        this.inventoryRepo.updateItemStatus(
-          rentalItem.stockId,
-          itemInput.stockTarget,
-          undefined,
-          input.adminId,
+    await Promise.all(
+      input.items.map(async (itemInput) => {
+        const rentalItem = await this.rentalRepo.getRentalItemById(
+          itemInput.rentalItemId,
         );
-      } else {
-        if (itemInput.stockTarget === "disponible") {
-          this.inventoryRepo.increaseLotQuantity(
+        if (!rentalItem) return;
+
+        const isSerial = await this.inventoryRepo.isSerial(rentalItem.stockId);
+
+        if (isSerial) {
+          await this.inventoryRepo.updateItemStatus(
             rentalItem.stockId,
-            rentalItem.quantity,
+            itemInput.stockTarget,
+            undefined,
+            input.adminId,
           );
+        } else {
+          if (itemInput.stockTarget === "disponible") {
+            await this.inventoryRepo.increaseLotQuantity(
+              rentalItem.stockId,
+              rentalItem.quantity,
+            );
+          }
         }
-      }
-    });
+      }),
+    );
 
     if (rental.guaranteeId) {
-      this.guaranteeRepo.updateGuaranteeStatus(
+      await this.guaranteeRepo.updateGuaranteeStatus(
         rental.guaranteeId,
         input.guaranteeResult,
       );
     }
 
     if (input.rentalStatus === "devuelto") {
-      this.operationRepo.updateOperationStatus(
+      await this.operationRepo.updateOperationStatus(
         rental.operationId,
         "completado",
       );

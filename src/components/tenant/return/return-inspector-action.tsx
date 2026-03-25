@@ -28,13 +28,8 @@ import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
 import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
-import { ProcessReturnUseCase } from "@/src/application/tenant/use-cases/processReturn.usecase";
-import { ZustandRentalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandRentalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandGuaranteeRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandGuaranteeRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
-import { USER_MOCK } from "@/src/mocks/mock.user";
-import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
+import { processReturnAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
+import { authClient } from "@/src/lib/auth-client";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 
@@ -50,9 +45,10 @@ export function ReturnInspectionDrawer({
   isOverdue,
 }: {
   rental: RentalDTO;
-  client: any;
+  client: { firstName: string; lastName: string; dni?: string; phone?: string } | null | undefined;
   isOverdue: boolean;
 }) {
+  const { data: session } = authClient.useSession();
   const isMobile = useIsMobile();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [extraDamageCharge, setExtraDamageCharge] = useState(0);
@@ -79,7 +75,7 @@ export function ReturnInspectionDrawer({
       name: item.productName,
       sizeId: (item as any).sizeId || (item as any).size,
     }));
-  }, [rental.items]);
+  }, [rental.items, rental.id]);
 
   // 1. Group items from rental.items (passed from Grid)
   const itemsToInspects = useMemo(() => {
@@ -207,16 +203,9 @@ export function ReturnInspectionDrawer({
 
     if (itemsToProcess.length === 0) return;
 
-    const processReturnUseCase = new ProcessReturnUseCase(
-      new ZustandRentalRepository(),
-      new ZustandInventoryRepository(),
-      new ZustandGuaranteeRepository(),
-      new ZustandOperationRepository(),
-    );
-
-    processReturnUseCase.execute({
+    await processReturnAction({
       rentalId: rental.id,
-      rentalStatus: !itemsStatus.noPhysicalDamage ? "con_daños" : "devuelto", // This logic might need review if partial return
+      rentalStatus: !itemsStatus.noPhysicalDamage ? "con_daños" : "devuelto",
       items: itemsToProcess.map((item) => ({
         rentalItemId: String(item.id),
         itemStatus: "devuelto",
@@ -229,7 +218,7 @@ export function ReturnInspectionDrawer({
         summary.refundAmount > 0 || !summary.isCash ? "devuelta" : "retenida",
 
       notes: damageNotes,
-      adminId: USER_MOCK[0].id,
+      adminId: session?.user?.id || "admin-system",
     });
 
     const ticketHtml = buildReturnTicketHtml(

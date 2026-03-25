@@ -23,15 +23,15 @@ export class ReturnSaleItemsUseCase {
     private paymentRepo: PaymentRepository,
   ) {}
 
-  execute({ saleId, items, reason, userId }: ReturnSaleItemsInput): void {
-    const sale = this.saleRepo.getSaleById(saleId);
+  async execute({ saleId, items, reason, userId }: ReturnSaleItemsInput): Promise<void> {
+    const sale = await this.saleRepo.getSaleById(saleId);
 
     if (!sale) throw new Error("Venta no encontrada");
     if (sale.status === "cancelado") {
       throw new Error("No se puede devolver una venta anulada");
     }
 
-    const saleWithItems = this.saleRepo.getSaleWithItems(saleId);
+    const saleWithItems = await this.saleRepo.getSaleWithItems(saleId);
 
     let totalRefunded = 0;
 
@@ -47,15 +47,17 @@ export class ReturnSaleItemsUseCase {
 
       return {
         saleItemId: item.id,
+        tenantId: sale.tenantId,
         condition: i.condition,
         restockingFee: i.restockingFee,
         refundedAmount: refunded,
       };
     });
 
-    this.reversalRepo.addReversal({
+    await this.reversalRepo.addReversal({
       id: `REV-${crypto.randomUUID()}`,
       saleId,
+      tenantId: sale.tenantId,
       type: "return",
       reason,
       items: reversalItems,
@@ -65,20 +67,21 @@ export class ReturnSaleItemsUseCase {
     });
 
     // 1️⃣ actualizar items
-    reversalItems.forEach((ri) => {
-      this.saleRepo.updateSaleItem(ri.saleItemId, {
+    for (const ri of reversalItems) {
+      await this.saleRepo.updateSaleItem(ri.saleItemId, {
         isReturned: true,
         returnedAt: new Date(),
         returnCondition: ri.condition,
       });
-    });
+    }
 
     // 2️⃣ LEER ESTADO NUEVO (clave)
-    const updatedItems = this.saleRepo.getSaleWithItems(saleId).items;
+    const updatedSaleWithItems = await this.saleRepo.getSaleWithItems(saleId);
+    const updatedItems = updatedSaleWithItems.items;
     const allReturned = updatedItems.every((i) => i.isReturned === true);
 
     // 3️⃣ actualizar venta
-    this.saleRepo.updateSale(saleId, {
+    await this.saleRepo.updateSale(saleId, {
       amountRefunded: sale.amountRefunded + totalRefunded,
       status: allReturned ? "devuelto" : sale.status,
       returnedAt: allReturned ? new Date() : sale.returnedAt,
@@ -86,23 +89,23 @@ export class ReturnSaleItemsUseCase {
       updatedBy: userId,
     });
 
-    reversalItems.forEach((ri) => {
+    for (const ri of reversalItems) {
       const saleItem = saleWithItems.items.find((i) => i.id === ri.saleItemId)!;
 
       if (ri.condition !== "perfecto") {
         throw new Error("No se aceptan devoluciones en este estado");
       }
 
-      this.inventoryRepo.updateItemStatus(saleItem.stockId, "disponible");
-    });
+      await this.inventoryRepo.updateItemStatus(saleItem.stockId, "disponible");
+    }
 
     if (totalRefunded > 0) {
-      const payments = this.paymentRepo.getPaymentsByOperationId(
+      const payments = await this.paymentRepo.getPaymentsByOperationId(
         sale.operationId,
       );
       const firstPaymentMethod = payments[0]?.paymentMethodId || "cash";
 
-      this.paymentRepo.addPayment({
+      await this.paymentRepo.addPayment({
         id: `PAY-${crypto.randomUUID()}`,
         tenantId: sale.tenantId,
         operationId: sale.operationId,

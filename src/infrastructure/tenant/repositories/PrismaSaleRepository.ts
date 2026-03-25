@@ -1,7 +1,7 @@
 import { SaleRepository } from "@/src/domain/tenant/repositories/SaleRepository";
 import { Sale } from "@/src/types/sales/type.sale";
 import { SaleItem } from "@/src/types/sales/type.saleItem";
-import { PrismaClient, Prisma } from "@/prisma/generated/client";
+import { PrismaClient, Prisma, SaleStatus, ItemCondition } from "@/prisma/generated/client";
 
 export class PrismaSaleRepository implements SaleRepository {
   constructor(
@@ -20,7 +20,7 @@ export class PrismaSaleRepository implements SaleRepository {
         reservationId: sale.reservationId || null,
         totalAmount: sale.totalAmount,
         saleDate: sale.saleDate,
-        status: sale.status as any,
+        status: sale.status as SaleStatus,
         amountRefunded: sale.amountRefunded || 0,
         notes: sale.notes || "",
         createdAt: sale.createdAt,
@@ -56,7 +56,32 @@ export class PrismaSaleRepository implements SaleRepository {
   async getSaleWithItems(id: string): Promise<{ items: SaleItem[] } & Sale> {
     const sale = await this.prisma.sale.findUnique({
       where: { id },
-      include: { items: true },
+      include: {
+        items: {
+          select: {
+            id: true,
+            tenantId: true,
+            saleId: true,
+            productId: true,
+            stockId: true,
+            variantId: true,
+            priceAtMoment: true,
+            listPrice: true,
+            quantity: true,
+            discountAmount: true,
+            discountReason: true,
+            bundleId: true,
+            promotionId: true,
+            productName: true,
+            variantCode: true,
+            serialCode: true,
+            isSerial: true,
+            isReturned: true,
+            returnedAt: true,
+            returnCondition: true,
+          },
+        },
+      },
     });
     if (!sale) throw new Error("Sale not found");
     const { items, ...rest } = sale;
@@ -78,7 +103,7 @@ export class PrismaSaleRepository implements SaleRepository {
       where: { id },
       data: {
         ...(data as any),
-        status: data.status ? (data.status as any) : undefined,
+        status: data.status ? (data.status as SaleStatus) : undefined,
       },
     });
   }
@@ -88,7 +113,7 @@ export class PrismaSaleRepository implements SaleRepository {
       where: { id },
       data: {
         ...(data as any),
-        returnCondition: data.returnCondition ? (data.returnCondition as any) : undefined,
+        returnCondition: data.returnCondition ? (data.returnCondition as ItemCondition) : undefined,
       },
     });
   }
@@ -106,7 +131,30 @@ export class PrismaSaleRepository implements SaleRepository {
   }
 
   async getSaleItems(): Promise<SaleItem[]> {
-    const items = await this.prisma.saleItem.findMany();
+    const items = await this.prisma.saleItem.findMany({
+      select: {
+        id: true,
+        tenantId: true,
+        saleId: true,
+        productId: true,
+        stockId: true,
+        variantId: true,
+        priceAtMoment: true,
+        listPrice: true,
+        quantity: true,
+        discountAmount: true,
+        discountReason: true,
+        bundleId: true,
+        promotionId: true,
+        productName: true,
+        variantCode: true,
+        serialCode: true,
+        isSerial: true,
+        isReturned: true,
+        returnedAt: true,
+        returnCondition: true,
+      },
+    });
     return items as unknown as SaleItem[];
   }
 }

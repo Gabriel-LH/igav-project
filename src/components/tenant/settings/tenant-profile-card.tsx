@@ -3,11 +3,12 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { updateTenantProfileAction } from "@/src/app/(tenant)/tenant/actions/tenant-profile.actions";
+import Image from "next/image";
 
 type TenantProfile = {
   id: string;
@@ -50,28 +51,26 @@ export function TenantProfileCard({ tenant }: TenantProfileCardProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="drop-shadow-2xl">
+      <CardHeader className="mt-3">
         <CardTitle>Información del negocio</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-2">
-          <Label htmlFor="tenant-name">Nombre del negocio</Label>
-          <Input
-            id="tenant-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nombre del negocio"
-          />
-        </div>
+        <div className="w-full md:grid-cols-2 grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="tenant-name">Nombre del negocio</Label>
+            <Input
+              id="tenant-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre del negocio"
+            />
+          </div>
 
-        <div className="grid gap-2">
-          <Label htmlFor="tenant-slug">Slug</Label>
-          <Input
-            id="tenant-slug"
-            value={tenant?.slug || ""}
-            disabled
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="tenant-slug">Slug</Label>
+            <Input id="tenant-slug" value={tenant?.slug || ""} disabled />
+          </div>
         </div>
 
         <div className="grid gap-2">
@@ -86,9 +85,11 @@ export function TenantProfileCard({ tenant }: TenantProfileCardProps) {
 
         {logoUrl ? (
           <div className="rounded-md border p-3">
-            <img
+            <Image
               src={logoUrl}
               alt="Logo del negocio"
+              width={64}
+              height={64}
               className="h-16 w-16 rounded object-cover"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
@@ -97,7 +98,7 @@ export function TenantProfileCard({ tenant }: TenantProfileCardProps) {
           </div>
         ) : null}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-3">
           <Button onClick={handleSave} disabled={!hasChanges || saving}>
             {saving ? "Guardando..." : "Guardar"}
           </Button>

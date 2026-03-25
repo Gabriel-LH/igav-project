@@ -98,6 +98,7 @@ export class CreateRentalUseCase {
             throw new Error(`ReservationItem no encontrado`);
           return {
             id: crypto.randomUUID(),
+            tenantId,
             rentalId: rental.id,
             operationId: String(operationId),
             productId: reservationItem.productId,
@@ -121,6 +122,7 @@ export class CreateRentalUseCase {
       rentalItems = rentalItemSchema.array().parse(
         (dto as RentalDTO).items.map((item) => ({
           id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
+          tenantId,
           rentalId: rental.id,
           operationId: String(operationId),
           productId: item.productId,

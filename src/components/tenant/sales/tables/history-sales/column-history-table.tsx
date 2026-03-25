@@ -23,15 +23,9 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { useState } from "react";
 import { ReturnProductModal } from "../../ui/modals/ReturProductModal";
 import { SaleWithItems } from "@/src/types/sales/type.sale";
-import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
-import { ZustandSaleRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleRepository";
-import { ZustandSaleReversalRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandSaleReversalRepository";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandPaymentRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPaymentRepository";
-import { ZustandOperationRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandOperationRepository";
+import { cancelSaleAction, returnSaleItemsAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
 import { toast } from "sonner";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
-import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/returnSaleItems.usecase";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>
@@ -150,19 +144,7 @@ function ActionCell({
 
   const handleCancelConfirm = async (id: string, reason: string) => {
     try {
-      const cancelSaleUC = new CancelSaleUseCase(
-        new ZustandSaleRepository(),
-        new ZustandSaleReversalRepository(),
-        new ZustandInventoryRepository(),
-        new ZustandPaymentRepository(),
-        new ZustandOperationRepository(),
-      );
-
-      cancelSaleUC.execute({
-        saleId: id,
-        reason,
-        userId: userId,
-      });
+      await cancelSaleAction(id, reason, userId);
 
       toast.success("Venta anulada", {
         description: "La venta fue anulada correctamente",
@@ -176,7 +158,7 @@ function ActionCell({
     }
   };
 
-  const handleReturnConfirm = (
+  const handleReturnConfirm = async (
     saleId: string,
     reason: string,
     items: {
@@ -186,19 +168,7 @@ function ActionCell({
     }[],
   ) => {
     try {
-      const returnSaleItemsUC = new ReturnSaleItemsUseCase(
-        new ZustandSaleRepository(),
-        new ZustandSaleReversalRepository(),
-        new ZustandInventoryRepository(),
-        new ZustandPaymentRepository(),
-      );
-
-      returnSaleItemsUC.execute({
-        saleId,
-        reason,
-        items,
-        userId: userId,
-      });
+      await returnSaleItemsAction(saleId, reason, items, userId);
 
       toast.success("Devolución registrada", {
         description: "Los productos fueron devueltos correctamente",

@@ -58,4 +58,50 @@ export class PrismaGuaranteeRepository implements GuaranteeRepository {
     });
     return guarantees as unknown as Guarantee[];
   }
+
+  async getGuaranteeById(id: string): Promise<Guarantee | undefined> {
+    const guarantee = await this.prisma.guarantee.findUnique({
+      where: { id },
+    });
+    return guarantee as Guarantee | undefined;
+  }
+
+  async getGuaranteeByOperationId(operationId: string): Promise<Guarantee | undefined> {
+    const guarantee = await this.prisma.guarantee.findFirst({
+      where: { operationId },
+      orderBy: { createdAt: "desc" },
+    });
+    return guarantee as Guarantee | undefined;
+  }
+
+  async findGuaranteeForRental(input: {
+    guaranteeId?: string;
+    operationId: string;
+    rentalId?: string;
+  }): Promise<Guarantee | undefined> {
+    const orConditions: Prisma.GuaranteeWhereInput[] = [
+      { operationId: input.operationId },
+    ];
+
+    if (input.guaranteeId) {
+      orConditions.unshift({ id: input.guaranteeId });
+    }
+
+    if (input.rentalId) {
+      orConditions.push({
+        description: {
+          contains: input.rentalId,
+        },
+      });
+    }
+
+    const guarantee = await this.prisma.guarantee.findFirst({
+      where: {
+        OR: orConditions,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return guarantee as Guarantee | undefined;
+  }
 }

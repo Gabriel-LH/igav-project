@@ -1,6 +1,5 @@
 // utils/ticket/build-return-ticket.ts
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import { formatCurrency } from "@/src/utils/currency-format";
 
 export const buildReturnTicketHtml = (
@@ -23,19 +22,18 @@ export const buildReturnTicketHtml = (
 ) => {
   const productsList = items
     .map((item) => {
-      const productInfo = PRODUCTS_MOCK.find((p) => p.id === item.productId);
-      const status = inspection.itemsInspection[item.productId];
+      const status = inspection.itemsInspection[item.id || item.productId];
 
       return `
       <div style="margin-bottom:6px;border-bottom:1px dashed #ddd;padding-bottom:4px;">
         <div style="font-weight:bold;text-transform:uppercase;">
-          ${productInfo?.name || "Producto"}
+          ${item.name || item.productName || "Producto"}
         </div>
         <div style="font-size:10px;color:#555;">
-          Talla: ${item.size} | Color: ${item.color}
+          Talla: ${item.size || item.sizeId || "N/A"} | Color: ${item.color || item.colorId || "N/A"}
         </div>
         <div style="font-size:10px;font-weight:bold;">
-          Estado: ${status?.toUpperCase()}
+          Estado: ${status?.toUpperCase() || "N/A"}
         </div>
       </div>
     `;

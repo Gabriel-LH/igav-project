@@ -4,45 +4,48 @@ import { rentalItemStatusHistorySchema } from "./rentalItemStatusHistory";
 
 export const rentalItemSchema = z.object({
   id: z.string(),
-  rentalId: z.string(), // Conecta con el Alquiler (Cabecera)
-  operationId: z.string(), // Conecta con el pago/garantía
+  tenantId: z.string().optional(),
+  rentalId: z.string(),
+  operationId: z.string(),
 
-  // --- IDENTIFICACIÓN ---
-  productId: z.string(), // Modelo del vestido
-  stockId: z.string(), // PRENDA FÍSICA ESPECÍFICA (Obligatorio aquí)
+  productId: z.string(),
+  stockId: z.string(),
+  inventoryItemId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
+  stockLotId: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
 
-  // --- SNAPSHOT DEL MOMENTO ---
-  // Guardamos esto por si el producto cambia en el catálogo
   variantId: z.string(),
   priceAtMoment: z.number(),
   quantity: z.number().default(1),
 
-  // --- ESTADO FÍSICO AL SALIR/ENTRAR ---
-  conditionOut: z.string(), // Ej: "Perfecto estado, con ganchos"
-  conditionIn: z.string().optional(), // Se llena al retornar
+  conditionOut: z.string(),
+  conditionIn: z.string().optional(),
 
   isDamaged: z.boolean().default(false),
   damageNotes: z.string().optional(),
-  // Importante SRP: no guardar montos de daños/penalidades en el item.
-  // Esos cargos viven exclusivamente en rentalCharge.
 
-  discountAmount: z.number().default(0), // Dinero descontado (ej: 20)
+  discountAmount: z.number().default(0),
   discountReason: z.preprocess(
     (value) => (value === null ? undefined : value),
     z.string().optional(),
-  ), // Ej: "Pack Terno Ejecutivo", "Promo Verano"
+  ),
   bundleId: z.preprocess(
     (value) => (value === null ? undefined : value),
     z.string().optional(),
-  ), // ID temporal para agrupar visualmente en el recibo (ej: "pack-uuid-123")
+  ),
   promotionId: z.preprocess(
     (value) => (value === null ? undefined : value),
     z.string().optional(),
   ),
 
   productName: z.string().optional(),
-  variantCode: z.string().optional(), // Para saber qué talla/color era
-  serialCode: z.string().optional(), // Para saber qué QR fue (si aplica)
+  variantCode: z.string().optional(),
+  serialCode: z.string().optional(),
   isSerial: z.boolean().optional(),
 
   notes: z.preprocess(
@@ -50,7 +53,6 @@ export const rentalItemSchema = z.object({
     z.string().optional(),
   ),
   listPrice: z.number(),
-  // El status del item dentro del proceso de alquiler
   itemStatus: z.enum([
     "alquilado",
     "devuelto",

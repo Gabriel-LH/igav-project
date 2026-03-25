@@ -54,17 +54,30 @@ export class GetRentalsGridUseCase {
     const guaranteesById = new Map<string, Guarantee>(guarantees.map((g) => [g.id, g]));
     const productsById = new Map<string, Product>(products.map((p) => [p.id, p]));
 
-    return rentals
+    return Promise.all(
+      rentals
       .filter((r: Rental) => r.tenantId === tenantId)
-      .map((rental: Rental) => {
+      .map(async (rental: Rental) => {
         const branch = branchesById.get(rental.branchId);
         const customer = clientsById.get(rental.customerId);
         const guaranteeId = rental.guaranteeId || (rental as any).guarantee_id;
-        let guarantee = guaranteeId ? guaranteesById.get(guaranteeId) : undefined;
+        let guarantee: Guarantee | undefined;
+
+        if (guaranteeId) {
+          guarantee = guaranteesById.get(guaranteeId);
+          if (!guarantee) {
+            guarantee = await this.guaranteeRepo.getGuaranteeById(guaranteeId);
+          }
+        }
         
         if (!guarantee) {
           // Fallback por operationId si el ID directo falla
           guarantee = guarantees.find(g => g.operationId === rental.operationId);
+          if (!guarantee) {
+            guarantee = await this.guaranteeRepo.getGuaranteeByOperationId(
+              rental.operationId,
+            );
+          }
         }
         
         if (!guarantee && rental.id) {
@@ -72,6 +85,14 @@ export class GetRentalsGridUseCase {
            guarantee = guarantees.find(g => g.description?.includes(rental.id));
         }
         
+        if (!guarantee) {
+          guarantee = await this.guaranteeRepo.findGuaranteeForRental({
+            guaranteeId: guaranteeId || undefined,
+            operationId: rental.operationId,
+            rentalId: rental.id,
+          });
+        }
+
         const sellerId = (rental as any).sellerId || sellerIdByOperationId.get(rental.operationId);
         const seller = sellerId ? usersById.get(sellerId) : undefined;
 
@@ -133,6 +154,7 @@ export class GetRentalsGridUseCase {
           damage: "---",
           searchContent,
         };
-      });
+      }),
+    );
   }
 }

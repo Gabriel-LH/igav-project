@@ -2,6 +2,7 @@ import z from "zod";
 
 export const saleReversalItemSchema = z.object({
   saleItemId: z.string(),
+  tenantId: z.string(),
   condition: z.enum(["perfecto", "dañado", "manchado"]).optional(),
   restockingFee: z.number().default(0),
   refundedAmount: z.number(),
@@ -10,6 +11,7 @@ export const saleReversalItemSchema = z.object({
 export const saleReversalSchema = z.object({
   id: z.string(),
   saleId: z.string(),
+  tenantId: z.string(),
 
   type: z.enum(["annulment", "return"]),
   reason: z.string(),
@@ -20,7 +22,6 @@ export const saleReversalSchema = z.object({
 
   createdAt: z.date(),
   createdBy: z.string().optional(),
-  
 });
 
 export type SaleReversal = z.infer<typeof saleReversalSchema>;

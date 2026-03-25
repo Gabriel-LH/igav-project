@@ -1,11 +1,12 @@
 import { Reservation } from "@/src/types/reservation/type.reservation";
-import { ReservationItem } from "@/src/types/reservation/type.reservationItem"; 
-import { RentalFromReservationDTO } from "@/src/application/dtos/RentalFromReservationDTO"; 
+import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
+import { RentalFromReservationDTO } from "@/src/application/dtos/RentalFromReservationDTO";
 import { SaleFromReservationDTO } from "@/src/application/dtos/SaleFromReservationDTO";
-import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions"; 
-import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository"; 
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
 import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { GuaranteeRepository } from "@/src/domain/tenant/repositories/GuaranteeRepository";
+import { RentalRepository } from "@/src/domain/tenant/repositories/RentalRepository";
 import { guaranteeSchema } from "@/src/types/guarantee/type.guarantee";
 
 export interface ConvertReservationInput {
@@ -13,21 +14,16 @@ export interface ConvertReservationInput {
   reservationItems: ReservationItem[];
   selectedStocks: Record<string, string>;
   sellerId: string;
-
-  // financieros genéricos
   totalCalculated: number;
   totalPaid: number;
   isCredit: boolean;
   downPayment: number;
-
   guarantee?: {
     type: "dinero" | "dni" | "joyas" | "reloj" | "otros" | "no_aplica";
     value?: string;
     description?: string;
   };
-
   notes?: string;
-
   shouldDeliverImmediately: boolean;
 }
 
@@ -36,6 +32,7 @@ export class ConvertReservationUseCase {
     private reservationRepo: ReservationRepository,
     private inventoryRepo: InventoryRepository,
     private guaranteeRepo: GuaranteeRepository,
+    private rentalRepo: RentalRepository,
   ) {}
 
   async execute(input: ConvertReservationInput): Promise<{
@@ -43,19 +40,9 @@ export class ConvertReservationUseCase {
     operationId?: string;
     rentalId?: string;
   }> {
-    const {
-      reservation,
-      reservationItems,
-      selectedStocks,
-      sellerId,
-      financials,
-      notes,
-      status,
-    } = input as any;
+    const { reservation } = input;
 
-    // Validación de stocks asignados (común)
     input.reservationItems.forEach((item) => {
-      // El viewer usa formato "id-0" para el primer item (y unicos)
       if (
         !input.selectedStocks[`${item.id}-0`] &&
         !input.selectedStocks[item.id]
@@ -70,10 +57,8 @@ export class ConvertReservationUseCase {
         customerId: reservation.customerId,
         sellerId: input.sellerId,
         branchId: reservation.branchId,
-
         startDate: reservation.startDate,
         endDate: reservation.endDate,
-
         reservationId: reservation.id,
         reservationItems: input.reservationItems.map((item) => ({
           reservationItemId: item.id,
@@ -81,7 +66,6 @@ export class ConvertReservationUseCase {
             input.selectedStocks[`${item.id}-0`] ||
             input.selectedStocks[item.id],
         })),
-
         financials: {
           subtotal: input.totalCalculated,
           totalAmount: input.totalCalculated,
@@ -99,29 +83,35 @@ export class ConvertReservationUseCase {
       };
 
       const guaranteeInput = input.guarantee;
-      if (guaranteeInput && guaranteeInput.type !== "no_aplica") {
+      const guaranteeId =
+        guaranteeInput && guaranteeInput.type !== "no_aplica"
+          ? `GUA-${crypto.randomUUID()}`
+          : undefined;
+
+      const res = await processTransactionAction(rentalDTO as any);
+      if (!res.success) throw new Error(res.error);
+      const result = res.data;
+
+      if (guaranteeInput && guaranteeId && guaranteeInput.type !== "no_aplica") {
         const guarantee = guaranteeSchema.parse({
-          id: `GUA-${crypto.randomUUID()}`,
+          id: guaranteeId,
           tenantId: reservation.tenantId,
-          operationId: reservation.operationId,
+          operationId: result.operation.id,
           branchId: reservation.branchId,
           receivedById: input.sellerId,
           type: guaranteeInput.type,
           value: guaranteeInput.value ?? 0,
-          description: guaranteeInput.description ?? "Garantía de alquiler",
+          description: guaranteeInput.description ?? "Garantia de alquiler",
           status: "custodia",
           createdAt: new Date(),
         });
 
         await this.guaranteeRepo.addGuarantee(guarantee);
+        await this.rentalRepo.updateRental(result.details.id, {
+          guaranteeId: guarantee.id,
+        } as any);
       }
 
-      // Transacción
-      const res = await processTransactionAction(rentalDTO as any);
-      if(!res.success) throw new Error(res.error);
-      const result = res.data;
-
-      // Movimiento físico
       for (const item of input.reservationItems) {
         await this.inventoryRepo.updateItemStatus(
           input.selectedStocks[`${item.id}-0`] || input.selectedStocks[item.id],
@@ -131,7 +121,6 @@ export class ConvertReservationUseCase {
         );
       }
 
-      // Reserva → convertida
       await this.reservationRepo.updateStatus(
         reservation.id,
         "convertida",
@@ -171,7 +160,7 @@ export class ConvertReservationUseCase {
       };
 
       const res = await processTransactionAction(saleDTO as any);
-      if(!res.success) throw new Error(res.error);
+      if (!res.success) throw new Error(res.error);
       const result = res.data;
 
       await this.reservationRepo.updateStatus(

@@ -10,9 +10,9 @@ export class DeliverSaleUseCase {
     private reservationRepo: ReservationRepository,
   ) {}
 
-  execute(saleId: string, userId: string): Sale {
+  async execute(saleId: string, userId: string): Promise<Sale> {
     const now = new Date();
-    const sale = this.saleRepo.getSaleById(saleId);
+    const sale = await this.saleRepo.getSaleById(saleId);
 
     if (!sale) {
       throw new Error("Venta no encontrada");
@@ -24,28 +24,28 @@ export class DeliverSaleUseCase {
       );
     }
 
-    const saleItems = this.saleRepo.getSaleWithItems(sale.id).items;
+    const saleItems = (await this.saleRepo.getSaleWithItems(sale.id)).items;
 
     if (saleItems.length === 0) {
       throw new Error("La venta no tiene items");
     }
 
-    saleItems.forEach((item) => {
+    for (const item of saleItems) {
       if (!item.stockId) {
         throw new Error(`Item ${item.id} no tiene stock asignado`);
       }
 
-      this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
-    });
+      await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+    }
 
-    this.saleRepo.updateSale(sale.id, {
+    await this.saleRepo.updateSale(sale.id, {
       status: "vendido",
       updatedAt: now,
       updatedBy: userId,
     });
 
     if (sale.reservationId) {
-      this.reservationRepo.updateStatus(
+      await this.reservationRepo.updateStatus(
         sale.reservationId,
         "convertida",
         "convertida",

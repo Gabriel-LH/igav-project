@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { PrismaReservationRepository } from "@/src/infrastructure/tenant/repositories/PrismaReservationRepository";
 import { PrismaInventoryRepository } from "@/src/infrastructure/tenant/repositories/PrismaInventoryRepository";
 import { PrismaGuaranteeRepository } from "@/src/infrastructure/tenant/repositories/PrismaGuaranteeRepository";
+import { PrismaRentalRepository } from "@/src/infrastructure/tenant/repositories/PrismaRentalRepository";
 import { PrismaPaymentRepository } from "@/src/infrastructure/tenant/repositories/PrismaPaymentRepository";
 import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositories/PrismaOperationRepository";
 import { ConvertReservationUseCase, ConvertReservationInput } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
@@ -23,11 +24,13 @@ export async function convertReservationAction(input: ConvertReservationInput) {
       const reservationRepo = new PrismaReservationRepository(tx);
       const inventoryRepo = new PrismaInventoryRepository(tx);
       const guaranteeRepo = new PrismaGuaranteeRepository(tx);
+      const rentalRepo = new PrismaRentalRepository(tx);
 
       const convertUseCase = new ConvertReservationUseCase(
         reservationRepo,
         inventoryRepo,
         guaranteeRepo,
+        rentalRepo,
       );
 
       return await convertUseCase.execute({
