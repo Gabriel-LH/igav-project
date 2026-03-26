@@ -46,6 +46,20 @@ export const tenantConfigSchema = z.object({
     requireClosingReport: z.boolean().default(true),
     allowNegativeCash: z.boolean().default(false),
   }),
+  referrals: z.object({
+    enabled: z.boolean().default(true),
+    rewardType: z
+      .enum(["discount_coupon", "loyalty_points"])
+      .default("loyalty_points"),
+    rewardValue: z.number().default(100),
+    couponDiscountType: z
+      .enum(["percentage", "fixed_amount"])
+      .default("percentage"),
+    couponExpiresInDays: z.number().optional(),
+    triggerCondition: z
+      .enum(["first_purchase", "first_payment"])
+      .default("first_purchase"),
+  }),
   defaultTransferTime: z.number().default(2),
   createdAt: z.date(),
 });

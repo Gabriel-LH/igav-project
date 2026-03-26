@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig"; 
+import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
@@ -97,7 +97,9 @@ export function ProductDetailsPage({
   const branches = useBranchStore((s) => s.branches);
   const setProductsInStore = useInventoryStore((s) => s.setProducts);
   const setVariantsInStore = useInventoryStore((s) => s.setProductVariants);
-  const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
+  const setInventoryItemsInStore = useInventoryStore(
+    (s) => s.setInventoryItems,
+  );
   const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
   const setReservationData = useReservationStore((s) => s.setReservationData);
   const setRentalData = useRentalStore((s) => s.setRentalData);
@@ -116,7 +118,7 @@ export function ProductDetailsPage({
 
   useEffect(() => {
     let cancelled = false;
-    
+
     async function fetchInventory() {
       if (!currentBranchId) return;
       setIsLoading(true);
@@ -141,7 +143,11 @@ export function ProductDetailsPage({
           setStockLotsInStore(inventoryResult.data.stockLots as StockLot[]);
         }
 
-        if (!cancelled && availabilityResult.success && availabilityResult.data) {
+        if (
+          !cancelled &&
+          availabilityResult.success &&
+          availabilityResult.data
+        ) {
           setReservationData(
             availabilityResult.data.reservations,
             availabilityResult.data.reservationItems,
@@ -253,7 +259,7 @@ export function ProductDetailsPage({
         });
       });
 
-      const attributeLabel = resolvedAttributes.map(a => a.name).join(" / ");
+      const attributeLabel = resolvedAttributes.map((a) => a.name).join(" / ");
 
       return {
         id: variant.id,
@@ -425,9 +431,7 @@ export function ProductDetailsPage({
     });
 
     return Array.from(map.entries()).map(([branchId, qty]) => {
-      const branch = branches.find(
-        (branchItem) => branchItem.id === branchId,
-      );
+      const branch = branches.find((branchItem) => branchItem.id === branchId);
       const isLocal = branchId === currentBranchId;
       const transferDays = !isLocal
         ? getEstimatedTransferTime(
@@ -455,14 +459,16 @@ export function ProductDetailsPage({
   const selectedImage = selectedVariantRaw?.image || product?.image;
 
   if (!product || !resolution) {
-     if (isLoading) {
-    return (
-      <div className="min-h-screen bg-muted/30 p-6 flex flex-col items-center justify-center">
-        <Loader className="w-16 h-16 animate-spin" />
-        <p className="mt-4 text-muted-foreground animate-pulse">Cargando producto...</p>
-      </div>
-    );
-  }
+    if (isLoading) {
+      return (
+        <div className="min-h-screen bg-muted/30 p-6 flex flex-col items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+          <p className="mt-4 text-muted-foreground animate-pulse">
+            Cargando producto...
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-muted/30 p-6">
         <Button
@@ -488,7 +494,7 @@ export function ProductDetailsPage({
 
   const categoryName =
     categories.find((c) => c.id === product?.categoryId)?.name || "General";
-  
+
   const modelName = product.modelId ? getModelById(product.modelId)?.name : "";
   return (
     <div className="min-h-screen bg-muted/30">
@@ -682,12 +688,15 @@ export function ProductDetailsPage({
                                   <span
                                     className="h-3 w-3 shrink-0 rounded-full border border-black/10 shadow-sm"
                                     style={{
-                                      backgroundColor: variant.allAttributes[0].hex || "#CCCCCC",
+                                      backgroundColor:
+                                        variant.allAttributes[0].hex ||
+                                        "#CCCCCC",
                                     }}
                                   />
                                 )}
                                 <span className="font-medium text-sm line-clamp-1">
-                                  {variant.allAttributes[0]?.name || variant.label}
+                                  {variant.allAttributes[0]?.name ||
+                                    variant.label}
                                 </span>
                               </div>
                               {variant.allAttributes[1] && (
@@ -707,25 +716,38 @@ export function ProductDetailsPage({
                   {selectedVariant && (
                     <div className="mt-4 p-3 bg-muted/50 rounded-lg space-y-2">
                       <div className="flex items-center justify-between text-sm py-1 border-b border-border/50">
-                        <span className="text-muted-foreground font-medium">Variante</span>
+                        <span className="text-muted-foreground font-medium">
+                          Variante
+                        </span>
                         <span className="font-medium text-right">
                           {selectedVariant.label}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1">
                         {selectedVariant.allAttributes.map((attr, idx) => (
-                          <div key={idx} className="flex items-center justify-between text-sm bg-background/50 px-2 py-1.5 rounded-md border">
-                            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">{attr.keyName}</span>
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between text-sm bg-background/50 px-2 py-1.5 rounded-md border"
+                          >
+                            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
+                              {attr.keyName}
+                            </span>
                             {attr.isColor ? (
                               <div className="flex items-center gap-2">
                                 <span
                                   className="h-3 w-3 rounded-full border border-black/10 shadow-sm"
-                                  style={{ backgroundColor: attr.hex || "#CCCCCC" }}
+                                  style={{
+                                    backgroundColor: attr.hex || "#CCCCCC",
+                                  }}
                                 />
-                                <span className="font-semibold text-xs">{attr.name}</span>
+                                <span className="font-semibold text-xs">
+                                  {attr.name}
+                                </span>
                               </div>
                             ) : (
-                              <span className="font-semibold text-xs">{attr.name}</span>
+                              <span className="font-semibold text-xs">
+                                {attr.name}
+                              </span>
                             )}
                           </div>
                         ))}
@@ -817,11 +839,16 @@ export function ProductDetailsPage({
                     <Layers className="w-4 h-4 text-muted-foreground" />
                     <h3 className="font-semibold">Características</h3>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {selectedVariant.allAttributes.map((attr, idx) => (
-                      <div key={idx} className="flex flex-col gap-1 p-3 bg-muted/40 rounded-lg border">
-                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{attr.keyName}</span>
+                      <div
+                        key={idx}
+                        className="flex flex-col gap-1 p-3 bg-muted/40 rounded-lg border"
+                      >
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                          {attr.keyName}
+                        </span>
                         <div className="flex items-center gap-2">
                           {attr.isColor && (
                             <span
@@ -829,7 +856,9 @@ export function ProductDetailsPage({
                               style={{ backgroundColor: attr.hex || "#CCCCCC" }}
                             />
                           )}
-                          <span className="font-medium text-sm leading-tight">{attr.name}</span>
+                          <span className="font-medium text-sm leading-tight">
+                            {attr.name}
+                          </span>
                         </div>
                       </div>
                     ))}

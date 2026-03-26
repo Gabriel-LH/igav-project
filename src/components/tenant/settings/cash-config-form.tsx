@@ -55,7 +55,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CashierIcon, Money01Icon } from "@hugeicons/core-free-icons";
+import { CashierIcon, CreditCardIcon, Money01Icon } from "@hugeicons/core-free-icons";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
@@ -91,7 +91,7 @@ function PaymentMethodModal({
       active: true,
       allowsChange: false,
       requiresPin: false,
-    }
+    },
   );
 
   const handleSubmit = () => {
@@ -100,7 +100,7 @@ function PaymentMethodModal({
     const newMethod: PaymentMethod = {
       id: method?.id || crypto.randomUUID(),
       name: formData.name,
-      type: formData.type as any || "digital",
+      type: (formData.type as any) || "digital",
       active: formData.active ?? true,
       allowsChange: formData.allowsChange ?? false,
       requiresPin: formData.requiresPin ?? false,
@@ -113,11 +113,16 @@ function PaymentMethodModal({
 
   const getIconForType = (type: string) => {
     switch (type) {
-      case "cash": return "💰";
-      case "digital": return "📱";
-      case "card": return "💳";
-      case "transfer": return "🏦";
-      default: return "💵";
+      case "cash":
+        return "💰";
+      case "digital":
+        return "📱";
+      case "card":
+        return "💳";
+      case "transfer":
+        return "🏦";
+      default:
+        return "💵";
     }
   };
 
@@ -136,7 +141,9 @@ function PaymentMethodModal({
             <Input
               placeholder="Ej: Yape, Visa, Efectivo..."
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
             />
           </div>
 
@@ -144,7 +151,9 @@ function PaymentMethodModal({
             <label className="text-sm font-medium">Tipo</label>
             <Select
               value={formData.type}
-              onValueChange={(value) => setFormData({ ...formData, type: value as any })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, type: value as any })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar tipo" />
@@ -167,7 +176,9 @@ function PaymentMethodModal({
             </div>
             <Switch
               checked={formData.active}
-              onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, active: checked })
+              }
             />
           </div>
 
@@ -181,7 +192,9 @@ function PaymentMethodModal({
               </div>
               <Switch
                 checked={formData.allowsChange}
-                onCheckedChange={(checked) => setFormData({ ...formData, allowsChange: checked })}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, allowsChange: checked })
+                }
               />
             </div>
           )}
@@ -196,7 +209,9 @@ function PaymentMethodModal({
               </div>
               <Switch
                 checked={formData.requiresPin}
-                onCheckedChange={(checked) => setFormData({ ...formData, requiresPin: checked })}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, requiresPin: checked })
+                }
               />
             </div>
           )}
@@ -229,10 +244,30 @@ function PaymentMethodsTable({
 }) {
   const getTypeBadge = (type: string) => {
     const variants = {
-      cash: { label: "Efectivo", icon: "💰", className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-      digital: { label: "Digital", icon: "📱", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-      card: { label: "Tarjeta", icon: "💳", className: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-      transfer: { label: "Transferencia", icon: "🏦", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
+      cash: {
+        label: "Efectivo",
+        icon: "💰",
+        className:
+          "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      },
+      digital: {
+        label: "Digital",
+        icon: "📱",
+        className:
+          "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      },
+      card: {
+        label: "Tarjeta",
+        icon: "💳",
+        className:
+          "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+      },
+      transfer: {
+        label: "Transferencia",
+        icon: "🏦",
+        className:
+          "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+      },
     };
     const info = variants[type as keyof typeof variants] || variants.digital;
     return (
@@ -268,29 +303,43 @@ function PaymentMethodsTable({
               <TableCell>
                 <Switch
                   checked={method.active}
-                  onCheckedChange={(checked) => onToggleActive(method.id, checked)}
+                  onCheckedChange={(checked) =>
+                    onToggleActive(method.id, checked)
+                  }
                 />
               </TableCell>
               <TableCell>
                 {method.allowsChange ? (
-                  <Badge variant="default" className="bg-green-500">Sí</Badge>
+                  <Badge variant="default" className="bg-green-500">
+                    Sí
+                  </Badge>
                 ) : (
                   <Badge variant="secondary">No</Badge>
                 )}
               </TableCell>
               <TableCell>
                 {method.requiresPin ? (
-                  <Badge variant="default" className="bg-amber-500">PIN</Badge>
+                  <Badge variant="default" className="bg-amber-500">
+                    PIN
+                  </Badge>
                 ) : (
                   <Badge variant="secondary">-</Badge>
                 )}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(method)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(method)}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => onDelete(method.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(method.id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -299,7 +348,10 @@ function PaymentMethodsTable({
           ))}
           {methods.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+              <TableCell
+                colSpan={6}
+                className="h-24 text-center text-muted-foreground"
+              >
                 No hay métodos de pago configurados
               </TableCell>
             </TableRow>
@@ -312,10 +364,12 @@ function PaymentMethodsTable({
 
 export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(
-    config.cash.paymentMethods
+    config.cash.paymentMethods,
   );
   const [showModal, setShowModal] = useState(false);
-  const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
+  const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(
+    null,
+  );
 
   const form = useForm<CashFormValues>({
     resolver: zodResolver(cashFormSchema),
@@ -327,8 +381,8 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
   });
 
   const handleToggleActive = (id: string, active: boolean) => {
-    const updated = paymentMethods.map(m =>
-      m.id === id ? { ...m, active } : m
+    const updated = paymentMethods.map((m) =>
+      m.id === id ? { ...m, active } : m,
     );
     setPaymentMethods(updated);
     onChange({ paymentMethods: updated });
@@ -337,7 +391,7 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
   const handleSaveMethod = (method: PaymentMethod) => {
     let updated;
     if (editingMethod) {
-      updated = paymentMethods.map(m => m.id === method.id ? method : m);
+      updated = paymentMethods.map((m) => (m.id === method.id ? method : m));
     } else {
       updated = [...paymentMethods, method];
     }
@@ -347,7 +401,7 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
   };
 
   const handleDeleteMethod = (id: string) => {
-    const updated = paymentMethods.filter(m => m.id !== id);
+    const updated = paymentMethods.filter((m) => m.id !== id);
     setPaymentMethods(updated);
     onChange({ paymentMethods: updated });
   };
@@ -361,12 +415,10 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={CashierIcon} />
-              <CardTitle>Configuración de Caja</CardTitle>
-            </div>
+          <div className="flex items-center gap-2 mt-3">
+            <CardTitle>Configuración de Caja</CardTitle>
           </div>
+
           <CardDescription>
             Administra los métodos de pago y configuración de caja
           </CardDescription>
@@ -376,7 +428,7 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium flex items-center gap-2">
-                <span>💳</span>
+                <HugeiconsIcon icon={CreditCardIcon} className="w-6 h-6" />
                 Métodos de pago
                 <TooltipProvider>
                   <Tooltip>
@@ -389,10 +441,12 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
                   </Tooltip>
                 </TooltipProvider>
               </h3>
-              <Button onClick={() => {
-                setEditingMethod(null);
-                setShowModal(true);
-              }}>
+              <Button
+                onClick={() => {
+                  setEditingMethod(null);
+                  setShowModal(true);
+                }}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Agregar método
               </Button>
@@ -423,7 +477,9 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Requerir apertura de caja</FormLabel>
+                        <FormLabel className="text-base">
+                          Requerir apertura de caja
+                        </FormLabel>
                         <FormDescription>
                           Obligar a registrar monto inicial al abrir caja
                         </FormDescription>
@@ -447,7 +503,9 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Requerir cierre de caja</FormLabel>
+                        <FormLabel className="text-base">
+                          Requerir cierre de caja
+                        </FormLabel>
                         <FormDescription>
                           Obligar a generar reporte al cerrar caja
                         </FormDescription>
@@ -471,7 +529,9 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Permitir caja negativa</FormLabel>
+                        <FormLabel className="text-base">
+                          Permitir caja negativa
+                        </FormLabel>
                         <FormDescription>
                           Permitir que el saldo de caja sea negativo
                         </FormDescription>
@@ -495,24 +555,24 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
           <Separator />
 
           {/* Resumen */}
-          <div className="bg-muted/50 rounded-lg p-4">
+          <div className="bg-muted/50 rounded-lg p-4 mb-3">
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Métodos activos</p>
                 <p className="text-2xl font-bold">
-                  {paymentMethods.filter(m => m.active).length}
+                  {paymentMethods.filter((m) => m.active).length}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Requieren PIN</p>
                 <p className="text-2xl font-bold">
-                  {paymentMethods.filter(m => m.requiresPin).length}
+                  {paymentMethods.filter((m) => m.requiresPin).length}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Permiten cambio</p>
                 <p className="text-2xl font-bold">
-                  {paymentMethods.filter(m => m.allowsChange).length}
+                  {paymentMethods.filter((m) => m.allowsChange).length}
                 </p>
               </div>
             </div>

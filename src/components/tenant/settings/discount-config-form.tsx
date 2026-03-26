@@ -63,8 +63,7 @@ export function DiscountsConfigForm({ config, onChange }: DiscountsConfigFormPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span>🎯</span>
+        <CardTitle className="flex items-center mt-3">
           Descuentos Globales
         </CardTitle>
         <CardDescription>
@@ -103,7 +102,7 @@ export function DiscountsConfigForm({ config, onChange }: DiscountsConfigFormPro
                         {...field}
                         onChange={e => field.onChange(parseInt(e.target.value))}
                       />
-                      <span className="absolute right-3 top-2.5 text-muted-foreground">%</span>
+                      <span className="absolute right-3 top-1.5 text-muted-foreground">%</span>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -140,7 +139,7 @@ export function DiscountsConfigForm({ config, onChange }: DiscountsConfigFormPro
                         {...field}
                         onChange={e => field.onChange(parseInt(e.target.value))}
                       />
-                      <span className="absolute right-3 top-2.5 text-muted-foreground">%</span>
+                      <span className="absolute right-3 top-1.5 text-muted-foreground">%</span>
                     </div>
                   </FormControl>
                   <FormDescription>
@@ -158,7 +157,7 @@ export function DiscountsConfigForm({ config, onChange }: DiscountsConfigFormPro
               control={form.control}
               name="allowStacking"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base flex items-center gap-2">
                       Permitir acumulación

@@ -2,13 +2,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FiscalConfigForm } from "./fiscal-config-form";
 import { PricingConfigForm } from "./pricing-config-fomr";
 import { DiscountsConfigForm } from "./discount-config-form";
 import { LoyaltyConfigForm } from "./loyalty-config-form";
+import { ReferralConfigForm } from "./referral-config-form";
 import { DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -61,6 +60,16 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             ...res.data,
             tax: { ...DEFAULT_CONFIG.tax, ...(res.data.tax || {}) },
             pricing: { ...DEFAULT_CONFIG.pricing, ...(res.data.pricing || {}) },
+            discounts: {
+              ...DEFAULT_CONFIG.discounts,
+              ...(res.data.discounts || {}),
+            },
+            loyalty: { ...DEFAULT_CONFIG.loyalty, ...(res.data.loyalty || {}) },
+            cash: { ...DEFAULT_CONFIG.cash, ...(res.data.cash || {}) },
+            referrals: {
+              ...DEFAULT_CONFIG.referrals,
+              ...(res.data.referrals || {}),
+            },
           };
           setConfig(merged as TenantConfig);
           setOriginalConfig(merged as TenantConfig);
@@ -115,8 +124,11 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
 
   if (isLoading) {
     return (
-      <div className="p-12 text-center text-muted-foreground animate-pulse">
-        Cargando configuración general...
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+        <div className="text-center animate-pulse text-muted-foreground">
+          Cargando configuración general...
+        </div>
       </div>
     );
   }
@@ -148,16 +160,10 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
               <HugeiconsIcon icon={SaleTag01Icon} className="w-4 h-4 mr-2" />
               Precios
             </TabsTrigger>
-            <TabsTrigger value="discounts" className="py-2.5">
-              <HugeiconsIcon
-                icon={DiscountTag01Icon}
-                className="w-4 h-4 mr-2"
-              />
-              Descuentos
-            </TabsTrigger>
-            <TabsTrigger value="loyalty" className="py-2.5">
+
+            <TabsTrigger value="programs" className="py-2.5">
               <HugeiconsIcon icon={StarIcon} className="w-4 h-4 mr-2" />
-              Fidelidad
+              Programas
             </TabsTrigger>
             <TabsTrigger value="cash" className="py-2.5">
               <HugeiconsIcon icon={CashierIcon} className="w-4 h-4 mr-2" />
@@ -177,24 +183,29 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             </TabsContent>
 
             <TabsContent value="pricing" className="m-0 focus-visible:ring-0">
-              <PricingConfigForm
-                config={config}
-                onChange={(v) => handleConfigChange("pricing", v)}
-              />
+              <div className="space-y-4">
+                <PricingConfigForm
+                  config={config}
+                  onChange={(v) => handleConfigChange("pricing", v)}
+                />
+                <DiscountsConfigForm
+                  config={config}
+                  onChange={(v) => handleConfigChange("discounts", v)}
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="discounts" className="m-0 focus-visible:ring-0">
-              <DiscountsConfigForm
-                config={config}
-                onChange={(v) => handleConfigChange("discounts", v)}
-              />
-            </TabsContent>
-
-            <TabsContent value="loyalty" className="m-0 focus-visible:ring-0">
-              <LoyaltyConfigForm
-                config={config}
-                onChange={(v) => handleConfigChange("loyalty", v)}
-              />
+            <TabsContent value="programs" className="m-0 focus-visible:ring-0">
+              <div className="space-y-4">
+                <LoyaltyConfigForm
+                  config={config}
+                  onChange={(v) => handleConfigChange("loyalty", v)}
+                />
+                <ReferralConfigForm
+                  config={config}
+                  onChange={(v) => handleConfigChange("referrals", v)}
+                />
+              </div>
             </TabsContent>
 
             <TabsContent value="cash" className="m-0 focus-visible:ring-0">

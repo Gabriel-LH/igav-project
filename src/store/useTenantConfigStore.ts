@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { type TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { type TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 import { getTenantConfigAction, getActivePolicyAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 
 interface TenantConfigState {
   config: TenantConfig | null;
@@ -19,19 +20,7 @@ interface TenantConfigState {
 }
 
 // Valores por defecto seguros para evitar que la UI rompa si no hay datos en BD
-export const DEFAULT_CONFIG: Partial<TenantConfig> = {
-  currency: "PEN",
-  tax: {
-    rate: 0.18,
-    calculationMode: "TAX_EXCLUDED",
-    rounding: { strategy: "HALF_UP", applyOn: "TOTAL", roundTo: 0.01 },
-  },
-  pricing: { allowNegativeStock: false, pricePrecision: 2 },
-  discounts: { maxPercentageAllowed: 50, requireAdminAuthOver: 20, allowStacking: true },
-  loyalty: { enabled: true, earnRate: 0.1, redemptionValue: 1, minPointsToRedeem: 100 },
-  cash: { paymentMethods: [], openingCashRequired: true, requireClosingReport: true, allowNegativeCash: false },
-  defaultTransferTime: 2,
-};
+export const DEFAULT_CONFIG: Partial<TenantConfig> = DEFAULT_TENANT_CONFIG;
 
 export const useTenantConfigStore = create<TenantConfigState>((set, get) => ({
   config: null,

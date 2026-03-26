@@ -3,6 +3,7 @@
 import { requireSuperAdmin } from "@/src/infrastructure/superadmin/auth.guard";
 import { revalidatePath } from "next/cache";
 import prisma from "@/src/lib/prisma";
+import { DEFAULT_TENANT_CONFIG, DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { hashPassword } from "better-auth/crypto";
 import { randomUUID } from "crypto";
 
@@ -347,6 +348,45 @@ export async function createTenantAction(formData: FormData) {
           invitedBy: superadminUser.id,
           createdAt: now,
           updatedAt: now,
+        },
+      });
+
+      await tx.tenantConfig.create({
+        data: {
+          tenantId,
+          config: DEFAULT_TENANT_CONFIG as any,
+        },
+      });
+
+      const seededPolicy = await tx.tenantPolicy.create({
+        data: {
+          id: randomUUID(),
+          tenantId,
+          version: 1,
+          isActive: true,
+          updatedBy: ownerId,
+          changeReason: "Bootstrap inicial del tenant",
+          sales: DEFAULT_TENANT_POLICY_SECTIONS.sales as any,
+          rentals: DEFAULT_TENANT_POLICY_SECTIONS.rentals as any,
+          reservations: DEFAULT_TENANT_POLICY_SECTIONS.reservations as any,
+          inventory: DEFAULT_TENANT_POLICY_SECTIONS.inventory as any,
+          financial: DEFAULT_TENANT_POLICY_SECTIONS.financial as any,
+          security: DEFAULT_TENANT_POLICY_SECTIONS.security as any,
+        },
+      });
+
+      await tx.tenantPolicyHistory.create({
+        data: {
+          policyId: seededPolicy.id,
+          version: 1,
+          sales: DEFAULT_TENANT_POLICY_SECTIONS.sales as any,
+          rentals: DEFAULT_TENANT_POLICY_SECTIONS.rentals as any,
+          reservations: DEFAULT_TENANT_POLICY_SECTIONS.reservations as any,
+          inventory: DEFAULT_TENANT_POLICY_SECTIONS.inventory as any,
+          financial: DEFAULT_TENANT_POLICY_SECTIONS.financial as any,
+          security: DEFAULT_TENANT_POLICY_SECTIONS.security as any,
+          changedBy: ownerId,
+          changeReason: "Bootstrap inicial del tenant",
         },
       });
     });

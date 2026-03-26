@@ -1,5 +1,6 @@
 import { PolicyRepository } from "../../../domain/tenant/repositories/PolicyRepository";
 import { TenantPolicy } from "../../../types/tenant/type.tenantPolicy";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import prisma from "@/src/lib/prisma";
 
 export class PrismaPolicyAdapter implements PolicyRepository {
@@ -64,6 +65,30 @@ export class PrismaPolicyAdapter implements PolicyRepository {
       financial: policy.financial as any,
       security: policy.security as any,
     } as TenantPolicy;
+  }
+
+  async getOrCreateActivePolicy(
+    tenantId: string,
+    userId = "system",
+  ): Promise<TenantPolicy> {
+    const existing = await this.getActivePolicy(tenantId);
+    if (existing) {
+      return existing;
+    }
+
+    const seededPolicy: TenantPolicy = {
+      id: crypto.randomUUID(),
+      tenantId,
+      version: 1,
+      isActive: true,
+      createdAt: new Date(),
+      updatedBy: userId,
+      changeReason: "Bootstrap inicial",
+      ...DEFAULT_TENANT_POLICY_SECTIONS,
+    };
+
+    await this.upsertPolicy(seededPolicy);
+    return seededPolicy;
   }
 
   async getPolicyByVersion(

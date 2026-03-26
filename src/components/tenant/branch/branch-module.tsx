@@ -12,7 +12,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Building03Icon,
   ListViewIcon,
-  Settings01Icon,
 } from "@hugeicons/core-free-icons";
 
 export function BranchesModule() {

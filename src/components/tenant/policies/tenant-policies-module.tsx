@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, RotateCcw,} from "lucide-react";
+import { Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PolicyConfigForm } from "./policy-config-form";
 import {
@@ -9,13 +9,17 @@ import {
   upsertPolicyAction,
 } from "@/src/app/(tenant)/tenant/actions/settings.actions";
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { File02Icon } from "@hugeicons/core-free-icons";
+import { PolicyHeader } from "./policy-header";
 
 export function TenantPoliciesModule() {
   const [policy, setPolicy] = useState<TenantPolicy | null>(null);
-  const [originalPolicy, setOriginalPolicy] = useState<TenantPolicy | null>(null);
+  const [originalPolicy, setOriginalPolicy] = useState<TenantPolicy | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -30,41 +34,21 @@ export function TenantPoliciesModule() {
           setOriginalPolicy(res.data);
         } else {
           const defPolicy: TenantPolicy = {
-              id: "default",
-              tenantId: "default",
-              version: 1,
-              isActive: true,
-              createdAt: new Date(),
-              updatedBy: "system",
-              sales: { allowReturns: true, maxReturnDays: 30, requireOriginalTicket: true, allowPartialReturns: true },
-              rentals: { 
-                  allowLateReturn: true, 
-                  lateToleranceHours: 2, 
-                  lateFeeType: "fixed" as any, 
-                  lateFeeValue: 0, 
-                  defaultRentalDurationDays: 3, 
-                  minRentalDurationDays: 1, 
-                  requireGuarantee: true, 
-                  inclusiveDayCalculation: true,
-                  autoMarkAsLate: true,
-                  allowRentalWithoutStockAssigned: false,
-                  autoMoveToLaundryOnReturn: true,
-                  autoMoveToMaintenanceIfDamaged: true,
-                  defaultLaundryDays: 2,
-                  defaultMaintenanceDays: 1
-              },
-              reservations: { autoExpireReservations: true, expireAfterHours: 24, requireDownPayment: false, minDownPaymentPercentage: 0 },
-              inventory: { allowManualAdjustments: true, requireReasonForAdjustment: true, autoOrderThreshold: 5, autoBlockStockIfReserved: true },
-              financial: { allowNegativeBalance: false, maxCreditPerClient: 0, allowInstallments: false, autoApplyChargesOnDamage: true },
-              security: { requirePinForHighDiscount: true, highDiscountThreshold: 20, requireManagerApprovalForVoid: true }
+            id: "default",
+            tenantId: "default",
+            version: 1,
+            isActive: true,
+            createdAt: new Date(),
+            updatedBy: "system",
+            ...DEFAULT_TENANT_POLICY_SECTIONS,
           };
           setPolicy(defPolicy);
           setOriginalPolicy(defPolicy);
         }
       } catch (error) {
-          console.error("Error loading policies:", error);
+        console.error("Error loading policies:", error);
       } finally {
-          setIsLoading(false);
+        setIsLoading(false);
       }
     }
     loadData();
@@ -91,18 +75,21 @@ export function TenantPoliciesModule() {
     if (!policy) return;
     setIsSaving(true);
     try {
-        const res = await upsertPolicyAction(policy, "Actualización manual de políticas");
-        if (res.success) {
-          toast.success("Políticas actualizadas correctamente");
-          setOriginalPolicy(policy);
-          setHasUnsavedChanges(false);
-        } else {
-          toast.error("Error al guardar políticas: " + res.error);
-        }
+      const res = await upsertPolicyAction(
+        policy,
+        "Actualización manual de políticas",
+      );
+      if (res.success) {
+        toast.success("Políticas actualizadas correctamente");
+        setOriginalPolicy(policy);
+        setHasUnsavedChanges(false);
+      } else {
+        toast.error("Error al guardar políticas: " + res.error);
+      }
     } catch (error) {
-        toast.error("Error de conexión al guardar políticas");
+      toast.error("Error de conexión al guardar políticas");
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
@@ -111,42 +98,27 @@ export function TenantPoliciesModule() {
   };
 
   if (isLoading) {
-    return <div className="p-12 text-center animate-pulse text-muted-foreground">Cargando políticas del sistema...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+        <div className="text-center animate-pulse text-muted-foreground">
+          Cargando políticas del sistema...
+        </div>
+      </div>
+    );
   }
 
   if (!policy) return null;
 
   return (
     <div className="space-y-6">
-       <div className="flex justify-between items-center bg-card p-4 rounded-xl border shadow-sm">
-            <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                    <HugeiconsIcon icon={File02Icon} className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                    <h2 className="text-xl font-bold">Configuración de Políticas</h2>
-                    <p className="text-sm text-muted-foreground">Define las reglas de negocio globales para el tenant</p>
-                </div>
-            </div>
-            {hasUnsavedChanges && (
-                <div className="flex gap-2 animate-in fade-in slide-in-from-right-4">
-                    <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        Descartar
-                    </Button>
-                    <Button onClick={handleSave} disabled={isSaving}>
-                        {isSaving ? "Guardando..." : (
-                            <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Guardar Cambios
-                            </>
-                        )}
-                    </Button>
-                </div>
-            )}
-       </div>
-
-       <PolicyConfigForm policy={policy} onChange={handlePolicyChange} />
+      <PolicyHeader
+        hasUnsavedChanges={hasUnsavedChanges}
+        isSaving={isSaving}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
+      />
+      <PolicyConfigForm policy={policy} onChange={handlePolicyChange} />
     </div>
   );
 }

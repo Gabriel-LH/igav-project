@@ -3,7 +3,6 @@
 import { PrismaPolicyAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-policy.adapter";
 import { PrismaConfigAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-config.adapter";
 import { UpsertTenantPolicyUseCase } from "@/src/application/tenant/use-cases/settings/upsertTenantPolicy.usecase";
-import { GetTenantPolicyUseCase } from "@/src/application/tenant/use-cases/settings/getTenantPolicy.usecase";
 import { UpdateTenantConfigUseCase } from "@/src/application/tenant/use-cases/settings/updateTenantConfig.usecase";
 import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
@@ -18,8 +17,10 @@ export async function getActivePolicyAction() {
     if (!tenantId) throw new Error("Tenant ID not found");
 
     const policyRepo = new PrismaPolicyAdapter();
-    const useCase = new GetTenantPolicyUseCase(policyRepo);
-    const policy = await useCase.execute(tenantId);
+    const policy = await policyRepo.getOrCreateActivePolicy(
+      tenantId,
+      membership.user.id as string,
+    );
 
     return { success: true, data: policy };
   } catch (error) {
@@ -59,7 +60,7 @@ export async function getTenantConfigAction() {
     if (!tenantId) throw new Error("Tenant ID not found");
 
     const configRepo = new PrismaConfigAdapter();
-    const config = await configRepo.getTenantConfig(tenantId);
+    const config = await configRepo.getOrCreateTenantConfig(tenantId);
 
     return { success: true, data: config };
   } catch (error) {

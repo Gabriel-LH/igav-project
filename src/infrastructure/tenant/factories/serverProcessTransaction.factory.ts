@@ -11,6 +11,7 @@ import { PrismaLoyaltyRepository } from "../repositories/PrismaLoyaltyRepository
 import { PrismaClientCreditRepository } from "../repositories/PrismaClientCreditRepository";
 import { PrismaReferralRepository } from "../repositories/PrismaReferralRepository";
 import { PrismaCouponRepository } from "../repositories/PrismaCouponRepository";
+import { PrismaConfigAdapter } from "../stores-adapters/prisma-config.adapter";
 import { PrismaUnitOfWork } from "../repositories/PrismaUnitOfWork";
 
 import { ProcessTransactionUseCase } from "@/src/application/tenant/use-cases/process-transaction/ProcessTransaction.usecase";
@@ -44,6 +45,7 @@ export function makeServerProcessTransaction(
   const clientCreditRepo = new PrismaClientCreditRepository(tx);
   const referralRepo = new PrismaReferralRepository(tx);
   const couponRepo = new PrismaCouponRepository(tx);
+  const configRepo = new PrismaConfigAdapter();
 
   // 2. Base Use Cases
   const createSaleUC = new CreateSaleUseCase(
@@ -71,6 +73,7 @@ export function makeServerProcessTransaction(
     referralRepo,
     couponRepo,
     loyaltyRepo,
+    configRepo,
   );
 
   // 4. Strategies

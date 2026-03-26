@@ -1,12 +1,18 @@
 // components/tenant-config/LoyaltyConfigForm.tsx
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HelpCircle, Star } from 'lucide-react';
-import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { HelpCircle } from "lucide-react";
+import { z } from "zod";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,17 +21,18 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
-import type { TenantConfig } from '@/src/types/tenant/type.tenantConfig';
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 const loyaltyFormSchema = z.object({
   enabled: z.boolean(),
@@ -39,10 +46,13 @@ type LoyaltyFormValues = z.infer<typeof loyaltyFormSchema>;
 
 interface LoyaltyConfigFormProps {
   config: TenantConfig;
-  onChange: (values: Partial<TenantConfig['loyalty']>) => void;
+  onChange: (values: Partial<TenantConfig["loyalty"]>) => void;
 }
 
-export function LoyaltyConfigForm({ config, onChange }: LoyaltyConfigFormProps) {
+export function LoyaltyConfigForm({
+  config,
+  onChange,
+}: LoyaltyConfigFormProps) {
   const form = useForm<LoyaltyFormValues>({
     resolver: zodResolver(loyaltyFormSchema),
     defaultValues: {
@@ -54,7 +64,7 @@ export function LoyaltyConfigForm({ config, onChange }: LoyaltyConfigFormProps) 
     },
   });
 
-  const watchEnabled = form.watch('enabled');
+  const watchEnabled = form.watch("enabled");
 
   useEffect(() => {
     const subscription = form.watch((values) => {
@@ -72,8 +82,7 @@ export function LoyaltyConfigForm({ config, onChange }: LoyaltyConfigFormProps) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Star className="h-5 w-5 text-yellow-500" />
+        <CardTitle className="flex items-center gap-2 mt-3">
           Programa de Lealtad
         </CardTitle>
         <CardDescription>
@@ -88,7 +97,7 @@ export function LoyaltyConfigForm({ config, onChange }: LoyaltyConfigFormProps) 
               control={form.control}
               name="enabled"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row mb-3 items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base flex items-center gap-2">
                       Activar programa de lealtad
@@ -120,167 +129,202 @@ export function LoyaltyConfigForm({ config, onChange }: LoyaltyConfigFormProps) 
             {watchEnabled && (
               <>
                 <Separator />
-                
+
                 <div className="space-y-4">
-                  {/* Ratio acumulación */}
-                  <FormField
-                    control={form.control}
-                    name="earnRate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Ratio de acumulación
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Porcentaje del valor de compra que se convierte en puntos</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input 
-                              type="number" 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Ratio acumulación */}
+                    <FormField
+                      control={form.control}
+                      name="earnRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Ratio de acumulación
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    Porcentaje del valor de compra que se
+                                    convierte en puntos
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                className="pr-8"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseFloat(e.target.value))
+                                }
+                              />
+                              <span className="absolute right-3 top-1.5 text-muted-foreground">
+                                %
+                              </span>
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Por cada {formatCurrency(100)}, el cliente recibe{" "}
+                            {field.value} puntos
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Valor de canje */}
+                    <FormField
+                      control={form.control}
+                      name="redemptionValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Valor de canje
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Valor en moneda de cada punto</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                {...field}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  // Si está vacío, asignar 0, si no, parsear el número
+                                  field.onChange(
+                                    value === "" ? 0 : parseFloat(value),
+                                  );
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            1 punto = {formatCurrency(field.value)}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Mínimo para canjear */}
+                    <FormField
+                      control={form.control}
+                      name="minPointsToRedeem"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Mínimo para canjear
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    Puntos mínimos necesarios para realizar un
+                                    canje
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
                               min="0"
-                              max="100"
-                              step="0.1"
-                              className="pr-8"
                               {...field}
-                              onChange={e => field.onChange(parseFloat(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ""
+                                    ? 0
+                                    : parseInt(e.target.value),
+                                )
+                              }
                             />
-                            <span className="absolute right-3 top-2.5 text-muted-foreground">%</span>
-                          </div>
-                        </FormControl>
-                        <FormDescription>
-                          Por cada S/100, el cliente recibe {field.value} puntos
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormDescription>
+                            Mínimo {field.value} puntos para canjear
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Valor de canje */}
-                  <FormField
-                    control={form.control}
-                    name="redemptionValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Valor de canje
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Valor en moneda de cada punto</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2.5">S/</span>
-                            <Input 
-                              type="number" 
-                              min="0"
-                              step="0.01"
-                              className="pl-8"
-                              {...field}
-                              onChange={e => field.onChange(parseFloat(e.target.value))}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormDescription>
-                          1 punto = S/{field.value}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Mínimo para canjear */}
-                  <FormField
-                    control={form.control}
-                    name="minPointsToRedeem"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Mínimo para canjear
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Puntos mínimos necesarios para realizar un canje</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Mínimo {field.value} puntos para canjear
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Expiración de puntos */}
-                  <FormField
-                    control={form.control}
-                    name="expirePointsAfterDays"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Expiración de puntos
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Días después de los cuales los puntos expiran (dejar vacío para sin expiración)</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input 
-                              type="number" 
-                              min="0"
-                              className="pr-16"
-                              placeholder="Sin expiración"
-                              value={field.value || ''}
-                              onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            />
-                            {field.value && (
-                              <span className="absolute right-3 top-2.5 text-muted-foreground">días</span>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormDescription>
-                          {field.value 
-                            ? `Los puntos expiran después de ${field.value} días`
-                            : 'Los puntos no tienen fecha de expiración'}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    {/* Expiración de puntos */}
+                    <FormField
+                      control={form.control}
+                      name="expirePointsAfterDays"
+                      render={({ field }) => (
+                        <FormItem className="mb-3">
+                          <FormLabel className="flex items-center gap-2">
+                            Expiración de puntos
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    Días después de los cuales los puntos
+                                    expiran (dejar vacío para sin expiración)
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                min="0"
+                                className="pr-16"
+                                placeholder="Sin expiración"
+                                value={field.value || ""}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseInt(e.target.value)
+                                      : undefined,
+                                  )
+                                }
+                              />
+                              {field.value && (
+                                <span className="absolute right-3 top-2.5 text-muted-foreground">
+                                  días
+                                </span>
+                              )}
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            {field.value
+                              ? `Los puntos expiran después de ${field.value} días`
+                              : "Los puntos no tienen fecha de expiración"}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </>
             )}

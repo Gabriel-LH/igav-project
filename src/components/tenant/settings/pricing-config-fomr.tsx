@@ -77,8 +77,7 @@ export function PricingConfigForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span>🏷️</span>
+        <CardTitle className="flex items-center mt-3">
           Configuración de Precios
         </CardTitle>
         <CardDescription>
@@ -173,7 +172,7 @@ export function PricingConfigForm({
               control={form.control}
               name="valuationMethod"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="mb-3">
                   <FormLabel className="flex items-center gap-2">
                     Método de valorización de inventario
                     <TooltipProvider>

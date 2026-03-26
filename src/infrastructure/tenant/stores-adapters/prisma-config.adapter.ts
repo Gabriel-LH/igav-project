@@ -1,6 +1,7 @@
 import { ConfigRepository } from "../../../domain/tenant/repositories/ConfigRepository";
 import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
 import { BranchConfig } from "../../../types/branch/type.branchConfig";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 import prisma from "@/src/lib/prisma";
 
 export class PrismaConfigAdapter implements ConfigRepository {
@@ -21,6 +22,26 @@ export class PrismaConfigAdapter implements ConfigRepository {
     } as TenantConfig;
   }
 
+  async getOrCreateTenantConfig(tenantId: string): Promise<TenantConfig> {
+    const existing = await this.getTenantConfig(tenantId);
+    if (existing) {
+      return existing;
+    }
+
+    await this.prisma.tenantConfig.create({
+      data: {
+        tenantId,
+        config: DEFAULT_TENANT_CONFIG as any,
+      },
+    });
+
+    return {
+      tenantId,
+      ...DEFAULT_TENANT_CONFIG,
+      createdAt: new Date(),
+    } as TenantConfig;
+  }
+
   async updateTenantConfig(
     tenantId: string,
     updates: Partial<TenantConfig>,
@@ -32,19 +53,28 @@ export class PrismaConfigAdapter implements ConfigRepository {
         await this.prisma.tenantConfig.create({
             data: {
                 tenantId,
-                config: updates as any,
+                config: {
+                  ...DEFAULT_TENANT_CONFIG,
+                  ...updates,
+                } as any,
             }
         });
         return;
     }
 
     const { tenantId: _, createdAt: __, ...cleanUpdates } = updates;
+    const {
+      tenantId: ___,
+      createdAt: ____,
+      ...existingConfig
+    } = existing;
 
     await this.prisma.tenantConfig.update({
       where: { tenantId },
       data: {
         config: {
-          ...(existing as any),
+          ...DEFAULT_TENANT_CONFIG,
+          ...existingConfig,
           ...cleanUpdates,
         },
       },

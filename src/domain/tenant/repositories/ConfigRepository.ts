@@ -4,6 +4,7 @@ import { BranchConfig } from "../../../types/branch/type.branchConfig";
 export interface ConfigRepository {
   // Tenant Config
   getTenantConfig(tenantId: string): Promise<TenantConfig | null>;
+  getOrCreateTenantConfig?(tenantId: string): Promise<TenantConfig>;
   updateTenantConfig(tenantId: string, config: Partial<TenantConfig>): Promise<void>;
 
   // Branch Config

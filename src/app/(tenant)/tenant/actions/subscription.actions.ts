@@ -5,6 +5,7 @@ import { auth } from "@/src/lib/auth";
 import { headers } from "next/headers";
 import type { PlanWithFeatures } from "@/src/adapters/subscription-adapter";
 import { CrudPlanUseCase } from "@/src/application/superadmin/use-cases/plan/crudPlan.usecase";
+import { PrismaConfigAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-config.adapter";
 import { BillingCycle } from "@/prisma/generated/client";
 import { revalidatePath } from "next/cache";
 
@@ -30,11 +31,12 @@ export async function getTenantSubscriptionDataAction() {
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: membership.tenantId },
-    select: { id: true, currentSubscriptionId: true, tenantConfig: true },
+    select: { id: true, currentSubscriptionId: true },
   });
   if (!tenant) return null;
 
-  const tenantConfig = tenant.tenantConfig as any;
+  const configRepo = new PrismaConfigAdapter();
+  const tenantConfig = await configRepo.getOrCreateTenantConfig(tenant.id);
   const paymentMethods = Array.isArray(tenantConfig?.cash?.paymentMethods)
     ? tenantConfig.cash.paymentMethods
     : [];
@@ -188,11 +190,8 @@ export async function changeTenantPlanAction(
     orderBy: { startedAt: "desc" },
   });
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { tenantConfig: true },
-  });
-  const tenantConfig = tenant?.tenantConfig as any;
+  const configRepo = new PrismaConfigAdapter();
+  const tenantConfig = await configRepo.getOrCreateTenantConfig(tenantId);
   const paymentMethods = Array.isArray(tenantConfig?.cash?.paymentMethods)
     ? tenantConfig.cash.paymentMethods
     : [];

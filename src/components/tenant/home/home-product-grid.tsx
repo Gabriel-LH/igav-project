@@ -61,7 +61,9 @@ export function ProductGrid({
   const setPayments = usePaymentStore((s) => s.setPayments);
   const setProductsInStore = useInventoryStore((s) => s.setProducts);
   const setVariantsInStore = useInventoryStore((s) => s.setProductVariants);
-  const setInventoryItemsInStore = useInventoryStore((s) => s.setInventoryItems);
+  const setInventoryItemsInStore = useInventoryStore(
+    (s) => s.setInventoryItems,
+  );
   const setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
   const setCustomers = useCustomerStore((s) => s.setCustomers);
   const setPromotions = usePromotionStore((s) => s.setPromotions);
@@ -97,7 +99,12 @@ export function ProductGrid({
 
     setIsLoading(true);
     try {
-      const [inventoryResult, availabilityResult, clientsResult, promotionsResult] = await Promise.all([
+      const [
+        inventoryResult,
+        availabilityResult,
+        clientsResult,
+        promotionsResult,
+      ] = await Promise.all([
         getBranchInventoryAction(selectedBranchId),
         getAvailabilityCalendarDataAction(),
         getClientsAction(),
@@ -152,15 +159,16 @@ export function ProductGrid({
     }
   }, [
     selectedBranchId,
-    setInventoryItemsInStore,
     setProductsInStore,
-    setRentalData,
-    setReservationData,
-    setStockLotsInStore,
     setVariantsInStore,
-    setCustomers,
+    setInventoryItemsInStore,
+    setStockLotsInStore,
+    setReservationData,
+    setRentalData,
     setOperations,
     setPayments,
+    setCustomers,
+    setPromotions,
   ]);
 
   useEffect(() => {
@@ -225,7 +233,9 @@ export function ProductGrid({
           .toLowerCase()
           .includes(query) || client?.dni?.includes(query);
 
-      const resItems = reservationItems.filter((i) => i.reservationId === res.id);
+      const resItems = reservationItems.filter(
+        (i) => i.reservationId === res.id,
+      );
       const matchesAnyProduct = resItems.some((item) => {
         const p = products.find((prod) => prod.id === item.productId);
         return p?.name.toLowerCase().includes(query);
@@ -233,14 +243,19 @@ export function ProductGrid({
 
       return matchesClient || matchesAnyProduct;
     });
-  }, [query, selectedBranchId, reservations, customers, products, reservationItems]);
+  }, [
+    query,
+    selectedBranchId,
+    reservations,
+    customers,
+    products,
+    reservationItems,
+  ]);
 
   const filteredLaundry = useMemo(() => {
     return [
       ...inventoryItems.filter(
-        (i) =>
-          i.branchId === selectedBranchId &&
-          i.status === "en_lavanderia",
+        (i) => i.branchId === selectedBranchId && i.status === "en_lavanderia",
       ),
       ...stockLotsWithExtendedStatus.filter(
         (l) =>
@@ -254,8 +269,7 @@ export function ProductGrid({
     return [
       ...inventoryItems.filter(
         (i) =>
-          i.branchId === selectedBranchId &&
-          i.status === "en_mantenimiento",
+          i.branchId === selectedBranchId && i.status === "en_mantenimiento",
       ),
       ...stockLotsWithExtendedStatus.filter(
         (l) =>
@@ -312,15 +326,18 @@ export function ProductGrid({
 
         {isLoading && viewMode === "catalog" && (
           <div className="col-span-full py-10 flex flex-col items-center justify-center text-muted-foreground">
-            <HugeiconsIcon icon={Loading03Icon} className="w-8 h-8 mb-2 animate-spin" />
-            <p className="text-sm animate-pulse font-semibold">Cargando catálogo...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+            <p className="text-sm animate-pulse font-semibold">
+              Cargando catálogo...
+            </p>
           </div>
         )}
 
-        {!isLoading && viewMode === "catalog" &&
+        {!isLoading &&
+          viewMode === "catalog" &&
           filteredCatalog.map((prod) => (
-            <CatalogProductCard 
-              key={prod.id} 
+            <CatalogProductCard
+              key={prod.id}
               product={prod}
               inventoryItems={inventoryItems}
               stockLots={stockLots}
