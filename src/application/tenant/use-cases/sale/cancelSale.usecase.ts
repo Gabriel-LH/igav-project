@@ -6,6 +6,8 @@ import { OperationRepository } from "@/src/domain/tenant/repositories/OperationR
 import { differenceInHours } from "date-fns";
 import { SaleReversal } from "@/src/types/sales/type.saleReversal";
 import { Payment } from "@/src/types/payments/type.payments";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export interface CancelSaleInput {
   saleId: string;
@@ -34,6 +36,27 @@ export class CancelSaleUseCase {
       throw new Error("No se puede anular una venta con devoluciones");
     }
 
+    const operation = await this.operationRepo.getOperationById(sale.operationId);
+    const policySnapshot = operation?.policySnapshot as TenantPolicy | undefined;
+    const policy: TenantPolicy = {
+      id: "policy-default",
+      tenantId: sale.tenantId,
+      version: 1,
+      isActive: true,
+      createdAt: new Date(0),
+      updatedBy: "system",
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+      ...(policySnapshot ?? {}),
+      sales: {
+        ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy).sales,
+        ...(policySnapshot?.sales ?? {}),
+      },
+    };
+
+    if (policy.sales?.requireReasonForCancel && !reason?.trim()) {
+      throw new Error("Debes indicar un motivo para anular la venta.");
+    }
+
     const hours = differenceInHours(new Date(), sale.createdAt);
     if (hours > 24) {
       throw new Error("Solo se puede anular ventas dentro de las 24h");
@@ -57,12 +80,19 @@ export class CancelSaleUseCase {
 
     // 2️⃣ Stock vuelve a disponible (por item)
     for (const item of saleWithItems.items) {
-      await this.inventoryRepo.updateItemStatus(
-        item.stockId,
-        "disponible",
-        sale.branchId,
-        userId,
-      );
+      if (item.inventoryItemId) {
+        await this.inventoryRepo.updateItemStatus(
+          item.inventoryItemId,
+          "disponible",
+          sale.branchId,
+          userId,
+        );
+        continue;
+      }
+
+      if (item.stockId && sale.status === "vendido") {
+        await this.inventoryRepo.increaseLotQuantity(item.stockId, item.quantity);
+      }
     }
 
     await this.saleRepo.updateSale(sale.id, {

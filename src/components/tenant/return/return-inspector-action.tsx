@@ -32,6 +32,7 @@ import { processReturnAction } from "@/src/app/(tenant)/tenant/actions/operation
 import { authClient } from "@/src/lib/auth-client";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { calculateLateFee } from "@/src/utils/rentals/late-fee";
 
 type StockTarget =
   | "disponible"
@@ -167,15 +168,15 @@ export function ReturnInspectionDrawer({
   };
 
   const summary = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dueDate = new Date(rental.endDate);
-    dueDate.setHours(0, 0, 0, 0);
+    const lateFeeInfo = calculateLateFee({
+      policySnapshot: rental.policySnapshot as any,
+      expectedReturnDate: new Date(rental.endDate),
+      actualReturnDate: new Date(),
+      totalAmount: rental.financials.totalAmount,
+    });
 
-    const diffTime = today.getTime() - dueDate.getTime();
-    const daysLate = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-
-    const penaltyAmount = waivePenalty ? 0 : daysLate * 15;
+    const daysLate = lateFeeInfo.daysLate;
+    const penaltyAmount = waivePenalty ? 0 : lateFeeInfo.lateFee;
     const totalToPay =
       penaltyAmount + extraDamageCharge + Number(penaltyCharge);
 
@@ -203,7 +204,7 @@ export function ReturnInspectionDrawer({
 
     if (itemsToProcess.length === 0) return;
 
-    await processReturnAction({
+    const response = await processReturnAction({
       rentalId: rental.id,
       rentalStatus: !itemsStatus.noPhysicalDamage ? "con_daños" : "devuelto",
       items: itemsToProcess.map((item) => ({
@@ -221,13 +222,36 @@ export function ReturnInspectionDrawer({
       adminId: session?.user?.id || "admin-system",
     });
 
+    if (!response?.success) {
+      return;
+    }
+
+    const serverLateFee = response.data?.lateFee ?? summary.penaltyAmount;
+    const serverDaysLate = response.data?.daysLate ?? summary.daysLate;
+    const finalTotalToPay =
+      (waivePenalty ? 0 : serverLateFee) +
+      extraDamageCharge +
+      Number(penaltyCharge);
+
     const ticketHtml = buildReturnTicketHtml(
       rental,
       client!,
       itemsToInspect, // This was original summary usage, might need update?
       rental.guarantee,
       { itemsInspection, damageNotes: damageNotes || undefined },
-      { ...summary, extraDamageCharge },
+      {
+        ...summary,
+        daysLate: serverDaysLate,
+        penaltyAmount: waivePenalty ? 0 : serverLateFee,
+        totalToPay: finalTotalToPay,
+        refundAmount: summary.isCash
+          ? Math.max(
+              0,
+              Number(rental.guarantee?.value || 0) - finalTotalToPay,
+            )
+          : 0,
+        extraDamageCharge,
+      },
     );
 
     setDrawerOpen(false);

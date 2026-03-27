@@ -5,6 +5,9 @@ import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { SaleFromReservationDTO } from "@/src/application/dtos/SaleFromReservationDTO";
 import { saleSchema } from "@/src/types/sales/type.sale";
 import { InventoryItemStatus } from "@/src/utils/status-type/InventoryItemStatusType";
+import { DEFAULT_TENANT_CONFIG, DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
+import { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export class CreateSaleUseCase {
   constructor(
@@ -12,6 +15,43 @@ export class CreateSaleUseCase {
     private inventoryRepo: InventoryRepository,
     private reservationRepo: ReservationRepository,
   ) {}
+
+  private resolveTenantConfig(snapshot: unknown): TenantConfig {
+    if (snapshot && typeof snapshot === "object") {
+      const raw = (snapshot as { tenant?: TenantConfig }).tenant ?? snapshot;
+      return {
+        ...(DEFAULT_TENANT_CONFIG as TenantConfig),
+        ...(raw as TenantConfig),
+      };
+    }
+    return DEFAULT_TENANT_CONFIG as TenantConfig;
+  }
+
+  private resolveTenantPolicy(snapshot: unknown): TenantPolicy {
+    const base: TenantPolicy = {
+      id: "policy-default",
+      tenantId: "",
+      version: 1,
+      isActive: true,
+      createdAt: new Date(0),
+      updatedBy: "system",
+      changeReason: undefined,
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+    };
+
+    if (snapshot && typeof snapshot === "object") {
+      return {
+        ...base,
+        ...(snapshot as TenantPolicy),
+        sales: {
+          ...base.sales,
+          ...(snapshot as TenantPolicy).sales,
+        },
+      };
+    }
+
+    return base;
+  }
 
   async execute(
     dto: SaleDTO | SaleFromReservationDTO,
@@ -23,6 +63,47 @@ export class CreateSaleUseCase {
     const now = new Date();
     const fromReservation =
       "reservationId" in dto && Array.isArray((dto as any).reservationItems);
+
+    const tenantConfig = this.resolveTenantConfig(
+      (dto as any).configSnapshot,
+    );
+    const tenantPolicy = this.resolveTenantPolicy(
+      (dto as any).policySnapshot,
+    );
+
+    const requestedStatus = dto.status as string;
+    const resolvedStatus =
+      tenantPolicy.sales?.autoCompleteDelivery &&
+      (requestedStatus === "pendiente_entrega" ||
+        requestedStatus === "vendido_pendiente_entrega")
+        ? "vendido"
+        : requestedStatus;
+
+    const validateManualDiscount = (item: {
+      listPrice?: number;
+      priceAtMoment?: number;
+      discountAmount?: number;
+      promotionId?: string;
+      bundleId?: string;
+    }) => {
+      const listPrice = item.listPrice ?? item.priceAtMoment ?? 0;
+      const discountAmount =
+        item.discountAmount ??
+        Math.max(0, listPrice - (item.priceAtMoment ?? listPrice));
+      const hasPromo = Boolean(item.promotionId || item.bundleId);
+      const hasManualDiscount = discountAmount > 0 && !hasPromo;
+
+      if (hasManualDiscount && !tenantPolicy.sales?.allowPriceEdit) {
+        throw new Error("No se permiten descuentos manuales en ventas.");
+      }
+
+      if (hasManualDiscount && listPrice > 0) {
+        const percent = (discountAmount / listPrice) * 100;
+        if (percent > tenantConfig.discounts.maxPercentageAllowed) {
+          throw new Error("Descuento manual excede el máximo permitido.");
+        }
+      }
+    };
 
     const specificData = saleSchema.parse({
       id: crypto.randomUUID(),
@@ -36,7 +117,7 @@ export class CreateSaleUseCase {
       sellerId: dto.sellerId,
       totalAmount: totalAmount,
       saleDate: now,
-      status: dto.status,
+      status: resolvedStatus,
       // paymentMethod: paymentMethodId, // Removed as it is not in schema
       amountRefunded: 0,
       notes: (dto as any).notes || "",
@@ -71,7 +152,7 @@ export class CreateSaleUseCase {
           
           const isItemSerial = reservationItem.isSerial || false;
 
-          return {
+          const saleItem = {
             id: `SITEM-${item.reservationItemId}`,
             saleId: specificData.id,
             productId: reservationItem.productId,
@@ -87,10 +168,14 @@ export class CreateSaleUseCase {
             promotionId: reservationItem.promotionId,
             isReturned: false,
           };
+
+          validateManualDiscount(saleItem);
+          return saleItem;
         },
       );
     } else {
-      saleItems = (dto as SaleDTO).items.map((item) => ({
+      saleItems = (dto as SaleDTO).items.map((item) => {
+        const saleItem = {
         id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
         saleId: specificData.id,
         productId: item.productId,
@@ -105,7 +190,11 @@ export class CreateSaleUseCase {
         bundleId: item.bundleId,
         promotionId: item.promotionId,
         isReturned: false,
-      }));
+        };
+
+        validateManualDiscount(saleItem);
+        return saleItem;
+      });
     }
 
     await this.saleRepo.addSale(specificData, saleItems);
@@ -114,11 +203,12 @@ export class CreateSaleUseCase {
     for (const item of saleItems) {
       let finalStockStatus: InventoryItemStatus | string = "vendido";
 
-      switch (dto.status) {
+      switch (resolvedStatus) {
         case "reservado":
           finalStockStatus = "reservado";
           break;
         case "pendiente_entrega":
+        case "vendido_pendiente_entrega":
           finalStockStatus = "vendido_pendiente_entrega";
           break;
         case "vendido":
@@ -137,11 +227,11 @@ export class CreateSaleUseCase {
           dto.sellerId,
         );
       } else if (item.stockId) {
-        if (
-          finalStockStatus === "vendido" ||
-          finalStockStatus === "vendido_pendiente_entrega"
-        ) {
-          await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+        if (finalStockStatus === "vendido") {
+          await this.inventoryRepo.decreaseLotQuantity(
+            item.stockId,
+            item.quantity,
+          );
         }
       }
     }

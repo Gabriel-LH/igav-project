@@ -11,6 +11,8 @@ import {
   getOperationBalances,
   getNetPostedAmount,
 } from "../../../utils/payment-helpers";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 export interface RegisterPaymentInput {
   operationId: string;
   amount: number;
@@ -38,6 +40,21 @@ export class RegisterPaymentUseCase {
     const operation = await this.operationRepo.getOperationById(operationId);
 
     if (!operation) throw new Error("Operacion no encontrada");
+    const policySnapshot = operation.policySnapshot as TenantPolicy | undefined;
+    const policy: TenantPolicy = {
+      id: "policy-default",
+      tenantId: operation.tenantId,
+      version: 1,
+      isActive: true,
+      createdAt: new Date(0),
+      updatedBy: "system",
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+      ...(policySnapshot ?? {}),
+      sales: {
+        ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy).sales,
+        ...(policySnapshot?.sales ?? {}),
+      },
+    };
 
     const payment = paymentSchema.parse({
       id: `PAY-${crypto.randomUUID().slice(0, 8)}`,
@@ -96,7 +113,11 @@ export class RegisterPaymentUseCase {
     if (operation.type === "venta" && balance === 0) {
       const currentSale = await this.saleRepo.getSaleByOperationId(operationId);
 
-      if (currentSale && currentSale.status === "vendido_pendiente_entrega") {
+      if (
+        currentSale &&
+        currentSale.status === "vendido_pendiente_entrega" &&
+        policy.sales?.autoCompleteDelivery
+      ) {
         await this.saleRepo.updateSale(currentSale.id, {
           status: "vendido",
           updatedAt: now,

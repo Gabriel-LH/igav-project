@@ -13,8 +13,8 @@ export interface PromotionContext {
 
 export class PromotionService {
   constructor(
-    private promotionRepo: PromotionRepository,
-    private promotionLoader: PromotionLoaderService,
+    private promotionRepo?: PromotionRepository,
+    private promotionLoader?: PromotionLoaderService,
   ) {}
 
   private isPromotionActiveAtDate = (
@@ -30,19 +30,23 @@ export class PromotionService {
   getActivePromotions(
     tenantId?: string,
     usageTypes: Array<"automatic" | "coupon" | "referral"> = ["automatic"],
+    explicitPromotions?: Promotion[],
   ) {
-    this.promotionLoader.ensurePromotionsLoaded();
-    return this.promotionRepo
-      .getPromotions()
-      .filter(
-        (promotion) =>
-          (!tenantId ||
-            !promotion.tenantId ||
-            promotion.tenantId === tenantId) &&
-          usageTypes.includes(promotion.usageType ?? "automatic") &&
-          promotion.isActive &&
-          this.isPromotionActiveAtDate(promotion.startDate, promotion.endDate),
-      );
+    if (this.promotionLoader) {
+      this.promotionLoader.ensurePromotionsLoaded();
+    }
+
+    const sourcePromotions =
+      explicitPromotions ||
+      (this.promotionRepo ? this.promotionRepo.getPromotions() : []);
+
+    return sourcePromotions.filter(
+      (promotion) =>
+        (!tenantId || !promotion.tenantId || promotion.tenantId === tenantId) &&
+        usageTypes.includes(promotion.usageType ?? "automatic") &&
+        promotion.isActive &&
+        this.isPromotionActiveAtDate(promotion.startDate, promotion.endDate),
+    );
   }
 
   applyPromotionsUseCase(

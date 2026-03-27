@@ -55,6 +55,9 @@ import { useReservationStore } from "@/src/store/useReservationStore";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { Client } from "@/src/types/clients/type.client";
 import { StockLot } from "@/src/types/product/type.stockLote";
+import { getTenantConfigAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
+import { calculateTaxTotals } from "@/src/utils/pricing/tax-calculation";
 
 interface DisplayAttributeValue {
   keyName: string;
@@ -87,6 +90,7 @@ export function DirectTransactionModal({
   const [open, setOpen] = React.useState(false);
   const { data: session } = authClient.useSession();
   const sellerId = session?.user?.id || "";
+  const [tenantConfig, setTenantConfig] = React.useState(DEFAULT_TENANT_CONFIG);
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -110,7 +114,7 @@ export function DirectTransactionModal({
       : undefined,
   );
   const availablePoints = selectedClient?.loyaltyPoints || 0;
-  const pointValueInMoney = 0.01;
+  const pointValueInMoney = tenantConfig.loyalty?.redemptionValue || 0.01;
 
   const [assignedStockIds, setAssignedStockIds] = React.useState<string[]>([]);
 
@@ -169,7 +173,16 @@ export function DirectTransactionModal({
       setPaymentMethodId((current) => current || result.data[0]?.id || "");
     };
 
+    const loadTenantConfig = async () => {
+      const res = await getTenantConfigAction();
+      if (cancelled) return;
+      if (res.success && res.data) {
+        setTenantConfig(res.data as any);
+      }
+    };
+
     loadPaymentMethods();
+    loadTenantConfig();
 
     return () => {
       cancelled = true;
@@ -302,14 +315,19 @@ export function DirectTransactionModal({
     0,
   );
 
+  const taxTotals = useMemo(
+    () => calculateTaxTotals(totalOperacionConDescuento, tenantConfig.tax),
+    [totalOperacionConDescuento, tenantConfig.tax],
+  );
+
   const totalACobrarHoy = useMemo(() => {
-    if (type === "venta") return totalOperacionConDescuento;
+    if (type === "venta") return taxTotals.total;
 
     return (
-      totalOperacionConDescuento +
+      taxTotals.total +
       (guaranteeType === "dinero" ? Number(guarantee || 0) : 0)
     );
-  }, [type, totalOperacionConDescuento, guaranteeType, guarantee]);
+  }, [type, taxTotals.total, guaranteeType, guarantee]);
 
   const selectedPaymentMethod = useMemo(
     () => paymentMethods.find((method) => method.id === paymentMethodId),
@@ -420,12 +438,12 @@ export function DirectTransactionModal({
                 quantity *
                 (type === "alquiler" && rentUnit !== "evento" ? days || 1 : 1),
           ),
-          taxAmount: 0,
-          totalAmount: Number(totalOperacionConDescuento),
+          taxAmount: taxTotals.taxAmount,
+          totalAmount: Number(taxTotals.total),
           receivedAmount:
             isCashPayment
               ? Number(receivedAmount)
-              : Number(totalOperacionConDescuento) +
+              : Number(taxTotals.total) +
                 (guaranteeType === "dinero" ? Number(guarantee) : 0),
           keepAsCredit: false,
           paymentMethod: paymentMethodId,
@@ -473,12 +491,12 @@ export function DirectTransactionModal({
           totalDiscount: Number(
             totalDescuentoExtra + unitDiscountAmount * quantity,
           ),
-          taxAmount: 0,
-          totalAmount: Number(totalOperacionConDescuento),
+          taxAmount: taxTotals.taxAmount,
+          totalAmount: Number(taxTotals.total),
           receivedAmount:
             isCashPayment
               ? Number(receivedAmount)
-              : Number(totalOperacionConDescuento),
+              : Number(taxTotals.total),
           keepAsCredit: false,
           paymentMethod: paymentMethodId,
         },
@@ -733,10 +751,17 @@ export function DirectTransactionModal({
                 <span>- {formatCurrency(totalDescuentoExtra)}</span>
               </div>
             )}
-            <div className="flex justify-between items-center text-base font-black">
-              <span>Total Operación</span>
-              <span>{formatCurrency(totalOperacionConDescuento)}</span>
-            </div>
+              <div className="flex justify-between items-center text-base font-black">
+                <span>Total Operación</span>
+                <span>{formatCurrency(taxTotals.total)}</span>
+              </div>
+              {tenantConfig.tax?.rate > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                    ? "Incluye IGV"
+                    : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%): ${formatCurrency(taxTotals.taxAmount)}`}
+                </div>
+              )}
           </div>
 
           <CashPaymentSummary

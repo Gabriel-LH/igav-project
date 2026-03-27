@@ -76,12 +76,14 @@ export async function cancelRentalAction(rentalId: string, reason: string, userI
   const guaranteeRepo = new PrismaGuaranteeRepository(prisma);
   const operationRepo = new PrismaOperationRepository(prisma);
   const paymentRepo = new PrismaPaymentRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
 
   const useCase = new CancelRentalUseCase(
     rentalRepo,
     guaranteeRepo,
     operationRepo,
-    paymentRepo
+    paymentRepo,
+    inventoryRepo
   );
 
   await useCase.execute(rentalId, reason, userId);
@@ -145,12 +147,14 @@ export async function returnSaleItemsAction(
   const reversalRepo = new PrismaSaleReversalRepository(prisma);
   const inventoryRepo = new PrismaInventoryRepository(prisma);
   const paymentRepo = new PrismaPaymentRepository(prisma);
+  const operationRepo = new PrismaOperationRepository(prisma);
 
   const useCase = new ReturnSaleItemsUseCase(
     saleRepo,
     reversalRepo,
     inventoryRepo,
-    paymentRepo
+    paymentRepo,
+    operationRepo
   );
 
   await useCase.execute({ saleId, reason, items, userId });
@@ -187,10 +191,10 @@ export async function processReturnAction(input: ProcessReturnInput) {
     operationRepo
   );
 
-  await useCase.execute(input);
+  const result = await useCase.execute(input);
   revalidatePath("/tenant/returns");
   revalidatePath("/tenant/rentals");
-  return { success: true };
+  return { success: true, data: result };
 }
 
 export async function getReturnsDataAction(tenantId: string) {
@@ -201,24 +205,36 @@ export async function getReturnsDataAction(tenantId: string) {
     const clientRepo = new PrismaClientRepository(prisma, tenantId);
     const guaranteeRepo = new PrismaGuaranteeRepository(prisma);
     const inventoryRepo = new PrismaInventoryRepository(prisma);
+    const operationRepo = new PrismaOperationRepository(prisma);
     const listTypes = new ListAttributeTypesUseCase(attributeTypeRepo);
     const listValues = new ListAttributeValuesUseCase(attributeValueRepo);
 
-    const [rentals, rentalItems, products, productVariants, customers, guarantees, types, values] = await Promise.all([
+    const [rentals, rentalItems, products, productVariants, customers, guarantees, operations, types, values] = await Promise.all([
       rentalRepo.getRentals(),
       rentalRepo.getRentalItems(),
       inventoryRepo.getProducts(),
       inventoryRepo.getProductVariants(),
       clientRepo.getAllClients(),
       guaranteeRepo.getGuarantees(tenantId),
+      operationRepo.getOperationsByTenant(tenantId),
       listTypes.execute(tenantId, { includeInactive: true }),
       listValues.execute(tenantId, { includeInactive: true }),
     ]);
 
+    const operationsById = new Map(operations.map((op: any) => [op.id, op]));
+    const rentalsWithSnapshots = rentals.map((r: any) => {
+      const op = operationsById.get(r.operationId);
+      return {
+        ...r,
+        policySnapshot: op?.policySnapshot,
+        operationTotalAmount: op?.totalAmount ?? null,
+      };
+    });
+
     return {
       success: true,
       data: {
-        rentals: rentals.filter((r: any) => r.tenantId === tenantId),
+        rentals: rentalsWithSnapshots.filter((r: any) => r.tenantId === tenantId),
         rentalItems: rentalItems.filter((i: any) => i.tenantId === tenantId),
         products: products.filter((p: any) => p.tenantId === tenantId),
         productVariants: productVariants.filter((v: any) => v.tenantId === tenantId),

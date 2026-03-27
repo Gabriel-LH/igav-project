@@ -545,6 +545,10 @@ model Operation {
   totalAmount          Float
   date                 DateTime
   createdAt            DateTime              @default(now())
+  policySnapshot       Json?
+  configSnapshot       Json?
+  policyVersion        Int?
+  configVersion        DateTime?
   clientCreditLedgers  ClientCreditLedger[]
   clientLoyaltyLedgers ClientLoyaltyLedger[]
   guarantees           Guarantee[]

@@ -1,6 +1,7 @@
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
-
-const businessRules = MOCK_BRANCH_CONFIG;
+const DEFAULT_OPEN_HOURS = {
+  open: "08:00",
+  close: "18:00",
+};
 
 export type Period = "AM" | "PM";
 
@@ -9,8 +10,8 @@ const parseTime = (timeStr: string) => {
   return { hour: h, minute: m };
 };
 
-const openTime = parseTime(businessRules.openHours.open); // { hour: 8, minute: 30 }
-const closeTime = parseTime(businessRules.openHours.close);
+const openTime = parseTime(DEFAULT_OPEN_HOURS.open);
+const closeTime = parseTime(DEFAULT_OPEN_HOURS.close);
 
 export const STORE_HOURS = {
   openHour: openTime.hour,

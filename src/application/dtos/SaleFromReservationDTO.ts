@@ -20,4 +20,9 @@ export interface SaleFromReservationDTO {
   financials: SaleDTO["financials"]
 
   notes?: string;
+
+  configSnapshot?: unknown;
+  policySnapshot?: unknown;
+  configVersion?: Date;
+  policyVersion?: number;
 }

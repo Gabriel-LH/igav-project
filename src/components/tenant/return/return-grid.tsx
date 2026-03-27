@@ -98,6 +98,7 @@ export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props)
             notes: parent.notes || "",
             createdAt: new Date(parent.createdAt),
             operationId: parent.operationId || "",
+            policySnapshot: (parent as any).policySnapshot,
             sellerId: "",
             items: group.map((gItem) => ({
               id: gItem.id, // ID del RentalItem
@@ -140,7 +141,9 @@ export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props)
             financials: {
               subtotal: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
               totalDiscount: 0,
-              totalAmount: group.reduce((sum, i) => sum + i.priceAtMoment, 0),
+              totalAmount:
+                Number((parent as any).operationTotalAmount) ||
+                group.reduce((sum, i) => sum + i.priceAtMoment, 0),
               paymentMethod: "cash",
               receivedAmount: 0,
               keepAsCredit: false,

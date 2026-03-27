@@ -19,6 +19,14 @@ import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { toast } from "sonner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { CustomerSelector } from "../home/ui/reservation/CustomerSelector";
+import { UsePointsComponent } from "../pos/ui/UsePointsComponent";
+import { UseCouponComponent } from "../pos/ui/UseCouponComponent";
+import { Coupon } from "@/src/types/coupon/type.coupon";
+import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { getTenantConfigAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
+import { calculateTaxTotals } from "@/src/utils/pricing/tax-calculation";
 
 export function PosCartSection() {
   const { productVariants } = useInventoryStore();
@@ -38,6 +46,19 @@ export function PosCartSection() {
   // ─── MODALES ───
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [reservationOpen, setReservationOpen] = React.useState(false);
+
+  const [tenantConfig, setTenantConfig] = React.useState(DEFAULT_TENANT_CONFIG);
+  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
+  const [usePoints, setUsePoints] = React.useState(false);
+  const [appliedCoupon, setAppliedCoupon] = React.useState<Coupon | null>(null);
+
+  const selectedClient = useCustomerStore((state) =>
+    selectedCustomer?.id
+      ? state.getCustomerById(selectedCustomer.id)
+      : undefined,
+  );
+  const availablePoints = selectedClient?.loyaltyPoints || 0;
+  const pointValueInMoney = tenantConfig.loyalty?.redemptionValue || 0.01;
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
@@ -59,6 +80,18 @@ export function PosCartSection() {
   }, []);
 
   React.useEffect(() => {
+    let cancelled = false;
+
+    const loadTenantConfig = async () => {
+      const res = await getTenantConfigAction();
+      if (cancelled) return;
+      if (res.success && res.data) {
+        setTenantConfig(res.data as any);
+      }
+    };
+
+    loadTenantConfig();
+
     if (!globalRentalDates?.from) {
       const today = new Date();
       setGlobalDates({
@@ -107,6 +140,33 @@ export function PosCartSection() {
   };
 
   const hasAppliedBundles = items.some((i) => i.bundleId);
+  const subtotalConPromos = items.reduce((acc, curr) => acc + curr.subtotal, 0);
+
+  const pointsConsumed = usePoints
+    ? Math.min(availablePoints, Math.ceil(subtotalConPromos / pointValueInMoney))
+    : 0;
+  const pointsDiscount = pointsConsumed * pointValueInMoney;
+
+  let couponDiscount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      couponDiscount = Math.floor(
+        subtotalConPromos * (appliedCoupon.discountValue / 100),
+      );
+    } else {
+      couponDiscount = Math.min(subtotalConPromos, appliedCoupon.discountValue);
+    }
+  }
+
+  const totalDescuentoExtra = pointsDiscount + couponDiscount;
+  const totalOperacionConDescuento = Math.max(
+    subtotalConPromos - totalDescuentoExtra,
+    0,
+  );
+  const taxTotals = calculateTaxTotals(
+    totalOperacionConDescuento,
+    tenantConfig.tax,
+  );
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -217,6 +277,29 @@ export function PosCartSection() {
       {/* 4. FOOTER DE TOTALES Y ACCIONES */}
       <div className="px-1 py-2 bg-background border-t shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] z-10">
         {items.length > 0 && (
+          <div className="px-2 pb-3 space-y-2">
+            <CustomerSelector
+              selected={selectedCustomer}
+              onSelect={setSelectedCustomer}
+            />
+            {selectedCustomer && availablePoints > 0 && (
+              <UsePointsComponent
+                usePoints={usePoints}
+                setUsePoints={setUsePoints}
+                availablePoints={availablePoints}
+                pointValueInMoney={pointValueInMoney}
+              />
+            )}
+            <UseCouponComponent
+              tenantId={items[0]?.product?.tenantId ?? null}
+              selectedClientId={selectedCustomer?.id}
+              appliedCoupon={appliedCoupon}
+              onApplyCoupon={setAppliedCoupon}
+            />
+          </div>
+        )}
+
+        {items.length > 0 && (
           <div className="pb-2">
             <div className="flex w-full justify-center items-center">
               {hasAppliedBundles ? (
@@ -286,12 +369,37 @@ export function PosCartSection() {
               </span>
             </div>
           )}
+          {totalDescuentoExtra > 0 && (
+            <div className="flex justify-between text-sm text-emerald-600 font-bold">
+              <span>Descuento (Puntos/Cupón)</span>
+              <span>-{formatCurrency(totalDescuentoExtra)}</span>
+            </div>
+          )}
+          {tenantConfig.tax?.rate > 0 && (
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>
+                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                  ? "Incluye IGV"
+                  : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%)`}
+              </span>
+              <span>
+                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                  ? formatCurrency(taxTotals.taxAmount)
+                  : formatCurrency(taxTotals.taxAmount)}
+              </span>
+            </div>
+          )}
           <div className="flex justify-between items-end">
             <span className="text-lg font-semibold">Total a Pagar</span>
             <span className="text-2xl font-semibold text-green-600 tracking-tight">
-              {formatCurrency(total)}
+              {formatCurrency(taxTotals.total)}
             </span>
           </div>
+          {hasRentals && (
+            <div className="text-xs text-muted-foreground">
+              La garantía se cobra en caja.
+            </div>
+          )}
         </div>
 
         {/* --- BOTONES DE ACCIÓN --- */}
@@ -332,7 +440,18 @@ export function PosCartSection() {
       </div>
 
       {/* ─── MODALES ─── */}
-      <PosCheckoutModal open={checkoutOpen} onOpenChange={setCheckoutOpen} />
+      <PosCheckoutModal
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+        selectedCustomer={selectedCustomer}
+        onSelectedCustomerChange={setSelectedCustomer}
+        usePoints={usePoints}
+        onUsePointsChange={setUsePoints}
+        appliedCoupon={appliedCoupon}
+        onAppliedCouponChange={setAppliedCoupon}
+        showCustomerSelector={false}
+        showDiscountControls={false}
+      />
       <PosReservationModal
         open={reservationOpen}
         onOpenChange={setReservationOpen}

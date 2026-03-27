@@ -27,12 +27,18 @@ export class ProcessTransactionUseCase {
       const financials = new TransactionFinancials(dto.financials);
       const tenantId = this.tenantRepo.getTenantIdByTransaction(dto);
 
-      const operation = await this.createOperationUC.execute(
-        dto,
-        financials.totalAmount,
-        financials.initialNetPaid,
-        tenantId,
-      );
+    const operation = await this.createOperationUC.execute(
+      dto,
+      financials.totalAmount,
+      financials.initialNetPaid,
+      tenantId,
+      {
+        policySnapshot: dto.policySnapshot,
+        configSnapshot: dto.configSnapshot,
+        policyVersion: dto.policyVersion,
+        configVersion: dto.configVersion,
+      },
+    );
       const operationId = String(operation.id);
 
       if (financials.hasOverpaymentToKeep) {

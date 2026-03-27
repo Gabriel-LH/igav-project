@@ -7,6 +7,16 @@ import { redirect } from "next/navigation";
 import { getActivePlanFeaturesAction } from "@/src/app/(tenant)/tenant/actions/plan.actions";
 import { PlanFeaturesProvider } from "@/src/components/tenant/plan-features-provider";
 import { getBranchesAction } from "./actions/branch.actions";
+import { SessionHydrator } from "@/src/components/auth/SessionHydrator";
+import { PromotionHydrator } from "@/src/components/tenant/promotion/PromotionHydrator";
+import { getPromotionsAction } from "./actions/promotion.actions";
+import { getTenantUsersAction } from "./actions/user.actions";
+import { UserHydrator } from "@/src/components/auth/UserHydrator";
+import { BranchHydrator } from "@/src/components/tenant/branch/BranchHydrator";
+import { getCategoriesAction } from "./actions/category.actions";
+import { CategoryHydrator } from "@/src/components/tenant/category/CategoryHydrator";
+import { getCashSessionsAction } from "./actions/cash-session.actions";
+import { CashSessionHydrator } from "@/src/components/tenant/cash/CashSessionHydrator";
 
 export default async function TenantLayout({
   children,
@@ -24,19 +34,50 @@ export default async function TenantLayout({
     redirect("/auth/login?error=no_tenant_membership");
   }
 
-  const planFeatures = await getActivePlanFeaturesAction();
-  const branchesResult = await getBranchesAction();
-  const branches = branchesResult.success ? branchesResult.data : [];
+  // Parallel fetching
+  const [planFeatures, branchesRes, promotionsRes, usersRes, categoriesRes, cashSessionsRes] = await Promise.all([
+    getActivePlanFeaturesAction(),
+    getBranchesAction(),
+    getPromotionsAction(),
+    getTenantUsersAction(),
+    getCategoriesAction(),
+    getCashSessionsAction(),
+  ]);
+
+  const branches = branchesRes.success ? branchesRes.data : [];
+  const promotions = promotionsRes.success ? promotionsRes.data : [];
+  const users = usersRes.success ? usersRes.data : [];
+  const categories = categoriesRes.success ? categoriesRes.data : [];
+  const cashSessions = cashSessionsRes.success ? cashSessionsRes.data : [];
   const tenant = access.membership.tenant;
+  
   const logoUrl =
     tenant?.metadata && typeof (tenant.metadata as any).logoUrl === "string"
       ? ((tenant.metadata as any).logoUrl as string)
       : "";
 
-  console.log("tenantRole", access.membership.role);
-
   return (
     <PlanFeaturesProvider initialData={planFeatures}>
+      <SessionHydrator
+        data={{
+          user: {
+            id: access.user.id,
+            email: access.user.email,
+            name: access.user.name ?? "",
+          },
+          membership: {
+            tenantId: access.tenantId!,
+            role: access.membership.role as any,
+            branch: access.membership.branch as any,
+          },
+        }}
+      />
+      <PromotionHydrator data={promotions as any} />
+      <UserHydrator data={users as any} />
+      <BranchHydrator data={branches as any} />
+      <CategoryHydrator data={categories as any} />
+      <CashSessionHydrator data={cashSessions as any} />
+      
       <SidebarProvider
         style={
           {
@@ -47,8 +88,8 @@ export default async function TenantLayout({
       >
         <AppSidebar
           variant="inset"
-          branches={branches}
-          tenant={tenant}
+          branches={branches as any}
+          tenant={tenant as any}
           user={access.user as any}
           membershipRoleName={access.membership.role?.name}
           logoUrl={logoUrl}
@@ -59,7 +100,6 @@ export default async function TenantLayout({
             <SiteHeader tenantName={tenant.name} logoUrl={logoUrl} />
           </header>
 
-          {/* Contenido dinámico */}
           <div className="flex flex-1 flex-col min-w-0 w-full">{children}</div>
         </SidebarInset>
       </SidebarProvider>

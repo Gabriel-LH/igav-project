@@ -8,5 +8,9 @@ export interface BaseOperation {
   createdAt: Date;
   updatedAt: Date;
   notes?: string;
+  configSnapshot?: unknown;
+  policySnapshot?: unknown;
+  configVersion?: Date;
+  policyVersion?: number;
 }
 

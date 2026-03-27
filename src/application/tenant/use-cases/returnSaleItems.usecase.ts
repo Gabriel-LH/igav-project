@@ -3,6 +3,10 @@ import { SaleReversalRepository } from "../../../domain/tenant/repositories/Sale
 import { InventoryRepository } from "../../../domain/tenant/repositories/InventoryRepository";
 import { PaymentRepository } from "../../../domain/tenant/repositories/PaymentRepository";
 import { Payment } from "../../../types/payments/type.payments";
+import { OperationRepository } from "../../../domain/tenant/repositories/OperationRepository";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
+import { differenceInDays } from "date-fns";
 
 export interface ReturnSaleItemsInput {
   saleId: string;
@@ -21,6 +25,7 @@ export class ReturnSaleItemsUseCase {
     private reversalRepo: SaleReversalRepository,
     private inventoryRepo: InventoryRepository,
     private paymentRepo: PaymentRepository,
+    private operationRepo: OperationRepository,
   ) {}
 
   async execute({ saleId, items, reason, userId }: ReturnSaleItemsInput): Promise<void> {
@@ -31,7 +36,55 @@ export class ReturnSaleItemsUseCase {
       throw new Error("No se puede devolver una venta anulada");
     }
 
+    const operation = await this.operationRepo.getOperationById(sale.operationId);
+    const policySnapshot = operation?.policySnapshot as TenantPolicy | undefined;
+    const policy: TenantPolicy = {
+      id: "policy-default",
+      tenantId: sale.tenantId,
+      version: 1,
+      isActive: true,
+      createdAt: new Date(0),
+      updatedBy: "system",
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+      ...(policySnapshot ?? {}),
+      sales: {
+        ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy).sales,
+        ...(policySnapshot?.sales ?? {}),
+      },
+    };
+
+    if (!policy.sales?.allowReturns) {
+      throw new Error("Las devoluciones están deshabilitadas por política.");
+    }
+
+    if (policy.sales?.maxReturnDays !== undefined) {
+      const baseDate = sale.saleDate ?? sale.createdAt;
+      const days = differenceInDays(new Date(), baseDate);
+      if (days > policy.sales.maxReturnDays) {
+        throw new Error("La venta excede el plazo máximo de devolución.");
+      }
+    }
+
     const saleWithItems = await this.saleRepo.getSaleWithItems(saleId);
+    const pendingItems = saleWithItems.items.filter((i) => !i.isReturned);
+
+    if (sale.status !== "vendido") {
+      const hasLotItems = pendingItems.some((i) => i.stockId);
+      if (hasLotItems) {
+        throw new Error("No se puede devolver una venta no entregada.");
+      }
+    }
+
+    if (!policy.sales?.allowPartialReturns) {
+      const inputIds = new Set(items.map((i) => i.saleItemId));
+      if (pendingItems.length !== items.length) {
+        throw new Error("La política requiere devolver todos los items.");
+      }
+      const allIncluded = pendingItems.every((i) => inputIds.has(i.id));
+      if (!allIncluded) {
+        throw new Error("La política requiere devolver todos los items.");
+      }
+    }
 
     let totalRefunded = 0;
 
@@ -96,7 +149,22 @@ export class ReturnSaleItemsUseCase {
         throw new Error("No se aceptan devoluciones en este estado");
       }
 
-      await this.inventoryRepo.updateItemStatus(saleItem.stockId, "disponible");
+      if (saleItem.inventoryItemId) {
+        await this.inventoryRepo.updateItemStatus(
+          saleItem.inventoryItemId,
+          "disponible",
+          sale.branchId,
+          userId,
+        );
+        continue;
+      }
+
+      if (saleItem.stockId && sale.status === "vendido") {
+        await this.inventoryRepo.increaseLotQuantity(
+          saleItem.stockId,
+          saleItem.quantity,
+        );
+      }
     }
 
     if (totalRefunded > 0) {

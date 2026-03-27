@@ -20,6 +20,10 @@ export class PrismaOperationRepository implements OperationRepository {
         totalAmount: operation.totalAmount,
         date: operation.date,
         createdAt: operation.createdAt,
+        policySnapshot: operation.policySnapshot as Prisma.InputJsonValue,
+        configSnapshot: operation.configSnapshot as Prisma.InputJsonValue,
+        policyVersion: operation.policyVersion ?? null,
+        configVersion: operation.configVersion ?? null,
         tenantId: operation.tenantId,
         branchId: operation.branchId,
         sellerId: operation.sellerId,
@@ -39,6 +43,10 @@ export class PrismaOperationRepository implements OperationRepository {
       status: op.status as Operation["status"],
       paymentStatus: op.paymentStatus as Operation["paymentStatus"],
       customerMode: op.customerId ? "registered" : "general", // Approximate reconstruct
+      policySnapshot: op.policySnapshot ?? undefined,
+      configSnapshot: op.configSnapshot ?? undefined,
+      policyVersion: op.policyVersion ?? undefined,
+      configVersion: op.configVersion ?? undefined,
     } as Operation;
   }
 
@@ -54,6 +62,10 @@ export class PrismaOperationRepository implements OperationRepository {
           type: op.type as Operation["type"],
           status: op.status as Operation["status"],
           paymentStatus: op.paymentStatus as Operation["paymentStatus"],
+          policySnapshot: op.policySnapshot ?? undefined,
+          configSnapshot: op.configSnapshot ?? undefined,
+          policyVersion: op.policyVersion ?? undefined,
+          configVersion: op.configVersion ?? undefined,
         }) as Operation,
     );
   }
@@ -76,6 +88,10 @@ export class PrismaOperationRepository implements OperationRepository {
           type: op.type as Operation["type"],
           status: op.status as Operation["status"],
           paymentStatus: op.paymentStatus as Operation["paymentStatus"],
+          policySnapshot: op.policySnapshot ?? undefined,
+          configSnapshot: op.configSnapshot ?? undefined,
+          policyVersion: op.policyVersion ?? undefined,
+          configVersion: op.configVersion ?? undefined,
         }) as Operation,
     );
   }

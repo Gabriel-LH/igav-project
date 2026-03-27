@@ -17,9 +17,10 @@ import { ShoppingBag, Calendar, BookmarkPlus, Info } from "lucide-react";
 
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { processTransactionAction, reserveBundlesAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { useSessionStore } from "@/src/store/useSessionStore";
+import { useBranchStore } from "@/src/store/useBranchStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
-import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
 import { DirectTransactionCalendar } from "@/src/components/tenant/home/ui/direct-transaction/DirectTransactionCalendar";
@@ -35,9 +36,6 @@ import {
 import { Banknote, CreditCard, Smartphone } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
-import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBundle.usecase";
-import { ZustandInventoryRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandInventoryRepository";
-import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
@@ -54,8 +52,11 @@ export function PosReservationModal({
   const { productVariants } = useInventoryStore();
   const { policy } = useTenantConfigStore();
 
-  const sellerId = USER_MOCK[0].id;
-  const currentBranchId = USER_MOCK[0].branchId!;
+  const user = useSessionStore((state) => state.user);
+  const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+
+  const sellerId = user?.id || "";
+  const currentBranchId = selectedBranchId || "";
 
   // ─── ESTADOS ───
   const [selectedCustomer, setSelectedCustomer] = React.useState<Client | null>(
@@ -67,12 +68,8 @@ export function PosReservationModal({
   const [pickupDate, setPickupDate] = React.useState<Date | undefined>(new Date());
   const [returnDate, setReturnDate] = React.useState<Date | undefined>(addDays(new Date(), 3));
   
-  const [pickupTime, setPickupTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.open,
-  );
-  const [returnTime, setReturnTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.close,
-  );
+  const [pickupTime, setPickupTime] = React.useState("08:00");
+  const [returnTime, setReturnTime] = React.useState("18:00");
 
   // Financieros
   const [downPayment, setDownPayment] = React.useState("");
@@ -155,17 +152,16 @@ export function PosReservationModal({
     if (items.some((item) => item.bundleId)) {
       const tenantId = activeTenantId ?? items[0]?.product.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-      const bundleOrchestrator = new ApplyBundleUseCase(
-        new ZustandInventoryRepository(),
-        new ZustandPromotionRepository(),
-      );
-      await bundleOrchestrator.reserveBundledItems(
+      
+      const res = await reserveBundlesAction(
         items,
         tenantId,
         currentBranchId,
         pickupDate || new Date(),
         returnDate || addDays(new Date(), 3),
       );
+
+      if (!res.success) throw new Error(res.error);
     }
 
     const tenantId = activeTenantId ?? items[0]?.product.tenantId;

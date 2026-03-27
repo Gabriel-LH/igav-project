@@ -12,6 +12,9 @@ import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositor
 import { ConvertReservationUseCase, ConvertReservationInput } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
 import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
 import { makeServerProcessTransaction } from "@/src/infrastructure/tenant/factories/serverProcessTransaction.factory";
+import { PrismaConfigAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-config.adapter";
+import { PrismaPolicyAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-policy.adapter";
+import { ResolveTenantSettingsUseCase } from "@/src/application/tenant/use-cases/settings/resolveTenantSettings.usecase";
 
 export async function convertReservationAction(input: ConvertReservationInput) {
   try {
@@ -20,6 +23,12 @@ export async function convertReservationAction(input: ConvertReservationInput) {
 
     if (!tenantId) throw new Error("Tenant ID es obligatorio");
     if (!user?.id) throw new Error("User ID es obligatorio");
+
+    const configRepo = new PrismaConfigAdapter();
+    const policyRepo = new PrismaPolicyAdapter();
+    const settingsUC = new ResolveTenantSettingsUseCase(configRepo, policyRepo);
+    const { config, policy, branchConfig, configVersion, policyVersion } =
+      await settingsUC.execute(tenantId, user.id as string, input.reservation.branchId);
 
     const result = await prisma.$transaction(async (tx) => {
       const reservationRepo = new PrismaReservationRepository(tx);
@@ -41,6 +50,13 @@ export async function convertReservationAction(input: ConvertReservationInput) {
         ...input,
         tenantId,
         sellerId: user.id as string,
+        configSnapshot: {
+          tenant: config,
+          branch: branchConfig,
+        },
+        policySnapshot: policy,
+        configVersion,
+        policyVersion,
       });
     });
 

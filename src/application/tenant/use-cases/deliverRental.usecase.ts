@@ -52,19 +52,25 @@ export class DeliverRentalUseCase {
         continue; // Only deliver selected items if provided
       }
 
-      if (!item.stockId) {
+      const stockId = item.inventoryItemId ?? item.stockId;
+      if (!stockId) {
         throw new Error(`Item ${item.id} no tiene stock asignado`);
       }
 
-      if (item.isSerial) {
+      const isSerial =
+        typeof item.isSerial === "boolean"
+          ? item.isSerial
+          : await this.inventoryRepo.isSerial(stockId);
+
+      if (isSerial) {
         await this.inventoryRepo.updateItemStatus(
-          item.stockId,
+          stockId,
           "alquilado",
           rental.branchId,
           userId,
         );
       } else {
-        await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+        await this.inventoryRepo.decreaseLotQuantity(stockId, item.quantity);
       }
     }
 

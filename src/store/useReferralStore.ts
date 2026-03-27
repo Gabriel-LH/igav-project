@@ -1,6 +1,4 @@
 import { create } from "zustand";
-import { MOCK_REFERRALS } from "../mocks/mock.referral";
-
 import { Referral } from "../types/referral/type.referral";
 
 interface ReferralState {
@@ -9,7 +7,7 @@ interface ReferralState {
 }
 
 export const useReferralStore = create<ReferralState>((set) => ({
-  referrals: MOCK_REFERRALS as any,
+  referrals: [],
   addReferral: (ref) =>
     set((state) => ({ referrals: [...state.referrals, ref as any] })),
 }));

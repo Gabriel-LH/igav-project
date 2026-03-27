@@ -11,8 +11,6 @@ import { PosCartSection } from "./pos-cart-section";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
-import { PromotionLoaderService } from "@/src/domain/tenant/services/promotionLoader.service";
-import { ZustandPromotionRepository } from "@/src/infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
@@ -26,12 +24,6 @@ export function PosLayout() {
     "alquiler",
   );
 
-  useEffect(() => {
-    const loaderService = new PromotionLoaderService(
-      new ZustandPromotionRepository(),
-    );
-    loaderService.ensurePromotionsLoaded();
-  }, []);
 
   const promotionsFingerprint = useMemo(
     () =>

@@ -7,25 +7,19 @@ import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
 import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
-import { USER_MOCK } from "@/src/mocks/mock.user";
+import { useBranchStore, GLOBAL_BRANCH_ID } from "./useBranchStore";
+import { useSessionStore } from "./useSessionStore";
 import {
   BundleDomainService,
   BundleDefinition,
 } from "@/src/domain/tenant/services/bundle.service";
 import { PromotionService } from "../domain/tenant/services/promotion.service";
-import { ZustandPromotionRepository } from "../infrastructure/tenant/stores-adapters/ZustandPromotionRepository";
-import { PromotionLoaderService } from "../domain/tenant/services/promotionLoader.service";
 import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
+import { usePromotionStore } from "./usePromotionStore";
 import { Promotion } from "../types/promotion/type.promotion";
 
 const bundleService = new BundleDomainService();
-const promotionLoader = new PromotionLoaderService(
-  new ZustandPromotionRepository(),
-);
-const promotionService = new PromotionService(
-  new ZustandPromotionRepository(),
-  promotionLoader,
-);
+const promotionService = new PromotionService();
 
 // --- HELPER DE CÁLCULO ---
 const calculateSubtotal = (
@@ -136,12 +130,14 @@ export const useCartStore = create<CartState>()(
 
       setCouponCode: (code) => {
         set({ appliedCouponCode: code });
-        get().applyPromotions(USER_MOCK[0].branchId!);
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
       },
 
       setReferralReward: (amount) => {
         set({ referralRewardAmount: amount });
-        get().applyPromotions(USER_MOCK[0].branchId!);
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
       },
 
       addItem: (
@@ -310,7 +306,7 @@ export const useCartStore = create<CartState>()(
         const bundleId = crypto.randomUUID();
         const { products, inventoryItems, stockLots } =
           useInventoryStore.getState();
-        const currentBranchId = USER_MOCK[0].branchId;
+        const currentBranchId = useBranchStore.getState().selectedBranchId;
         const requiredProducts = promotion.bundleConfig.requiredProductIds
           .map((id) => products.find((product) => product.id === id))
           .filter((p): p is Product => Boolean(p && p.tenantId === tenantId));
@@ -547,11 +543,10 @@ export const useCartStore = create<CartState>()(
         const dates = get().globalRentalDates;
         const activeBundles = get().activeBundles;
         if (dates && activeBundles.length) {
-          get().reevaluateActiveBundle(
-            USER_MOCK[0].branchId!,
-            dates.from,
-            dates.to,
-          );
+          const bid = useBranchStore.getState().selectedBranchId;
+          if (bid && bid !== GLOBAL_BRANCH_ID) {
+            get().reevaluateActiveBundle(bid, dates.from, dates.to);
+          }
         }
       },
 
@@ -588,11 +583,10 @@ export const useCartStore = create<CartState>()(
         }));
 
         if (get().activeBundles.length) {
-          get().reevaluateActiveBundle(
-            USER_MOCK[0].branchId!,
-            range.from,
-            range.to,
-          );
+          const bid = useBranchStore.getState().selectedBranchId;
+          if (bid && bid !== GLOBAL_BRANCH_ID) {
+            get().reevaluateActiveBundle(bid, range.from, range.to);
+          }
         }
       },
 
@@ -612,11 +606,10 @@ export const useCartStore = create<CartState>()(
         const dates = get().globalRentalDates;
         const active = get().activeBundles.length;
         if (dates && active) {
-          get().reevaluateActiveBundle(
-            USER_MOCK[0].branchId!,
-            dates.from,
-            dates.to,
-          );
+          const bid = useBranchStore.getState().selectedBranchId;
+          if (bid && bid !== GLOBAL_BRANCH_ID) {
+            get().reevaluateActiveBundle(bid, dates.from, dates.to);
+          }
         }
       },
       clearCart: () =>
@@ -636,9 +629,11 @@ export const useCartStore = create<CartState>()(
 
         const tenantId =
           state.activeTenantId ?? state.items[0]?.product.tenantId ?? null;
+        const allPromotions = usePromotionStore.getState().promotions;
         let promotions = promotionService.getActivePromotions(
           tenantId ?? undefined,
           ["automatic"],
+          allPromotions,
         );
 
         // 🔹 1. Resolver cupón manual

@@ -28,11 +28,10 @@ import {
   getBranchInventoryAction,
 } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { redeemPointsAction } from "@/src/app/(tenant)/tenant/actions/loyalty.actions";
-import {
-  useTenantConfigStore,
-  DEFAULT_CONFIG,
-} from "@/src/store/useTenantConfigStore";
+import { getTenantConfigAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 import { formatCurrency } from "@/src/utils/currency-format";
+import { calculateTaxTotals } from "@/src/utils/pricing/tax-calculation";
 import { SaleDTO } from "@/src/application/dtos/SaleDTO";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
@@ -57,11 +56,27 @@ import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 interface PosCheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  selectedCustomer?: any | null;
+  onSelectedCustomerChange?: (client: any) => void;
+  usePoints?: boolean;
+  onUsePointsChange?: (value: boolean) => void;
+  appliedCoupon?: Coupon | null;
+  onAppliedCouponChange?: (coupon: Coupon | null) => void;
+  showCustomerSelector?: boolean;
+  showDiscountControls?: boolean;
 }
 
 export function PosCheckoutModal({
   open,
   onOpenChange,
+  selectedCustomer: selectedCustomerProp,
+  onSelectedCustomerChange,
+  usePoints: usePointsProp,
+  onUsePointsChange,
+  appliedCoupon: appliedCouponProp,
+  onAppliedCouponChange,
+  showCustomerSelector = true,
+  showDiscountControls = true,
 }: PosCheckoutModalProps) {
   const {
     items,
@@ -77,18 +92,33 @@ export function PosCheckoutModal({
   const sellerId = session?.user?.id || "";
   const currentBranchId = useBranchStore((s) => s.selectedBranchId) || "";
   const { productVariants } = useInventoryStore();
-  const { config, ensureLoaded } = useTenantConfigStore();
+  const [tenantConfig, setTenantConfig] = useState(DEFAULT_TENANT_CONFIG);
 
   useEffect(() => {
-    if (open) {
-      ensureLoaded();
-    }
-  }, [open, ensureLoaded]);
+    let cancelled = false;
 
-  const tenantConfig = config || (DEFAULT_CONFIG as any);
+    const loadTenantConfig = async () => {
+      const res = await getTenantConfigAction();
+      if (cancelled) return;
+      if (res.success && res.data) {
+        setTenantConfig(res.data as any);
+      }
+    };
+
+    if (open) {
+      loadTenantConfig();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   // ─── ESTADOS ───
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [localSelectedCustomer, setLocalSelectedCustomer] = useState<any>(null);
+  const selectedCustomer = selectedCustomerProp ?? localSelectedCustomer;
+  const setSelectedCustomer =
+    onSelectedCustomerChange ?? setLocalSelectedCustomer;
   const [notes, setNotes] = useState("");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodId, setPaymentMethodId] = useState<string>("");
@@ -115,8 +145,12 @@ export function PosCheckoutModal({
 
   const isCashPayment = selectedPaymentMethod?.type === "cash";
 
-  const [usePoints, setUsePoints] = React.useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [localUsePoints, setLocalUsePoints] = React.useState(false);
+  const [localAppliedCoupon, setLocalAppliedCoupon] = useState<Coupon | null>(null);
+  const usePoints = usePointsProp ?? localUsePoints;
+  const setUsePoints = onUsePointsChange ?? setLocalUsePoints;
+  const appliedCoupon = appliedCouponProp ?? localAppliedCoupon;
+  const setAppliedCoupon = onAppliedCouponChange ?? setLocalAppliedCoupon;
 
   // Obtenemos al cliente actual desde tu store
   const selectedClient = useCustomerStore((state) =>
@@ -190,8 +224,6 @@ export function PosCheckoutModal({
     [alquilerItems],
   );
 
-  const IGV_RATE = tenantConfig.tax?.rate || 0.18;
-
   const subtotalBruto = items.reduce(
     (acc, item) =>
       acc +
@@ -220,16 +252,15 @@ export function PosCheckoutModal({
 
   const discountFromItems = Math.max(subtotalBruto - subtotalConPromos, 0);
   const totalDiscount = discountFromItems + pointsDiscount + couponDiscount;
-  const totalBrutoConIGV = Math.max(
+  const baseAmount = Math.max(
     subtotalConPromos - pointsDiscount - couponDiscount,
     0,
   );
 
-  // Base imponible (sin IGV)
-  const subtotalSinIGV = totalBrutoConIGV / (1 + IGV_RATE);
-
-  // IGV contenido
-  const taxAmount = totalBrutoConIGV - subtotalSinIGV;
+  const taxTotals = calculateTaxTotals(baseAmount, tenantConfig.tax);
+  const totalBrutoConIGV = taxTotals.total;
+  const subtotalSinIGV = taxTotals.subtotal;
+  const taxAmount = taxTotals.taxAmount;
 
   // Total final (ya incluye IGV)
 
@@ -289,8 +320,8 @@ export function PosCheckoutModal({
 
     const baseData = {
       tenantId: activeTenantId ?? items[0]?.product.tenantId,
-      customerId: selectedCustomer.id,
-      customerName: selectedCustomer.name,
+        customerId: selectedCustomer.id,
+        customerName: `${selectedCustomer.firstName ?? ""} ${selectedCustomer.lastName ?? ""}`.trim(),
       sellerId,
       branchId: currentBranchId,
       notes,
@@ -720,10 +751,12 @@ export function PosCheckoutModal({
             </div>
           )}
 
-          <CustomerSelector
-            selected={selectedCustomer}
-            onSelect={setSelectedCustomer}
-          />
+          {showCustomerSelector && (
+            <CustomerSelector
+              selected={selectedCustomer}
+              onSelect={setSelectedCustomer}
+            />
+          )}
 
           <div className="bg-primary/5 p-3 rounded-lg border-l-2 border-primary">
             <div className="flex justify-between items-center">
@@ -734,25 +767,34 @@ export function PosCheckoutModal({
                 {formatCurrency(totalBrutoConIGV)}
               </span>
             </div>
+            {tenantConfig.tax?.rate > 0 && (
+              <div className="mt-1 text-xs text-muted-foreground">
+                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                  ? "Incluye IGV"
+                  : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%): ${formatCurrency(taxAmount)}`}
+              </div>
+            )}
           </div>
 
           {/* SECCIÓN FIDELIDAD / CUPONES */}
-          <div className="pt-2 border-t flex flex-col gap-2">
-            {selectedClient && availablePoints > 0 && (
-              <UsePointsComponent
-                usePoints={usePoints}
-                setUsePoints={setUsePoints}
-                availablePoints={availablePoints}
-                pointValueInMoney={pointValueInMoney}
+          {showDiscountControls && (
+            <div className="pt-2 border-t flex flex-col gap-2">
+              {selectedClient && availablePoints > 0 && (
+                <UsePointsComponent
+                  usePoints={usePoints}
+                  setUsePoints={setUsePoints}
+                  availablePoints={availablePoints}
+                  pointValueInMoney={pointValueInMoney}
+                />
+              )}
+              <UseCouponComponent
+                tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
+                selectedClientId={selectedCustomer?.id}
+                appliedCoupon={appliedCoupon}
+                onApplyCoupon={setAppliedCoupon}
               />
-            )}
-            <UseCouponComponent
-              tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
-              selectedClientId={selectedCustomer?.id}
-              appliedCoupon={appliedCoupon}
-              onApplyCoupon={setAppliedCoupon}
-            />
-          </div>
+            </div>
+          )}
 
           <CashPaymentSummary
             type={hasRentals ? "alquiler" : "venta"}

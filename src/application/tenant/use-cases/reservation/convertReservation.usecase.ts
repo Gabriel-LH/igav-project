@@ -26,6 +26,10 @@ export interface ConvertReservationInput {
   };
   notes?: string;
   shouldDeliverImmediately: boolean;
+  configSnapshot?: unknown;
+  policySnapshot?: unknown;
+  configVersion?: Date;
+  policyVersion?: number;
 }
 
 export class ConvertReservationUseCase {
@@ -83,6 +87,10 @@ export class ConvertReservationUseCase {
           },
         } as any,
         status: "alquilado",
+        configSnapshot: input.configSnapshot,
+        policySnapshot: input.policySnapshot,
+        configVersion: input.configVersion,
+        policyVersion: input.policyVersion,
       };
 
       const guaranteeInput = input.guarantee;
@@ -160,6 +168,10 @@ export class ConvertReservationUseCase {
           totalPrice: 0,
         } as any,
         notes: input.notes,
+        configSnapshot: input.configSnapshot,
+        policySnapshot: input.policySnapshot,
+        configVersion: input.configVersion,
+        policyVersion: input.policyVersion,
       };
 
       const res = await this.processTransactionUC.execute(saleDTO as any);

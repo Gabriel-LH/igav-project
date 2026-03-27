@@ -8,6 +8,8 @@ import { rentalSchema } from "../../../types/rentals/type.rentals";
 import { rentalItemSchema } from "../../../types/rentals/type.rentalsItem";
 import { guaranteeSchema } from "../../../types/guarantee/type.guarantee";
 import { InventoryItemStatus } from "../../../utils/status-type/InventoryItemStatusType";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export class CreateRentalUseCase {
   constructor(
@@ -25,6 +27,31 @@ export class CreateRentalUseCase {
     const now = new Date();
     const fromReservation =
       "reservationId" in dto && Array.isArray((dto as any).reservationItems);
+
+    const policySnapshot = (dto as any).policySnapshot as TenantPolicy | undefined;
+    const policy: TenantPolicy = {
+      id: "policy-default",
+      tenantId,
+      version: 1,
+      isActive: true,
+      createdAt: new Date(0),
+      updatedBy: "system",
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+      ...(policySnapshot ?? {}),
+      rentals: {
+        ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy).rentals,
+        ...(policySnapshot?.rentals ?? {}),
+      },
+    };
+
+    if (
+      !fromReservation &&
+      policy.rentals?.requireGuarantee &&
+      (!(dto as RentalDTO).guarantee ||
+        (dto as RentalDTO).guarantee?.type === "no_aplica")
+    ) {
+      throw new Error("La política requiere garantía para alquileres.");
+    }
 
     let guaranteeData: any = null;
 
@@ -126,7 +153,8 @@ export class CreateRentalUseCase {
           rentalId: rental.id,
           operationId: String(operationId),
           productId: item.productId,
-          stockId: item.stockId,
+          stockId: item.inventoryItemId ?? item.stockId,
+          inventoryItemId: item.inventoryItemId,
           quantity: item.quantity ?? 1,
           variantId: item.variantId,
           priceAtMoment: item.priceAtMoment ?? 0,
@@ -144,8 +172,12 @@ export class CreateRentalUseCase {
 
     await this.rentalRepo.addRental(rental, rentalItems);
 
-    const finalRentalStockStatus =
-      dto.status === "reservado_fisico" ? "reservado_fisico" : "alquilado";
+    const finalRentalStockStatus: InventoryItemStatus =
+      dto.status === "reservado_fisico" ||
+      dto.status === "pendiente_entrega" ||
+      dto.status === "reservado"
+        ? "alquilado_pendiente_entrega"
+        : "alquilado";
 
     for (const item of rentalItems) {
       if (await this.inventoryRepo.isSerial(item.stockId)) {
@@ -156,7 +188,12 @@ export class CreateRentalUseCase {
           dto.sellerId,
         );
       } else {
-        await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+        if (finalRentalStockStatus === "alquilado") {
+          await this.inventoryRepo.decreaseLotQuantity(
+            item.stockId,
+            item.quantity,
+          );
+        }
       }
     }
 

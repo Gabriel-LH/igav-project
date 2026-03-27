@@ -3,6 +3,7 @@ import { GuaranteeRepository } from "../../../domain/tenant/repositories/Guarant
 import { OperationRepository } from "../../../domain/tenant/repositories/OperationRepository";
 import { PaymentRepository } from "../../../domain/tenant/repositories/PaymentRepository";
 import { Payment } from "../../../types/payments/type.payments";
+import { InventoryRepository } from "../../../domain/tenant/repositories/InventoryRepository";
 
 export class CancelRentalUseCase {
   constructor(
@@ -10,6 +11,7 @@ export class CancelRentalUseCase {
     private guaranteeRepo: GuaranteeRepository,
     private operationRepo: OperationRepository,
     private paymentRepo: PaymentRepository,
+    private inventoryRepo: InventoryRepository,
   ) {}
 
   async execute(rentalId: string, reason: string, userId: string): Promise<void> {
@@ -19,7 +21,33 @@ export class CancelRentalUseCase {
       throw new Error("Rental no encontrado");
     }
 
+    const rentalItems = await this.rentalRepo.getRentalItemsByRentalId(rentalId);
+
     await this.rentalRepo.cancelRental(rentalId, reason);
+
+    if (rental.status === "alquilado" || rental.status === "reservado_fisico") {
+      for (const item of rentalItems) {
+        const stockId = item.inventoryItemId ?? item.stockId;
+        const isSerial = await this.inventoryRepo.isSerial(stockId);
+
+        if (isSerial) {
+          await this.inventoryRepo.updateItemStatus(
+            stockId,
+            "disponible",
+            rental.branchId,
+            userId,
+          );
+          continue;
+        }
+
+        if (rental.status === "alquilado") {
+          await this.inventoryRepo.increaseLotQuantity(
+            stockId,
+            item.quantity,
+          );
+        }
+      }
+    }
 
     if (rental.guaranteeId) {
       await this.guaranteeRepo.releaseGuarantee(rental.guaranteeId);

@@ -7,6 +7,10 @@ import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard"
 import { ApplyBundleUseCase } from "@/src/application/tenant/use-cases/applyBundle.usecase";
 import { PrismaInventoryRepository } from "@/src/infrastructure/tenant/repositories/PrismaInventoryRepository";
 import { PrismaPromotionRepository } from "@/src/infrastructure/tenant/repositories/PrismaPromotionRepository";
+import { resolvePaymentMethodId } from "./_utils/resolve-payment-method-id";
+import { PrismaConfigAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-config.adapter";
+import { PrismaPolicyAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-policy.adapter";
+import { ResolveTenantSettingsUseCase } from "@/src/application/tenant/use-cases/settings/resolveTenantSettings.usecase";
 
 /**
  * Server Action to process any transaction (Rental, Sale, Reservation)
@@ -17,16 +21,53 @@ export async function processTransactionAction(dto: any) {
     // 0. Auth check and tenant isolation
     const membership = await requireTenantMembership();
     const tenantId = membership.tenantId;
+    const userId = membership.user?.id;
 
-    if (!dto.tenantId) {
-      dto.tenantId = tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant ID es obligatorio");
     }
+    if (!userId) {
+      throw new Error("User ID es obligatorio");
+    }
+
+    const rawPaymentMethod =
+      (dto as { financials?: { paymentMethod?: unknown } })?.financials
+        ?.paymentMethod ?? null;
+    const resolvedPaymentMethodId =
+      await resolvePaymentMethodId(rawPaymentMethod);
+
+    if (!resolvedPaymentMethodId) {
+      throw new Error("Método de pago inválido");
+    }
+
+    const configRepo = new PrismaConfigAdapter();
+    const policyRepo = new PrismaPolicyAdapter();
+    const settingsUC = new ResolveTenantSettingsUseCase(configRepo, policyRepo);
+    const { config, policy, branchConfig, configVersion, policyVersion } =
+      await settingsUC.execute(tenantId, userId, dto?.branchId);
+
+    const dtoWithTenant = {
+      ...dto,
+      tenantId,
+      sellerId: userId,
+      financials: {
+        ...(dto as { financials?: Record<string, unknown> }).financials,
+        paymentMethod: resolvedPaymentMethodId,
+      },
+      configSnapshot: {
+        tenant: config,
+        branch: branchConfig,
+      },
+      policySnapshot: policy,
+      configVersion,
+      policyVersion,
+    };
 
     // 1. Execute the use case within a database transaction
     const result = await prisma.$transaction(async (tx) => {
       // Instantiate the Use Case via factory with the transaction client
       const useCase = makeServerProcessTransaction(tx);
-      return await useCase.execute(dto);
+      return await useCase.execute(dtoWithTenant);
     });
 
     // 2. Revalidate relevant paths to ensure UI updates

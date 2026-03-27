@@ -31,11 +31,22 @@ export class DeliverSaleUseCase {
     }
 
     for (const item of saleItems) {
-      if (!item.stockId) {
-        throw new Error(`Item ${item.id} no tiene stock asignado`);
+      if (item.inventoryItemId) {
+        await this.inventoryRepo.updateItemStatus(
+          item.inventoryItemId,
+          "vendido",
+          sale.branchId,
+          userId,
+        );
+        continue;
       }
 
-      await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+      if (item.stockId) {
+        await this.inventoryRepo.decreaseLotQuantity(item.stockId, item.quantity);
+        continue;
+      }
+
+      throw new Error(`Item ${item.id} no tiene stock asignado`);
     }
 
     await this.saleRepo.updateSale(sale.id, {

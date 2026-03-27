@@ -20,4 +20,9 @@ export interface RentalFromReservationDTO {
   status: "alquilado" | "devuelto" | "atrasado" | "con_daños" | "reservado_fisico" | "perdido" | "anulado";
 
   financials: RentalDTO["financials"];
+
+  configSnapshot?: unknown;
+  policySnapshot?: unknown;
+  configVersion?: Date;
+  policyVersion?: number;
 }

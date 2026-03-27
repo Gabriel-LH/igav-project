@@ -1,10 +1,10 @@
 // components/tenant-config/FiscalConfigForm.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Info, HelpCircle } from "lucide-react";
+import { Info, HelpCircle, InfoIcon } from "lucide-react";
 import { z } from "zod";
 import {
   Card,
@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { Label } from "@/components/label";
 
 const fiscalFormSchema = z.object({
   currency: z.string(),
@@ -69,6 +70,39 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
     },
   });
 
+  const [testAmount, setTestAmount] = useState<number>(0);
+
+  const calculatePreview = (
+    amount: number,
+    roundTo: number,
+    strategy: string,
+  ) => {
+    const factor = amount / roundTo;
+    let rounded;
+
+    switch (strategy) {
+      case "FLOOR":
+        rounded = Math.floor(factor);
+        break;
+      case "CEIL":
+        rounded = Math.ceil(factor);
+        break;
+      case "HALF_UP":
+        rounded = Math.round(factor);
+        break;
+      case "HALF_EVEN":
+        // Lógica de redondeo bancario (al par más cercano)
+        const i = Math.floor(factor);
+        const f = factor - i;
+        if (f !== 0.5) rounded = Math.round(factor);
+        else rounded = i % 2 === 0 ? i : i + 1;
+        break;
+      default:
+        rounded = Math.round(factor);
+    }
+    return (rounded * roundTo).toFixed(2);
+  };
+
   // Actualizar cuando cambie el formulario
   useEffect(() => {
     const subscription = form.watch((values) => {
@@ -90,23 +124,23 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
   const roundingStrategies = [
     {
       value: "HALF_UP",
-      label: "HALF_UP (Redondear hacia arriba .5)",
-      desc: "Estándar comercial: 2.5 → 3",
+      label: "Aritmético (Estándar)",
+      desc: "Redondea al más cercano. Si está a la mitad (.5), sube. Ejemplo: 45.95 → 46.00",
     },
     {
       value: "HALF_EVEN",
-      label: "HALF_EVEN (Redondeo bancario)",
-      desc: "Redondeo al par más cercano: 2.5 → 2",
+      label: "Bancario (Par más cercano)",
+      desc: "Reduce el error acumulado en grandes volúmenes. Ejemplo: 2.5 → 2, 3.5 → 4",
     },
     {
       value: "FLOOR",
-      label: "FLOOR (Redondear hacia abajo)",
-      desc: "Siempre hacia abajo: 2.9 → 2",
+      label: "A favor del Cliente (Hacia abajo)",
+      desc: "Ignora el exceso decimal. Obligatorio en pagos en efectivo. Ejemplo: 45.99 → 45.90",
     },
     {
       value: "CEIL",
-      label: "CEIL (Redondear hacia arriba)",
-      desc: "Siempre hacia arriba: 2.1 → 3",
+      label: "A favor de la Empresa (Hacia arriba)",
+      desc: "Cualquier decimal sube al siguiente nivel. Ejemplo: 45.91 → 46.00",
     },
   ];
 
@@ -311,73 +345,119 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                   </FormItem>
                 )}
               />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  {/* Aplicar redondeo */}
+                  <FormField
+                    control={form.control}
+                    name="applyOn"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel>Aplicar redondeo</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex space-x-4"
+                          >
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="LINE" />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer">
+                                Por línea
+                              </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="TOTAL" />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer">
+                                Al total
+                              </FormLabel>
+                            </FormItem>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Aplicar redondeo */}
-              <FormField
-                control={form.control}
-                name="applyOn"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Aplicar redondeo</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex space-x-4"
-                      >
-                        <FormItem className="flex items-center space-x-2 space-y-0">
+                  {/* Redondear a */}
+                  <FormField
+                    control={form.control}
+                    name="roundTo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Redondear a</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(parseFloat(value))
+                          }
+                          defaultValue={field.value.toString()}
+                        >
                           <FormControl>
-                            <RadioGroupItem value="LINE" />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Seleccionar precisión" />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            Por línea
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="TOTAL" />
-                          </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            Al total
-                          </FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          <SelectContent>
+                            <SelectItem value="0.01">
+                              0.01 (Centésimos)
+                            </SelectItem>
+                            <SelectItem value="0.05">
+                              0.05 (Medio décimo)
+                            </SelectItem>
+                            <SelectItem value="0.10">0.10 (Décimos)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              {/* Redondear a */}
-              <FormField
-                control={form.control}
-                name="roundTo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Redondear a</FormLabel>
-                    <Select
-                      onValueChange={(value) =>
-                        field.onChange(parseFloat(value))
-                      }
-                      defaultValue={field.value.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar precisión" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="0.01">0.01 (Centésimos)</SelectItem>
-                        <SelectItem value="0.05">
-                          0.05 (Medio décimo)
-                        </SelectItem>
-                        <SelectItem value="0.10">0.10 (Décimos)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                {/* Sección de Simulador */}
+                <div className="mt-6 p-4 border rounded-lg">
+                  <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
+                    Simulador en tiempo real
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InfoIcon size={14} />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Prueba cómo se comportará el redondeo con un monto real
+                        antes de guardar.
+                      </TooltipContent>
+                    </Tooltip>
+                  </h4>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs">Monto de prueba</Label>
+                      <Input
+                        type="number"
+                        defaultValue="45.99"
+                        onChange={(e) =>
+                          setTestAmount(parseFloat(e.target.value))
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col justify-end">
+                      <span className="text-xs text-muted-foreground">
+                        Resultado final:
+                      </span>
+                      <span className="text-xl font-mono font-bold text-primary">
+                        {calculatePreview(
+                          testAmount,
+                          form.watch("roundTo"),
+                          form.watch("strategy"),
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         </Form>

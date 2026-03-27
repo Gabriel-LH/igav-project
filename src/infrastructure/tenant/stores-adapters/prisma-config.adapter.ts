@@ -19,6 +19,7 @@ export class PrismaConfigAdapter implements ConfigRepository {
       tenantId,
       ...(config.config as any),
       createdAt: config.createdAt,
+      updatedAt: config.updatedAt,
     } as TenantConfig;
   }
 
@@ -39,6 +40,7 @@ export class PrismaConfigAdapter implements ConfigRepository {
       tenantId,
       ...DEFAULT_TENANT_CONFIG,
       createdAt: new Date(),
+      updatedAt: new Date(),
     } as TenantConfig;
   }
 

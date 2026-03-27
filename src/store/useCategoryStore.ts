@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { Category } from "../types/category/type.category";
-import { CATEGORIES_MOCK } from "../mocks/mock.categories";
 
 interface CategoryState {
   categories: Category[];
@@ -26,7 +25,7 @@ interface CategoryState {
 }
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
-  categories: CATEGORIES_MOCK,
+  categories: [],
   setCategories: (categories) => set({ categories }),
 
   // ➕ Agregar categoría

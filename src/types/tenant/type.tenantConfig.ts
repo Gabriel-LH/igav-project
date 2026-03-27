@@ -62,6 +62,7 @@ export const tenantConfigSchema = z.object({
   }),
   defaultTransferTime: z.number().default(2),
   createdAt: z.date(),
+  updatedAt: z.date().optional(),
 });
 
 export type TenantConfig = z.infer<typeof tenantConfigSchema>;

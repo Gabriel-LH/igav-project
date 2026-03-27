@@ -9,7 +9,18 @@ import { generateOperationReference } from "../../../utils/operation/generateOpe
 export class CreateOperationUseCase {
   constructor(private operationRepo: OperationRepository) {}
 
-  async execute(dto: any, totalAmount: number, initialNetPaid: number, tenantId: string): Promise<Operation> {
+  async execute(
+    dto: any,
+    totalAmount: number,
+    initialNetPaid: number,
+    tenantId: string,
+    snapshots?: {
+      policySnapshot?: unknown;
+      configSnapshot?: unknown;
+      policyVersion?: number;
+      configVersion?: Date;
+    },
+  ): Promise<Operation> {
     const now = new Date();
     const operations = await this.operationRepo.getOperations();
 
@@ -40,6 +51,10 @@ export class CreateOperationUseCase {
       totalAmount,
       date: now,
       createdAt: now,
+      policySnapshot: snapshots?.policySnapshot,
+      configSnapshot: snapshots?.configSnapshot,
+      policyVersion: snapshots?.policyVersion,
+      configVersion: snapshots?.configVersion,
     });
 
     await this.operationRepo.addOperation(operationData);

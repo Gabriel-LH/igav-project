@@ -20,6 +20,10 @@ export const operationSchema = z
     totalAmount: z.number().min(0),
     date: z.date(),
     createdAt: z.date(),
+    policySnapshot: z.any().optional(),
+    configSnapshot: z.any().optional(),
+    policyVersion: z.number().optional(),
+    configVersion: z.date().optional(),
   })
   .superRefine((data, ctx) => {
     const hasCustomer = data.customerId.trim().length > 0;

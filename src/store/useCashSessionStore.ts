@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { CashSession } from "../types/cash/type.cash";
-import { MOCK_SESSIONS } from "../mocks/mock.cashSession";
 
 interface CashSessionState {
   sessions: CashSession[];
   isLoading: boolean;
   loadSessions: () => Promise<void>;
+  setSessions: (sessions: CashSession[]) => void;
   addSession: (session: CashSession) => void;
   updateSession: (id: string, session: Partial<CashSession>) => void;
   closeSession: (id: string, countedAmount: number) => void;
@@ -14,11 +14,11 @@ interface CashSessionState {
 export const useCashSessionStore = create<CashSessionState>((set) => ({
   sessions: [],
   isLoading: false,
+  setSessions: (sessions) => set({ sessions }),
   loadSessions: async () => {
     set({ isLoading: true });
-    // Simular carga
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    set({ sessions: MOCK_SESSIONS, isLoading: false });
+    // TODO: Implement real session loading via Server Action
+    set({ sessions: [], isLoading: false });
   },
   addSession: (session) =>
     set((state) => ({

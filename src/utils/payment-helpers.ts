@@ -1,4 +1,3 @@
-import { MOCK_RESERVATION_ITEM } from "../mocks/mock.reservationItem";
 import { Operation } from "../types/operation/type.operations";
 import { Payment } from "../types/payments/type.payments";
 
@@ -41,17 +40,6 @@ export const getRemainingBalance = (
 ): number => {
   const balance = totalAmount - totalPaid;
   return balance > 0 ? balance : 0;
-};
-
-export const calculateOperationTotal = (reservationId: string) => {
-  const items = MOCK_RESERVATION_ITEM.filter(
-    (item) => item.reservationId === reservationId,
-  );
-
-  return items.reduce(
-    (total, item) => total + item.priceAtMoment * item.quantity,
-    0,
-  );
 };
 
 export const getUpdatedPaymentStatus = (
