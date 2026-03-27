@@ -10,7 +10,6 @@ import {
   BubbleChatSearchIcon,
   Calendar03Icon,
   CleanIcon,
-  Loading03Icon,
   SearchRemoveIcon,
   ToolsIcon,
 } from "@hugeicons/core-free-icons";

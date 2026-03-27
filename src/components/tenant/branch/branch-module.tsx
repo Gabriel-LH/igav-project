@@ -60,10 +60,12 @@ export function BranchesModule() {
       <div className="container mx-auto py-6">
         <div className="flex justify-center items-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">
-              Cargando módulo de sucursales...
-            </p>
+            <div className="col-span-full py-10 flex flex-col items-center justify-center text-muted-foreground">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+              <p className="text-sm animate-pulse font-semibold">
+                Cargando módulo de sucursales...
+              </p>
+            </div>
           </div>
         </div>
       </div>

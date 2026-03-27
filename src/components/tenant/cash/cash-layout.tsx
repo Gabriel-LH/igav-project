@@ -1,21 +1,17 @@
-// components/cash/cash-layout.tsx (corregido)
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Plus, History, CreditCard } from "lucide-react";
 import { SessionDataTable } from "./session-data-table";
 import { PaymentDataTable } from "./payment-data-table";
 import { PaymentHeader } from "./cash-stats";
-import { usePaymentStore } from "@/src/store/usePaymentStore";
-import { useCashSessionStore } from "@/src/store/useCashSessionStore";
-import { MOCK_BRANCHES } from "@/src/mocks/mock.branch";
-import { useCustomerStore } from "@/src/store/useCustomerStore";
-import { useOperationStore } from "@/src/store/useOperationStore";
-import { USER_MOCK } from "@/src/mocks/mock.user";
 import { mapPaymentsToTable } from "@/src/adapters/payment-adapter";
-import { mapCashSessionsToTable } from "@/src/adapters/cash-session-adapter";
+import {
+  CashSessionTableRow,
+  mapCashSessionsToTable,
+} from "@/src/adapters/cash-session-adapter";
 import {
   PaymentDatePreset,
   filterPaymentsByDate,
@@ -24,11 +20,37 @@ import {
 import { OpenSessionModal } from "./ui/modal/OpenSessionModal";
 import { CloseSessionModal } from "./ui/modal/CloseSessionModal";
 import { SessionDetailModal } from "./ui/modal/DetailSessionModal";
-import type { CashSessionTableRow } from "@/src/adapters/cash-session-adapter";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import type { User } from "@/src/types/user/type.user";
+import type { Payment } from "@/src/types/payments/type.payments";
+import type { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
+import type { CashSession } from "@/src/types/cash/type.cash";
+import type { Client } from "@/src/types/clients/type.client";
+import type { Operation } from "@/src/types/operation/type.operations";
+import {
+  closeCashSessionAction,
+  getCashDashboardDataAction,
+  openCashSessionAction,
+} from "@/src/app/(tenant)/tenant/actions/cash.actions";
+import { toast } from "sonner";
 
-// Valores estables fuera del componente
-const STABLE_BRANCHES = MOCK_BRANCHES; // Referencia estable
-const STABLE_USERS = USER_MOCK; // Referencia estable
+const normalizePayment = (payment: Payment): Payment => ({
+  ...payment,
+  createdAt: new Date(payment.createdAt),
+  date: new Date(payment.date),
+});
+
+const normalizeSession = (session: CashSession): CashSession => ({
+  ...session,
+  openedAt: new Date(session.openedAt),
+  closedAt: session.closedAt ? new Date(session.closedAt) : undefined,
+});
+
+const normalizeUser = (user: User): User => ({
+  ...user,
+  createdAt: new Date(user.createdAt),
+  updatedAt: new Date(user.updatedAt),
+});
 
 export function CashLayout() {
   const [activeTab, setActiveTab] = useState("sessions");
@@ -40,52 +62,69 @@ export function CashLayout() {
   const [showSessionDetail, setShowSessionDetail] = useState(false);
   const [selectedSession, setSelectedSession] =
     useState<CashSessionTableRow | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [sessions, setSessions] = useState<CashSession[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [operations, setOperations] = useState<Operation[]>([]);
+  const branches = useBranchStore((state) => state.branches);
 
-  // Stores
-  const { payments } = usePaymentStore();
-  const { sessions, loadSessions, addSession, closeSession } =
-    useCashSessionStore();
-  const { customers } = useCustomerStore();
-  const { operations } = useOperationStore();
+  const loadCashData = useCallback(async () => {
+    const result = await getCashDashboardDataAction();
 
-  // Cargar datos iniciales (solo una vez)
+    if (!result.success || !result.data) {
+      toast.error(result.error || "No se pudo cargar caja");
+      return;
+    }
+
+    setSessions(result.data.sessions.map(normalizeSession));
+    setPayments(result.data.payments.map(normalizePayment));
+    setUsers(result.data.users.map(normalizeUser));
+    setPaymentMethods(result.data.paymentMethods);
+    setClients(
+      result.data.clients.map((client) => ({
+        ...client,
+        createdAt: new Date(client.createdAt),
+        updatedAt: new Date(client.updatedAt),
+        deletedAt: client.deletedAt ? new Date(client.deletedAt) : null,
+      })),
+    );
+    setOperations(
+      result.data.operations.map((operation) => ({
+        ...operation,
+        date: new Date(operation.date),
+        createdAt: new Date(operation.createdAt),
+      })),
+    );
+  }, []);
+
   useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([loadSessions()]);
-    };
+    loadCashData();
+  }, [loadCashData]);
 
-    loadData();
-  }, [loadSessions]); // Dependencias estables
-
-  // Filtrar pagos por fecha - con useMemo optimizado
   const filteredPayments = useMemo(
     () => filterPaymentsByDate(payments, datePreset, customFrom, customTo),
-    [payments, datePreset, customFrom, customTo], // Solo cambiar cuando estas dependencias cambien
+    [payments, datePreset, customFrom, customTo],
   );
 
-  // Datos para tabla de pagos - con referencias estables
   const paymentsData = useMemo(() => {
-    // customers y operations son objetos/arrays de stores, necesitamos asegurar referencias
-    const customersArray = customers ? Object.values(customers) : [];
-    const operationsArray = operations ? Object.values(operations) : [];
-
     return mapPaymentsToTable(
       filteredPayments,
-      customersArray,
-      operationsArray,
-      STABLE_USERS,
+      clients,
+      operations,
+      users,
+      paymentMethods,
     );
-  }, [filteredPayments, customers, operations]); // customers y operations son de stores, pueden cambiar
+  }, [filteredPayments, clients, operations, users, paymentMethods]);
 
-  // Datos para tabla de sesiones - con referencias estables
   const sessionsData = useMemo(
-    () => mapCashSessionsToTable(sessions, STABLE_USERS, STABLE_BRANCHES),
-    [sessions], // Solo depende de sessions
+    () => mapCashSessionsToTable(sessions, users, branches),
+    [sessions, users, branches],
   );
 
   const periodLabel = useMemo(() => getPeriodLabel(datePreset), [datePreset]);
 
-  // Handlers con useCallback para evitar recreación
   const handleViewSession = useCallback((session: CashSessionTableRow) => {
     setSelectedSession(session);
     setShowSessionDetail(true);
@@ -96,21 +135,56 @@ export function CashLayout() {
     setShowCloseSession(true);
   }, []);
 
-  const handleConfirmClose = useCallback(
-    (countedAmount: number) => {
-      if (selectedSession) {
-        closeSession(selectedSession.id, countedAmount);
-        setShowCloseSession(false);
-        setSelectedSession(null);
+  const handleOpenSession = useCallback(
+    async (input: {
+      branchId: string;
+      openingAmount: number;
+      notes?: string;
+    }) => {
+      const result = await openCashSessionAction(input);
+
+      if (!result.success || !result.data) {
+        toast.error(result.error || "No se pudo abrir la caja");
+        return false;
       }
+
+      setSessions((current) => [normalizeSession(result.data), ...current]);
+      toast.success("Caja abierta correctamente");
+      return true;
     },
-    [selectedSession, closeSession],
+    [],
+  );
+
+  const handleConfirmClose = useCallback(
+    async (countedAmount: number) => {
+      if (!selectedSession) return;
+
+      const result = await closeCashSessionAction({
+        sessionId: selectedSession.id,
+        countedAmount,
+      });
+
+      if (!result.success || !result.data) {
+        toast.error(result.error || "No se pudo cerrar la caja");
+        return;
+      }
+
+      const updatedSession = normalizeSession(result.data);
+      setSessions((current) =>
+        current.map((session) =>
+          session.id === updatedSession.id ? updatedSession : session,
+        ),
+      );
+      setShowCloseSession(false);
+      setSelectedSession(null);
+      toast.success("Caja cerrada correctamente");
+    },
+    [selectedSession],
   );
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      {/* Header con título y botón de abrir sesión */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Caja</h1>
           <p className="text-muted-foreground">
@@ -123,7 +197,6 @@ export function CashLayout() {
         </Button>
       </div>
 
-      {/* Tabs principales */}
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -140,7 +213,6 @@ export function CashLayout() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab de Sesiones */}
         <TabsContent value="sessions" className="space-y-4">
           {activeTab === "sessions" && (
             <SessionDataTable
@@ -151,13 +223,13 @@ export function CashLayout() {
           )}
         </TabsContent>
 
-        {/* Tab de Movimientos */}
         <TabsContent value="movements" className="space-y-4">
           {activeTab === "movements" && (
             <>
               <PaymentHeader
                 payments={filteredPayments}
                 periodLabel={periodLabel}
+                paymentMethods={paymentMethods}
               />
 
               <PaymentDataTable
@@ -174,13 +246,12 @@ export function CashLayout() {
         </TabsContent>
       </Tabs>
 
-      {/* Modales */}
       <OpenSessionModal
         open={showOpenSession}
         onOpenChange={setShowOpenSession}
-        onSessionCreated={addSession}
-        branches={STABLE_BRANCHES}
-        cashiers={STABLE_USERS}
+        onSessionCreated={handleOpenSession}
+        branches={branches}
+        cashiers={users}
       />
 
       <CloseSessionModal
@@ -194,7 +265,8 @@ export function CashLayout() {
         open={showSessionDetail}
         onOpenChange={setShowSessionDetail}
         session={selectedSession}
-        payments={filteredPayments}
+        payments={payments}
+        paymentMethods={paymentMethods}
       />
     </div>
   );

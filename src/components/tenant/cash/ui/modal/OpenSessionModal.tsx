@@ -1,22 +1,24 @@
-// components/cash/open-session-modal.tsx
 import {
   CustomModal,
+  CustomModalFooter,
   CustomModalHeader,
   CustomModalTitle,
-  CustomModalFooter,
 } from "../custom/CustomModal";
 import { CustomSelect } from "../custom/CustomSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { CashSession } from "@/src/types/cash/type.cash";
 import type { Branch } from "@/src/types/branch/type.branch";
 import type { User } from "@/src/types/user/type.user";
 
 interface OpenSessionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSessionCreated: (session: CashSession) => void;
+  onSessionCreated: (input: {
+    branchId: string;
+    openingAmount: number;
+    notes?: string;
+  }) => Promise<boolean>;
   branches: Branch[];
   cashiers: User[];
 }
@@ -31,34 +33,28 @@ export function OpenSessionModal({
   const [openingAmount, setOpeningAmount] = useState<number>(0);
   const [notes, setNotes] = useState("");
 
-  const handleSubmit = () => {
-    const newSession: CashSession = {
-      id: crypto.randomUUID(),
+  const handleSubmit = async () => {
+    const wasCreated = await onSessionCreated({
       branchId,
-      openedById: "current-user", // En producción vendría del contexto
-      openedAt: new Date(),
-      sessionNumber: `SES-${Math.floor(Math.random() * 1000)
-        .toString()
-        .padStart(3, "0")}`,
-      status: "open",
       openingAmount,
       notes: notes || undefined,
-    };
-
-    onSessionCreated(newSession);
+    });
+    if (!wasCreated) return;
     onOpenChange(false);
-    // Reset
     setBranchId("");
     setOpeningAmount(0);
     setNotes("");
   };
 
-  const branchOptions = branches.map((b) => ({ label: b.name, value: b.id }));
+  const branchOptions = branches.map((branch) => ({
+    label: branch.name,
+    value: branch.id,
+  }));
 
   return (
     <CustomModal open={open} onOpenChange={onOpenChange}>
       <CustomModalHeader>
-        <CustomModalTitle>Abrir nueva sesión de caja</CustomModalTitle>
+        <CustomModalTitle>Abrir nueva sesion de caja</CustomModalTitle>
       </CustomModalHeader>
 
       <div className="space-y-4 py-4">

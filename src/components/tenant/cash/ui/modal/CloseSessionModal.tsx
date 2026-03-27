@@ -21,7 +21,7 @@ interface CloseSessionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   session: CashSessionTableRow | null;
-  onConfirm: (countedAmount: number) => void;
+  onConfirm: (countedAmount: number) => void | Promise<void>;
 }
 
 export function CloseSessionModal({

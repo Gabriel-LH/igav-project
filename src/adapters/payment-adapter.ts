@@ -1,5 +1,6 @@
 import { Client } from "../types/clients/type.client";
 import { Operation } from "../types/operation/type.operations";
+import { PaymentMethod } from "../types/payments/type.paymentMethod";
 import { Payment } from "../types/payments/type.payments";
 import { User } from "../types/user/type.user";
 import { MethodPaymentType } from "../utils/status-type/MethodPaymentType";
@@ -25,6 +26,7 @@ export const mapPaymentsToTable = (
   clients: Client[],
   operations: Operation[],
   users: User[],
+  paymentMethods: PaymentMethod[],
 ): PaymentTableRow[] => {
   const sortedVisiblePayments = [...visiblePayments].sort(
     (a, b) => b.date.getTime() - a.date.getTime(),
@@ -35,32 +37,35 @@ export const mapPaymentsToTable = (
   );
   const clientMap = new Map(clients.map((client) => [client.id, client]));
   const userMap = new Map(users.map((user) => [user.id, user]));
+  const paymentMethodMap = new Map(
+    paymentMethods.map((method) => [method.id, method]),
+  );
 
-  return sortedVisiblePayments
-    .map((payment) => {
+  return sortedVisiblePayments.map((payment) => {
       const operation = operationMap.get(payment.operationId);
-      if (!operation) return null;
-
-      const client = clientMap.get(operation.customerId);
+      const client = operation ? clientMap.get(operation.customerId) : undefined;
       const receivedBy = userMap.get(payment.receivedById);
+      const fallbackReference = payment.reference || payment.operationId;
 
       return {
         id: payment.id,
         clientName:
-          `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim(),
-        operationType: operation.referenceCode,
+          `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim() ||
+          "Cliente general",
+        operationType: operation?.referenceCode || fallbackReference || "Sin referencia",
         receivedBy: receivedBy
           ? `${receivedBy.firstName} ${receivedBy.lastName}`
-          : "",
+          : payment.receivedById,
         amount: payment.amount,
         direction: payment.direction,
         category: payment.category,
         status: payment.status,
         date: payment.date,
-        method: payment.paymentMethodId as MethodPaymentType,
-        reference: operation.type,
+        method:
+          (paymentMethodMap.get(payment.paymentMethodId)?.name ||
+            payment.paymentMethodId) as MethodPaymentType,
+        reference: (operation?.type || "venta") as OperationType,
         notes: payment.notes,
       } satisfies PaymentTableRow;
-    })
-    .filter((row): row is PaymentTableRow => row !== null);
+    });
 };

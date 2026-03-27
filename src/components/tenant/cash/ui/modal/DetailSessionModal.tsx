@@ -30,6 +30,7 @@ import {
   Wallet,
 } from "lucide-react";
 import type { CashSessionTableRow } from "@/src/adapters/cash-session-adapter";
+import type { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 import type { Payment } from "@/src/types/payments/type.payments";
 
 interface SessionDetailModalProps {
@@ -37,6 +38,7 @@ interface SessionDetailModalProps {
   onOpenChange: (open: boolean) => void;
   session: CashSessionTableRow | null;
   payments: Payment[];
+  paymentMethods: PaymentMethod[];
 }
 
 export function SessionDetailModal({
@@ -44,12 +46,13 @@ export function SessionDetailModal({
   onOpenChange,
   session,
   payments,
+  paymentMethods,
 }: SessionDetailModalProps) {
   if (!session) return null;
 
-
-    const sessionPayments =  payments.slice(0, 5);
- 
+  const sessionPayments = payments
+    .filter((payment) => payment.cashSessionId === session.id)
+    .slice(0, 5);
 
   const ingresos = sessionPayments
     .filter((p) => p.direction === "in")
@@ -66,6 +69,10 @@ export function SessionDetailModal({
       timeStyle: "short",
     }).format(date);
   };
+
+  const getPaymentMethodName = (paymentMethodId: string) =>
+    paymentMethods.find((method) => method.id === paymentMethodId)?.name ||
+    paymentMethodId;
 
   return (
     <CustomModal
@@ -212,7 +219,7 @@ export function SessionDetailModal({
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="uppercase">
-                          {payment.paymentMethodId}
+                          {getPaymentMethodName(payment.paymentMethodId)}
                         </Badge>
                       </TableCell>
                       <TableCell

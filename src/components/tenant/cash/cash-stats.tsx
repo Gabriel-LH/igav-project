@@ -1,19 +1,19 @@
-// components/cash/payment-header.tsx (mejorado)
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 import { Payment } from "@/src/types/payments/type.payments";
 import { formatCurrency } from "@/src/utils/currency-format";
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Wallet,
   ArrowUpDown,
   Banknote,
-  Smartphone,
+  CreditCard,
+  DollarSign,
   Landmark,
-  CreditCard
+  Smartphone,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
 
 const sumAmounts = (
@@ -25,63 +25,98 @@ const sumAmounts = (
     0,
   );
 
+const normalizeMethodLabel = (
+  methodId: string,
+  paymentMethods: PaymentMethod[],
+) => {
+  const configuredMethod = paymentMethods.find((method) => method.id === methodId);
+  if (configuredMethod?.name) return configuredMethod.name;
+
+  const value = methodId.trim().toLowerCase();
+
+  if (value === "cash") return "Efectivo";
+  if (value === "card") return "Tarjeta";
+  if (value === "transfer") return "Transferencia";
+  if (value === "yape") return "Yape";
+  if (value === "plin") return "Plin";
+
+  return methodId
+    .split(/[_\-\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+};
+
+const getMethodIcon = (methodId: string) => {
+  const value = methodId.trim().toLowerCase();
+
+  if (value === "cash") return Banknote;
+  if (value === "card") return CreditCard;
+  if (value === "transfer") return Landmark;
+  if (value === "yape" || value === "plin") return Smartphone;
+  return Wallet;
+};
+
 export function PaymentHeader({
   payments = [],
   periodLabel,
+  paymentMethods = [],
 }: {
   payments?: Payment[];
   periodLabel: string;
+  paymentMethods?: PaymentMethod[];
 }) {
   const postedPayments = payments.filter(
     (payment) => payment.status === "posted",
   );
 
-  // Totales generales
-  const ingresos = sumAmounts(postedPayments, (p) => p.direction === "in");
-  const salidas = sumAmounts(postedPayments, (p) => p.direction === "out");
-  const reembolsos = sumAmounts(postedPayments, (p) => p.category === "refund");
+  const ingresos = sumAmounts(postedPayments, (payment) => payment.direction === "in");
+  const salidas = sumAmounts(postedPayments, (payment) => payment.direction === "out");
+  const reembolsos = sumAmounts(
+    postedPayments,
+    (payment) => payment.category === "refund",
+  );
   const correcciones = sumAmounts(
     postedPayments,
-    (p) => p.category === "correction",
+    (payment) => payment.category === "correction",
   );
   const flujoNeto = ingresos - salidas;
 
-  // Efectivo en caja (solo método cash)
-  const ingresosEfectivo = sumAmounts(
-    postedPayments,
-    (p) => p.direction === "in" && p.paymentMethodId === "cash",
+  const uniqueMethods = Array.from(
+    new Set(postedPayments.map((payment) => payment.paymentMethodId).filter(Boolean)),
   );
-  const salidasEfectivo = sumAmounts(
-    postedPayments,
-    (p) => p.direction === "out" && p.paymentMethodId === "cash",
-  );
-  const efectivoNeto = ingresosEfectivo - salidasEfectivo;
 
-  // Stats por método
-  const methods = ["cash", "yape", "plin", "transfer", "card"] as const;
+  const efectivoNeto = postedPayments.reduce((total, payment) => {
+    if (payment.paymentMethodId !== "cash") return total;
+    return payment.direction === "in"
+      ? total + payment.amount
+      : total - payment.amount;
+  }, 0);
 
-  const methodStats = methods.map((method) => {
-    const ingresosMethod = sumAmounts(
+  const methodStats = uniqueMethods.map((method) => {
+    const ingresosMetodo = sumAmounts(
       postedPayments,
-      (p) => p.direction === "in" && p.paymentMethodId === method,
+      (payment) =>
+        payment.direction === "in" && payment.paymentMethodId === method,
     );
-
-    const salidasMethod = sumAmounts(
+    const salidasMetodo = sumAmounts(
       postedPayments,
-      (p) => p.direction === "out" && p.paymentMethodId === method,
+      (payment) =>
+        payment.direction === "out" && payment.paymentMethodId === method,
     );
 
     return {
       method,
-      ingresos: ingresosMethod,
-      salidas: salidasMethod,
-      neto: ingresosMethod - salidasMethod,
+      label: normalizeMethodLabel(method, paymentMethods),
+      ingresos: ingresosMetodo,
+      salidas: salidasMetodo,
+      neto: ingresosMetodo - salidasMetodo,
+      Icon: getMethodIcon(method),
     };
   });
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Fila 1: Totales generales */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Card className="py-4">
           <CardContent>
@@ -136,9 +171,8 @@ export function PaymentHeader({
         </Card>
       </div>
 
-      {/* Fila 2: Flujo total vs Efectivo en caja */}
       <div className="grid grid-cols-2 gap-3">
-        <Card className="py-4 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+        <Card className="border-blue-200 bg-blue-50/50 py-4 dark:border-blue-800 dark:bg-blue-950/20">
           <CardContent>
             <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4 text-blue-600" />
@@ -153,13 +187,13 @@ export function PaymentHeader({
             >
               {formatCurrency(flujoNeto)}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ingresos - Salidas (todos los métodos)
+            <p className="mt-1 text-xs text-muted-foreground">
+              Ingresos - Salidas (todos los metodos)
             </p>
           </CardContent>
         </Card>
 
-        <Card className="py-4 bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+        <Card className="border-green-200 bg-green-50/50 py-4 dark:border-green-800 dark:bg-green-950/20">
           <CardContent>
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-green-600" />
@@ -174,45 +208,22 @@ export function PaymentHeader({
             >
               {formatCurrency(efectivoNeto)}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               Solo movimientos en efectivo
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Fila 3: Stats por método */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {methodStats.map((item) => (
           <Card key={item.method} className="py-4">
             <CardContent className="space-y-2">
-              <div className="text-xs uppercase font-medium text-muted-foreground">
-                {item.method === "cash" ? (
-                  <span className="flex gap-2">
-                    <Banknote />
-                    Efectivo
-                  </span>
-                ) : item.method === "yape" ? (
-                  <span className="flex gap-2">
-                    <Smartphone />
-                    Yape
-                  </span>
-                ) : item.method === "plin" ? (
-                  <span className="flex gap-2">
-                    <Smartphone />
-                    Plin
-                  </span>
-                ) : item.method === "transfer" ? (
-                  <span className="flex gap-2">
-                    <Landmark />
-                    Transferencia
-                  </span>
-                ) : (
-                  <span className="flex gap-2">
-                    <CreditCard/>
-                    Tarjeta
-                  </span>
-                )}
+              <div className="text-xs font-medium uppercase text-muted-foreground">
+                <span className="flex gap-2">
+                  <item.Icon className="h-4 w-4" />
+                  {item.label}
+                </span>
               </div>
 
               <div className="space-y-1">
@@ -241,7 +252,7 @@ export function PaymentHeader({
                 )}
 
                 {(item.ingresos > 0 || item.salidas > 0) && (
-                  <div className="flex justify-between text-sm font-medium pt-1 border-t">
+                  <div className="flex justify-between border-t pt-1 text-sm font-medium">
                     <span>Neto:</span>
                     <span
                       className={

@@ -14,6 +14,25 @@ export class PrismaPaymentRepository implements PaymentRepository {
   ) {}
 
   async addPayment(payment: Payment): Promise<void> {
+    const activeCashSession =
+      payment.cashSessionId ||
+      !payment.tenantId ||
+      !payment.branchId
+        ? null
+        : await this.prisma.cashSession.findFirst({
+            where: {
+              tenantId: payment.tenantId,
+              branchId: payment.branchId,
+              status: "open",
+            },
+            select: {
+              id: true,
+            },
+            orderBy: {
+              openedAt: "desc",
+            },
+          });
+
     await this.prisma.payment.create({
       data: {
         id: payment.id,
@@ -32,7 +51,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
         branchId: payment.branchId || "",
         receivedById: payment.receivedById || "",
         paymentMethodId: payment.paymentMethodId || "",
-        cashSessionId: payment.cashSessionId || null,
+        cashSessionId: payment.cashSessionId || activeCashSession?.id || null,
       },
     });
   }
