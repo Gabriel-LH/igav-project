@@ -37,7 +37,6 @@ import { Banknote, CreditCard, Smartphone } from "lucide-react";
 import { Client } from "@/src/types/clients/type.client";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 
 interface PosReservationModalProps {
   open: boolean;

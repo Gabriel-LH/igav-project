@@ -125,30 +125,7 @@ export function ReservationsPoliciesTab() {
 
           <FormField
             control={control}
-            name="reservations.allowOverbooking"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Permitir sobreventa
-                  </FormLabel>
-                  <FormDescription>
-                    Permitir reservas por encima del stock disponible
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="reservations.requireDeposit"
+            name="reservations.requireDownPayment"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
@@ -165,31 +142,6 @@ export function ReservationsPoliciesTab() {
                 </FormControl>
               </FormItem>
             )}
-          />
-
-          <FormField
-            control={control}
-            name="reservations.autoConvertOnPickup"
-            render={({ field }) => (
-              <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Convertir automáticamente al recoger
-                  </FormLabel>
-                  <FormDescription>
-                    La reserva se convierte en venta/alquiler al momento de
-                    recoger
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
         </div>
       </CardContent>
     </Card>

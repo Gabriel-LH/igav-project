@@ -36,16 +36,7 @@ interface RoleDetailProps {
   isOwner: boolean;
 }
 
-// Mock de usuarios asignados
-const ASSIGNED_USERS_MOCK = [
-  {
-    id: "u1",
-    name: "Carlos Rodríguez",
-    email: "carlos@empresa.com",
-    avatar: "",
-  },
-  { id: "u2", name: "Ana Martínez", email: "ana@empresa.com", avatar: "" },
-];
+
 
 // Mock de nombres de permisos
 const PERMISSION_NAMES: Record<string, string> = {
@@ -66,8 +57,7 @@ export function RoleDetail({
 }: RoleDetailProps) {
   if (!role) return null;
 
-  const assignedUsers =
-    role.userCount > 0 ? ASSIGNED_USERS_MOCK.slice(0, role.userCount) : [];
+  const assignedUsers: any[] = [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -189,7 +179,7 @@ export function RoleDetail({
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
                         {user.name
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join("")}
                       </div>
                       <div>

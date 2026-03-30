@@ -9,8 +9,8 @@ import {
   BundleDomainService,
   BundleDefinition,
 } from "@/src/domain/tenant/services/bundle.service";
-import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { usePromotionStore } from "@/src/store/usePromotionStore";
 import { Gift } from "lucide-react";
 
 export function PosBundlesPanel() {
@@ -25,16 +25,17 @@ export function PosBundlesPanel() {
   const tenantId = activeTenantId ?? items[0]?.product.tenantId;
 
   const { products, inventoryItems, stockLots, productVariants } = useInventoryStore();
+  const { promotions } = usePromotionStore();
   const bundleService = useMemo(() => new BundleDomainService(), []);
 
   const bundles = useMemo(() => {
     if (!tenantId) return [];
     return bundleService.createBundleDefinitionsFromPromotions(
-      PROMOTIONS_MOCK,
+      promotions,
       products,
       tenantId,
     );
-  }, [tenantId, bundleService, products]);
+  }, [tenantId, bundleService, products, promotions]);
 
   const evaluations = useMemo(() => {
     if (!tenantId) return [];

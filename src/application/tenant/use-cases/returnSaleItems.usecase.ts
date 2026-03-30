@@ -6,7 +6,7 @@ import { Payment } from "../../../types/payments/type.payments";
 import { OperationRepository } from "../../../domain/tenant/repositories/OperationRepository";
 import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
-import { differenceInDays } from "date-fns";
+import { differenceInHours } from "date-fns";
 
 export interface ReturnSaleItemsInput {
   saleId: string;
@@ -57,11 +57,12 @@ export class ReturnSaleItemsUseCase {
       throw new Error("Las devoluciones están deshabilitadas por política.");
     }
 
-    if (policy.sales?.maxReturnDays !== undefined) {
+    const maxReturnHours = policy.sales?.maxReturnHours;
+    if (maxReturnHours !== undefined) {
       const baseDate = sale.saleDate ?? sale.createdAt;
-      const days = differenceInDays(new Date(), baseDate);
-      if (days > policy.sales.maxReturnDays) {
-        throw new Error("La venta excede el plazo máximo de devolución.");
+      const hours = differenceInHours(new Date(), baseDate);
+      if (hours > maxReturnHours) {
+        throw new Error(`La venta excede el plazo máximo de ${maxReturnHours} horas para devolución.`);
       }
     }
 

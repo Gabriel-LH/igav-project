@@ -1,10 +1,11 @@
 import { differenceInHours } from "date-fns";
 import { Sale } from "@/src/types/sales/type.sale";
 
-export function canAnnulSale(sale: Sale) {
-  return differenceInHours(new Date(), sale.createdAt) <= 24;
+export function canAnnulSale(sale: Sale, maxCancelHours = 24) {
+  return differenceInHours(new Date(), sale.createdAt) <= maxCancelHours;
 }
 
-export function canReturnSale(sale: Sale) {
-  return true; // o <= 7 días, si quieres
+export function canReturnSale(sale: Sale, maxReturnHours = 72) {
+  const baseDate = sale.saleDate || sale.createdAt;
+  return differenceInHours(new Date(), baseDate) <= maxReturnHours;
 }

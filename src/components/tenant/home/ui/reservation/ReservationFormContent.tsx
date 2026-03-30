@@ -1,7 +1,6 @@
 import { Label } from "@/components/label";
 import { ReservationCalendar } from "./ReservationCalendar";
 import { CustomerSelector } from "./CustomerSelector";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { PriceSummary } from "./PriceSummary";
 import { Input } from "@/components/input";
 import {
@@ -179,7 +178,7 @@ export function ReservationFormContent({
                 currentBranchId={currentBranchId}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                rules={MOCK_BRANCH_CONFIG}
+                rules={null}
                 productId={item.id}
                 variantId={variantId}
                 quantity={quantity}
@@ -222,7 +221,7 @@ export function ReservationFormContent({
                 currentBranchId={currentBranchId}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                rules={MOCK_BRANCH_CONFIG}
+                rules={null}
                 productId={item.id}
                 variantId={variantId}
                 type={operationType}
@@ -250,7 +249,7 @@ export function ReservationFormContent({
                   getEstimatedTransferTime(
                     originBranchId,
                     currentBranchId,
-                    MOCK_BRANCH_CONFIG,
+                    null,
                   ) + 1,
                 ),
                 "dd/MM/yy",

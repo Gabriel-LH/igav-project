@@ -71,13 +71,7 @@ export class CreateSaleUseCase {
       (dto as any).policySnapshot,
     );
 
-    const requestedStatus = dto.status as string;
-    const resolvedStatus =
-      tenantPolicy.sales?.autoCompleteDelivery &&
-      (requestedStatus === "pendiente_entrega" ||
-        requestedStatus === "vendido_pendiente_entrega")
-        ? "vendido"
-        : requestedStatus;
+    const resolvedStatus = dto.status || "vendido";
 
     const validateDiscountPolicy = (item: {
       listPrice?: number;
@@ -112,10 +106,17 @@ export class CreateSaleUseCase {
         }
       }
 
-      // 3. Verificar acumulación (Stacking)
+      // 3. Verificar acumulación (Stacking) de item
       if (hasPromo && (item.discountAmount ?? 0) > 0 && !tenantConfig.pricing.allowDiscountStacking) {
-         // Si hay promo Y descuento manual, y la config prohíbe acumular
          throw new Error("La política actual no permite acumular promociones con descuentos manuales.");
+      }
+
+      // 4. Verificar acumulación Global (Cupones/Puntos vs Items)
+      const hasExtraDiscount = (dto.financials as any).extraDiscountTotal > 0;
+      const hasAnyItemDiscount = totalDiscount > 0;
+      
+      if (hasExtraDiscount && hasAnyItemDiscount && !tenantConfig.pricing.allowDiscountStacking) {
+        throw new Error("La política actual no permite acumular cupones o puntos con descuentos en productos (promociones/manuales).");
       }
     };
 

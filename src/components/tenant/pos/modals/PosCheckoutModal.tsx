@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { addDays, setHours, setMinutes, differenceInDays } from "date-fns";
-import { ShoppingBag, AlertTriangle, Banknote, Calendar } from "lucide-react";
+import { ShoppingBag, AlertTriangle, Banknote, Calendar, Tag, AlertCircle } from "lucide-react";
 
 // --- IMPORTS ---
 import { useCartStore } from "@/src/store/useCartStore";
@@ -149,9 +149,14 @@ export function PosCheckoutModal({
 
   const [localUsePoints, setLocalUsePoints] = React.useState(false);
   const [localAppliedCoupon, setLocalAppliedCoupon] = useState<Coupon | null>(null);
-  const usePoints = usePointsProp ?? localUsePoints;
+  
+  const allowStacking = tenantConfig.pricing?.allowDiscountStacking ?? true;
+  const hasItemLevelDiscounts = items.some(i => (i.discountAmount || 0) > 0);
+  const prohibitStacking = !allowStacking && hasItemLevelDiscounts;
+
+  const usePoints = prohibitStacking ? false : (usePointsProp ?? localUsePoints);
   const setUsePoints = onUsePointsChange ?? setLocalUsePoints;
-  const appliedCoupon = appliedCouponProp ?? localAppliedCoupon;
+  const appliedCoupon = prohibitStacking ? null : (appliedCouponProp ?? localAppliedCoupon);
   const setAppliedCoupon = onAppliedCouponChange ?? setLocalAppliedCoupon;
 
   // Obtenemos al cliente actual desde tu store
@@ -509,6 +514,8 @@ export function PosCheckoutModal({
           financials: {
             subtotal: Math.round(subtotalBruto * saleShare * 100) / 100,
             totalDiscount: Math.round(totalDiscount * saleShare * 100) / 100,
+            itemDiscountTotal: Math.round(discountFromItems * saleShare * 100) / 100,
+            extraDiscountTotal: Math.round((pointsDiscount + couponDiscount) * saleShare * 100) / 100,
             taxAmount: Math.round(taxAmount * saleShare * 100) / 100,
             totalAmount: saleTotalAmount,
             totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * saleShare * 100) / 100,
@@ -539,6 +546,8 @@ export function PosCheckoutModal({
           financials: {
             subtotal: Math.round(subtotalBruto * rentalShare * 100) / 100,
             totalDiscount: Math.round(totalDiscount * rentalShare * 100) / 100,
+            itemDiscountTotal: Math.round(discountFromItems * rentalShare * 100) / 100,
+            extraDiscountTotal: Math.round((pointsDiscount + couponDiscount) * rentalShare * 100) / 100,
             taxAmount: Math.round(taxAmount * rentalShare * 100) / 100,
             totalAmount: rentalTotalAmount,
             totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * rentalShare * 100) / 100,
@@ -822,21 +831,31 @@ export function PosCheckoutModal({
 
             {/* SECCIÓN FIDELIDAD / CUPONES */}
             {showDiscountControls && (
-              <div className="pt-2 border-t flex flex-col gap-2">
-                {selectedClient && availablePoints > 0 && (
-                  <UsePointsComponent
-                    usePoints={usePoints}
-                    setUsePoints={setUsePoints}
-                    availablePoints={availablePoints}
-                    pointValueInMoney={pointValueInMoney}
+              <div className="pt-2 border-t flex flex-col gap-2 relative">
+                <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
+                  {selectedClient && availablePoints > 0 && (
+                    <UsePointsComponent
+                      usePoints={usePoints}
+                      setUsePoints={setUsePoints}
+                      availablePoints={availablePoints}
+                      pointValueInMoney={pointValueInMoney}
+                    />
+                  )}
+                  <UseCouponComponent
+                    tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
+                    selectedClientId={selectedCustomer?.id}
+                    appliedCoupon={appliedCoupon}
+                    onApplyCoupon={setAppliedCoupon}
                   />
+                </div>
+                {prohibitStacking && (
+                  <div className="px-3 py-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-[10px] text-amber-200/70 leading-tight">
+                      No se pueden usar cupones/puntos porque el carrito ya tiene descuentos aplicados y la acumulación está desactivada.
+                    </span>
+                  </div>
                 )}
-                <UseCouponComponent
-                  tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
-                  selectedClientId={selectedCustomer?.id}
-                  appliedCoupon={appliedCoupon}
-                  onApplyCoupon={setAppliedCoupon}
-                />
               </div>
             )}
 

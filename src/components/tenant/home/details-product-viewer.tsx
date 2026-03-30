@@ -28,7 +28,6 @@ import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
@@ -181,7 +180,7 @@ export function DetailsProductViewer({
         getEstimatedTransferTime(
           s.branchId,
           currentBranchId!,
-          MOCK_BRANCH_CONFIG,
+          null,
         ),
       ),
     );
@@ -407,7 +406,7 @@ export function DetailsProductViewer({
                   ? getEstimatedTransferTime(
                       bId,
                       currentBranchId!,
-                      MOCK_BRANCH_CONFIG,
+                      null,
                     )
                   : 0;
 

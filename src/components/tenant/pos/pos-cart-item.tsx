@@ -5,9 +5,18 @@ import { CartItem } from "@/src/types/cart/type.cart";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
-import { Trash2, Minus, Plus, QrCode } from "lucide-react";
+import { Trash2, Minus, Plus, QrCode, Tag } from "lucide-react";
+import { ManualDiscountModal } from "./modals/ManualDiscountModal";
+import { useState } from "react";
 import { formatCurrency } from "@/src/utils/currency-format";
 import {
   Popover,
@@ -25,7 +34,10 @@ interface PosCartItemProps {
 export function PosCartItem({ item }: PosCartItemProps) {
   const { removeItem, updateQuantity, updateSelectedStock, globalRentalDates } =
     useCartStore();
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
   const { inventoryItems, stockLots, productVariants } = useInventoryStore();
+  const { policy } = useTenantConfigStore();
+  const allowPriceEdit = policy?.sales.allowPriceEdit ?? true;
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
   const isRent = item.operationType === "alquiler";
   const isSerial = item.product.is_serial;
@@ -113,8 +125,8 @@ export function PosCartItem({ item }: PosCartItemProps) {
           </span>
           <div className="flex flex-wrap gap-1 mt-1">
             <span className="text-[10px] text-muted-foreground mr-1">
-              {item.product.categoryId
-                ? getCategoryById(item.product.categoryId)?.name
+                {item.product.categoryId
+                ? getCategoryById(item.product.tenantId, item.product.categoryId)?.name
                 : "Gen"}
             </span>
             {variantParams?.attributes?.size && (
@@ -233,6 +245,35 @@ export function PosCartItem({ item }: PosCartItemProps) {
               </Button>
             </div>
           )}
+
+          {/* Botón de Descuento Manual */}
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <div className="w-fit">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={!allowPriceEdit}
+                    onClick={() => setDiscountModalOpen(true)}
+                    className={`h-7 text-[10px] px-2 font-bold uppercase gap-1.5 transition-colors ${
+                      item.manualDiscountAmount
+                        ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                        : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    } ${!allowPriceEdit ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
+                  >
+                    <Tag className="w-3 h-3" />
+                    {item.manualDiscountAmount ? "Editar Descuento" : "Descuento"}
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {!allowPriceEdit && (
+                <TooltipContent side="bottom" className="text-[10px] bg-destructive text-destructive-foreground border-0">
+                  La política de tienda no permite cambios manuales de precio en el carrito.
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* 3. Precios */}
@@ -278,6 +319,11 @@ export function PosCartItem({ item }: PosCartItemProps) {
           </div>
         </div>
       </div>
+      <ManualDiscountModal
+        open={discountModalOpen}
+        onOpenChange={setDiscountModalOpen}
+        cartId={item.cartId}
+      />
     </div>
   );
 }

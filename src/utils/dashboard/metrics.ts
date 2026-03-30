@@ -1,6 +1,6 @@
 import { Operation } from "@/src/types/operation/type.operations";
 
-// Type based on mock client since it is derived from typeof CLIENTS_MOCK
+
 export type CustomerData = {
   id: string;
   firstName: string;
@@ -187,22 +187,7 @@ export function getMostPopularMetrics(
   operations: Operation[],
   inventoryItems?: any[],
 ) {
-  return [
-    {
-      id: "POP1",
-      name: "Vestido Elegante Rojo",
-      type: "Venta",
-      count: 24,
-      income: 4500,
-    },
-    {
-      id: "POP2",
-      name: "Esmoquin Clásico",
-      type: "Alquiler",
-      count: 56,
-      income: 8900,
-    },
-  ];
+  return [];
 }
 
 /**
@@ -212,20 +197,5 @@ export function getTradingFastMetrics(
   operations: Operation[],
   inventoryItems?: any[],
 ) {
-  return [
-    {
-      id: "TRA1",
-      item: "Vestido Corte Sirena",
-      lastweek: 12,
-      thisweek: 25,
-      difference: "+13",
-    },
-    {
-      id: "TRA2",
-      item: "Traje Azul Estándar",
-      lastweek: 40,
-      thisweek: 30,
-      difference: "-10",
-    },
-  ];
+  return [];
 }

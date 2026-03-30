@@ -33,7 +33,6 @@ import { authClient } from "@/src/lib/auth-client";
 import { DialogDescription } from "@/components/ui/dialog";
 import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { DirectTransactionCalendar } from "./DirectTransactionCalendar";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
 import { TimePicker } from "./TimePicker";
@@ -151,12 +150,8 @@ export function DirectTransactionModal({
   const [guaranteeType, setGuaranteeType] =
     React.useState<GuaranteeType>("dinero");
 
-  const [pickupTime, setPickupTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.open,
-  );
-  const [returnTime, setReturnTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.close,
-  );
+  const [pickupTime, setPickupTime] = React.useState("09:00");
+  const [returnTime, setReturnTime] = React.useState("20:00");
   const setReservationData = useReservationStore((s) => s.setReservationData);
   const setRentalData = useRentalStore((s) => s.setRentalData);
 

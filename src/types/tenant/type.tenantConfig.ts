@@ -23,7 +23,6 @@ export const tenantConfigSchema = z
       }),
     }),
     pricing: z.object({
-      allowNegativeStock: z.boolean().default(false),
       pricePrecision: z.number().default(2),
       allowDiscountStacking: z.boolean().default(true),
       maxDiscountLimit: z.number().min(0).max(100).default(50),
@@ -43,7 +42,6 @@ export const tenantConfigSchema = z
       paymentMethods: z.array(paymentMethodSchema).default([]),
       openingCashRequired: z.boolean().default(true),
       requireClosingReport: z.boolean().default(true),
-      allowNegativeCash: z.boolean().default(false),
     }),
     referrals: z.object({
       enabled: z.boolean().default(true),

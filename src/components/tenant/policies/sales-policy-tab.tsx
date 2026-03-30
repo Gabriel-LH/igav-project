@@ -82,37 +82,37 @@ export function SalesPoliciesTab() {
           {allowReturns && (
             <FormField
               control={control}
-              name="sales.maxReturnDays"
+              name="sales.maxReturnHours"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    Dias maximos para devolver
+                    Horas máximas para devolución
                     <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Plazo maximo despues de la compra.</p>
+                          <p>Plazo máximo en horas después de la compra.</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </FormLabel>
                   <FormControl>
-                    <div className="relative w-fit">
+                    <div className="relative w-fit flex items-center">
                       <Input
                         type="number"
                         min="0"
-                        value={field.value}
+                        placeholder="72"
+                        className="pr-16"
+                        value={field.value ?? ""}
                         onChange={(e) => {
                           const value = parseInt(e.target.value, 10);
-                          if (!isNaN(value)) {
-                            field.onChange(value);
-                          }
+                          field.onChange(isNaN(value) ? 0 : value);
                         }}
                       />
-                      <span className="absolute right-10 top-1.5 text-muted-foreground">
-                        dias
+                      <span className="absolute right-3 text-muted-foreground text-sm pointer-events-none">
+                        horas
                       </span>
                     </div>
                   </FormControl>
@@ -132,8 +132,8 @@ export function SalesPoliciesTab() {
           <PolicySwitch
             control={control}
             name="sales.allowPriceEdit"
-            label="Permitir editar precio"
-            description="Habilitar modificacion manual de precios en ventas."
+            label="Permitir cambios de precio en el Carrito"
+            description="Si se desactiva, el cajero sólo puede usar promociones automáticas y no podrá sobreescribir precios."
           />
 
           <PolicySwitch
@@ -143,12 +143,46 @@ export function SalesPoliciesTab() {
             description="Obligar a ingresar motivo al cancelar una venta."
           />
 
-          <PolicySwitch
+          <FormField
             control={control}
-            name="sales.autoCompleteDelivery"
-            label="Completar entrega automaticamente"
-            description="Marcar entregas como completadas sin confirmacion manual."
+            name="sales.maxCancelHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  Horas máximas para anulación
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Plazo máximo en horas permitido para anular una venta.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FormLabel>
+                <FormControl>
+                  <div className="relative w-fit flex items-center">
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="24"
+                      className="pr-16"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        field.onChange(isNaN(value) ? 0 : value);
+                      }}
+                    />
+                    <span className="absolute right-3 text-muted-foreground text-sm pointer-events-none">
+                      horas
+                    </span>
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
           />
+
         </div>
       </CardContent>
     </Card>

@@ -13,7 +13,6 @@ import { PolicyHeader } from "./policy-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { SalesPoliciesTab } from "./sales-policy-tab";
 import { InventoryPoliciesTab } from "./inventory-policy-tab";
-import { FinancialPoliciesTab } from "./financials-policy-tab";
 import { RentalsPoliciesTab } from "./rentals-policy-tab";
 import { ReservationsPoliciesTab } from "./reservation-policy-tab";
 import { SecurityPoliciesTab } from "./security-policy-tab";
@@ -151,8 +150,6 @@ export function TenantPoliciesModule() {
           <TabsList>
             <TabsTrigger value="sales">Ventas</TabsTrigger>
             <TabsTrigger value="rentals">Alquileres</TabsTrigger>
-            <TabsTrigger value="inventory">Inventario</TabsTrigger>
-            <TabsTrigger value="financials">Finanzas</TabsTrigger>
             <TabsTrigger value="reservations">Reservaciones</TabsTrigger>
             <TabsTrigger value="security">Seguridad</TabsTrigger>
           </TabsList>
@@ -161,12 +158,6 @@ export function TenantPoliciesModule() {
           </TabsContent>
           <TabsContent value="rentals">
             <RentalsPoliciesTab />
-          </TabsContent>
-          <TabsContent value="inventory">
-            <InventoryPoliciesTab />
-          </TabsContent>
-          <TabsContent value="financials">
-            <FinancialPoliciesTab />
           </TabsContent>
           <TabsContent value="reservations">
             <ReservationsPoliciesTab />

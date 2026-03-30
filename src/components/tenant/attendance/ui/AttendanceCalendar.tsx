@@ -1,7 +1,9 @@
 // components/attendance/AttendanceCalendar.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import { useUserStore } from "@/src/store/useUserStore";
 import {
   Table,
   TableBody,
@@ -89,54 +91,7 @@ export interface AttendanceRecord {
 }
 
 // Mock de datos actualizado
-const BRANCHES_MOCK = [
-  { id: "branch-1", name: "Sucursal Central" },
-  { id: "branch-2", name: "Sucursal Norte" },
-  { id: "branch-3", name: "Sucursal Sur" },
-];
 
-const EMPLOYEES_MOCK = [
-  {
-    id: "emp-1",
-    name: "Juan Pérez",
-    dni: "12345678",
-    branchId: "branch-1",
-    avatar: "",
-    defaultShift: "morning" as const,
-  },
-  {
-    id: "emp-2",
-    name: "María García",
-    dni: "87654321",
-    branchId: "branch-1",
-    avatar: "",
-    defaultShift: "morning" as const,
-  },
-  {
-    id: "emp-3",
-    name: "Carlos López",
-    dni: "45678912",
-    branchId: "branch-2",
-    avatar: "",
-    defaultShift: "afternoon" as const,
-  },
-  {
-    id: "emp-4",
-    name: "Ana Martínez",
-    dni: "78912345",
-    branchId: "branch-1",
-    avatar: "",
-    defaultShift: "morning" as const,
-  },
-  {
-    id: "emp-5",
-    name: "Pedro Sánchez",
-    dni: "32165498",
-    branchId: "branch-3",
-    avatar: "",
-    defaultShift: "night" as const,
-  },
-];
 
 const SHIFT_CONFIG = {
   morning: { label: "Mañana", start: "08:00", end: "17:00", icon: Clock },
@@ -230,87 +185,7 @@ const calculateAttendanceMetrics = (
 
 // Generar registros mock actualizados
 const generateMockRecords = (weekStart: Date): AttendanceRecord[] => {
-  const records: AttendanceRecord[] = [];
-
-  EMPLOYEES_MOCK.forEach((emp) => {
-    for (let i = 0; i < 7; i++) {
-      const date = addDays(weekStart, i);
-      const isWeekend = i >= 5;
-      const random = Math.random();
-
-      let status: AttendanceRecord["status"] = "present";
-      let shift: AttendanceRecord["shift"] = emp.defaultShift;
-      let checkIn = SHIFT_CONFIG[shift].start;
-      let checkOut = SHIFT_CONFIG[shift].end;
-      let notes = "";
-      let justification = "";
-
-      if (isWeekend) {
-        status = "dayoff";
-      } else if (random < 0.1) {
-        status = "absent";
-      } else if (random < 0.15) {
-        status = "justified";
-        justification = "Licencia médica";
-      } else if (random < 0.25) {
-        status = "late";
-        // Llegada tarde 10-40 minutos
-        const lateMin = Math.floor(Math.random() * 30 + 10);
-        const [hours, minutes] = SHIFT_CONFIG[shift].start
-          .split(":")
-          .map(Number);
-        checkIn = `${hours}:${(minutes + lateMin).toString().padStart(2, "0")}`;
-        notes = "Llegada tardía por tráfico";
-      } else if (random < 0.3) {
-        status = "manual";
-        shift = "custom";
-        checkIn = "09:00";
-        checkOut = "18:00";
-      } else if (random < 0.4) {
-        // Horas extra: salida 1-3 horas después
-        const extraH = Math.floor(Math.random() * 2 + 1);
-        const [hours, minutes] = SHIFT_CONFIG[shift].end.split(":").map(Number);
-        const endHour = (hours + extraH) % 24;
-        checkOut = `${endHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-        notes = "Trabajo extraordinario";
-      }
-
-      const metrics = calculateAttendanceMetrics(
-        checkIn,
-        checkOut,
-        shift,
-        status,
-      );
-
-      records.push({
-        id: `${emp.id}-${format(date, "yyyy-MM-dd")}`,
-        employeeId: emp.id,
-        employeeName: emp.name,
-        employeeDni: emp.dni,
-        avatar: emp.avatar,
-        date,
-        shift,
-        checkIn:
-          status !== "dayoff" && status !== "absent" ? checkIn : undefined,
-        checkOut:
-          status !== "dayoff" && status !== "absent" ? checkOut : undefined,
-        status,
-        notes,
-        branchId: emp.branchId,
-        isManual: status === "manual",
-        lateMinutes: metrics.lateMinutes > 0 ? metrics.lateMinutes : undefined,
-        extraHours:
-          metrics.extraHours > 0 || metrics.extraMinutes > 0
-            ? metrics.extraHours
-            : undefined,
-        extraMinutes:
-          metrics.extraMinutes > 0 ? metrics.extraMinutes : undefined,
-        justification: status === "justified" ? justification : undefined,
-      });
-    }
-  });
-
-  return records;
+  return [];
 };
 
 interface AttendanceCalendarProps {
@@ -332,7 +207,13 @@ interface AttendanceCalendarProps {
 }
 
 // Componente de escaneo DNI (sin cambios)
-function DniScanner({ onScan }: { onScan: (dni: string) => void }) {
+function DniScanner({
+  onScan,
+  employees,
+}: {
+  onScan: (dni: string) => void;
+  employees: any[];
+}) {
   const [scanning, setScanning] = useState(false);
   const [manualDni, setManualDni] = useState("");
 
@@ -340,7 +221,7 @@ function DniScanner({ onScan }: { onScan: (dni: string) => void }) {
     setScanning(true);
     setTimeout(() => {
       const randomDni =
-        EMPLOYEES_MOCK[Math.floor(Math.random() * EMPLOYEES_MOCK.length)].dni;
+        employees[Math.floor(Math.random() * employees.length)]?.dni || "";
       onScan(randomDni);
       setScanning(false);
     }, 1500);
@@ -407,7 +288,7 @@ function MarkAttendanceModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  employee: (typeof EMPLOYEES_MOCK)[0] | null;
+  employee: any | null;
   date: Date;
   existingRecord?: AttendanceRecord;
   onSubmit: (data: {
@@ -482,7 +363,7 @@ function MarkAttendanceModal({
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
               {employee.name
                 .split(" ")
-                .map((n) => n[0])
+                .map((n: string) => n[0])
                 .join("")}
             </div>
             <div>
@@ -747,14 +628,31 @@ export function AttendanceCalendar({
   onScanDni,
   onJustifyAbsence,
 }: AttendanceCalendarProps) {
+  const { branches } = useBranchStore();
+  const { users: employeesFromStore } = useUserStore();
+
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [selectedEmployee, setSelectedEmployee] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
+  const branchesToUse = useMemo(() => branches, [branches]);
+  const employeesToUse = useMemo(
+    () =>
+      employeesFromStore.map((u) => ({
+        id: u.id,
+        name: u.name || u.email,
+        dni: "00000000",
+        branchId: "all",
+        avatar: "",
+        defaultShift: "morning" as const,
+      })),
+    [employeesFromStore],
+  );
+
   const [markModalOpen, setMarkModalOpen] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{
-    employee: (typeof EMPLOYEES_MOCK)[0];
+    employee: any;
     date: Date;
     record?: AttendanceRecord;
   } | null>(null);
@@ -797,7 +695,7 @@ export function AttendanceCalendar({
   }, [filteredRecords]);
 
   const handleCellClick = (
-    employee: (typeof EMPLOYEES_MOCK)[0],
+    employee: any,
     date: Date,
   ) => {
     const existing = filteredRecords.find(
@@ -808,7 +706,7 @@ export function AttendanceCalendar({
   };
 
   const handleScanDni = (dni: string) => {
-    const employee = EMPLOYEES_MOCK.find((e) => e.dni === dni);
+    const employee = employeesToUse.find((e) => e.dni === dni);
     if (employee) {
       const today = new Date();
       const existing = filteredRecords.find(
@@ -823,7 +721,7 @@ export function AttendanceCalendar({
   };
 
   const employeesToShow = useMemo(() => {
-    let filtered = EMPLOYEES_MOCK;
+    let filtered = employeesToUse;
     if (selectedBranch !== "all") {
       filtered = filtered.filter((e) => e.branchId === selectedBranch);
     }
@@ -878,7 +776,7 @@ export function AttendanceCalendar({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
-              <DniScanner onScan={handleScanDni} />
+              <DniScanner onScan={handleScanDni} employees={employeesToUse} />
             </PopoverContent>
           </Popover>
 
@@ -906,7 +804,7 @@ export function AttendanceCalendar({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las sucursales</SelectItem>
-                {BRANCHES_MOCK.map((b) => (
+                {branchesToUse.map((b) => (
                   <SelectItem key={b.id} value={b.id}>
                     {b.name}
                   </SelectItem>
@@ -924,7 +822,7 @@ export function AttendanceCalendar({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los empleados</SelectItem>
-                {EMPLOYEES_MOCK.map((e) => (
+                {employeesToUse.map((e) => (
                   <SelectItem key={e.id} value={e.id}>
                     {e.name}
                   </SelectItem>
@@ -1028,7 +926,7 @@ export function AttendanceCalendar({
                           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
                             {employee.name
                               .split(" ")
-                              .map((n) => n[0])
+                              .map((n: string) => n[0])
                               .join("")}
                           </div>
                           <div className="min-w-0">

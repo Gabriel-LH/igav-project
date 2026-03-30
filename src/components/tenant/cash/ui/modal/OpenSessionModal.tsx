@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import type { Branch } from "@/src/types/branch/type.branch";
 import type { User } from "@/src/types/user/type.user";
+import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { toast } from "sonner";
 
 interface OpenSessionModalProps {
   open: boolean;
@@ -21,6 +23,7 @@ interface OpenSessionModalProps {
   }) => Promise<boolean>;
   branches: Branch[];
   cashiers: User[];
+  tenantConfig: TenantConfig | null;
 }
 
 export function OpenSessionModal({
@@ -28,15 +31,21 @@ export function OpenSessionModal({
   onOpenChange,
   onSessionCreated,
   branches,
+  tenantConfig,
 }: OpenSessionModalProps) {
   const [branchId, setBranchId] = useState("");
   const [openingAmount, setOpeningAmount] = useState<number>(0);
   const [notes, setNotes] = useState("");
 
   const handleSubmit = async () => {
+    if (tenantConfig?.cash.openingCashRequired && (openingAmount === null || openingAmount === undefined || openingAmount <= 0)) {
+      toast.error("El monto inicial es obligatorio por configuración de caja.");
+      return;
+    }
+
     const wasCreated = await onSessionCreated({
       branchId,
-      openingAmount,
+      openingAmount: openingAmount || 0,
       notes: notes || undefined,
     });
     if (!wasCreated) return;
@@ -69,7 +78,12 @@ export function OpenSessionModal({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Monto inicial</label>
+          <label className="text-sm font-medium flex items-center gap-1">
+            Monto inicial
+            {tenantConfig?.cash.openingCashRequired && (
+              <span className="text-destructive">*</span>
+            )}
+          </label>
           <Input
             type="number"
             min="0"

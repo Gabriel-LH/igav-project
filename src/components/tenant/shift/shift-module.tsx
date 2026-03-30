@@ -10,99 +10,7 @@ import type {
   ShiftAssignment,
 } from "@/src/application/interfaces/shift/shift";
 
-// Datos mock
-const MOCK_SHIFTS: Shift[] = [
-  {
-    id: "1",
-    name: "Turno Mañana",
-    startTime: "06:00",
-    endTime: "14:00",
-    workingDays: [
-      { day: "L", label: "Lunes", active: true },
-      { day: "M", label: "Martes", active: true },
-      { day: "X", label: "Miércoles", active: true },
-      { day: "J", label: "Jueves", active: true },
-      { day: "V", label: "Viernes", active: true },
-      { day: "S", label: "Sábado", active: false },
-      { day: "D", label: "Domingo", active: false },
-    ],
-    toleranceMinutes: 15,
-    allowOvertime: true,
-    status: "active",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "2",
-    name: "Turno Tarde",
-    startTime: "14:00",
-    endTime: "22:00",
-    workingDays: [
-      { day: "L", label: "Lunes", active: true },
-      { day: "M", label: "Martes", active: true },
-      { day: "X", label: "Miércoles", active: true },
-      { day: "J", label: "Jueves", active: true },
-      { day: "V", label: "Viernes", active: true },
-      { day: "S", label: "Sábado", active: false },
-      { day: "D", label: "Domingo", active: false },
-    ],
-    toleranceMinutes: 10,
-    allowOvertime: true,
-    status: "active",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "3",
-    name: "Turno Noche",
-    startTime: "22:00",
-    endTime: "06:00",
-    workingDays: [
-      { day: "L", label: "Lunes", active: true },
-      { day: "M", label: "Martes", active: true },
-      { day: "X", label: "Miércoles", active: true },
-      { day: "J", label: "Jueves", active: true },
-      { day: "V", label: "Viernes", active: true },
-      { day: "S", label: "Sábado", active: true },
-      { day: "D", label: "Domingo", active: false },
-    ],
-    toleranceMinutes: 20,
-    allowOvertime: false,
-    status: "inactive",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
 
-const MOCK_ASSIGNMENTS: ShiftAssignment[] = [
-  {
-    id: "a1",
-    employeeId: "1",
-    employeeName: "Juan Pérez",
-    shiftId: "1",
-    startDate: new Date("2024-01-01"),
-    endDate: undefined,
-    status: "active",
-  },
-  {
-    id: "a2",
-    employeeId: "2",
-    employeeName: "María García",
-    shiftId: "1",
-    startDate: new Date("2024-01-01"),
-    endDate: new Date("2024-12-31"),
-    status: "active",
-  },
-  {
-    id: "a3",
-    employeeId: "3",
-    employeeName: "Carlos López",
-    shiftId: "2",
-    startDate: new Date("2024-02-01"),
-    endDate: undefined,
-    status: "active",
-  },
-];
 
 // Definimos tipos para el estado y acciones del reducer
 type State = {
@@ -166,8 +74,8 @@ export function ShiftsModule() {
         dispatch({
           type: "INIT_DATA",
           payload: {
-            shifts: MOCK_SHIFTS,
-            assignments: MOCK_ASSIGNMENTS,
+            shifts: [],
+            assignments: [],
           },
         });
       }

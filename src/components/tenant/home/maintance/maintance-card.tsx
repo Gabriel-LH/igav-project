@@ -4,7 +4,6 @@ import { Button } from "@/components/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ToolsIcon, StickyNote01Icon } from "@hugeicons/core-free-icons";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { PRODUCTS_MOCK } from "@/src/mocks/mocks.product";
 import Image from "next/image";
 import { Badge } from "@/components/badge";
 import { Product } from "@/src/types/product/type.product";

@@ -30,14 +30,14 @@ export class CreateRentalUseCase {
 
     const policySnapshot = (dto as any).policySnapshot as TenantPolicy | undefined;
     const policy: TenantPolicy = {
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
+      ...(policySnapshot ?? {}),
       id: "policy-default",
       tenantId,
       version: 1,
       isActive: true,
       createdAt: new Date(0),
       updatedBy: "system",
-      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
-      ...(policySnapshot ?? {}),
       rentals: {
         ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy).rentals,
         ...(policySnapshot?.rentals ?? {}),
@@ -112,6 +112,24 @@ export class CreateRentalUseCase {
       notes: !fromReservation ? ((dto as RentalDTO).notes ?? "") : "",
     });
 
+    const tenantConfig = (dto as any).configSnapshot || {};
+    const allowStacking = tenantConfig.pricing?.allowDiscountStacking ?? true;
+
+    const validateDiscountPolicy = (item: any) => {
+      const hasPromo = Boolean(item.promotionId || item.bundleId);
+      const hasManual = (item.discountAmount ?? 0) > 0;
+      const hasExtraDiscount = (dto.financials as any).extraDiscountTotal > 0;
+
+      if (!allowStacking) {
+        if (hasPromo && hasManual) {
+          throw new Error("La política actual no permite acumular promociones con descuentos manuales en el alquiler.");
+        }
+        if (hasExtraDiscount && (hasPromo || hasManual)) {
+          throw new Error("La política actual no permite acumular cupones o puntos con descuentos en productos de alquiler.");
+        }
+      }
+    };
+
     let rentalItems: any[] = [];
 
     if (fromReservation) {
@@ -123,7 +141,7 @@ export class CreateRentalUseCase {
           );
           if (!reservationItem)
             throw new Error(`ReservationItem no encontrado`);
-          return {
+          const rItem = {
             id: crypto.randomUUID(),
             tenantId,
             rentalId: rental.id,
@@ -143,30 +161,36 @@ export class CreateRentalUseCase {
             itemStatus: "alquilado",
             notes: "",
           };
+          validateDiscountPolicy(rItem);
+          return rItem;
         }),
       );
     } else {
       rentalItems = rentalItemSchema.array().parse(
-        (dto as RentalDTO).items.map((item) => ({
-          id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
-          tenantId,
-          rentalId: rental.id,
-          operationId: String(operationId),
-          productId: item.productId,
-          stockId: item.inventoryItemId ?? item.stockId,
-          inventoryItemId: item.inventoryItemId,
-          quantity: item.quantity ?? 1,
-          variantId: item.variantId,
-          priceAtMoment: item.priceAtMoment ?? 0,
-          listPrice: item.listPrice ?? item.priceAtMoment ?? 0,
-          discountAmount: item.discountAmount ?? 0,
-          discountReason: item.discountReason,
-          bundleId: item.bundleId,
-          promotionId: item.promotionId,
-          conditionOut: "Excelente",
-          itemStatus: "alquilado",
-          notes: (dto as any).notes ?? "",
-        })),
+        (dto as RentalDTO).items.map((item) => {
+          const rItem = {
+            id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
+            tenantId,
+            rentalId: rental.id,
+            operationId: String(operationId),
+            productId: item.productId,
+            stockId: item.inventoryItemId ?? item.stockId,
+            inventoryItemId: item.inventoryItemId,
+            quantity: item.quantity ?? 1,
+            variantId: item.variantId,
+            priceAtMoment: item.priceAtMoment ?? 0,
+            listPrice: item.listPrice ?? item.priceAtMoment ?? 0,
+            discountAmount: item.discountAmount ?? 0,
+            discountReason: item.discountReason,
+            bundleId: item.bundleId,
+            promotionId: item.promotionId,
+            conditionOut: "Excelente",
+            itemStatus: "alquilado",
+            notes: (dto as any).notes ?? "",
+          };
+          validateDiscountPolicy(rItem);
+          return rItem;
+        }),
       );
     }
 

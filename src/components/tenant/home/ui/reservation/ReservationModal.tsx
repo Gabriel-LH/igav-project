@@ -32,7 +32,6 @@ import z from "zod";
 import { productSchema } from "@/src/types/product/type.product";
 import { formatCurrency } from "@/src/utils/currency-format";
 
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 import { useRentalStore } from "@/src/store/useRentalStore";
@@ -69,12 +68,8 @@ export function ReservationModal({
 
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [dateRange, setDateRange] = React.useState<any>(undefined);
-  const [pickupTime, setPickupTime] = React.useState<string>(
-    MOCK_BRANCH_CONFIG.openHours.open,
-  );
-  const [returnTime, setReturnTime] = React.useState<string>(
-    MOCK_BRANCH_CONFIG.openHours.close,
-  );
+  const [pickupTime, setPickupTime] = React.useState<string>("09:00");
+  const [returnTime, setReturnTime] = React.useState<string>("20:00");
   const [quantity, setQuantity] = React.useState(1);
   const [notes, setNotes] = React.useState("");
   const [operationType, setOperationType] = React.useState<

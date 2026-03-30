@@ -36,6 +36,8 @@ export interface RentalDTO extends BaseOperation {
   financials: {
     subtotal: number;
     totalDiscount: number;
+    itemDiscountTotal: number;
+    extraDiscountTotal: number;
     taxAmount?: number;
     totalAmount: number;
     totalBeforeRounding?: number;

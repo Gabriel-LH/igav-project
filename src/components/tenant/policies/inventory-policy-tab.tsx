@@ -19,8 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export function InventoryPoliciesTab() {
-  const { control, watch } = useFormContext<TenantPolicy>();
-  const allowManualAdjustments = watch("inventory.allowManualAdjustments");
+  const { control } = useFormContext<TenantPolicy>();
 
   return (
     <Card>
@@ -37,57 +36,15 @@ export function InventoryPoliciesTab() {
 
       <CardContent className="space-y-4">
         <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
-          Se removieron los switches duplicados de stock negativo y bloqueo por
-          reserva para evitar configuraciones contradictorias.
+          <p>
+            No hay políticas operativas adicionales para configurar en esta
+            sección.
+          </p>
+          <p className="mt-2">
+            Recuerde que el **Stock Negativo** se configura en el módulo de
+            Configuración General (Ajustes {">"} Precios).
+          </p>
         </div>
-
-        <FormField
-          control={control}
-          name="inventory.allowManualAdjustments"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  Permitir ajustes manuales
-                </FormLabel>
-                <FormDescription>
-                  Habilita correcciones manuales sobre el inventario.
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        {allowManualAdjustments && (
-          <FormField
-            control={control}
-            name="inventory.requireReasonForAdjustment"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Requerir motivo en ajustes
-                  </FormLabel>
-                  <FormDescription>
-                    Obliga a registrar la razon de cada ajuste manual.
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        )}
       </CardContent>
     </Card>
   );

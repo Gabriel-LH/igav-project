@@ -19,6 +19,8 @@ export interface CartItem {
   appliedPromotionId?: string;
   discountAmount?: number;
   discountReason?: string;
+  manualDiscountAmount?: number;
+  manualDiscountReason?: string;
 
   // Notas por item
   notes?: string;

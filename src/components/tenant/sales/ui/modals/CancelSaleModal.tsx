@@ -15,6 +15,8 @@ import { Sale } from "@/src/types/sales/type.sale";
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { Badge } from "@/components/badge";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import { PinAuthModal } from "../../../pos/modals/PinAuthModal";
 
 interface CancelSaleModalProps {
   open: boolean;
@@ -30,8 +32,12 @@ export function CancelSaleModal({
   onConfirm,
 }: CancelSaleModalProps) {
   const [reason, setReason] = useState("");
+  const [showPinAuth, setShowPinAuth] = useState(false);
   const { saleItems } = useSaleStore();
   const { products } = useInventoryStore();
+  const { policy } = useTenantConfigStore();
+
+  const requirePin = policy?.security.requirePinForCancelOperation ?? true;
 
   const currentItems = saleItems.filter((i) => i.saleId === sale.id);
 
@@ -105,12 +111,29 @@ export function CancelSaleModal({
           <Button
             variant="destructive"
             disabled={!reason.trim()}
-            onClick={() => onConfirm(sale.id, reason)}
+            onClick={() => {
+              if (requirePin) {
+                setShowPinAuth(true);
+              } else {
+                onConfirm(sale.id, reason);
+              }
+            }}
           >
             Confirmar Anulación
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <PinAuthModal
+        open={showPinAuth}
+        onOpenChange={setShowPinAuth}
+        onSuccess={() => {
+          onConfirm(sale.id, reason);
+          onOpenChange(false);
+        }}
+        title="Autorización Requerida"
+        description={`Se requiere PIN de administrador para anular la venta #${sale.id.slice(-6)}.`}
+      />
     </Dialog>
   );
 }

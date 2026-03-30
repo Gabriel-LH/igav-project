@@ -24,6 +24,8 @@ import { useSaleStore } from "@/src/store/useSaleStore";
 import { cancelSaleAction, deliverSaleAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
 import { toast } from "sonner";
 import { DeliverSaleModal } from "../../ui/modals/DeliverSaleModal";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import { canAnnulSale } from "@/src/utils/times/saleTimeRules";
 
 export const columnsSalesPending: ColumnDef<
   z.infer<typeof salesPendingSchema>
@@ -121,6 +123,7 @@ function ActionCell({
   const item = row.original;
 
   const { sales } = useSaleStore(); // Asumiendo que tienes un store de ventas
+  const { policy } = useTenantConfigStore();
   const fullSaleData = sales.find((s) => s.id === item.id);
 
   const handleCancelConfirm = async (id: string, reason: string) => {
@@ -183,13 +186,15 @@ function ActionCell({
           <DropdownMenuSeparator />
 
           {/* Solo Anular en Pendientes */}
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => setShowCancelModal(true)}
-          >
-            <BadgeX className="animate-pulse" />
-            Anular Venta
-          </DropdownMenuItem>
+          {canAnnulSale(fullSaleData, policy?.sales?.maxCancelHours) && (
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setShowCancelModal(true)}
+            >
+              <BadgeX className="animate-pulse" />
+              Anular Venta
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

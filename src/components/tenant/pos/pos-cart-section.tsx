@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, ListChecks } from "lucide-react";
+import { Trash2, ListChecks, AlertCircle } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PosCartItem } from "./pos-cart-item";
@@ -16,7 +16,6 @@ import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectT
 import { TimePicker } from "../home/ui/direct-transaction/TimePicker";
 import { PosBundlesPanel } from "./ui/PosBundlePanel";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { toast } from "sonner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { CustomerSelector } from "../home/ui/reservation/CustomerSelector";
@@ -64,12 +63,8 @@ export function PosCartSection() {
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
   
-  const [pickupTime, setPickupTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.open,
-  );
-  const [returnTime, setReturnTime] = React.useState(
-    MOCK_BRANCH_CONFIG.openHours.close,
-  );
+  const [pickupTime, setPickupTime] = React.useState("09:00");
+  const [returnTime, setReturnTime] = React.useState("20:00");
 
   const alquilerItems = items.filter((i) => i.operationType === "alquiler");
   const hasRentals = alquilerItems.length > 0;
@@ -101,7 +96,7 @@ export function PosCartSection() {
 
       setGlobalTimes({
         pickup: currentTime,
-        return: MOCK_BRANCH_CONFIG.openHours.close,
+        return: "20:00",
       });
     }
   }, [globalRentalDates, currentTime, setGlobalDates, setGlobalTimes]);
@@ -161,6 +156,18 @@ export function PosCartSection() {
     totalOperacionConDescuento,
     tenantConfig.tax,
   );
+
+  const allowStacking = tenantConfig.pricing?.allowDiscountStacking ?? true;
+  const hasItemLevelDiscounts = items.some(i => (i.discountAmount || 0) > 0);
+  const prohibitStacking = !allowStacking && hasItemLevelDiscounts;
+
+  // Si no se permite acumular, y ya hay descuentos en items, reseteamos cupon/puntos si estuvieran
+  React.useEffect(() => {
+    if (prohibitStacking) {
+      if (usePoints) setUsePoints(false);
+      if (appliedCoupon) setAppliedCoupon(null);
+    }
+  }, [prohibitStacking, usePoints, appliedCoupon]);
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -277,19 +284,31 @@ export function PosCartSection() {
               onSelect={setSelectedCustomer}
             />
             {selectedCustomer && availablePoints > 0 && (
-              <UsePointsComponent
-                usePoints={usePoints}
-                setUsePoints={setUsePoints}
-                availablePoints={availablePoints}
-                pointValueInMoney={pointValueInMoney}
-              />
+              <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
+                <UsePointsComponent
+                  usePoints={usePoints}
+                  setUsePoints={setUsePoints}
+                  availablePoints={availablePoints}
+                  pointValueInMoney={pointValueInMoney}
+                />
+              </div>
             )}
-            <UseCouponComponent
-              tenantId={items[0]?.product?.tenantId ?? null}
-              selectedClientId={selectedCustomer?.id}
-              appliedCoupon={appliedCoupon}
-              onApplyCoupon={setAppliedCoupon}
-            />
+            <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
+              <UseCouponComponent
+                tenantId={items[0]?.product?.tenantId ?? null}
+                selectedClientId={selectedCustomer?.id}
+                appliedCoupon={appliedCoupon}
+                onApplyCoupon={setAppliedCoupon}
+              />
+            </div>
+            {prohibitStacking && (
+              <div className="px-2 py-1.5 rounded border border-amber-500/20 bg-amber-500/5 flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-[10px] text-amber-200/70 leading-tight">
+                  No se pueden usar cupones/puntos porque ya hay productos con descuento aplicado.
+                </span>
+              </div>
+            )}
           </div>
         )}
 

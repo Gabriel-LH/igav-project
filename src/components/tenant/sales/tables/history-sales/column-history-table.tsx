@@ -26,6 +26,7 @@ import { SaleWithItems } from "@/src/types/sales/type.sale";
 import { cancelSaleAction, returnSaleItemsAction } from "@/src/app/(tenant)/tenant/actions/operation.actions";
 import { toast } from "sonner";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>
@@ -128,6 +129,8 @@ function ActionCell({
   const item = row.original;
 
   const { sales, saleItems } = useSaleStore(); // Asumiendo que tienes un store de ventas
+  const { policy } = useTenantConfigStore();
+
 
   const userId = "user_1";
 
@@ -200,7 +203,7 @@ function ActionCell({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
-          {canReturnSale(fullSaleData) && (
+          {canReturnSale(fullSaleData, policy?.sales?.maxReturnHours) && (
             <DropdownMenuItem onClick={() => setShowReturnModal(true)}>
               <Undo2 className="animate-pulse" />
               Realizar Retorno
@@ -210,7 +213,7 @@ function ActionCell({
           <DropdownMenuSeparator />
 
           {/* Solo Anular en Pendientes */}
-          {canAnnulSale(fullSaleData) && (
+          {canAnnulSale(fullSaleData, policy?.sales?.maxCancelHours) && (
             <DropdownMenuItem
               variant="destructive"
               onClick={() => setShowCancelModal(true)}

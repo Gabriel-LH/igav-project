@@ -41,7 +41,6 @@ import { Input } from "@/components/input";
 
 const pricingFormSchema = z.object({
   pricePrecision: z.number().min(0).max(4),
-  allowNegativeStock: z.boolean(),
   allowDiscountStacking: z.boolean(),
   maxDiscountLimit: z.number().min(0).max(100),
   requirePinForHighDiscount: z.boolean(),
@@ -63,7 +62,6 @@ export function PricingConfigForm({
     resolver: zodResolver(pricingFormSchema),
     defaultValues: {
       pricePrecision: config.pricing.pricePrecision,
-      allowNegativeStock: config.pricing.allowNegativeStock,
       allowDiscountStacking: config.pricing.allowDiscountStacking,
       maxDiscountLimit: config.pricing.maxDiscountLimit,
       requirePinForHighDiscount: config.pricing.requirePinForHighDiscount,
@@ -75,7 +73,6 @@ export function PricingConfigForm({
     const subscription = form.watch((values) => {
       onChange({
         pricePrecision: values.pricePrecision,
-        allowNegativeStock: values.allowNegativeStock,
         allowDiscountStacking: values.allowDiscountStacking,
         maxDiscountLimit: values.maxDiscountLimit,
         requirePinForHighDiscount: values.requirePinForHighDiscount,
@@ -144,39 +141,6 @@ export function PricingConfigForm({
               )}
             />
 
-            {/* Permitir stock negativo */}
-            <FormField
-              control={form.control}
-              name="allowNegativeStock"
-              render={({ field }) => (
-                <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base flex items-center gap-2">
-                      Permitir stock negativo
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Permite ventas incluso sin stock disponible</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </FormLabel>
-                    <FormDescription>
-                      Activar solo si es necesario para el negocio
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

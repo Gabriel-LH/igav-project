@@ -36,7 +36,6 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
-import { MOCK_BRANCH_CONFIG } from "@/src/mocks/mock.branchConfig";
 import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
 import { ReservationModal } from "./ui/reservation/ReservationModal";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
@@ -437,7 +436,7 @@ export function ProductDetailsPage({
         ? getEstimatedTransferTime(
             branchId,
             currentBranchId,
-            MOCK_BRANCH_CONFIG,
+            null,
           )
         : 0;
 

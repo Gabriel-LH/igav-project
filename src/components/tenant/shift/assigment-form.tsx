@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useUserStore } from "@/src/store/useUserStore";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -55,19 +56,14 @@ interface AssignmentFormProps {
   onSubmit: (assignment: ShiftAssignment) => void;
 }
 
-// Datos de ejemplo - En producción, estos vendrían de una API
-const MOCK_EMPLOYEES = [
-  { id: "1", name: "Juan Pérez", membership: "EMP001" },
-  { id: "2", name: "María García", membership: "EMP002" },
-  { id: "3", name: "Carlos López", membership: "EMP003" },
-  { id: "4", name: "Ana Martínez", membership: "EMP004" },
-];
+
 
 export function AssignmentForm({
   shift,
   onClose,
   onSubmit,
 }: AssignmentFormProps) {
+  const { users } = useUserStore();
   const form = useForm<z.infer<typeof assignmentSchema>>({
     resolver: zodResolver(assignmentSchema),
     defaultValues: {
@@ -76,7 +72,7 @@ export function AssignmentForm({
   });
 
   const handleSubmit = (values: z.infer<typeof assignmentSchema>) => {
-    const employee = MOCK_EMPLOYEES.find((e) => e.id === values.employeeId);
+    const employee = users.find((e) => e.id === values.employeeId);
 
     const newAssignment: ShiftAssignment = {
       id: crypto.randomUUID(),
@@ -119,7 +115,7 @@ export function AssignmentForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {MOCK_EMPLOYEES.map((employee) => (
+                      {users.map((employee) => (
                         <SelectItem key={employee.id} value={employee.id}>
                           {employee.name} ({employee.membership})
                         </SelectItem>

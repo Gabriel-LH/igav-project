@@ -16,12 +16,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { AlertCircle, DollarSign, Calculator } from "lucide-react";
 import type { CashSessionTableRow } from "@/src/adapters/cash-session-adapter";
+import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 
 interface CloseSessionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   session: CashSessionTableRow | null;
   onConfirm: (countedAmount: number) => void | Promise<void>;
+  tenantConfig: TenantConfig | null;
 }
 
 export function CloseSessionModal({
@@ -29,6 +31,7 @@ export function CloseSessionModal({
   onOpenChange,
   session,
   onConfirm,
+  tenantConfig,
 }: CloseSessionModalProps) {
   const [countedAmount, setCountedAmount] = useState<number>(0);
   const [error, setError] = useState<string>("");
@@ -42,6 +45,11 @@ export function CloseSessionModal({
   const handleSubmit = () => {
     if (countedAmount < 0) {
       setError("El monto contado no puede ser negativo");
+      return;
+    }
+
+    if (tenantConfig?.cash.requireClosingReport && (countedAmount === null || countedAmount === undefined)) {
+      setError("El reporte de cierre detallado es obligatorio por configuración.");
       return;
     }
 
@@ -101,13 +109,15 @@ export function CloseSessionModal({
           </p>
         </div>
 
-        {/* Input de monto contado */}
         <div className="space-y-3">
-          <Label htmlFor="counted" className="text-base">
+          <Label htmlFor="counted" className="text-base flex items-center gap-1">
             Efectivo contado
+            {tenantConfig?.cash.requireClosingReport && (
+              <span className="text-destructive font-bold">*</span>
+            )}
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-muted-foreground">
+            <span className="absolute left-3 top-1.5 text-muted-foreground">
               S/
             </span>
             <Input

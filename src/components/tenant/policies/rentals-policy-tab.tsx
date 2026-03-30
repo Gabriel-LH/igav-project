@@ -18,14 +18,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { AlertCircle } from "lucide-react";
-import { ImpactIndicator } from "./ui/ImpactIndicator";
-import { POLICY_METADATA } from "@/src/mocks/mock.tenantPolicies";
 import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export function RentalsPoliciesTab() {
   const { control, watch } = useFormContext<TenantPolicy>();
-  const autoMarkAsLate = watch("rentals.autoMarkAsLate");
   const requireGuarantee = watch("rentals.requireGuarantee");
   const lateToleranceHours = watch("rentals.lateToleranceHours");
 
@@ -37,12 +33,6 @@ export function RentalsPoliciesTab() {
           <div className="flex items-center mt-1 justify-between">
             <CardTitle className="flex items-center gap-2">
               Retrasos
-              <ImpactIndicator
-                impact="high"
-                message={
-                  POLICY_METADATA["rentals.autoMarkAsLate"]?.impactMessage
-                }
-              />
             </CardTitle>
           </div>
           <CardDescription>
@@ -99,41 +89,6 @@ export function RentalsPoliciesTab() {
             )}
           />
 
-          <FormField
-            control={control}
-            name="rentals.autoMarkAsLate"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Marcar automáticamente como atrasado
-                  </FormLabel>
-                  <FormDescription className="flex items-center gap-1 text-amber-600">
-                    <AlertCircle className="h-3 w-3" />
-                    Los alquileres se marcarán como atrasados automáticamente
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {autoMarkAsLate && (
-            <div className="p-3 mb-3 bg-amber-50 dark:bg-amber-950/20 rounded-md text-sm">
-              <p className="font-medium text-amber-800 dark:text-amber-300">
-                ⚠️ Marcado automático activado
-              </p>
-              <p className="text-amber-600 dark:text-amber-400 text-xs mt-1">
-                Los alquileres se marcarán como atrasados después de{" "}
-                {lateToleranceHours} horas de tolerancia
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -152,7 +107,7 @@ export function RentalsPoliciesTab() {
             control={control}
             name="rentals.requireGuarantee"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">
                     Requerir garantía obligatoria
@@ -171,91 +126,9 @@ export function RentalsPoliciesTab() {
             )}
           />
 
-          {requireGuarantee && (
-            <FormField
-              control={control}
-              name="rentals.allowRentalWithoutStockAssigned"
-              render={({ field }) => (
-                <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">
-                      Permitir alquiler sin stock asignado
-                    </FormLabel>
-                    <FormDescription>
-                      Permitir alquileres incluso sin inventario disponible
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          )}
         </CardContent>
       </Card>
 
-      {/* Devolución y post-proceso */}
-      <Card>
-        <CardHeader className="-mb-4">
-          <CardTitle className="flex items-center gap-2 mt-3">
-            Proceso de Devolución
-          </CardTitle>
-          <CardDescription>
-            Configura las reglas para el proceso de devoluciones
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FormField
-            control={control}
-            name="rentals.autoMoveToLaundryOnReturn"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Mover automáticamente a lavandería
-                  </FormLabel>
-                  <FormDescription>
-                    Productos devueltos pasan directamente a lavandería
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="rentals.autoMoveToMaintenanceIfDamaged"
-            render={({ field }) => (
-              <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    Mover a mantenimiento si hay daño
-                  </FormLabel>
-                  <FormDescription>
-                    Productos dañados pasan automáticamente a mantenimiento
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
     </div>
   );
 }

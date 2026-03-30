@@ -15,11 +15,6 @@ import { PayrollConfigView } from "./payroll-config-view";
 import { PayrollGenerationView } from "./payroll-geration-view";
 import { PayrollListView } from "./payroll-list-view";
 
-import { PAYROLL_POLICIES_MOCK } from "@/src/mocks/mock.payrollPolicy";
-import { PAYROLL_CONFIGS_MOCK } from "@/src/mocks/mock.payrollConfig";
-import { PAYROLL_RUNS_MOCK } from "@/src/mocks/mock.payrollRun";
-import { PAYROLL_ITEMS_MOCK } from "@/src/mocks/mock.payrollItem";
-import { PAYROLL_LINE_ITEMS_MOCK } from "@/src/mocks/mock.payrollLineItem";
 import type { PayrollPolicy } from "@/src/types/payroll/type.payrollPolicies";
 import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
 import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
@@ -36,16 +31,11 @@ export function PayrollModule() {
   const [runs, setRuns] = useState<PayrollRun[]>([]);
   const [payrolls, setPayrolls] = useState<PayrollItem[]>([]);
   const [lineItems, setLineItems] = useState<PayrollLineItem[]>([]);
-  const [policy, setPolicy] = useState<PayrollPolicy>(PAYROLL_POLICIES_MOCK[0]);
+  const [policy, setPolicy] = useState<PayrollPolicy | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setConfigs(PAYROLL_CONFIGS_MOCK);
-      setRuns(PAYROLL_RUNS_MOCK);
-      setPayrolls(PAYROLL_ITEMS_MOCK);
-      setLineItems(PAYROLL_LINE_ITEMS_MOCK);
-      setPolicy(PAYROLL_POLICIES_MOCK[0]);
       setIsLoading(false);
     }, 350);
 
@@ -154,7 +144,7 @@ export function PayrollModule() {
         </div>
 
         <TabsContent value="policy" className="space-y-4">
-          <PayrollPolicyView policy={policy} onPolicyChange={setPolicy} />
+          {policy && <PayrollPolicyView policy={policy} onPolicyChange={setPolicy} />}
         </TabsContent>
 
         <TabsContent value="config" className="space-y-4">
@@ -164,7 +154,7 @@ export function PayrollModule() {
         <TabsContent value="generate" className="space-y-4">
           <PayrollGenerationView
             configs={configs}
-            policy={policy}
+            policy={policy || ({} as any)}
             onPayrollGenerated={handleGenerated}
           />
         </TabsContent>

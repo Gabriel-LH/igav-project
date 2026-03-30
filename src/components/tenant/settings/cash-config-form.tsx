@@ -77,7 +77,6 @@ import { toast } from "sonner";
 const cashFormSchema = z.object({
   openingCashRequired: z.boolean(),
   requireClosingReport: z.boolean(),
-  allowNegativeCash: z.boolean(),
 });
 
 type CashFormValues = z.infer<typeof cashFormSchema>;
@@ -545,7 +544,6 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
     defaultValues: {
       openingCashRequired: config.cash.openingCashRequired,
       requireClosingReport: config.cash.requireClosingReport,
-      allowNegativeCash: config.cash.allowNegativeCash,
     },
   });
 
@@ -623,7 +621,7 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
             </h3>
 
             <Form {...form}>
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form className="grid grid-cols-1 mb-3 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="openingCashRequired"
@@ -672,29 +670,6 @@ export function CashConfigForm({ config, onChange }: CashConfigFormProps) {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="allowNegativeCash"
-                  render={({ field }) => (
-                    <FormItem className="flex mb-3 flex-row items-center justify-between rounded-xl border p-4 bg-muted/10">
-                      <div className="space-y-0.5">
-                        <FormLabel>Saldo negativo</FormLabel>
-                        <FormDescription className="text-[10px]">
-                          Permitir egresos superiores al saldo
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={(v) => {
-                            field.onChange(v);
-                            onChange({ allowNegativeCash: v });
-                          }}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
               </form>
             </Form>
           </div>

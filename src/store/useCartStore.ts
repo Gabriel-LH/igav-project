@@ -107,6 +107,11 @@ interface CartState {
 
   removeItem: (cartId: string) => void;
   updateQuantity: (cartId: string, quantity: number) => void;
+  updateManualDiscount: (
+    cartId: string,
+    amount: number,
+    reason?: string,
+  ) => void;
   updateSelectedStock: (cartId: string, stockIds: string[]) => void;
 
   setGlobalDates: (range: { from: Date; to: Date }) => void;
@@ -218,22 +223,24 @@ export const useCartStore = create<CartState>()(
                 promotions: [],
                 config: useTenantConfigStore.getState().config!,
                 policy: useTenantConfigStore.getState().policy,
+                manualDiscountAmount: customData?.manualDiscountAmount,
+                manualDiscountReason: customData?.manualDiscountReason,
                 explicitBundle: {
                   promotionId: customData!.appliedPromotionId!,
                   bundleId: customData!.bundleId!,
                   priceAtMoment: customData?.priceAtMoment ?? listPrice,
                 },
-                manualDiscountReason: customData?.discountReason,
               })
-            : {
+            : applyPricingEngine({
+                product,
+                operationType: type,
                 listPrice,
-                priceAtMoment: listPrice,
-                discountAmount: 0,
-                discountReason: undefined,
-                promotionId: undefined,
-                bundleId: undefined,
-                requiresAdminAuth: false,
-              };
+                promotions: usePromotionStore.getState().promotions,
+                config: useTenantConfigStore.getState().config!,
+                policy: useTenantConfigStore.getState().policy,
+                manualDiscountAmount: customData?.manualDiscountAmount,
+                manualDiscountReason: customData?.manualDiscountReason,
+              });
           const finalUnitPrice = pricing.priceAtMoment;
 
           // 1. Buscar si ya existe el ítem (mismo producto + variante + tipo)
@@ -322,8 +329,10 @@ export const useCartStore = create<CartState>()(
               state.globalRentalDates,
               type,
             ),
-            selectedCodes: specificStockId ? [specificStockId] : [], // specificStockId should be the UIID (id)
+            selectedCodes: specificStockId ? [specificStockId] : [],
             variantId: variantId,
+            manualDiscountAmount: customData?.manualDiscountAmount,
+            manualDiscountReason: customData?.manualDiscountReason,
           };
 
           return {
@@ -610,6 +619,55 @@ export const useCartStore = create<CartState>()(
              get().reevaluateActiveBundle(bid, dates.from, dates.to);
            }
         }
+        get().syncCartWithServer();
+      },
+      updateManualDiscount: (cartId, amount, reason) => {
+        set((state) => ({
+          items: state.items.map((item) => {
+            if (item.cartId !== cartId) return item;
+
+            const config = useTenantConfigStore.getState().config!;
+            const policy = useTenantConfigStore.getState().policy;
+            const promotions = usePromotionStore.getState().promotions;
+
+            const pricing = applyPricingEngine({
+              product: item.product,
+              operationType: item.operationType,
+              listPrice: item.listPrice || item.unitPrice,
+              promotions,
+              config,
+              policy,
+              manualDiscountAmount: amount,
+              manualDiscountReason: reason,
+              explicitBundle: item.bundleId ? {
+                promotionId: item.appliedPromotionId!,
+                bundleId: item.bundleId,
+                priceAtMoment: item.unitPrice
+              } : undefined
+            });
+
+            return {
+              ...item,
+              unitPrice: pricing.priceAtMoment,
+              discountAmount: pricing.discountAmount,
+              discountReason: pricing.discountReason,
+              appliedPromotionId: pricing.promotionId,
+              manualDiscountAmount: amount,
+              manualDiscountReason: reason,
+              requiresAdminAuth: pricing.requiresAdminAuth,
+              subtotal: calculateSubtotal(
+                {
+                  product: item.product,
+                  unitPrice: pricing.priceAtMoment,
+                  quantity: item.quantity,
+                  variantId: item.variantId,
+                },
+                state.globalRentalDates,
+                item.operationType,
+              ),
+            };
+          }),
+        }));
         get().syncCartWithServer();
       },
 

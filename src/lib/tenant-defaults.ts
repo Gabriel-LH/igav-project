@@ -13,7 +13,6 @@ export const DEFAULT_TENANT_CONFIG: Omit<TenantConfig, "tenantId" | "createdAt">
     },
   },
   pricing: {
-    allowNegativeStock: false,
     pricePrecision: 2,
     allowDiscountStacking: true,
     maxDiscountLimit: 50,
@@ -30,7 +29,6 @@ export const DEFAULT_TENANT_CONFIG: Omit<TenantConfig, "tenantId" | "createdAt">
     paymentMethods: [],
     openingCashRequired: true,
     requireClosingReport: true,
-    allowNegativeCash: false,
   },
   referrals: {
     enabled: true,
@@ -48,10 +46,10 @@ export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<
 > = {
   sales: {
     allowReturns: true,
-    maxReturnDays: 30,
+    maxReturnHours: 72,
+    maxCancelHours: 24,
     allowPriceEdit: false,
     requireReasonForCancel: true,
-    autoCompleteDelivery: true,
     requireOriginalTicket: true,
     allowPartialReturns: true,
   },
@@ -64,32 +62,18 @@ export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<
     minRentalDurationDays: 1,
     requireGuarantee: true,
     inclusiveDayCalculation: true,
-    autoMarkAsLate: true,
-    allowRentalWithoutStockAssigned: false,
-    autoMoveToLaundryOnReturn: true,
-    autoMoveToMaintenanceIfDamaged: true,
-    defaultLaundryDays: 2,
-    defaultMaintenanceDays: 1,
   },
   reservations: {
     autoExpireReservations: true,
     expireAfterHours: 24,
-    allowOverbooking: false,
-    requireDeposit: false,
-    autoConvertOnPickup: true,
     requireDownPayment: false,
     minDownPaymentPercentage: 0,
   },
   inventory: {
-    allowManualAdjustments: true,
-    requireReasonForAdjustment: true,
     autoOrderThreshold: 5,
   },
   financial: {
-    allowNegativeBalance: false,
-    maxCreditPerClient: 0,
     allowInstallments: false,
-    autoApplyChargesOnDamage: true,
   },
   security: {
     requirePinForCancelOperation: true,

@@ -57,9 +57,10 @@ export class CancelSaleUseCase {
       throw new Error("Debes indicar un motivo para anular la venta.");
     }
 
+    const maxCancelHours = policy.sales?.maxCancelHours ?? 24;
     const hours = differenceInHours(new Date(), sale.createdAt);
-    if (hours > 24) {
-      throw new Error("Solo se puede anular ventas dentro de las 24h");
+    if (hours > maxCancelHours) {
+      throw new Error(`Solo se puede anular ventas dentro de las primeras ${maxCancelHours} horas`);
     }
 
     const saleWithItems = await this.saleRepo.getSaleWithItems(saleId);

@@ -1,7 +1,10 @@
 // components/inventory/transfer/TransferForm.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useBranchStore } from "@/src/store/useBranchStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,102 +73,7 @@ export interface TransferFormData {
   requiresApproval: boolean;
 }
 
-// Mocks de datos
-const BRANCHES_MOCK = [
-  {
-    id: "branch-1",
-    name: "Sucursal Central",
-    address: "Av. Principal 123",
-    stock: 150,
-  },
-  {
-    id: "branch-2",
-    name: "Sucursal Norte",
-    address: "Calle Norte 456",
-    stock: 89,
-  },
-  { id: "branch-3", name: "Sucursal Sur", address: "Av. Sur 789", stock: 234 },
-  {
-    id: "branch-4",
-    name: "Almacén Principal",
-    address: "Zona Industrial",
-    stock: 500,
-  },
-];
 
-// Stock disponible mock (combinado serializado y no serializado)
-const AVAILABLE_STOCK_MOCK = [
-  // No serializados (lotes)
-  {
-    id: "stock-1",
-    productId: "prod-1",
-    productName: "iPhone 15 Pro",
-    variantId: "var-1",
-    variantName: "Negro / 128GB",
-    variantCode: "IPH-15-PRO-NEG-128-01",
-    barcode: "9123456789012",
-    isSerial: false,
-    quantity: 15,
-    branchId: "branch-1",
-    condition: "Nuevo",
-  },
-  {
-    id: "stock-2",
-    productId: "prod-1",
-    productName: "iPhone 15 Pro",
-    variantId: "var-2",
-    variantName: "Azul / 256GB",
-    variantCode: "IPH-15-PRO-AZU-256-02",
-    barcode: "9876543210987",
-    isSerial: false,
-    quantity: 8,
-    branchId: "branch-1",
-    condition: "Nuevo",
-  },
-  // Serializados (items individuales)
-  {
-    id: "item-1",
-    productId: "prod-2",
-    productName: "Vestido de Gala Élite",
-    variantId: "var-3",
-    variantName: "Rojo / M",
-    variantCode: "VEST-GALA-ROJ-M-01",
-    barcode: "1234567890123",
-    isSerial: true,
-    serialCode: "ITEM-VEST-ABC123-001",
-    quantity: 1,
-    branchId: "branch-1",
-    condition: "Nuevo",
-  },
-  {
-    id: "item-2",
-    productId: "prod-2",
-    productName: "Vestido de Gala Élite",
-    variantId: "var-3",
-    variantName: "Rojo / M",
-    variantCode: "VEST-GALA-ROJ-M-01",
-    barcode: "1234567890123",
-    isSerial: true,
-    serialCode: "ITEM-VEST-ABC123-002",
-    quantity: 1,
-    branchId: "branch-1",
-    condition: "Usado",
-  },
-  {
-    id: "item-3",
-    productId: "prod-2",
-    productName: "Vestido de Gala Élite",
-    variantId: "var-4",
-    variantName: "Azul / S",
-    variantCode: "VEST-GALA-AZU-S-01",
-    barcode: "1234567890124",
-    isSerial: true,
-    serialCode: "ITEM-VEST-DEF456-001",
-    quantity: 1,
-    branchId: "branch-1",
-    condition: "Nuevo",
-  },
-];
 
 interface TransferFormProps {
   onSubmit: (data: TransferFormData) => void;
@@ -207,13 +115,20 @@ function StockScanner({
 }
 
 export function TransferForm({ onSubmit }: TransferFormProps) {
+  const { branches } = useBranchStore();
+  const { products, productVariants, inventoryItems, stockLots } =
+    useInventoryStore();
+  const { getSizeById, getColorById } = useAttributeStore();
+
   const [formData, setFormData] = useState<Partial<TransferFormData>>({
     referenceNumber: `TRF-${Date.now().toString(36).toUpperCase().slice(-6)}`,
     scheduledDate: new Date().toISOString().split("T")[0],
     items: [],
     priority: "normal",
     requiresApproval: false,
+    fromBranchId: "",
   });
+
   const [scanMessage, setScanMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -222,10 +137,85 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
   // Filtrar stock disponible según sucursal origen
   const availableStock = useMemo(() => {
     if (!formData.fromBranchId) return [];
-    return AVAILABLE_STOCK_MOCK.filter(
-      (s) => s.branchId === formData.fromBranchId,
-    );
-  }, [formData.fromBranchId]);
+
+    // Map serial items
+    const serials = inventoryItems
+      .filter(
+        (item) =>
+          item.branchId === formData.fromBranchId &&
+          item.status === "disponible",
+      )
+      .map((item) => {
+        const product = products.find((p) => p.id === item.productId);
+        const variant = productVariants.find((v) => v.id === item.variantId);
+        const size = variant?.attributes?.size
+          ? getSizeById(variant.attributes.size)?.name
+          : "";
+        const color = variant?.attributes?.color
+          ? getColorById(variant.attributes.color)?.name
+          : "";
+
+        return {
+          id: item.id,
+          productId: item.productId,
+          productName: product?.name || "Producto",
+          variantId: item.variantId,
+          variantName: `${size} / ${color}`.trim() || variant?.variantCode,
+          variantCode: variant?.variantCode || "",
+          barcode: variant?.barcode || "",
+          isSerial: true,
+          serialCode: item.serialCode,
+          quantity: 1,
+          branchId: item.branchId,
+          condition: "Excelente", // Default
+        };
+      });
+
+    // Map lot items
+    const lots = stockLots
+      .filter(
+        (lot) =>
+          lot.branchId === formData.fromBranchId &&
+          lot.status === "disponible" &&
+          lot.quantity > 0,
+      )
+      .map((lot) => {
+        const product = products.find((p) => p.id === lot.productId);
+        const variant = productVariants.find((v) => v.id === lot.variantId);
+        const size = variant?.attributes?.size
+          ? getSizeById(variant.attributes.size)?.name
+          : "";
+        const color = variant?.attributes?.color
+          ? getColorById(variant.attributes.color)?.name
+          : "";
+
+        return {
+          id: lot.id,
+          productId: lot.productId,
+          productName: product?.name || "Producto",
+          variantId: lot.variantId,
+          variantName: `${size} / ${color}`.trim() || variant?.variantCode,
+          variantCode: variant?.variantCode || "",
+          barcode: variant?.barcode || "",
+          isSerial: false,
+          quantity: lot.quantity,
+          branchId: lot.branchId,
+          condition: "Nuevo",
+        };
+      });
+
+    return [...serials, ...lots];
+  }, [
+    formData.fromBranchId,
+    inventoryItems,
+    stockLots,
+    products,
+    productVariants,
+    getSizeById,
+    getColorById,
+  ]);
+
+  const branchesToUse = branches;
 
   // Agrupar stock por variante para no serializados
   const groupedStock = useMemo(() => {
@@ -238,10 +228,10 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
     return groups;
   }, [availableStock]);
 
-  const selectedFromBranch = BRANCHES_MOCK.find(
+  const selectedFromBranch = branchesToUse.find(
     (b) => b.id === formData.fromBranchId,
   );
-  const selectedToBranch = BRANCHES_MOCK.find(
+  const selectedToBranch = branchesToUse.find(
     (b) => b.id === formData.toBranchId,
   );
 
@@ -460,12 +450,12 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                 <SelectValue placeholder="Seleccionar sucursal origen..." />
               </SelectTrigger>
               <SelectContent>
-                {BRANCHES_MOCK.map((branch) => (
+                {branchesToUse.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
                     <div className="flex flex-col">
                       <span className="font-medium">{branch.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {branch.address} • {branch.stock} items
+                        {branch.address}
                       </span>
                     </div>
                   </SelectItem>
@@ -511,18 +501,18 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                 <SelectValue placeholder="Seleccionar sucursal destino..." />
               </SelectTrigger>
               <SelectContent>
-                {BRANCHES_MOCK.filter(
-                  (b) => b.id !== formData.fromBranchId,
-                ).map((branch) => (
-                  <SelectItem key={branch.id} value={branch.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{branch.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {branch.address}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
+                {branchesToUse
+                  .filter((b) => b.id !== formData.fromBranchId)
+                  .map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{branch.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {branch.address}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
 

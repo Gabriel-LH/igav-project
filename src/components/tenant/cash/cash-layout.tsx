@@ -21,6 +21,7 @@ import { OpenSessionModal } from "./ui/modal/OpenSessionModal";
 import { CloseSessionModal } from "./ui/modal/CloseSessionModal";
 import { SessionDetailModal } from "./ui/modal/DetailSessionModal";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import type { User } from "@/src/types/user/type.user";
 import type { Payment } from "@/src/types/payments/type.payments";
 import type { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
@@ -34,16 +35,23 @@ import {
 } from "@/src/app/(tenant)/tenant/actions/cash.actions";
 import { toast } from "sonner";
 
-const normalizePayment = (payment: Payment): Payment => ({
+const normalizePayment = (payment: any): Payment => ({
   ...payment,
   createdAt: new Date(payment.createdAt),
   date: new Date(payment.date),
+  cashSessionId: payment.cashSessionId ?? undefined,
+  notes: payment.notes ?? undefined,
 });
 
-const normalizeSession = (session: CashSession): CashSession => ({
+const normalizeSession = (session: any): CashSession => ({
   ...session,
   openedAt: new Date(session.openedAt),
   closedAt: session.closedAt ? new Date(session.closedAt) : undefined,
+  closedById: session.closedById ?? undefined,
+  closingExpectedAmount: session.closingExpectedAmount ?? undefined,
+  closingCountedAmount: session.closingCountedAmount ?? undefined,
+  closingDifference: session.closingDifference ?? undefined,
+  notes: session.notes ?? undefined,
 });
 
 const normalizeUser = (user: User): User => ({
@@ -69,6 +77,7 @@ export function CashLayout() {
   const [clients, setClients] = useState<Client[]>([]);
   const [operations, setOperations] = useState<Operation[]>([]);
   const branches = useBranchStore((state) => state.branches);
+  const { config: tenantConfig } = useTenantConfigStore();
 
   const loadCashData = useCallback(async () => {
     const result = await getCashDashboardDataAction();
@@ -91,10 +100,12 @@ export function CashLayout() {
       })),
     );
     setOperations(
-      result.data.operations.map((operation) => ({
+      result.data.operations.map((operation: any) => ({
         ...operation,
         date: new Date(operation.date),
         createdAt: new Date(operation.createdAt),
+        customerMode: operation.customerMode as "registered" | "general",
+        configVersion: operation.configVersion ? new Date(operation.configVersion) : undefined,
       })),
     );
   }, []);
@@ -252,6 +263,7 @@ export function CashLayout() {
         onSessionCreated={handleOpenSession}
         branches={branches}
         cashiers={users}
+        tenantConfig={tenantConfig}
       />
 
       <CloseSessionModal
@@ -259,6 +271,7 @@ export function CashLayout() {
         onOpenChange={setShowCloseSession}
         session={selectedSession}
         onConfirm={handleConfirmClose}
+        tenantConfig={tenantConfig}
       />
 
       <SessionDetailModal
