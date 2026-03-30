@@ -25,5 +25,17 @@ export interface ProductRepository {
     variantId: string,
     updates: Partial<ProductVariant>,
   ): Promise<void>;
+  getVariantById(variantId: string): Promise<ProductVariant | null>;
+  createPriceHistory(data: {
+    tenantId: string;
+    variantId: string;
+    oldPrice: number;
+    newPrice: number;
+    reason: "purchase" | "adjustment" | "import" | "restock_return";
+    userId: string;
+    inventoryItemId?: string;
+    stockLotId?: string;
+  }): Promise<void>;
   deleteVariantsByProductId(productId: string): Promise<void>;
+  getPriceHistoryByProductId(productId: string): Promise<any[]>;
 }

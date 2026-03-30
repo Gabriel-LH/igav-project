@@ -1,4 +1,3 @@
-// components/tenant-policies/tabs/SalesPoliciesTab.tsx (versión alternativa)
 "use client";
 
 import { useFormContext, useWatch } from "react-hook-form";
@@ -10,32 +9,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
-  FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { HelpCircle } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { TenantPolicies } from "@/src/types/tenant/type.tenantPolicies";
+import { HelpCircle } from "lucide-react";
+import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
-// Componente separado para el Switch para evitar re-renders
 function PolicySwitch({ control, name, label, description }: any) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+        <FormItem className="mb-3 flex flex-row items-center justify-between rounded-lg border p-4">
           <div className="space-y-0.5">
             <FormLabel className="text-base">{label}</FormLabel>
             <FormDescription>{description}</FormDescription>
@@ -50,7 +48,7 @@ function PolicySwitch({ control, name, label, description }: any) {
 }
 
 export function SalesPoliciesTab() {
-  const { control } = useFormContext<TenantPolicies>();
+  const { control } = useFormContext<TenantPolicy>();
   const allowReturns = useWatch({
     control,
     name: "sales.allowReturns",
@@ -58,20 +56,19 @@ export function SalesPoliciesTab() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span>💰</span>
-          Políticas de Ventas
+      <CardHeader className="-mb-4">
+        <CardTitle className="mt-3 flex items-center gap-2">
+          Politicas de Ventas
         </CardTitle>
         <CardDescription>
-          Configura las reglas para el proceso de ventas
+          Configura las reglas operativas del flujo de ventas. Los descuentos se
+          configuran en Ajustes {">"} Precios.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Devoluciones */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium flex items-center gap-2">
-            <span>🔄</span>
+
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <h3 className="flex items-center gap-2 text-lg font-medium">
             Devoluciones
           </h3>
 
@@ -79,7 +76,7 @@ export function SalesPoliciesTab() {
             control={control}
             name="sales.allowReturns"
             label="Permitir devoluciones"
-            description="Habilita la opción de devolver productos"
+            description="Habilita la opcion de devolver productos."
           />
 
           {allowReturns && (
@@ -87,38 +84,35 @@ export function SalesPoliciesTab() {
               control={control}
               name="sales.maxReturnDays"
               render={({ field }) => (
-                <FormItem className="ml-6">
+                <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    Días máximos para devolver
+                    Dias maximos para devolver
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
                           <HelpCircle className="h-4 w-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>
-                            Plazo máximo después de la compra para aceptar
-                            devoluciones
-                          </p>
+                          <p>Plazo maximo despues de la compra.</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </FormLabel>
                   <FormControl>
-                    <div className="relative max-w-[200px]">
+                    <div className="relative w-fit">
                       <Input
                         type="number"
-                        min="1"
+                        min="0"
                         value={field.value}
                         onChange={(e) => {
-                          const value = parseInt(e.target.value);
+                          const value = parseInt(e.target.value, 10);
                           if (!isNaN(value)) {
                             field.onChange(value);
                           }
                         }}
                       />
-                      <span className="absolute right-3 top-2.5 text-muted-foreground">
-                        días
+                      <span className="absolute right-10 top-1.5 text-muted-foreground">
+                        dias
                       </span>
                     </div>
                   </FormControl>
@@ -130,10 +124,8 @@ export function SalesPoliciesTab() {
 
         <Separator />
 
-        {/* Precios y cancelaciones */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium flex items-center gap-2">
-            <span>🏷️</span>
+          <h3 className="flex items-center gap-2 text-lg font-medium">
             Precios y Cancelaciones
           </h3>
 
@@ -141,21 +133,21 @@ export function SalesPoliciesTab() {
             control={control}
             name="sales.allowPriceEdit"
             label="Permitir editar precio"
-            description="Habilitar modificación manual de precios en ventas"
+            description="Habilitar modificacion manual de precios en ventas."
           />
 
           <PolicySwitch
             control={control}
             name="sales.requireReasonForCancel"
-            label="Requerir motivo de cancelación"
-            description="Obligar a ingresar motivo al cancelar una venta"
+            label="Requerir motivo de cancelacion"
+            description="Obligar a ingresar motivo al cancelar una venta."
           />
 
           <PolicySwitch
             control={control}
             name="sales.autoCompleteDelivery"
-            label="Completar entrega automáticamente"
-            description="Marcar entregas como completadas sin confirmación manual"
+            label="Completar entrega automaticamente"
+            description="Marcar entregas como completadas sin confirmacion manual."
           />
         </div>
       </CardContent>

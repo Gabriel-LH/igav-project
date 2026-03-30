@@ -236,6 +236,7 @@ export type TenantWhereInput = {
   moduleFeatures?: Prisma.ModuleFeatureListRelationFilter
   operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   payrollConfigs?: Prisma.PayrollConfigListRelationFilter
   payrollItems?: Prisma.PayrollItemListRelationFilter
   payrollLineItems?: Prisma.PayrollLineItemListRelationFilter
@@ -319,6 +320,7 @@ export type TenantOrderByWithRelationInput = {
   moduleFeatures?: Prisma.ModuleFeatureOrderByRelationAggregateInput
   operations?: Prisma.OperationOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
+  paymentMethods?: Prisma.PaymentMethodOrderByRelationAggregateInput
   payrollConfigs?: Prisma.PayrollConfigOrderByRelationAggregateInput
   payrollItems?: Prisma.PayrollItemOrderByRelationAggregateInput
   payrollLineItems?: Prisma.PayrollLineItemOrderByRelationAggregateInput
@@ -405,6 +407,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   moduleFeatures?: Prisma.ModuleFeatureListRelationFilter
   operations?: Prisma.OperationListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   payrollConfigs?: Prisma.PayrollConfigListRelationFilter
   payrollItems?: Prisma.PayrollItemListRelationFilter
   payrollLineItems?: Prisma.PayrollLineItemListRelationFilter
@@ -519,6 +522,7 @@ export type TenantCreateInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -602,6 +606,7 @@ export type TenantUncheckedCreateInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -683,6 +688,7 @@ export type TenantUpdateInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -766,6 +772,7 @@ export type TenantUncheckedUpdateInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -1228,6 +1235,22 @@ export type TenantUpdateOneRequiredWithoutOperationsNestedInput = {
   upsert?: Prisma.TenantUpsertWithoutOperationsInput
   connect?: Prisma.TenantWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutOperationsInput, Prisma.TenantUpdateWithoutOperationsInput>, Prisma.TenantUncheckedUpdateWithoutOperationsInput>
+}
+
+export type TenantCreateNestedOneWithoutPaymentMethodsInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutPaymentMethodsInput, Prisma.TenantUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutPaymentMethodsInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneWithoutPaymentMethodsNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutPaymentMethodsInput, Prisma.TenantUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutPaymentMethodsInput
+  upsert?: Prisma.TenantUpsertWithoutPaymentMethodsInput
+  disconnect?: Prisma.TenantWhereInput | boolean
+  delete?: Prisma.TenantWhereInput | boolean
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutPaymentMethodsInput, Prisma.TenantUpdateWithoutPaymentMethodsInput>, Prisma.TenantUncheckedUpdateWithoutPaymentMethodsInput>
 }
 
 export type TenantCreateNestedOneWithoutPaymentsInput = {
@@ -1956,6 +1979,7 @@ export type TenantCreateWithoutOwnerInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -2037,6 +2061,7 @@ export type TenantUncheckedCreateWithoutOwnerInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -2160,6 +2185,7 @@ export type TenantCreateWithoutUserBranchAccessesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -2242,6 +2268,7 @@ export type TenantUncheckedCreateWithoutUserBranchAccessesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -2338,6 +2365,7 @@ export type TenantUpdateWithoutUserBranchAccessesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -2420,6 +2448,7 @@ export type TenantUncheckedUpdateWithoutUserBranchAccessesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -2500,6 +2529,7 @@ export type TenantCreateWithoutUserAttendancesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -2582,6 +2612,7 @@ export type TenantUncheckedCreateWithoutUserAttendancesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -2678,6 +2709,7 @@ export type TenantUpdateWithoutUserAttendancesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -2760,6 +2792,7 @@ export type TenantUncheckedUpdateWithoutUserAttendancesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -2840,6 +2873,7 @@ export type TenantCreateWithoutUserRoleBranchHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -2922,6 +2956,7 @@ export type TenantUncheckedCreateWithoutUserRoleBranchHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -3018,6 +3053,7 @@ export type TenantUpdateWithoutUserRoleBranchHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -3100,6 +3136,7 @@ export type TenantUncheckedUpdateWithoutUserRoleBranchHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -3180,6 +3217,7 @@ export type TenantCreateWithoutUserShiftAssignmentsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -3262,6 +3300,7 @@ export type TenantUncheckedCreateWithoutUserShiftAssignmentsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -3358,6 +3397,7 @@ export type TenantUpdateWithoutUserShiftAssignmentsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -3440,6 +3480,7 @@ export type TenantUncheckedUpdateWithoutUserShiftAssignmentsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -3519,6 +3560,7 @@ export type TenantCreateWithoutAttributeTypesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -3601,6 +3643,7 @@ export type TenantUncheckedCreateWithoutAttributeTypesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -3697,6 +3740,7 @@ export type TenantUpdateWithoutAttributeTypesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -3779,6 +3823,7 @@ export type TenantUncheckedUpdateWithoutAttributeTypesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -3859,6 +3904,7 @@ export type TenantCreateWithoutAttributeValuesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -3941,6 +3987,7 @@ export type TenantUncheckedCreateWithoutAttributeValuesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -4037,6 +4084,7 @@ export type TenantUpdateWithoutAttributeValuesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -4119,6 +4167,7 @@ export type TenantUncheckedUpdateWithoutAttributeValuesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -4199,6 +4248,7 @@ export type TenantCreateWithoutBranchesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -4281,6 +4331,7 @@ export type TenantUncheckedCreateWithoutBranchesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -4377,6 +4428,7 @@ export type TenantUpdateWithoutBranchesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -4459,6 +4511,7 @@ export type TenantUncheckedUpdateWithoutBranchesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -4539,6 +4592,7 @@ export type TenantCreateWithoutBrandsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -4621,6 +4675,7 @@ export type TenantUncheckedCreateWithoutBrandsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -4717,6 +4772,7 @@ export type TenantUpdateWithoutBrandsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -4799,6 +4855,7 @@ export type TenantUncheckedUpdateWithoutBrandsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -4879,6 +4936,7 @@ export type TenantCreateWithoutCashSessionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -4961,6 +5019,7 @@ export type TenantUncheckedCreateWithoutCashSessionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -5057,6 +5116,7 @@ export type TenantUpdateWithoutCashSessionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -5139,6 +5199,7 @@ export type TenantUncheckedUpdateWithoutCashSessionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -5219,6 +5280,7 @@ export type TenantCreateWithoutCategoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -5301,6 +5363,7 @@ export type TenantUncheckedCreateWithoutCategoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -5397,6 +5460,7 @@ export type TenantUpdateWithoutCategoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -5479,6 +5543,7 @@ export type TenantUncheckedUpdateWithoutCategoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -5559,6 +5624,7 @@ export type TenantCreateWithoutClientsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -5641,6 +5707,7 @@ export type TenantUncheckedCreateWithoutClientsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -5737,6 +5804,7 @@ export type TenantUpdateWithoutClientsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -5819,6 +5887,7 @@ export type TenantUncheckedUpdateWithoutClientsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -5899,6 +5968,7 @@ export type TenantCreateWithoutClientCreditLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -5981,6 +6051,7 @@ export type TenantUncheckedCreateWithoutClientCreditLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -6077,6 +6148,7 @@ export type TenantUpdateWithoutClientCreditLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -6159,6 +6231,7 @@ export type TenantUncheckedUpdateWithoutClientCreditLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -6239,6 +6312,7 @@ export type TenantCreateWithoutClientLoyaltyLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -6321,6 +6395,7 @@ export type TenantUncheckedCreateWithoutClientLoyaltyLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -6417,6 +6492,7 @@ export type TenantUpdateWithoutClientLoyaltyLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -6499,6 +6575,7 @@ export type TenantUncheckedUpdateWithoutClientLoyaltyLedgersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -6579,6 +6656,7 @@ export type TenantCreateWithoutCouponsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -6661,6 +6739,7 @@ export type TenantUncheckedCreateWithoutCouponsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -6757,6 +6836,7 @@ export type TenantUpdateWithoutCouponsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -6839,6 +6919,7 @@ export type TenantUncheckedUpdateWithoutCouponsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -6919,6 +7000,7 @@ export type TenantCreateWithoutGuaranteesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -7001,6 +7083,7 @@ export type TenantUncheckedCreateWithoutGuaranteesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -7097,6 +7180,7 @@ export type TenantUpdateWithoutGuaranteesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -7179,6 +7263,7 @@ export type TenantUncheckedUpdateWithoutGuaranteesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -7259,6 +7344,7 @@ export type TenantCreateWithoutGuaranteeStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -7341,6 +7427,7 @@ export type TenantUncheckedCreateWithoutGuaranteeStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -7437,6 +7524,7 @@ export type TenantUpdateWithoutGuaranteeStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -7519,6 +7607,7 @@ export type TenantUncheckedUpdateWithoutGuaranteeStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -7599,6 +7688,7 @@ export type TenantCreateWithoutModelsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -7681,6 +7771,7 @@ export type TenantUncheckedCreateWithoutModelsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -7777,6 +7868,7 @@ export type TenantUpdateWithoutModelsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -7859,6 +7951,7 @@ export type TenantUncheckedUpdateWithoutModelsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -7939,6 +8032,7 @@ export type TenantCreateWithoutModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -8021,6 +8115,7 @@ export type TenantUncheckedCreateWithoutModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -8117,6 +8212,7 @@ export type TenantUpdateWithoutModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -8199,6 +8295,7 @@ export type TenantUncheckedUpdateWithoutModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -8279,6 +8376,7 @@ export type TenantCreateWithoutModuleFeaturesInput = {
   modules?: Prisma.ModuleCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -8361,6 +8459,7 @@ export type TenantUncheckedCreateWithoutModuleFeaturesInput = {
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -8457,6 +8556,7 @@ export type TenantUpdateWithoutModuleFeaturesInput = {
   modules?: Prisma.ModuleUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -8539,6 +8639,7 @@ export type TenantUncheckedUpdateWithoutModuleFeaturesInput = {
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -8619,6 +8720,7 @@ export type TenantCreateWithoutOperationsInput = {
   modules?: Prisma.ModuleCreateNestedManyWithoutTenantInput
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -8701,6 +8803,7 @@ export type TenantUncheckedCreateWithoutOperationsInput = {
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutTenantInput
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -8797,6 +8900,7 @@ export type TenantUpdateWithoutOperationsInput = {
   modules?: Prisma.ModuleUpdateManyWithoutTenantNestedInput
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -8879,6 +8983,351 @@ export type TenantUncheckedUpdateWithoutOperationsInput = {
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutTenantNestedInput
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
+  payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
+  payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
+  payrollPolicies?: Prisma.PayrollPolicyUncheckedUpdateManyWithoutTenantNestedInput
+  payrollRuns?: Prisma.PayrollRunUncheckedUpdateManyWithoutTenantNestedInput
+  permissions?: Prisma.PermissionUncheckedUpdateManyWithoutTenantNestedInput
+  planFeatures?: Prisma.PlanFeatureUncheckedUpdateManyWithoutTenantNestedInput
+  planLimits?: Prisma.PlanLimitUncheckedUpdateManyWithoutTenantNestedInput
+  planModules?: Prisma.PlanModuleUncheckedUpdateManyWithoutTenantNestedInput
+  plans?: Prisma.PlanUncheckedUpdateManyWithoutTenantNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
+  productVariants?: Prisma.ProductVariantUncheckedUpdateManyWithoutTenantNestedInput
+  promotionUsages?: Prisma.PromotionUsageUncheckedUpdateManyWithoutTenantNestedInput
+  promotions?: Prisma.PromotionUncheckedUpdateManyWithoutTenantNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutTenantNestedInput
+  referralPrograms?: Prisma.ReferralProgramUncheckedUpdateManyWithoutTenantNestedInput
+  referralRewards?: Prisma.ReferralRewardUncheckedUpdateManyWithoutTenantNestedInput
+  rentals?: Prisma.RentalUncheckedUpdateManyWithoutTenantNestedInput
+  rentalCharges?: Prisma.RentalChargeUncheckedUpdateManyWithoutTenantNestedInput
+  rentalItems?: Prisma.RentalItemUncheckedUpdateManyWithoutTenantNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTenantNestedInput
+  reservationItems?: Prisma.ReservationItemUncheckedUpdateManyWithoutTenantNestedInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  reversalItems?: Prisma.ReversalItemUncheckedUpdateManyWithoutTenantNestedInput
+  rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutTenantNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutTenantNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutTenantNestedInput
+  saleCharges?: Prisma.SaleChargeUncheckedUpdateManyWithoutTenantNestedInput
+  saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutTenantNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  saleReversals?: Prisma.SaleReversalUncheckedUpdateManyWithoutTenantNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutTenantNestedInput
+  stockLots?: Prisma.StockLotUncheckedUpdateManyWithoutTenantNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutTenantNestedInput
+  tenantConfigs?: Prisma.TenantConfigUncheckedUpdateOneWithoutTenantNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutTenantNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+  transfers?: Prisma.TransferUncheckedUpdateManyWithoutTenantNestedInput
+  transferRoutes?: Prisma.TransferRouteUncheckedUpdateManyWithoutTenantNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutTenantNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutTenantNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantCreateWithoutPaymentMethodsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryCreateNestedManyWithoutTenantInput
+  tenantModules?: Prisma.TenantModuleCreateNestedManyWithoutTenantInput
+  attributeTypes?: Prisma.AttributeTypeCreateNestedManyWithoutTenantInput
+  attributeValues?: Prisma.AttributeValueCreateNestedManyWithoutTenantInput
+  branches?: Prisma.BranchCreateNestedManyWithoutTenantInput
+  brands?: Prisma.BrandCreateNestedManyWithoutTenantInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutTenantInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutTenantInput
+  clients?: Prisma.ClientCreateNestedManyWithoutTenantInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutTenantInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutTenantInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutTenantInput
+  guarantees?: Prisma.GuaranteeCreateNestedManyWithoutTenantInput
+  inventoryItems?: Prisma.InventoryItemCreateNestedManyWithoutTenantInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryCreateNestedManyWithoutTenantInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput
+  models?: Prisma.ModelCreateNestedManyWithoutTenantInput
+  modules?: Prisma.ModuleCreateNestedManyWithoutTenantInput
+  moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
+  operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
+  payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
+  payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
+  payrollPolicies?: Prisma.PayrollPolicyCreateNestedManyWithoutTenantInput
+  payrollRuns?: Prisma.PayrollRunCreateNestedManyWithoutTenantInput
+  permissions?: Prisma.PermissionCreateNestedManyWithoutTenantInput
+  planFeatures?: Prisma.PlanFeatureCreateNestedManyWithoutTenantInput
+  planLimits?: Prisma.PlanLimitCreateNestedManyWithoutTenantInput
+  planModules?: Prisma.PlanModuleCreateNestedManyWithoutTenantInput
+  plans?: Prisma.PlanCreateNestedManyWithoutTenantInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutTenantInput
+  products?: Prisma.ProductCreateNestedManyWithoutTenantInput
+  productVariants?: Prisma.ProductVariantCreateNestedManyWithoutTenantInput
+  promotionUsages?: Prisma.PromotionUsageCreateNestedManyWithoutTenantInput
+  promotions?: Prisma.PromotionCreateNestedManyWithoutTenantInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutTenantInput
+  referralPrograms?: Prisma.ReferralProgramCreateNestedManyWithoutTenantInput
+  referralRewards?: Prisma.ReferralRewardCreateNestedManyWithoutTenantInput
+  rentals?: Prisma.RentalCreateNestedManyWithoutTenantInput
+  rentalCharges?: Prisma.RentalChargeCreateNestedManyWithoutTenantInput
+  rentalItems?: Prisma.RentalItemCreateNestedManyWithoutTenantInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryCreateNestedManyWithoutTenantInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryCreateNestedManyWithoutTenantInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutTenantInput
+  reservationItems?: Prisma.ReservationItemCreateNestedManyWithoutTenantInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryCreateNestedManyWithoutTenantInput
+  reversalItems?: Prisma.ReversalItemCreateNestedManyWithoutTenantInput
+  rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutTenantInput
+  roles?: Prisma.RoleCreateNestedManyWithoutTenantInput
+  sales?: Prisma.SaleCreateNestedManyWithoutTenantInput
+  saleCharges?: Prisma.SaleChargeCreateNestedManyWithoutTenantInput
+  saleItems?: Prisma.SaleItemCreateNestedManyWithoutTenantInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryCreateNestedManyWithoutTenantInput
+  saleReversals?: Prisma.SaleReversalCreateNestedManyWithoutTenantInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutTenantInput
+  stockLots?: Prisma.StockLotCreateNestedManyWithoutTenantInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutTenantInput
+  owner: Prisma.UserCreateNestedOneWithoutTenantsInput
+  tenantConfigs?: Prisma.TenantConfigCreateNestedOneWithoutTenantInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutTenantInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutTenantInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionCreateNestedManyWithoutTenantInput
+  transfers?: Prisma.TransferCreateNestedManyWithoutTenantInput
+  transferRoutes?: Prisma.TransferRouteCreateNestedManyWithoutTenantInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutTenantInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutTenantInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryCreateNestedManyWithoutTenantInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentCreateNestedManyWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutPaymentMethodsInput = {
+  id?: string
+  name: string
+  slug: string
+  ownerId: string
+  status?: $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  tenantModules?: Prisma.TenantModuleUncheckedCreateNestedManyWithoutTenantInput
+  attributeTypes?: Prisma.AttributeTypeUncheckedCreateNestedManyWithoutTenantInput
+  attributeValues?: Prisma.AttributeValueUncheckedCreateNestedManyWithoutTenantInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutTenantInput
+  brands?: Prisma.BrandUncheckedCreateNestedManyWithoutTenantInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutTenantInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutTenantInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutTenantInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutTenantInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutTenantInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutTenantInput
+  guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutTenantInput
+  inventoryItems?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutTenantInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutTenantInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput
+  models?: Prisma.ModelUncheckedCreateNestedManyWithoutTenantInput
+  modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutTenantInput
+  moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
+  payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
+  payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
+  payrollPolicies?: Prisma.PayrollPolicyUncheckedCreateNestedManyWithoutTenantInput
+  payrollRuns?: Prisma.PayrollRunUncheckedCreateNestedManyWithoutTenantInput
+  permissions?: Prisma.PermissionUncheckedCreateNestedManyWithoutTenantInput
+  planFeatures?: Prisma.PlanFeatureUncheckedCreateNestedManyWithoutTenantInput
+  planLimits?: Prisma.PlanLimitUncheckedCreateNestedManyWithoutTenantInput
+  planModules?: Prisma.PlanModuleUncheckedCreateNestedManyWithoutTenantInput
+  plans?: Prisma.PlanUncheckedCreateNestedManyWithoutTenantInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutTenantInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
+  productVariants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutTenantInput
+  promotionUsages?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutTenantInput
+  promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutTenantInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutTenantInput
+  referralPrograms?: Prisma.ReferralProgramUncheckedCreateNestedManyWithoutTenantInput
+  referralRewards?: Prisma.ReferralRewardUncheckedCreateNestedManyWithoutTenantInput
+  rentals?: Prisma.RentalUncheckedCreateNestedManyWithoutTenantInput
+  rentalCharges?: Prisma.RentalChargeUncheckedCreateNestedManyWithoutTenantInput
+  rentalItems?: Prisma.RentalItemUncheckedCreateNestedManyWithoutTenantInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTenantInput
+  reservationItems?: Prisma.ReservationItemUncheckedCreateNestedManyWithoutTenantInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  reversalItems?: Prisma.ReversalItemUncheckedCreateNestedManyWithoutTenantInput
+  rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutTenantInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutTenantInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutTenantInput
+  saleCharges?: Prisma.SaleChargeUncheckedCreateNestedManyWithoutTenantInput
+  saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutTenantInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUncheckedCreateNestedManyWithoutTenantInput
+  saleReversals?: Prisma.SaleReversalUncheckedCreateNestedManyWithoutTenantInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutTenantInput
+  stockLots?: Prisma.StockLotUncheckedCreateNestedManyWithoutTenantInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutTenantInput
+  tenantConfigs?: Prisma.TenantConfigUncheckedCreateNestedOneWithoutTenantInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutTenantInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutTenantInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+  transfers?: Prisma.TransferUncheckedCreateNestedManyWithoutTenantInput
+  transferRoutes?: Prisma.TransferRouteUncheckedCreateNestedManyWithoutTenantInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutTenantInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutTenantInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUncheckedCreateNestedManyWithoutTenantInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutPaymentMethodsInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutPaymentMethodsInput, Prisma.TenantUncheckedCreateWithoutPaymentMethodsInput>
+}
+
+export type TenantUpsertWithoutPaymentMethodsInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutPaymentMethodsInput, Prisma.TenantUncheckedUpdateWithoutPaymentMethodsInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutPaymentMethodsInput, Prisma.TenantUncheckedCreateWithoutPaymentMethodsInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutPaymentMethodsInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutPaymentMethodsInput, Prisma.TenantUncheckedUpdateWithoutPaymentMethodsInput>
+}
+
+export type TenantUpdateWithoutPaymentMethodsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUpdateManyWithoutTenantNestedInput
+  tenantModules?: Prisma.TenantModuleUpdateManyWithoutTenantNestedInput
+  attributeTypes?: Prisma.AttributeTypeUpdateManyWithoutTenantNestedInput
+  attributeValues?: Prisma.AttributeValueUpdateManyWithoutTenantNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutTenantNestedInput
+  brands?: Prisma.BrandUpdateManyWithoutTenantNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutTenantNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutTenantNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutTenantNestedInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutTenantNestedInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutTenantNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutTenantNestedInput
+  guarantees?: Prisma.GuaranteeUpdateManyWithoutTenantNestedInput
+  inventoryItems?: Prisma.InventoryItemUpdateManyWithoutTenantNestedInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput
+  models?: Prisma.ModelUpdateManyWithoutTenantNestedInput
+  modules?: Prisma.ModuleUpdateManyWithoutTenantNestedInput
+  moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
+  payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
+  payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
+  payrollPolicies?: Prisma.PayrollPolicyUpdateManyWithoutTenantNestedInput
+  payrollRuns?: Prisma.PayrollRunUpdateManyWithoutTenantNestedInput
+  permissions?: Prisma.PermissionUpdateManyWithoutTenantNestedInput
+  planFeatures?: Prisma.PlanFeatureUpdateManyWithoutTenantNestedInput
+  planLimits?: Prisma.PlanLimitUpdateManyWithoutTenantNestedInput
+  planModules?: Prisma.PlanModuleUpdateManyWithoutTenantNestedInput
+  plans?: Prisma.PlanUpdateManyWithoutTenantNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutTenantNestedInput
+  products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
+  productVariants?: Prisma.ProductVariantUpdateManyWithoutTenantNestedInput
+  promotionUsages?: Prisma.PromotionUsageUpdateManyWithoutTenantNestedInput
+  promotions?: Prisma.PromotionUpdateManyWithoutTenantNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutTenantNestedInput
+  referralPrograms?: Prisma.ReferralProgramUpdateManyWithoutTenantNestedInput
+  referralRewards?: Prisma.ReferralRewardUpdateManyWithoutTenantNestedInput
+  rentals?: Prisma.RentalUpdateManyWithoutTenantNestedInput
+  rentalCharges?: Prisma.RentalChargeUpdateManyWithoutTenantNestedInput
+  rentalItems?: Prisma.RentalItemUpdateManyWithoutTenantNestedInput
+  rentalItemStatusHistories?: Prisma.RentalItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  rentalStatusHistories?: Prisma.RentalStatusHistoryUpdateManyWithoutTenantNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutTenantNestedInput
+  reservationItems?: Prisma.ReservationItemUpdateManyWithoutTenantNestedInput
+  reservationItemStatusHistories?: Prisma.ReservationItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  reversalItems?: Prisma.ReversalItemUpdateManyWithoutTenantNestedInput
+  rolePermissions?: Prisma.RolePermissionUpdateManyWithoutTenantNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutTenantNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutTenantNestedInput
+  saleCharges?: Prisma.SaleChargeUpdateManyWithoutTenantNestedInput
+  saleItems?: Prisma.SaleItemUpdateManyWithoutTenantNestedInput
+  saleItemStatusHistories?: Prisma.SaleItemStatusHistoryUpdateManyWithoutTenantNestedInput
+  saleReversals?: Prisma.SaleReversalUpdateManyWithoutTenantNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutTenantNestedInput
+  stockLots?: Prisma.StockLotUpdateManyWithoutTenantNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutTenantNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutTenantsNestedInput
+  tenantConfigs?: Prisma.TenantConfigUpdateOneWithoutTenantNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutTenantNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutTenantNestedInput
+  tenantSubscriptions?: Prisma.TenantSubscriptionUpdateManyWithoutTenantNestedInput
+  transfers?: Prisma.TransferUpdateManyWithoutTenantNestedInput
+  transferRoutes?: Prisma.TransferRouteUpdateManyWithoutTenantNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutTenantNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutTenantNestedInput
+  userRoleBranchHistories?: Prisma.UserRoleBranchHistoryUpdateManyWithoutTenantNestedInput
+  userShiftAssignments?: Prisma.UserShiftAssignmentUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutPaymentMethodsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  tenantConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  currentSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  guaranteeStatusHistories?: Prisma.GuaranteeStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  tenantModules?: Prisma.TenantModuleUncheckedUpdateManyWithoutTenantNestedInput
+  attributeTypes?: Prisma.AttributeTypeUncheckedUpdateManyWithoutTenantNestedInput
+  attributeValues?: Prisma.AttributeValueUncheckedUpdateManyWithoutTenantNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutTenantNestedInput
+  brands?: Prisma.BrandUncheckedUpdateManyWithoutTenantNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutTenantNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutTenantNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutTenantNestedInput
+  clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutTenantNestedInput
+  clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutTenantNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutTenantNestedInput
+  guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryItems?: Prisma.InventoryItemUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryItemStatusHistories?: Prisma.InventoryItemStatusHistoryUncheckedUpdateManyWithoutTenantNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutTenantNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput
+  models?: Prisma.ModelUncheckedUpdateManyWithoutTenantNestedInput
+  modules?: Prisma.ModuleUncheckedUpdateManyWithoutTenantNestedInput
+  moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -8959,6 +9408,7 @@ export type TenantCreateWithoutPaymentsInput = {
   modules?: Prisma.ModuleCreateNestedManyWithoutTenantInput
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -9041,6 +9491,7 @@ export type TenantUncheckedCreateWithoutPaymentsInput = {
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutTenantInput
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -9137,6 +9588,7 @@ export type TenantUpdateWithoutPaymentsInput = {
   modules?: Prisma.ModuleUpdateManyWithoutTenantNestedInput
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -9219,6 +9671,7 @@ export type TenantUncheckedUpdateWithoutPaymentsInput = {
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutTenantNestedInput
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -9300,6 +9753,7 @@ export type TenantCreateWithoutPayrollRunsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -9382,6 +9836,7 @@ export type TenantUncheckedCreateWithoutPayrollRunsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -9478,6 +9933,7 @@ export type TenantUpdateWithoutPayrollRunsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -9560,6 +10016,7 @@ export type TenantUncheckedUpdateWithoutPayrollRunsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -9640,6 +10097,7 @@ export type TenantCreateWithoutPayrollItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyCreateNestedManyWithoutTenantInput
@@ -9722,6 +10180,7 @@ export type TenantUncheckedCreateWithoutPayrollItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedCreateNestedManyWithoutTenantInput
@@ -9818,6 +10277,7 @@ export type TenantUpdateWithoutPayrollItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUpdateManyWithoutTenantNestedInput
@@ -9900,6 +10360,7 @@ export type TenantUncheckedUpdateWithoutPayrollItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedUpdateManyWithoutTenantNestedInput
@@ -9980,6 +10441,7 @@ export type TenantCreateWithoutPayrollLineItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyCreateNestedManyWithoutTenantInput
@@ -10062,6 +10524,7 @@ export type TenantUncheckedCreateWithoutPayrollLineItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedCreateNestedManyWithoutTenantInput
@@ -10158,6 +10621,7 @@ export type TenantUpdateWithoutPayrollLineItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUpdateManyWithoutTenantNestedInput
@@ -10240,6 +10704,7 @@ export type TenantUncheckedUpdateWithoutPayrollLineItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedUpdateManyWithoutTenantNestedInput
@@ -10320,6 +10785,7 @@ export type TenantCreateWithoutPayrollPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -10402,6 +10868,7 @@ export type TenantUncheckedCreateWithoutPayrollPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -10498,6 +10965,7 @@ export type TenantUpdateWithoutPayrollPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -10580,6 +11048,7 @@ export type TenantUncheckedUpdateWithoutPayrollPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -10660,6 +11129,7 @@ export type TenantCreateWithoutPayrollConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyCreateNestedManyWithoutTenantInput
@@ -10742,6 +11212,7 @@ export type TenantUncheckedCreateWithoutPayrollConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedCreateNestedManyWithoutTenantInput
@@ -10838,6 +11309,7 @@ export type TenantUpdateWithoutPayrollConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUpdateManyWithoutTenantNestedInput
@@ -10920,6 +11392,7 @@ export type TenantUncheckedUpdateWithoutPayrollConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollPolicies?: Prisma.PayrollPolicyUncheckedUpdateManyWithoutTenantNestedInput
@@ -11000,6 +11473,7 @@ export type TenantCreateWithoutPermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -11082,6 +11556,7 @@ export type TenantUncheckedCreateWithoutPermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -11178,6 +11653,7 @@ export type TenantUpdateWithoutPermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -11260,6 +11736,7 @@ export type TenantUncheckedUpdateWithoutPermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -11340,6 +11817,7 @@ export type TenantCreateWithoutRolesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -11422,6 +11900,7 @@ export type TenantUncheckedCreateWithoutRolesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -11518,6 +11997,7 @@ export type TenantUpdateWithoutRolesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -11600,6 +12080,7 @@ export type TenantUncheckedUpdateWithoutRolesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -11680,6 +12161,7 @@ export type TenantCreateWithoutRolePermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -11762,6 +12244,7 @@ export type TenantUncheckedCreateWithoutRolePermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -11858,6 +12341,7 @@ export type TenantUpdateWithoutRolePermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -11940,6 +12424,7 @@ export type TenantUncheckedUpdateWithoutRolePermissionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -12020,6 +12505,7 @@ export type TenantCreateWithoutPlansInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -12102,6 +12588,7 @@ export type TenantUncheckedCreateWithoutPlansInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -12198,6 +12685,7 @@ export type TenantUpdateWithoutPlansInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -12280,6 +12768,7 @@ export type TenantUncheckedUpdateWithoutPlansInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -12360,6 +12849,7 @@ export type TenantCreateWithoutPlanFeaturesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -12442,6 +12932,7 @@ export type TenantUncheckedCreateWithoutPlanFeaturesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -12538,6 +13029,7 @@ export type TenantUpdateWithoutPlanFeaturesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -12620,6 +13112,7 @@ export type TenantUncheckedUpdateWithoutPlanFeaturesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -12700,6 +13193,7 @@ export type TenantCreateWithoutPlanLimitsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -12782,6 +13276,7 @@ export type TenantUncheckedCreateWithoutPlanLimitsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -12878,6 +13373,7 @@ export type TenantUpdateWithoutPlanLimitsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -12960,6 +13456,7 @@ export type TenantUncheckedUpdateWithoutPlanLimitsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -13040,6 +13537,7 @@ export type TenantCreateWithoutPlanModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -13122,6 +13620,7 @@ export type TenantUncheckedCreateWithoutPlanModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -13218,6 +13717,7 @@ export type TenantUpdateWithoutPlanModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -13300,6 +13800,7 @@ export type TenantUncheckedUpdateWithoutPlanModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -13380,6 +13881,7 @@ export type TenantCreateWithoutProductsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -13462,6 +13964,7 @@ export type TenantUncheckedCreateWithoutProductsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -13558,6 +14061,7 @@ export type TenantUpdateWithoutProductsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -13640,6 +14144,7 @@ export type TenantUncheckedUpdateWithoutProductsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -13720,6 +14225,7 @@ export type TenantCreateWithoutProductVariantsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -13802,6 +14308,7 @@ export type TenantUncheckedCreateWithoutProductVariantsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -13898,6 +14405,7 @@ export type TenantUpdateWithoutProductVariantsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -13980,6 +14488,7 @@ export type TenantUncheckedUpdateWithoutProductVariantsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -14059,6 +14568,7 @@ export type TenantCreateWithoutInventoryItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -14141,6 +14651,7 @@ export type TenantUncheckedCreateWithoutInventoryItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -14237,6 +14748,7 @@ export type TenantUpdateWithoutInventoryItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -14319,6 +14831,7 @@ export type TenantUncheckedUpdateWithoutInventoryItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -14399,6 +14912,7 @@ export type TenantCreateWithoutInventoryItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -14481,6 +14995,7 @@ export type TenantUncheckedCreateWithoutInventoryItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -14577,6 +15092,7 @@ export type TenantUpdateWithoutInventoryItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -14659,6 +15175,7 @@ export type TenantUncheckedUpdateWithoutInventoryItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -14740,6 +15257,7 @@ export type TenantCreateWithoutPriceHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -14822,6 +15340,7 @@ export type TenantUncheckedCreateWithoutPriceHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -14918,6 +15437,7 @@ export type TenantUpdateWithoutPriceHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -15000,6 +15520,7 @@ export type TenantUncheckedUpdateWithoutPriceHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -15080,6 +15601,7 @@ export type TenantCreateWithoutStockLotsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -15162,6 +15684,7 @@ export type TenantUncheckedCreateWithoutStockLotsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -15258,6 +15781,7 @@ export type TenantUpdateWithoutStockLotsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -15340,6 +15864,7 @@ export type TenantUncheckedUpdateWithoutStockLotsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -15420,6 +15945,7 @@ export type TenantCreateWithoutStockMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -15502,6 +16028,7 @@ export type TenantUncheckedCreateWithoutStockMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -15598,6 +16125,7 @@ export type TenantUpdateWithoutStockMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -15680,6 +16208,7 @@ export type TenantUncheckedUpdateWithoutStockMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -15760,6 +16289,7 @@ export type TenantCreateWithoutPromotionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -15842,6 +16372,7 @@ export type TenantUncheckedCreateWithoutPromotionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -15938,6 +16469,7 @@ export type TenantUpdateWithoutPromotionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -16020,6 +16552,7 @@ export type TenantUncheckedUpdateWithoutPromotionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -16100,6 +16633,7 @@ export type TenantCreateWithoutPromotionUsagesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -16182,6 +16716,7 @@ export type TenantUncheckedCreateWithoutPromotionUsagesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -16278,6 +16813,7 @@ export type TenantUpdateWithoutPromotionUsagesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -16360,6 +16896,7 @@ export type TenantUncheckedUpdateWithoutPromotionUsagesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -16440,6 +16977,7 @@ export type TenantCreateWithoutReferralsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -16522,6 +17060,7 @@ export type TenantUncheckedCreateWithoutReferralsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -16618,6 +17157,7 @@ export type TenantUpdateWithoutReferralsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -16700,6 +17240,7 @@ export type TenantUncheckedUpdateWithoutReferralsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -16780,6 +17321,7 @@ export type TenantCreateWithoutReferralProgramsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -16862,6 +17404,7 @@ export type TenantUncheckedCreateWithoutReferralProgramsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -16958,6 +17501,7 @@ export type TenantUpdateWithoutReferralProgramsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -17040,6 +17584,7 @@ export type TenantUncheckedUpdateWithoutReferralProgramsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -17120,6 +17665,7 @@ export type TenantCreateWithoutReferralRewardsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -17202,6 +17748,7 @@ export type TenantUncheckedCreateWithoutReferralRewardsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -17298,6 +17845,7 @@ export type TenantUpdateWithoutReferralRewardsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -17380,6 +17928,7 @@ export type TenantUncheckedUpdateWithoutReferralRewardsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -17460,6 +18009,7 @@ export type TenantCreateWithoutRentalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -17542,6 +18092,7 @@ export type TenantUncheckedCreateWithoutRentalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -17638,6 +18189,7 @@ export type TenantUpdateWithoutRentalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -17720,6 +18272,7 @@ export type TenantUncheckedUpdateWithoutRentalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -17800,6 +18353,7 @@ export type TenantCreateWithoutRentalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -17882,6 +18436,7 @@ export type TenantUncheckedCreateWithoutRentalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -17978,6 +18533,7 @@ export type TenantUpdateWithoutRentalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -18060,6 +18616,7 @@ export type TenantUncheckedUpdateWithoutRentalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -18140,6 +18697,7 @@ export type TenantCreateWithoutRentalChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -18222,6 +18780,7 @@ export type TenantUncheckedCreateWithoutRentalChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -18318,6 +18877,7 @@ export type TenantUpdateWithoutRentalChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -18400,6 +18960,7 @@ export type TenantUncheckedUpdateWithoutRentalChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -18480,6 +19041,7 @@ export type TenantCreateWithoutRentalStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -18562,6 +19124,7 @@ export type TenantUncheckedCreateWithoutRentalStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -18658,6 +19221,7 @@ export type TenantUpdateWithoutRentalStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -18740,6 +19304,7 @@ export type TenantUncheckedUpdateWithoutRentalStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -18820,6 +19385,7 @@ export type TenantCreateWithoutRentalItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -18902,6 +19468,7 @@ export type TenantUncheckedCreateWithoutRentalItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -18998,6 +19565,7 @@ export type TenantUpdateWithoutRentalItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -19080,6 +19648,7 @@ export type TenantUncheckedUpdateWithoutRentalItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -19160,6 +19729,7 @@ export type TenantCreateWithoutReservationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -19242,6 +19812,7 @@ export type TenantUncheckedCreateWithoutReservationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -19338,6 +19909,7 @@ export type TenantUpdateWithoutReservationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -19420,6 +19992,7 @@ export type TenantUncheckedUpdateWithoutReservationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -19500,6 +20073,7 @@ export type TenantCreateWithoutReservationItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -19582,6 +20156,7 @@ export type TenantUncheckedCreateWithoutReservationItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -19678,6 +20253,7 @@ export type TenantUpdateWithoutReservationItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -19760,6 +20336,7 @@ export type TenantUncheckedUpdateWithoutReservationItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -19840,6 +20417,7 @@ export type TenantCreateWithoutReservationItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -19922,6 +20500,7 @@ export type TenantUncheckedCreateWithoutReservationItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -20018,6 +20597,7 @@ export type TenantUpdateWithoutReservationItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -20100,6 +20680,7 @@ export type TenantUncheckedUpdateWithoutReservationItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -20180,6 +20761,7 @@ export type TenantCreateWithoutSalesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -20262,6 +20844,7 @@ export type TenantUncheckedCreateWithoutSalesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -20358,6 +20941,7 @@ export type TenantUpdateWithoutSalesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -20440,6 +21024,7 @@ export type TenantUncheckedUpdateWithoutSalesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -20520,6 +21105,7 @@ export type TenantCreateWithoutSaleItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -20602,6 +21188,7 @@ export type TenantUncheckedCreateWithoutSaleItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -20698,6 +21285,7 @@ export type TenantUpdateWithoutSaleItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -20780,6 +21368,7 @@ export type TenantUncheckedUpdateWithoutSaleItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -20860,6 +21449,7 @@ export type TenantCreateWithoutSaleChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -20942,6 +21532,7 @@ export type TenantUncheckedCreateWithoutSaleChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -21038,6 +21629,7 @@ export type TenantUpdateWithoutSaleChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -21120,6 +21712,7 @@ export type TenantUncheckedUpdateWithoutSaleChargesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -21200,6 +21793,7 @@ export type TenantCreateWithoutSaleReversalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -21282,6 +21876,7 @@ export type TenantUncheckedCreateWithoutSaleReversalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -21378,6 +21973,7 @@ export type TenantUpdateWithoutSaleReversalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -21460,6 +22056,7 @@ export type TenantUncheckedUpdateWithoutSaleReversalsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -21540,6 +22137,7 @@ export type TenantCreateWithoutReversalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -21622,6 +22220,7 @@ export type TenantUncheckedCreateWithoutReversalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -21718,6 +22317,7 @@ export type TenantUpdateWithoutReversalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -21800,6 +22400,7 @@ export type TenantUncheckedUpdateWithoutReversalItemsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -21880,6 +22481,7 @@ export type TenantCreateWithoutSaleItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -21962,6 +22564,7 @@ export type TenantUncheckedCreateWithoutSaleItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -22058,6 +22661,7 @@ export type TenantUpdateWithoutSaleItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -22140,6 +22744,7 @@ export type TenantUncheckedUpdateWithoutSaleItemStatusHistoriesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -22220,6 +22825,7 @@ export type TenantCreateWithoutShiftsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -22302,6 +22908,7 @@ export type TenantUncheckedCreateWithoutShiftsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -22398,6 +23005,7 @@ export type TenantUpdateWithoutShiftsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -22480,6 +23088,7 @@ export type TenantUncheckedUpdateWithoutShiftsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -22560,6 +23169,7 @@ export type TenantCreateWithoutTenantConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -22642,6 +23252,7 @@ export type TenantUncheckedCreateWithoutTenantConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -22738,6 +23349,7 @@ export type TenantUpdateWithoutTenantConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -22820,6 +23432,7 @@ export type TenantUncheckedUpdateWithoutTenantConfigsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -22900,6 +23513,7 @@ export type TenantCreateWithoutTenantSubscriptionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -22982,6 +23596,7 @@ export type TenantUncheckedCreateWithoutTenantSubscriptionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -23078,6 +23693,7 @@ export type TenantUpdateWithoutTenantSubscriptionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -23160,6 +23776,7 @@ export type TenantUncheckedUpdateWithoutTenantSubscriptionsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -23239,6 +23856,7 @@ export type TenantCreateWithoutTenantModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -23321,6 +23939,7 @@ export type TenantUncheckedCreateWithoutTenantModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -23417,6 +24036,7 @@ export type TenantUpdateWithoutTenantModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -23499,6 +24119,7 @@ export type TenantUncheckedUpdateWithoutTenantModulesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -23580,6 +24201,7 @@ export type TenantCreateWithoutTenantPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -23662,6 +24284,7 @@ export type TenantUncheckedCreateWithoutTenantPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -23758,6 +24381,7 @@ export type TenantUpdateWithoutTenantPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -23840,6 +24464,7 @@ export type TenantUncheckedUpdateWithoutTenantPoliciesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -23919,6 +24544,7 @@ export type TenantCreateWithoutInvitationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -24001,6 +24627,7 @@ export type TenantUncheckedCreateWithoutInvitationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -24097,6 +24724,7 @@ export type TenantUpdateWithoutInvitationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -24179,6 +24807,7 @@ export type TenantUncheckedUpdateWithoutInvitationsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -24260,6 +24889,7 @@ export type TenantCreateWithoutUserTenantMembershipsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -24342,6 +24972,7 @@ export type TenantUncheckedCreateWithoutUserTenantMembershipsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -24438,6 +25069,7 @@ export type TenantUpdateWithoutUserTenantMembershipsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -24520,6 +25152,7 @@ export type TenantUncheckedUpdateWithoutUserTenantMembershipsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -24600,6 +25233,7 @@ export type TenantCreateWithoutTransfersInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -24682,6 +25316,7 @@ export type TenantUncheckedCreateWithoutTransfersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -24778,6 +25413,7 @@ export type TenantUpdateWithoutTransfersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -24860,6 +25496,7 @@ export type TenantUncheckedUpdateWithoutTransfersInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -24940,6 +25577,7 @@ export type TenantCreateWithoutTransferRoutesInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -25022,6 +25660,7 @@ export type TenantUncheckedCreateWithoutTransferRoutesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -25118,6 +25757,7 @@ export type TenantUpdateWithoutTransferRoutesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -25200,6 +25840,7 @@ export type TenantUncheckedUpdateWithoutTransferRoutesInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -25279,6 +25920,7 @@ export type TenantCreateWithoutInventoryMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemCreateNestedManyWithoutTenantInput
@@ -25361,6 +26003,7 @@ export type TenantUncheckedCreateWithoutInventoryMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedCreateNestedManyWithoutTenantInput
   operations?: Prisma.OperationUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutTenantInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedCreateNestedManyWithoutTenantInput
   payrollItems?: Prisma.PayrollItemUncheckedCreateNestedManyWithoutTenantInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedCreateNestedManyWithoutTenantInput
@@ -25457,6 +26100,7 @@ export type TenantUpdateWithoutInventoryMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -25539,6 +26183,7 @@ export type TenantUncheckedUpdateWithoutInventoryMovementsInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -25632,6 +26277,7 @@ export type TenantUpdateWithoutOwnerInput = {
   moduleFeatures?: Prisma.ModuleFeatureUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUpdateManyWithoutTenantNestedInput
@@ -25713,6 +26359,7 @@ export type TenantUncheckedUpdateWithoutOwnerInput = {
   moduleFeatures?: Prisma.ModuleFeatureUncheckedUpdateManyWithoutTenantNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutTenantNestedInput
   payrollConfigs?: Prisma.PayrollConfigUncheckedUpdateManyWithoutTenantNestedInput
   payrollItems?: Prisma.PayrollItemUncheckedUpdateManyWithoutTenantNestedInput
   payrollLineItems?: Prisma.PayrollLineItemUncheckedUpdateManyWithoutTenantNestedInput
@@ -25802,6 +26449,7 @@ export type TenantCountOutputType = {
   moduleFeatures: number
   operations: number
   payments: number
+  paymentMethods: number
   payrollConfigs: number
   payrollItems: number
   payrollLineItems: number
@@ -25873,6 +26521,7 @@ export type TenantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   moduleFeatures?: boolean | TenantCountOutputTypeCountModuleFeaturesArgs
   operations?: boolean | TenantCountOutputTypeCountOperationsArgs
   payments?: boolean | TenantCountOutputTypeCountPaymentsArgs
+  paymentMethods?: boolean | TenantCountOutputTypeCountPaymentMethodsArgs
   payrollConfigs?: boolean | TenantCountOutputTypeCountPayrollConfigsArgs
   payrollItems?: boolean | TenantCountOutputTypeCountPayrollItemsArgs
   payrollLineItems?: boolean | TenantCountOutputTypeCountPayrollLineItemsArgs
@@ -26083,6 +26732,13 @@ export type TenantCountOutputTypeCountOperationsArgs<ExtArgs extends runtime.Typ
  */
 export type TenantCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * TenantCountOutputType without action
+ */
+export type TenantCountOutputTypeCountPaymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentMethodWhereInput
 }
 
 /**
@@ -26441,6 +27097,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   moduleFeatures?: boolean | Prisma.Tenant$moduleFeaturesArgs<ExtArgs>
   operations?: boolean | Prisma.Tenant$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.Tenant$paymentsArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Tenant$paymentMethodsArgs<ExtArgs>
   payrollConfigs?: boolean | Prisma.Tenant$payrollConfigsArgs<ExtArgs>
   payrollItems?: boolean | Prisma.Tenant$payrollItemsArgs<ExtArgs>
   payrollLineItems?: boolean | Prisma.Tenant$payrollLineItemsArgs<ExtArgs>
@@ -26557,6 +27214,7 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   moduleFeatures?: boolean | Prisma.Tenant$moduleFeaturesArgs<ExtArgs>
   operations?: boolean | Prisma.Tenant$operationsArgs<ExtArgs>
   payments?: boolean | Prisma.Tenant$paymentsArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Tenant$paymentMethodsArgs<ExtArgs>
   payrollConfigs?: boolean | Prisma.Tenant$payrollConfigsArgs<ExtArgs>
   payrollItems?: boolean | Prisma.Tenant$payrollItemsArgs<ExtArgs>
   payrollLineItems?: boolean | Prisma.Tenant$payrollLineItemsArgs<ExtArgs>
@@ -26639,6 +27297,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     moduleFeatures: Prisma.$ModuleFeaturePayload<ExtArgs>[]
     operations: Prisma.$OperationPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
+    paymentMethods: Prisma.$PaymentMethodPayload<ExtArgs>[]
     payrollConfigs: Prisma.$PayrollConfigPayload<ExtArgs>[]
     payrollItems: Prisma.$PayrollItemPayload<ExtArgs>[]
     payrollLineItems: Prisma.$PayrollLineItemPayload<ExtArgs>[]
@@ -27115,6 +27774,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   moduleFeatures<T extends Prisma.Tenant$moduleFeaturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$moduleFeaturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModuleFeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   operations<T extends Prisma.Tenant$operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.Tenant$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  paymentMethods<T extends Prisma.Tenant$paymentMethodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$paymentMethodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payrollConfigs<T extends Prisma.Tenant$payrollConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$payrollConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payrollItems<T extends Prisma.Tenant$payrollItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$payrollItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payrollLineItems<T extends Prisma.Tenant$payrollLineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$payrollLineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayrollLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -28123,6 +28783,30 @@ export type Tenant$paymentsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * Tenant.paymentMethods
+ */
+export type Tenant$paymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentMethod
+   */
+  select?: Prisma.PaymentMethodSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentMethod
+   */
+  omit?: Prisma.PaymentMethodOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodInclude<ExtArgs> | null
+  where?: Prisma.PaymentMethodWhereInput
+  orderBy?: Prisma.PaymentMethodOrderByWithRelationInput | Prisma.PaymentMethodOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentMethodWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentMethodScalarFieldEnum | Prisma.PaymentMethodScalarFieldEnum[]
 }
 
 /**

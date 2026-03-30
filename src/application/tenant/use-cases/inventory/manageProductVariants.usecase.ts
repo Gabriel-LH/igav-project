@@ -12,6 +12,8 @@ interface ToggleVariantInput {
 
 interface UpdateVariantInput {
   variantId: string;
+  tenantId: string;
+  userId: string;
   updates: Partial<{
     variantCode: string;
     barcode: string;
@@ -47,6 +49,31 @@ export class UpdateVariantUseCase {
   constructor(private productRepo: ProductRepository) { }
 
   async execute(input: UpdateVariantInput): Promise<void> {
+    const current = await this.productRepo.getVariantById(input.variantId);
+    if (current) {
+      const priceChanges: ("priceSell" | "priceRent" | "purchasePrice")[] = [
+        "priceSell",
+        "priceRent",
+        "purchasePrice",
+      ];
+
+      for (const key of priceChanges) {
+        const newValue = input.updates[key];
+        const oldValue = current[key as keyof typeof current] as number;
+
+        if (newValue !== undefined && newValue !== oldValue) {
+          await this.productRepo.createPriceHistory({
+            tenantId: input.tenantId,
+            variantId: input.variantId,
+            oldPrice: oldValue || 0,
+            newPrice: newValue,
+            reason: "adjustment",
+            userId: input.userId,
+          });
+        }
+      }
+    }
+
     await this.productRepo.updateVariant(input.variantId, {
       ...input.updates,
       updatedAt: new Date(),

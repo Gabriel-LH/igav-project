@@ -6,7 +6,7 @@ import { useRentalStore } from "@/src/store/useRentalStore";
 import { useSaleStore } from "@/src/store/useSaleStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { usePlanFeatures } from "./usePlanFeatures";
-import { CATEGORY_MOCKS } from "@/src/mocks/mock.category";
+import { useCategoryStore } from "@/src/store/useCategoryStore";
 import {
   getAnalyticsOverviewMetrics,
   getRentalsLineChartMetrics,
@@ -22,6 +22,7 @@ export function useAnalyticsData() {
   const rentalItems = useRentalStore((s) => s.rentalItems);
   const saleItems = useSaleStore((s) => s.saleItems);
   const products = useInventoryStore((s) => s.products);
+  const categories = useCategoryStore((s) => s.categories);
   const { hasFeature } = usePlanFeatures();
 
   const hasSalesFeature = hasFeature("sales");
@@ -66,9 +67,9 @@ export function useAnalyticsData() {
         rentalItems,
         saleItems,
         products,
-        CATEGORY_MOCKS,
+        categories,
       ),
-    [filteredOperations, rentalItems, saleItems, products],
+    [filteredOperations, rentalItems, saleItems, products, categories],
   );
 
   const performanceData = useMemo(

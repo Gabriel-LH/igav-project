@@ -9,6 +9,8 @@ import { ProcessInitialPaymentUseCase } from "../processInitialPayment.usecase";
 import { AddClientCreditUseCase } from "../client/addClientCredit.usecase";
 import { RewardLoyaltyUseCase } from "../rewardLoyalty.usecase";
 import { ProcessReferralUseCase } from "../processReferral.usecase";
+import { CalculateCartPromotionsUseCase } from "../promotion/CalculateCartPromotionsUseCase";
+import { CartItem } from "../../../../types/cart/type.cart";
 
 export class ProcessTransactionUseCase {
   constructor(
@@ -20,25 +22,48 @@ export class ProcessTransactionUseCase {
     private readonly addClientCreditUC: AddClientCreditUseCase,
     private readonly rewardLoyaltyUC: RewardLoyaltyUseCase,
     private readonly processReferralUC: ProcessReferralUseCase,
+    private readonly calculatePromotionsUC: CalculateCartPromotionsUseCase,
   ) {}
 
   async execute(dto: any): Promise<any> {
     return this.unitOfWork.execute(async () => {
-      const financials = new TransactionFinancials(dto.financials);
       const tenantId = this.tenantRepo.getTenantIdByTransaction(dto);
+      
+      // Re-calculate promotions on server to ensure consistency and security
+      const recalculatedItems = await this.calculatePromotionsUC.execute({
+        items: dto.items,
+        tenantId,
+        branchId: dto.branchId,
+        config: dto.configSnapshot?.tenant || dto.configSnapshot, // Handle possible snapshot structure
+        startDate: dto.rentalDates?.from ? new Date(dto.rentalDates.from) : undefined,
+        endDate: dto.rentalDates?.to ? new Date(dto.rentalDates.to) : undefined,
+      });
 
-    const operation = await this.createOperationUC.execute(
-      dto,
-      financials.totalAmount,
-      financials.initialNetPaid,
-      tenantId,
-      {
-        policySnapshot: dto.policySnapshot,
-        configSnapshot: dto.configSnapshot,
-        policyVersion: dto.policyVersion,
-        configVersion: dto.configVersion,
-      },
-    );
+      // Update DTO with server-calculated items and total
+      const serverTotal = recalculatedItems.reduce((acc: number, item: CartItem) => acc + (item.subtotal || 0), 0);
+      const dtoWithServerPrices = {
+        ...dto,
+        items: recalculatedItems,
+        financials: {
+          ...dto.financials,
+          totalAmount: serverTotal,
+        }
+      };
+
+      const financials = new TransactionFinancials(dtoWithServerPrices.financials);
+
+      const operation = await this.createOperationUC.execute(
+        dtoWithServerPrices,
+        financials.totalAmount,
+        financials.initialNetPaid,
+        tenantId,
+        {
+          policySnapshot: dto.policySnapshot,
+          configSnapshot: dto.configSnapshot,
+          policyVersion: dto.policyVersion,
+          configVersion: dto.configVersion,
+        },
+      );
       const operationId = String(operation.id);
 
       if (financials.hasOverpaymentToKeep) {
@@ -70,7 +95,7 @@ export class ProcessTransactionUseCase {
       }
 
       const { details, guarantee } = await strategy.execute(
-        dto,
+        dtoWithServerPrices,
         operationId,
         tenantId,
         financials,

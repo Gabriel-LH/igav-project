@@ -38,6 +38,8 @@ export interface RentalDTO extends BaseOperation {
     totalDiscount: number;
     taxAmount?: number;
     totalAmount: number;
+    totalBeforeRounding?: number;
+    roundingDifference?: number;
     keepAsCredit: boolean;
     receivedAmount: number;
     paymentMethodId: string;

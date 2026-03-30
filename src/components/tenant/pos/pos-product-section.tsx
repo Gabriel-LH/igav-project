@@ -100,7 +100,7 @@ export function PosProductSection() {
       <div className="flex-1 overflow-y-auto p-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-10 text-muted-foreground animate-pulse">
-            <HugeiconsIcon icon={ToolsIcon} className="w-8 h-8 mb-2 animate-spin" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"/>
             <p className="text-sm font-semibold">Cargando catálogo...</p>
           </div>
         ) : filtered.length === 0 ? (

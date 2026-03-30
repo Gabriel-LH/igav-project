@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FiscalConfigForm } from "./fiscal-config-form";
 import { PricingConfigForm } from "./pricing-config-fomr";
-import { DiscountsConfigForm } from "./discount-config-form";
 import { LoyaltyConfigForm } from "./loyalty-config-form";
 import { ReferralConfigForm } from "./referral-config-form";
 import { DEFAULT_CONFIG } from "@/src/store/useTenantConfigStore";
@@ -60,10 +59,6 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             ...res.data,
             tax: { ...DEFAULT_CONFIG.tax, ...(res.data.tax || {}) },
             pricing: { ...DEFAULT_CONFIG.pricing, ...(res.data.pricing || {}) },
-            discounts: {
-              ...DEFAULT_CONFIG.discounts,
-              ...(res.data.discounts || {}),
-            },
             loyalty: { ...DEFAULT_CONFIG.loyalty, ...(res.data.loyalty || {}) },
             cash: { ...DEFAULT_CONFIG.cash, ...(res.data.cash || {}) },
             referrals: {
@@ -183,16 +178,10 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             </TabsContent>
 
             <TabsContent value="pricing" className="m-0 focus-visible:ring-0">
-              <div className="space-y-4">
-                <PricingConfigForm
-                  config={config}
-                  onChange={(v) => handleConfigChange("pricing", v)}
-                />
-                <DiscountsConfigForm
-                  config={config}
-                  onChange={(v) => handleConfigChange("discounts", v)}
-                />
-              </div>
+              <PricingConfigForm
+                config={config}
+                onChange={(v) => handleConfigChange("pricing", v)}
+              />
             </TabsContent>
 
             <TabsContent value="programs" className="m-0 focus-visible:ring-0">

@@ -26,28 +26,26 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { TenantPolicies } from "@/src/types/tenant/type.tenantPolicies";
+import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export function ReservationsPoliciesTab() {
-  const { control, watch } = useFormContext<TenantPolicies>();
+  const { control, watch } = useFormContext<TenantPolicy>();
   const autoExpire = watch("reservations.autoExpireReservations");
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span>📅</span>
+      <CardHeader className="-mb-4">
+        <CardTitle className="flex items-center gap-2 mt-3">
           Políticas de Reservas
         </CardTitle>
         <CardDescription>
           Configura el comportamiento de las reservas
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {/* Expiración */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <h3 className="text-lg font-medium flex items-center gap-2">
-            <span>⏳</span>
             Expiración
           </h3>
 
@@ -80,7 +78,7 @@ export function ReservationsPoliciesTab() {
               control={control}
               name="reservations.expireAfterHours"
               render={({ field }) => (
-                <FormItem className="ml-6">
+                <FormItem>
                   <FormLabel className="flex items-center gap-2">
                     Horas antes de expirar
                     <TooltipProvider>
@@ -106,7 +104,7 @@ export function ReservationsPoliciesTab() {
                           field.onChange(parseInt(e.target.value))
                         }
                       />
-                      <span className="absolute right-3 top-2.5 text-muted-foreground">
+                      <span className="absolute right-9 top-1.5 text-muted-foreground">
                         horas
                       </span>
                     </div>
@@ -122,7 +120,6 @@ export function ReservationsPoliciesTab() {
         {/* Configuración avanzada */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium flex items-center gap-2">
-            <span>⚙️</span>
             Configuración avanzada
           </h3>
 
@@ -174,7 +171,7 @@ export function ReservationsPoliciesTab() {
             control={control}
             name="reservations.autoConvertOnPickup"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">
                     Convertir automáticamente al recoger

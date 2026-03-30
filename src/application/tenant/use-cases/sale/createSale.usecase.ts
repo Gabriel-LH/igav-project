@@ -29,6 +29,7 @@ export class CreateSaleUseCase {
 
   private resolveTenantPolicy(snapshot: unknown): TenantPolicy {
     const base: TenantPolicy = {
+      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
       id: "policy-default",
       tenantId: "",
       version: 1,
@@ -36,7 +37,6 @@ export class CreateSaleUseCase {
       createdAt: new Date(0),
       updatedBy: "system",
       changeReason: undefined,
-      ...(DEFAULT_TENANT_POLICY_SECTIONS as TenantPolicy),
     };
 
     if (snapshot && typeof snapshot === "object") {
@@ -63,10 +63,10 @@ export class CreateSaleUseCase {
     const now = new Date();
     const fromReservation =
       "reservationId" in dto && Array.isArray((dto as any).reservationItems);
-
     const tenantConfig = this.resolveTenantConfig(
       (dto as any).configSnapshot,
     );
+
     const tenantPolicy = this.resolveTenantPolicy(
       (dto as any).policySnapshot,
     );
@@ -79,7 +79,7 @@ export class CreateSaleUseCase {
         ? "vendido"
         : requestedStatus;
 
-    const validateManualDiscount = (item: {
+    const validateDiscountPolicy = (item: {
       listPrice?: number;
       priceAtMoment?: number;
       discountAmount?: number;
@@ -87,21 +87,35 @@ export class CreateSaleUseCase {
       bundleId?: string;
     }) => {
       const listPrice = item.listPrice ?? item.priceAtMoment ?? 0;
-      const discountAmount =
+      const totalDiscount =
         item.discountAmount ??
         Math.max(0, listPrice - (item.priceAtMoment ?? listPrice));
+      
       const hasPromo = Boolean(item.promotionId || item.bundleId);
-      const hasManualDiscount = discountAmount > 0 && !hasPromo;
+      const isManualOnly = totalDiscount > 0 && !hasPromo;
 
-      if (hasManualDiscount && !tenantPolicy.sales?.allowPriceEdit) {
+      // 1. Verificar si se permiten descuentos manuales
+      if (isManualOnly && !tenantPolicy.sales?.allowPriceEdit) {
         throw new Error("No se permiten descuentos manuales en ventas.");
       }
 
-      if (hasManualDiscount && listPrice > 0) {
-        const percent = (discountAmount / listPrice) * 100;
-        if (percent > tenantConfig.discounts.maxPercentageAllowed) {
-          throw new Error("Descuento manual excede el máximo permitido.");
+      // 2. Verificar tope máximo (Total: Manual + Promocional)
+      if (totalDiscount > 0 && listPrice > 0) {
+        const percent = (totalDiscount / listPrice) * 100;
+        const maxPercent = tenantConfig.pricing.maxDiscountLimit;
+        
+        if (percent > maxPercent) {
+          const errorMsg = hasPromo 
+            ? `El descuento total (${percent.toFixed(1)}%) incluyendo promociones excede el máximo permitido (${maxPercent}%).`
+            : `El descuento manual (${percent.toFixed(1)}%) excede el máximo permitido (${maxPercent}%).`;
+          throw new Error(errorMsg);
         }
+      }
+
+      // 3. Verificar acumulación (Stacking)
+      if (hasPromo && (item.discountAmount ?? 0) > 0 && !tenantConfig.pricing.allowDiscountStacking) {
+         // Si hay promo Y descuento manual, y la config prohíbe acumular
+         throw new Error("La política actual no permite acumular promociones con descuentos manuales.");
       }
     };
 
@@ -169,7 +183,7 @@ export class CreateSaleUseCase {
             isReturned: false,
           };
 
-          validateManualDiscount(saleItem);
+          validateDiscountPolicy(saleItem);
           return saleItem;
         },
       );
@@ -192,7 +206,7 @@ export class CreateSaleUseCase {
         isReturned: false,
         };
 
-        validateManualDiscount(saleItem);
+        validateDiscountPolicy(saleItem);
         return saleItem;
       });
     }

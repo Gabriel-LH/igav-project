@@ -23,7 +23,8 @@ export class GetSalesGridUseCase {
       clients,
       branches,
       products,
-      users
+      users,
+      operations
     ] = await Promise.all([
       this.saleRepo.getSales(),
       this.saleRepo.getSaleItems(),
@@ -31,8 +32,9 @@ export class GetSalesGridUseCase {
       this.branchRepo.getBranches(),
       this.inventoryRepo.getProducts(),
       this.userRepo.getUsers(),
+      this.operationRepo.getOperationsByTenant(tenantId),
     ]);
 
-    return mapSaleToTable(clients, sales.filter(s => s.tenantId === tenantId), saleItems, products, users);
+    return mapSaleToTable(clients, sales.filter(s => s.tenantId === tenantId), saleItems, products, users, operations);
   }
 }

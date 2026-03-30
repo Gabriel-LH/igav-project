@@ -221,4 +221,82 @@ export class PrismaProductAdapter implements ProductRepository {
       where: { productId },
     });
   }
+
+  async getVariantById(variantId: string): Promise<ProductVariant | null> {
+    const v = await this.prisma.productVariant.findUnique({
+      where: { id: variantId },
+    });
+    if (!v) return null;
+    const attrs = (v.attributes as Record<string, string>) || {};
+    return {
+      ...v,
+      image: (v.image as string[]) || [],
+      attributes: attrs,
+      variantSignature: v.variantSignature || this.buildSignatureFromAttributes(attrs),
+      rentUnit: this.mapFromPrismaRentUnit(v.rentUnit),
+      purchasePrice: v.purchasePrice ?? 0,
+      priceSell: v.priceSell ?? 0,
+      priceRent: v.priceRent ?? 0,
+    } as unknown as ProductVariant;
+  }
+
+  async createPriceHistory(data: {
+    tenantId: string;
+    variantId: string;
+    oldPrice: number;
+    newPrice: number;
+    reason: "purchase" | "adjustment" | "import" | "restock_return";
+    userId: string;
+    inventoryItemId?: string;
+    stockLotId?: string;
+  }): Promise<void> {
+    await this.prisma.priceHistory.create({
+      data: {
+        tenantId: data.tenantId,
+        variantId: data.variantId,
+        oldPrice: data.oldPrice,
+        newPrice: data.newPrice,
+        reason: data.reason,
+        userId: data.userId,
+        inventoryItemId: data.inventoryItemId,
+        stockLotId: data.stockLotId,
+      },
+    });
+  }
+
+  async getPriceHistoryByProductId(productId: string): Promise<any[]> {
+    const history = await this.prisma.priceHistory.findMany({
+      where: {
+        variant: {
+          productId: productId,
+        },
+      },
+      include: {
+        variant: {
+          select: {
+            variantCode: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return history.map((h: any) => ({
+      id: h.id,
+      variantId: h.variantId,
+      variantCode: h.variant?.variantCode || "N/A",
+      oldPrice: Number(h.oldPrice),
+      newPrice: Number(h.newPrice),
+      reason: h.reason,
+      createdAt: h.createdAt,
+      userName: h.user?.name || "Desconocido",
+    }));
+  }
 }

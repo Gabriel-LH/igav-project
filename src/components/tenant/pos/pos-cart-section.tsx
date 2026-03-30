@@ -104,13 +104,7 @@ export function PosCartSection() {
         return: MOCK_BRANCH_CONFIG.openHours.close,
       });
     }
-  }, [
-    globalRentalDates,
-    currentTime,
-    setGlobalDates,
-    setGlobalTimes,
-    MOCK_BRANCH_CONFIG.openHours.close,
-  ]);
+  }, [globalRentalDates, currentTime, setGlobalDates, setGlobalTimes]);
 
   const dateRange = React.useMemo(
     () => ({
@@ -275,7 +269,7 @@ export function PosCartSection() {
       </div>
 
       {/* 4. FOOTER DE TOTALES Y ACCIONES */}
-      <div className="px-1 py-2 bg-background border-t shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] z-10">
+      <div className="px-1 bg-background border-t shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] z-10">
         {items.length > 0 && (
           <div className="px-2 pb-3 space-y-2">
             <CustomerSelector
@@ -370,13 +364,13 @@ export function PosCartSection() {
             </div>
           )}
           {totalDescuentoExtra > 0 && (
-            <div className="flex justify-between text-sm text-emerald-600 font-bold">
+            <div className="flex justify-between text-xs text-emerald-600 font-bold">
               <span>Descuento (Puntos/Cupón)</span>
               <span>-{formatCurrency(totalDescuentoExtra)}</span>
             </div>
           )}
           {tenantConfig.tax?.rate > 0 && (
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>
                 {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
                   ? "Incluye IGV"

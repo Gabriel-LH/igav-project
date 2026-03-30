@@ -13,11 +13,6 @@ export const authClient = createAuthClient({
         type: "string",
         required: false,
       },
-      tenantId: { type: "string" },
-      status: {
-        type: "string",
-        required: false,
-      },
     },
   },
 

@@ -20,17 +20,17 @@ import { Switch } from "@/components/ui/switch";
 import { AlertCircle } from "lucide-react";
 import { ImpactIndicator } from "./ui/ImpactIndicator";
 import { POLICY_METADATA } from "@/src/mocks/mock.tenantPolicies";
-import type { TenantPolicies } from "@/src/types/tenant/type.tenantPolicies";
+import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 
 export function FinancialPoliciesTab() {
-  const { control, watch } = useFormContext<TenantPolicies>();
+  const { control, watch } =
+    useFormContext<typeof DEFAULT_TENANT_POLICY_SECTIONS>();
   const autoApplyCharges = watch("financial.autoApplyChargesOnDamage");
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span>💵</span>
+        <CardTitle className="flex items-center gap-2 mt-3">
           Políticas Financieras
         </CardTitle>
         <CardDescription>
@@ -95,7 +95,7 @@ export function FinancialPoliciesTab() {
         />
 
         {autoApplyCharges && (
-          <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md text-sm">
+          <div className="p-3 mb-3 bg-amber-50 dark:bg-amber-950/20 rounded-md text-sm">
             <p className="font-medium text-amber-800 dark:text-amber-300">
               ⚠️ Cargos automáticos activados
             </p>

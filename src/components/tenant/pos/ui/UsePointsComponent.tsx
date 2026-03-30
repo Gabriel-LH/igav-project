@@ -1,23 +1,21 @@
 import { Button } from "@/components/button";
 
 export const UsePointsComponent = ({
-    usePoints,
-    setUsePoints,
-    availablePoints,
-    pointValueInMoney,
+  usePoints,
+  setUsePoints,
+  availablePoints,
+  pointValueInMoney,
 }: {
-    usePoints: boolean;
-    setUsePoints: (usePoints: boolean) => void;
-    availablePoints: number;
-    pointValueInMoney: number;
+  usePoints: boolean;
+  setUsePoints: (usePoints: boolean) => void;
+  availablePoints: number;
+  pointValueInMoney: number;
 }) => {
   return (
     <div>
       <div
-        className={`p-3 rounded-md border flex items-center justify-between mt-2 mb-4 transition-colors ${
-          usePoints
-            ? " border-amber-300"
-            : "bg-muted/50 border-border"
+        className={`p-3 rounded-md border flex items-center justify-between mt-2  transition-colors ${
+          usePoints ? " border-amber-300" : "border-border"
         }`}
       >
         <div className="flex items-center gap-3">
@@ -41,8 +39,8 @@ export const UsePointsComponent = ({
               Puntos Acumulados: {availablePoints}
             </p>
             <p className="text-[11px] text-muted-foreground leading-none">
-              Equivale a S/{" "}
-              {(availablePoints * pointValueInMoney).toFixed(2)} de descuento
+              Equivale a S/ {(availablePoints * pointValueInMoney).toFixed(2)}{" "}
+              de descuento
             </p>
           </div>
         </div>
@@ -52,8 +50,8 @@ export const UsePointsComponent = ({
           variant={usePoints ? "default" : "outline"}
           className={
             usePoints
-              ? "bg-amber-500 hover:bg-amber-600 text-white h-8 text-xs"
-              : "h-8 text-xs"
+              ? "bg-amber-500 hover:bg-amber-600 text-white h-7 text-xs"
+              : "h-7 text-xs"
           }
           onClick={() => setUsePoints(!usePoints)}
         >

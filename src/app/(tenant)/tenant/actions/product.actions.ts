@@ -7,6 +7,7 @@ import { CreateProductWithVariantsUseCase } from "@/src/application/tenant/use-c
 import { ListProductsWithVariantsUseCase } from "@/src/application/tenant/use-cases/inventory/listProductsWithVariants.usecase";
 import { SoftDeleteProductUseCase, ToggleProductVariantUseCase, UpdateVariantUseCase, CreateVariantUseCase } from "@/src/application/tenant/use-cases/inventory/manageProductVariants.usecase";
 import { GetProductByIdUseCase } from "@/src/application/tenant/use-cases/inventory/getProductById.usecase";
+import { GetProductPriceHistoryUseCase } from "@/src/application/tenant/use-cases/inventory/getPriceHistory.usecase";
 import { UpdateProductWithVariantsUseCase } from "@/src/application/tenant/use-cases/inventory/updateProductWithVariants.usecase";
 import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
 import { ProductFormData } from "@/src/application/interfaces/ProductForm";
@@ -244,13 +245,16 @@ export async function toggleVariantAction(variantId: string, isActive: boolean) 
 
 export async function updateVariantAction(variantId: string, updates: Partial<ProductVariant>) {
   try {
-    await requireTenantMembership();
+    const membership = await requireTenantMembership();
+    const { tenantId, user } = membership;
 
     const productRepo = new PrismaProductAdapter();
     const updateUseCase = new UpdateVariantUseCase(productRepo);
 
     await updateUseCase.execute({ 
       variantId, 
+      tenantId: tenantId!,
+      userId: user.id!,
       updates: updates as any 
     });
 
@@ -298,5 +302,17 @@ export async function createVariantAction(productId: string, variantData: Partia
       success: false,
       error: error instanceof Error ? error.message : "Error desconocido al crear variante",
     };
+  }
+}
+
+export async function getPriceHistoryAction(productId: string) {
+  try {
+    await requireTenantMembership();
+    const productRepo = new PrismaProductAdapter();
+    const useCase = new GetProductPriceHistoryUseCase(productRepo);
+    const history = await useCase.execute(productId);
+    return { success: true, data: history };
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
 }

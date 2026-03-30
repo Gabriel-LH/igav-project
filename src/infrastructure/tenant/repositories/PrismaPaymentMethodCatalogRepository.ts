@@ -70,9 +70,12 @@ export class PrismaPaymentMethodCatalogRepository
   constructor(
     private readonly prisma: PrismaClient | Prisma.TransactionClient,
   ) {}
-
-  async ensureDefaults(): Promise<PaymentMethod[]> {
-    const currentMethods = await this.prisma.paymentMethod.findMany();
+  async ensureDefaults(tenantId: string | null): Promise<PaymentMethod[]> {
+    const currentMethods = await this.prisma.paymentMethod.findMany({
+      where: {
+        OR: [{ tenantId: tenantId ?? undefined }, { tenantId: null }],
+      },
+    });
 
     for (const defaultMethod of DEFAULT_PAYMENT_METHODS) {
       const alreadyExists = currentMethods.some(
@@ -87,6 +90,7 @@ export class PrismaPaymentMethodCatalogRepository
 
       const created = await this.prisma.paymentMethod.create({
         data: {
+          tenantId,
           name: defaultMethod.name,
           type: defaultMethod.type as PaymentMethodType,
           active: defaultMethod.active,
@@ -102,12 +106,58 @@ export class PrismaPaymentMethodCatalogRepository
     return currentMethods.map(mapPrismaPaymentMethod);
   }
 
-  async getAll(): Promise<PaymentMethod[]> {
+  async getAll(tenantId: string | null): Promise<PaymentMethod[]> {
     const methods = await this.prisma.paymentMethod.findMany({
+      where: {
+        OR: [{ tenantId: tenantId ?? undefined }, { tenantId: null }],
+      },
       orderBy: [{ active: "desc" }, { name: "asc" }],
     });
 
     return methods.map(mapPrismaPaymentMethod);
+  }
+
+  async getById(id: string): Promise<PaymentMethod | null> {
+    const method = await this.prisma.paymentMethod.findUnique({
+      where: { id },
+    });
+    return method ? mapPrismaPaymentMethod(method) : null;
+  }
+
+  async create(tenantId: string | null, data: Omit<PaymentMethod, "id">): Promise<PaymentMethod> {
+    const created = await this.prisma.paymentMethod.create({
+      data: {
+        tenantId,
+        name: data.name,
+        type: data.type as PaymentMethodType,
+        active: data.active,
+        allowsChange: data.allowsChange,
+        requiresPin: data.requiresPin,
+        icon: data.icon,
+      },
+    });
+    return mapPrismaPaymentMethod(created);
+  }
+
+  async update(id: string, data: Partial<PaymentMethod>): Promise<PaymentMethod> {
+    const updated = await this.prisma.paymentMethod.update({
+      where: { id },
+      data: {
+        name: data.name,
+        type: data.type as PaymentMethodType,
+        active: data.active,
+        allowsChange: data.allowsChange,
+        requiresPin: data.requiresPin,
+        icon: data.icon,
+      },
+    });
+    return mapPrismaPaymentMethod(updated);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.paymentMethod.delete({
+      where: { id },
+    });
   }
 
   async getByIds(ids: string[]): Promise<PaymentMethod[]> {

@@ -33,6 +33,8 @@ export interface SaleDTO extends BaseOperation {
     totalDiscount: number;
     taxAmount?: number;
     totalAmount: number;
+    totalBeforeRounding?: number;
+    roundingDifference?: number;
     receivedAmount: number;
     keepAsCredit: boolean;
     paymentMethodId: string;

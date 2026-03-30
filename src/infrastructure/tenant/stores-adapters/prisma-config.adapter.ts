@@ -7,6 +7,47 @@ import prisma from "@/src/lib/prisma";
 export class PrismaConfigAdapter implements ConfigRepository {
   private prisma = prisma;
 
+  private normalizeTenantConfig(
+    tenantId: string,
+    config: Record<string, unknown>,
+    createdAt: Date,
+    updatedAt?: Date | null,
+  ): TenantConfig {
+    const raw = config as Partial<TenantConfig>;
+
+    return {
+      tenantId,
+      ...DEFAULT_TENANT_CONFIG,
+      ...raw,
+      tax: {
+        ...DEFAULT_TENANT_CONFIG.tax,
+        ...(raw.tax ?? {}),
+        rounding: {
+          ...DEFAULT_TENANT_CONFIG.tax.rounding,
+          ...(raw.tax?.rounding ?? {}),
+        },
+      },
+      pricing: {
+        ...DEFAULT_TENANT_CONFIG.pricing,
+        ...(raw.pricing ?? {}),
+      },
+      loyalty: {
+        ...DEFAULT_TENANT_CONFIG.loyalty,
+        ...(raw.loyalty ?? {}),
+      },
+      cash: {
+        ...DEFAULT_TENANT_CONFIG.cash,
+        ...(raw.cash ?? {}),
+      },
+      referrals: {
+        ...DEFAULT_TENANT_CONFIG.referrals,
+        ...(raw.referrals ?? {}),
+      },
+      createdAt,
+      updatedAt: updatedAt ?? undefined,
+    } as TenantConfig;
+  }
+
   // --- Tenant Config ---
   async getTenantConfig(tenantId: string): Promise<TenantConfig | null> {
     const config = await this.prisma.tenantConfig.findUnique({
@@ -15,12 +56,12 @@ export class PrismaConfigAdapter implements ConfigRepository {
 
     if (!config) return null;
 
-    return {
+    return this.normalizeTenantConfig(
       tenantId,
-      ...(config.config as any),
-      createdAt: config.createdAt,
-      updatedAt: config.updatedAt,
-    } as TenantConfig;
+      (config.config as Record<string, unknown>) ?? {},
+      config.createdAt,
+      config.updatedAt,
+    );
   }
 
   async getOrCreateTenantConfig(tenantId: string): Promise<TenantConfig> {
@@ -36,12 +77,12 @@ export class PrismaConfigAdapter implements ConfigRepository {
       },
     });
 
-    return {
+    return this.normalizeTenantConfig(
       tenantId,
-      ...DEFAULT_TENANT_CONFIG,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as TenantConfig;
+      DEFAULT_TENANT_CONFIG as unknown as Record<string, unknown>,
+      new Date(),
+      new Date(),
+    );
   }
 
   async updateTenantConfig(
@@ -64,12 +105,15 @@ export class PrismaConfigAdapter implements ConfigRepository {
         return;
     }
 
-    const { tenantId: _, createdAt: __, ...cleanUpdates } = updates;
+    const { tenantId: _, createdAt: __, ...cleanUpdates } = updates as TenantConfig & {
+      discounts?: unknown;
+    };
     const {
       tenantId: ___,
       createdAt: ____,
+      discounts: _____,
       ...existingConfig
-    } = existing;
+    } = existing as TenantConfig & { discounts?: unknown };
 
     await this.prisma.tenantConfig.update({
       where: { tenantId },

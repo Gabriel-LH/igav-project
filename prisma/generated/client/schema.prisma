@@ -1,0 +1,2269 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                    String                 @id
+  name                  String
+  email                 String                 @unique
+  emailVerified         Boolean                @default(false)
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  status                StatusUser             @default(active)
+  createdBy             String                 @default("system")
+  updatedBy             String                 @default("system")
+  deletedAt             DateTime?
+  deletedBy             String?
+  globalRole            GlobalRole             @default(USER)
+  accounts              Account[]
+  closedCashSessions    CashSession[]          @relation("SessionCloser")
+  openedCashSessions    CashSession[]          @relation("SessionOpener")
+  receivedGuarantees    Guarantee[]            @relation("GuaranteeReceiver")
+  returnedGuarantees    Guarantee[]            @relation("GuaranteeReturner")
+  invitationsAccepted   Invitation[]           @relation("InvitationsAccepted")
+  invitationsSent       Invitation[]           @relation("InvitationsSent")
+  operations            Operation[]
+  payments              Payment[]
+  priceHistories        PriceHistory[]
+  sessions              Session[]
+  stockMovements        StockMovement[]
+  tenants               Tenant[]               @relation("TenantOwner")
+  userTenantMemberships UserTenantMembership[]
+  tenantPolicies        TenantPolicy[]
+  tenantPolicyHistories TenantPolicyHistory[]
+  userAttendances       UserAttendance[]
+  userBranchAccesses    UserBranchAccess[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Jwks {
+  id         String   @id
+  publicKey  String   @unique
+  privateKey String
+  createdAt  DateTime @default(now())
+
+  @@map("jwks")
+}
+
+model UserBranchAccess {
+  id        String       @id @default(uuid())
+  tenantId  String
+  branchId  String
+  userId    String
+  roleId    String
+  isPrimary Boolean      @default(false)
+  status    BranchStatus @default(active)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String
+  updatedBy String
+  branch    Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  role      Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+  @@index([tenantId])
+  @@index([branchId])
+  @@index([userId])
+  @@map("user_branch_access")
+}
+
+model UserAttendance {
+  id           String       @id @default(uuid())
+  tenantId     String
+  branchId     String
+  userId       String
+  shiftId      String
+  checkIn      DateTime
+  checkOut     DateTime?
+  notes        String?
+  createdBy    String
+  status       BranchStatus @default(active)
+  source       String
+  lateMinutes  Int
+  extraMinutes Int
+  workDate     DateTime
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  shift        Shift        @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_attendance")
+}
+
+model UserRoleBranchHistory {
+  id           String               @id @default(uuid())
+  tenantId     String
+  membershipId String
+  roleId       String
+  branchId     String
+  shiftId      String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String
+  updatedBy    String
+  branch       Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  membership   UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  role         Role                 @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  shift        Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("user_role_branch_history")
+}
+
+model UserShiftAssignment {
+  id           String               @id @default(uuid())
+  tenantId     String
+  membershipId String
+  shiftId      String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String
+  updatedBy    String
+  membership   UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  shift        Shift                @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("user_shift_assignment")
+}
+
+model AttributeType {
+  id              String             @id @default(uuid())
+  tenantId        String
+  name            String
+  code            String
+  inputType       AttributeInputType
+  isVariant       Boolean
+  affectsSku      Boolean
+  isActive        Boolean            @default(true)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  attributeValues AttributeValue[]
+
+  @@map("attribute_type")
+}
+
+model AttributeValue {
+  id              String        @id @default(uuid())
+  tenantId        String
+  code            String
+  value           String
+  attributeTypeId String
+  hexColor        String
+  isActive        Boolean
+  attributeType   AttributeType @relation(fields: [attributeTypeId], references: [id], onDelete: Cascade)
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("attribute_value")
+}
+
+model Branch {
+  id                      String                  @id @default(uuid())
+  tenantId                String
+  code                    String
+  name                    String
+  city                    String
+  address                 String
+  phone                   String?
+  email                   String?
+  timezone                String                  @default("America/Lima")
+  isPrimary               Boolean                 @default(false)
+  status                  BranchStatus            @default(active)
+  metadata                Json?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  createdBy               String?
+  updatedBy               String?
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branchConfigs           BranchConfig[]
+  cashSessions            CashSession[]
+  guarantees              Guarantee[]
+  inventoryItems          InventoryItem[]
+  inventoryMovements      InventoryMovement[]
+  invitations             Invitation[]
+  operations              Operation[]
+  payments                Payment[]
+  payrollRuns             PayrollRun[]
+  promotionBranches       PromotionBranch[]
+  rentals                 Rental[]
+  reservations            Reservation[]
+  sales                   Sale[]
+  stockLots               StockLot[]
+  userTenantMemberships   UserTenantMembership[]
+  destinationTransfers    Transfer[]              @relation("DestinationTransfers")
+  originTransfers         Transfer[]              @relation("OriginTransfers")
+  destinationRoutes       TransferRoute[]         @relation("DestinationRoutes")
+  originRoutes            TransferRoute[]         @relation("OriginRoutes")
+  userAttendances         UserAttendance[]
+  userBranchAccesses      UserBranchAccess[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+
+  @@map("branch")
+}
+
+model BranchConfig {
+  id                String   @id @default(uuid())
+  branchId          String
+  openHours         Json
+  daysInLaundry     Int
+  daysInMaintenance Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  branch            Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@map("branch_configs")
+}
+
+model Brand {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  models      Model[]
+
+  @@map("brand")
+}
+
+model CashSession {
+  id                    String            @id @default(uuid())
+  tenantId              String
+  branchId              String
+  openedById            String
+  closedById            String?
+  openedAt              DateTime
+  closedAt              DateTime?
+  sessionNumber         String
+  status                CashSessionStatus
+  openingAmount         Float             @default(0)
+  closingExpectedAmount Float?
+  closingCountedAmount  Float?
+  closingDifference     Float?
+  notes                 String?
+  branch                Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  closedBy              User?             @relation("SessionCloser", fields: [closedById], references: [id], onDelete: Restrict)
+  openedBy              User              @relation("SessionOpener", fields: [openedById], references: [id])
+  tenant                Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments              Payment[]
+
+  @@map("cash_session")
+}
+
+model Category {
+  id                String     @id @default(uuid())
+  tenantId          String
+  name              String
+  description       String?
+  parentId          String?
+  level             Int        @default(0)
+  path              String?
+  image             String?
+  color             String?
+  icon              String?
+  slug              String?    @unique
+  order             Int        @default(0)
+  isActive          Boolean    @default(true)
+  showInPos         Boolean    @default(true)
+  showInEcommerce   Boolean    @default(true)
+  productCount      Int        @default(0)
+  totalProductCount Int        @default(0)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  parent            Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Restrict)
+  children          Category[] @relation("CategoryToCategory")
+  tenant            Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products          Product[]
+
+  @@map("category")
+}
+
+model Client {
+  id                 String                @id @default(uuid())
+  tenantId           String
+  userName           String?
+  firstName          String
+  lastName           String
+  dni                String                @unique
+  email              String?
+  phone              String
+  address            String
+  city               String
+  province           String?
+  zipCode            String?
+  type               ClientType            @default(individual)
+  walletBalance      Float                 @default(0)
+  loyaltyPoints      Int                   @default(0)
+  referralCode       String                @unique
+  referredByClientId String?
+  status             ClientStatus          @default(active)
+  internalNotes      String?
+  metadata           Json?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  isDeleted          Boolean               @default(false)
+  deletedAt          DateTime?
+  deletedBy          String?
+  deleteReason       String?
+  referredBy         Client?               @relation("ClientReferrals", fields: [referredByClientId], references: [id])
+  referredClients    Client[]              @relation("ClientReferrals")
+  tenant             Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creditLedger       ClientCreditLedger[]
+  loyaltyLedger      ClientLoyaltyLedger[]
+  coupons            Coupon[]
+  operations         Operation[]
+  referralReceived   Referral?             @relation("ReceivedReferral")
+  referralsMade      Referral[]            @relation("MadeReferrals")
+  reservations       Reservation[]
+
+  @@map("client")
+}
+
+model ClientCreditLedger {
+  id          String                      @id @default(uuid())
+  tenantId    String
+  clientId    String
+  amount      Float                       @default(0)
+  direction   ClientCreditLedgerDirection @default(credit)
+  status      ClientCreditLedgerStatus    @default(confirmed)
+  reason      ClientCreditLedgerReason    @default(manual_adjustment)
+  operationId String?
+  createdAt   DateTime                    @default(now())
+  client      Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  operation   Operation?                  @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant      Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("client_credit_ledger")
+}
+
+model ClientLoyaltyLedger {
+  id          String                       @id @default(uuid())
+  tenantId    String
+  clientId    String
+  amount      Float                        @default(0)
+  direction   ClientLoyaltyLedgerDirection @default(credit)
+  status      ClientLoyaltyLedgerStatus    @default(confirmed)
+  type        ClientLoyaltyLedgerType      @default(manual_adjustment)
+  operationId String?
+  description String?
+  createdAt   DateTime                     @default(now())
+  createdBy   String?
+  expiresAt   DateTime?
+  client      Client                       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  operation   Operation?                   @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant      Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("client_loyalty_ledger")
+}
+
+model Coupon {
+  id                 String       @id @default(uuid())
+  tenantId           String
+  code               String       @unique
+  discountType       DiscountType
+  discountValue      Float
+  minPurchaseAmount  Float?
+  assignedToClientId String
+  origin             CouponOrigin
+  originReferenceId  String?
+  status             CouponStatus @default(available)
+  expiresAt          DateTime?
+  createdAt          DateTime     @default(now())
+  usedAt             DateTime?
+  assignedClient     Client       @relation(fields: [assignedToClientId], references: [id], onDelete: Cascade)
+  tenant             Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("coupon")
+}
+
+model Guarantee {
+  id                       String                   @id @default(uuid())
+  tenantId                 String
+  operationId              String
+  branchId                 String
+  type                     GuaranteeType
+  value                    String
+  description              String
+  status                   GuaranteeStatus
+  receivedById             String
+  returnedById             String?
+  createdAt                DateTime                 @default(now())
+  returnedAt               DateTime?
+  createdBy                String?
+  updatedAt                DateTime                 @updatedAt
+  updatedBy                String?
+  guaranteeStatusHistories GuaranteeStatusHistory[]
+  branch                   Branch                   @relation(fields: [branchId], references: [id])
+  operation                Operation                @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  receivedBy               User                     @relation("GuaranteeReceiver", fields: [receivedById], references: [id])
+  returnedBy               User?                    @relation("GuaranteeReturner", fields: [returnedById], references: [id], onDelete: Restrict)
+  tenant                   Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("guarantee")
+}
+
+model GuaranteeStatusHistory {
+  id          String          @id @default(uuid())
+  tenantId    String
+  guaranteeId String
+  fromStatus  GuaranteeStatus
+  toStatus    GuaranteeStatus
+  reason      String?
+  changedBy   String?
+  createdAt   DateTime        @default(now())
+  guarantee   Guarantee       @relation(fields: [guaranteeId], references: [id], onDelete: Cascade)
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Model {
+  id          String    @id @default(uuid())
+  tenantId    String
+  brandId     String
+  name        String
+  slug        String    @unique
+  description String?
+  year        Int?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@map("model")
+}
+
+model Module {
+  id             String          @id @default(uuid())
+  tenantId       String
+  name           String
+  slug           String          @unique
+  description    String?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  tenantModules  TenantModule[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  moduleFeatures ModuleFeature[]
+
+  @@map("module")
+}
+
+model ModuleFeature {
+  id         String   @id @default(uuid())
+  tenantId   String
+  moduleId   String
+  featureKey String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("module_feature")
+}
+
+model Operation {
+  id                   String                @id @default(uuid())
+  tenantId             String
+  referenceCode        String                @unique
+  branchId             String
+  sellerId             String
+  type                 OperationType
+  customerMode         CustomerMode          @default(registered)
+  customerId           String?
+  status               OperationStatus
+  paymentStatus        PaymentStatus
+  subtotal             Float?
+  discountAmount       Float?
+  totalAmount          Float
+  date                 DateTime
+  createdAt            DateTime              @default(now())
+  configSnapshot       Json?
+  configVersion        DateTime?
+  policySnapshot       Json?
+  policyVersion        Int?
+  roundingAmount       Float?
+  taxAmount            Float?
+  taxRate              Float?
+  totalBeforeRounding  Float?
+  clientCreditLedgers  ClientCreditLedger[]
+  clientLoyaltyLedgers ClientLoyaltyLedger[]
+  guarantees           Guarantee[]
+  branch               Branch                @relation(fields: [branchId], references: [id])
+  customer             Client?               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  seller               User                  @relation(fields: [sellerId], references: [id])
+  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments             Payment[]
+  rentals              Rental[]
+  rentalCharges        RentalCharge[]
+  rentalItems          RentalItem[]
+  reservations         Reservation[]
+  reservationItems     ReservationItem[]
+  sales                Sale[]
+  saleCharges          SaleCharge[]
+  stockMovements       StockMovement[]
+
+  @@map("operation")
+}
+
+model PaymentMethod {
+  id           String            @id @default(uuid())
+  name         String
+  type         PaymentMethodType
+  active       Boolean           @default(true)
+  allowsChange Boolean           @default(false)
+  requiresPin  Boolean           @default(false)
+  icon         String?
+  tenantId     String?
+  payments     Payment[]
+  tenant       Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payment_method")
+}
+
+model Payment {
+  id                String           @id @default(uuid())
+  tenantId          String
+  operationId       String
+  branchId          String
+  receivedById      String
+  amount            Float
+  direction         PaymentDirection
+  paymentMethodId   String
+  cashSessionId     String?
+  createdAt         DateTime         @default(now())
+  currency          String           @default("PEN")
+  status            PaymentStatusLog @default(pending)
+  category          PaymentCategory
+  originalPaymentId String?
+  reference         String?
+  date              DateTime
+  notes             String?
+  branch            Branch           @relation(fields: [branchId], references: [id])
+  cashSession       CashSession?     @relation(fields: [cashSessionId], references: [id])
+  operation         Operation        @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  paymentMethod     PaymentMethod    @relation(fields: [paymentMethodId], references: [id])
+  receivedBy        User             @relation(fields: [receivedById], references: [id])
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payment")
+}
+
+model PayrollRun {
+  id           String           @id @default(uuid())
+  tenantId     String
+  branchId     String
+  periodStart  DateTime
+  periodEnd    DateTime
+  payDate      DateTime
+  status       PayrollRunStatus
+  createdAt    DateTime         @default(now())
+  payrollItems PayrollItem[]
+  branch       Branch           @relation(fields: [branchId], references: [id])
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_run")
+}
+
+model PayrollItem {
+  id             String               @id @default(uuid())
+  tenantId       String
+  payrollRunId   String
+  membershipId   String
+  grossTotal     Float
+  deductionTotal Float
+  netTotal       Float
+  status         PayrollItemStatus
+  membership     UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  payrollRun     PayrollRun           @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lineItems      PayrollLineItem[]
+
+  @@map("payroll_item")
+}
+
+model PayrollLineItem {
+  id            String              @id @default(uuid())
+  tenantId      String
+  payrollItemId String
+  type          PayrollItemType
+  category      PayrollItemCategory
+  name          String
+  amount        Float
+  quantity      Int?
+  rate          Float?
+  createdAt     DateTime            @default(now())
+  payrollItem   PayrollItem         @relation(fields: [payrollItemId], references: [id], onDelete: Cascade)
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_line_item")
+}
+
+model PayrollPolicy {
+  id                 String   @id @default(uuid())
+  tenantId           String
+  deductions         Json
+  overtimeMultiplier Float
+  createdAt          DateTime @default(now())
+  createdBy          String
+  updatedAt          DateTime @updatedAt
+  updatedBy          String
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_policy")
+}
+
+model PayrollConfig {
+  id                   String               @id @default(uuid())
+  tenantId             String
+  membershipId         String
+  salaryType           String
+  baseSalary           Float
+  hourlyRate           Float
+  paySchedule          PayScheduleType
+  applyOvertime        Boolean
+  applyHealthInsurance Boolean
+  applyPension         Boolean
+  applyTax             Boolean
+  otherDeductions      Float
+  createdAt            DateTime             @default(now())
+  createdBy            String
+  updatedAt            DateTime             @updatedAt
+  updatedBy            String
+  membership           UserTenantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  tenant               Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_config")
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  module      String
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  tenantId    String?
+  tenant      Tenant?          @relation(fields: [tenantId], references: [id])
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id                      String                  @id @default(cuid())
+  tenantId                String
+  name                    String                  @db.VarChar(50)
+  description             String?
+  isSystem                Boolean                 @default(false)
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  invitations             Invitation[]
+  permissions             RolePermission[]
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userTenantMemberships   UserTenantMembership[]
+  userBranchAccesses      UserBranchAccess[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+
+  @@unique([tenantId, name])
+  @@map("roles")
+}
+
+model RolePermission {
+  tenantId     String
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Plan {
+  id                  String               @id @default(cuid())
+  tenantId            String
+  name                String               @db.VarChar(100)
+  description         String?
+  currency            String               @default("PEN")
+  priceMonthly        Decimal              @db.Decimal(10, 2)
+  priceYearly         Decimal?             @db.Decimal(10, 2)
+  trialDays           Int?
+  isActive            Boolean              @default(true)
+  sortOrder           Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  features            PlanFeature[]
+  limits              PlanLimit[]
+  modules             PlanModule[]
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantSubscriptions TenantSubscription[]
+
+  @@map("plans")
+}
+
+model PlanFeature {
+  id         String         @id @default(cuid())
+  tenantId   String
+  planId     String
+  featureKey PlanFeatureKey
+  plan       Plan           @relation(fields: [planId], references: [id])
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureKey])
+  @@map("plan_features")
+}
+
+model PlanLimit {
+  id       String       @id @default(cuid())
+  tenantId String
+  planId   String
+  limitKey PlanLimitKey
+  limit    Int
+  plan     Plan         @relation(fields: [planId], references: [id])
+  tenant   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, limitKey])
+  @@map("plan_limits")
+}
+
+model PlanModule {
+  id        String        @id @default(cuid())
+  tenantId  String
+  planId    String
+  moduleKey PlanModuleKey
+  plan      Plan          @relation(fields: [planId], references: [id])
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, moduleKey])
+  @@map("plan_modules")
+}
+
+model Product {
+  id                 String              @id @default(uuid())
+  tenantId           String
+  name               String
+  baseSku            String              @unique
+  modelId            String?
+  categoryId         String?
+  description        String?
+  is_serial          Boolean
+  can_rent           Boolean
+  can_sell           Boolean
+  createdAt          DateTime            @default(now())
+  createdBy          String?
+  updatedAt          DateTime            @updatedAt
+  updatedBy          String?
+  deletedAt          DateTime?
+  deletedBy          String?
+  deleteReason       String?
+  isDeleted          Boolean             @default(false)
+  image              String[]            @default([])
+  inventoryItems     InventoryItem[]
+  inventoryMovements InventoryMovement[]
+  category           Category?           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  model              Model?              @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variants           ProductVariant[]
+  rentalItems        RentalItem[]
+  reservationItems   ReservationItem[]
+  saleItems          SaleItem[]
+  stockLots          StockLot[]
+  transferItems      TransferItem[]
+
+  @@map("product")
+}
+
+model ProductVariant {
+  id                 String              @id @default(uuid())
+  tenantId           String
+  productId          String
+  variantCode        String              @unique
+  barcode            String?
+  attributes         Json                @default("{}")
+  priceSell          Float?
+  priceRent          Float?
+  rentUnit           RentUnit?
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  purchasePrice      Float?              @default(0)
+  image              String[]            @default([])
+  variantSignature   String              @default("")
+  inventoryItems     InventoryItem[]
+  inventoryMovements InventoryMovement[]
+  priceHistories     PriceHistory[]
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rentalItems        RentalItem[]
+  reservationItems   ReservationItem[]
+  saleItems          SaleItem[]
+  stockLots          StockLot[]
+  transferItems      TransferItem[]
+
+  @@map("product_variant")
+}
+
+model InventoryItem {
+  id                           String                       @id @default(uuid())
+  tenantId                     String
+  serialCode                   String                       @unique
+  variantId                    String
+  productId                    String
+  branchId                     String
+  isForRent                    Boolean
+  isForSale                    Boolean
+  usageCount                   Int                          @default(0)
+  lastMaintenance              DateTime?
+  condition                    InventoryCondition
+  status                       InventoryStatus
+  damageNotes                  String?
+  createdAt                    DateTime                     @default(now())
+  updatedAt                    DateTime                     @updatedAt
+  branch                       Branch                       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product                      Product                      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant                       Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                      ProductVariant               @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  inventoryItemStatusHistories InventoryItemStatusHistory[]
+  priceHistories               PriceHistory[]
+  rentalItems                  RentalItem[]
+  reservationItems             ReservationItem[]
+  saleItems                    SaleItem[]
+
+  @@map("inventory_item")
+}
+
+model InventoryItemStatusHistory {
+  id              String          @id @default(uuid())
+  tenantId        String
+  inventoryItemId String
+  fromStatus      InventoryStatus
+  toStatus        InventoryStatus
+  reason          String?
+  operationId     String?
+  changedBy       String?
+  createdAt       DateTime        @default(now())
+  inventoryItem   InventoryItem   @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_item_status_history")
+}
+
+model PriceHistory {
+  id              String             @id @default(uuid())
+  tenantId        String
+  variantId       String
+  stockLotId      String?
+  inventoryItemId String?
+  oldPrice        Float
+  newPrice        Float
+  reason          PriceHistoryReason
+  createdAt       DateTime           @default(now())
+  userId          String
+  inventoryItem   InventoryItem?     @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  stockLot        StockLot?          @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variant         ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@map("price_history")
+}
+
+model StockLot {
+  id               String            @id @default(uuid())
+  tenantId         String
+  productId        String
+  variantId        String
+  branchId         String
+  quantity         Int               @default(0)
+  barcode          String?
+  expirationDate   DateTime?
+  lotNumber        String?
+  isForRent        Boolean
+  isForSale        Boolean
+  status           StockLotStatus    @default(disponible)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  condition        StockLotCondition @default(Nuevo)
+  priceHistories   PriceHistory[]
+  rentalItems      RentalItem[]
+  reservationItems ReservationItem[]
+  saleItems        SaleItem[]
+  branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant          ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  stockMovements   StockMovement[]
+
+  @@map("stock_lot")
+}
+
+model StockMovement {
+  id            String            @id @default(uuid())
+  tenantId      String
+  stockLotId    String
+  type          StockMovementType
+  reason        String?
+  operationId   String?
+  changedBy     String?
+  createdAt     DateTime          @default(now())
+  quantity      Int
+  changedByUser User?             @relation(fields: [changedBy], references: [id], onDelete: Cascade)
+  operation     Operation?        @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  stockLot      StockLot          @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movement")
+}
+
+model Promotion {
+  id                   String            @id @default(cuid())
+  tenantId             String?
+  name                 String
+  type                 PromotionType
+  scope                PromotionScope
+  value                Float?
+  appliesTo            AppliesToType[]
+  bundleConfig         Json?
+  isExclusive          Boolean           @default(true)
+  code                 String?           @unique
+  targetIds            String[]
+  startDate            DateTime
+  endDate              DateTime?
+  isActive             Boolean           @default(true)
+  branchIds            String[]
+  minPurchaseAmount    Float?
+  maxUses              Int?
+  usedCount            Int               @default(0)
+  combinable           Boolean           @default(true)
+  requiresCode         Boolean           @default(false)
+  singleUsePerCustomer Boolean           @default(false)
+  usageType            UsageType         @default(automatic)
+  createdAt            DateTime          @default(now())
+  createdBy            String?
+  updatedAt            DateTime          @updatedAt
+  updatedBy            String?
+  deletedAt            DateTime?
+  deletedBy            String?
+  isDeleted            Boolean           @default(false)
+  branchRelations      PromotionBranch[]
+  usageRecords         PromotionUsage[]
+  tenant               Tenant?           @relation(fields: [tenantId], references: [id])
+  saleItems            SaleItem[]
+
+  @@map("promotions")
+}
+
+model PromotionBranch {
+  promotionId String
+  branchId    String
+  branch      Branch    @relation(fields: [branchId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@id([promotionId, branchId])
+  @@map("promotion_branches")
+}
+
+model PromotionUsage {
+  id          String    @id @default(cuid())
+  tenantId    String
+  promotionId String
+  customerId  String?
+  orderId     String?
+  usedAt      DateTime  @default(now())
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("promotion_usages")
+}
+
+model Referral {
+  id               String           @id @default(uuid())
+  tenantId         String
+  referrerClientId String
+  referredClientId String           @unique
+  status           ReferralStatus
+  createdAt        DateTime         @default(now())
+  rewardedAt       DateTime?
+  referredClient   Client           @relation("ReceivedReferral", fields: [referredClientId], references: [id])
+  referrer         Client           @relation("MadeReferrals", fields: [referrerClientId], references: [id])
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  referralRewards  ReferralReward[]
+
+  @@map("referral")
+}
+
+model ReferralProgram {
+  id               String                   @id @default(uuid())
+  tenantId         String
+  isActive         Boolean                  @default(true)
+  rewardType       ReferralRewardType
+  rewardValue      Float
+  triggerCondition ReferralTriggerCondition
+  expiresInDays    Int?
+  createdAt        DateTime                 @default(now())
+  tenant           Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("referral_program")
+}
+
+model ReferralReward {
+  id         String               @id @default(uuid())
+  tenantId   String
+  referralId String
+  rewardType ReferralRewardType
+  amount     Float
+  status     ReferralRewardStatus
+  createdAt  DateTime             @default(now())
+  referral   Referral             @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("referral_reward")
+}
+
+model Rental {
+  id                    String                @id @default(uuid())
+  tenantId              String
+  operationId           String
+  reservationId         String?
+  customerId            String
+  branchId              String
+  outDate               DateTime
+  expectedReturnDate    DateTime
+  actualReturnDate      DateTime?
+  cancelDate            DateTime?
+  status                RentalStatus
+  guaranteeId           String?
+  notes                 String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  updatedBy             String?
+  deletedAt             DateTime?
+  deletedBy             String?
+  deleteReason          String?
+  isDeleted             Boolean               @default(false)
+  branch                Branch                @relation(fields: [branchId], references: [id])
+  operation             Operation             @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  charges               RentalCharge[]
+  items                 RentalItem[]
+  rentalStatusHistories RentalStatusHistory[]
+
+  @@map("rental")
+}
+
+model RentalItem {
+  id                        String                    @id @default(uuid())
+  tenantId                  String
+  rentalId                  String
+  operationId               String
+  productId                 String
+  variantId                 String
+  priceAtMoment             Float
+  quantity                  Int                       @default(1)
+  conditionOut              String
+  conditionIn               String?
+  isDamaged                 Boolean                   @default(false)
+  damageNotes               String?
+  discountAmount            Float                     @default(0)
+  discountReason            String?
+  bundleId                  String?
+  promotionId               String?
+  productName               String?
+  variantCode               String?
+  serialCode                String?
+  isSerial                  Boolean                   @default(false)
+  notes                     String?
+  listPrice                 Float
+  itemStatus                RentalItemStatus
+  inventoryItemId           String?
+  stockLotId                String?
+  rentalCharges             RentalCharge[]
+  inventoryItem             InventoryItem?            @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  operation                 Operation                 @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  product                   Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rental                    Rental                    @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  stockLot                  StockLot?                 @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+  tenant                    Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                   ProductVariant            @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  rentalItemStatusHistories RentalItemStatusHistory[]
+
+  @@map("rental_item")
+}
+
+model RentalCharge {
+  id                     String             @id @default(uuid())
+  tenantId               String
+  rentalId               String
+  rentalItemId           String
+  operationId            String
+  type                   RentalChargeType
+  description            String
+  amount                 Float
+  guaranteeCoveredAmount Float
+  remainingAmount        Float
+  status                 RentalChargeStatus
+  createdAt              DateTime           @default(now())
+  createdBy              String?
+  updatedAt              DateTime           @updatedAt
+  updatedBy              String?
+  operation              Operation          @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  rental                 Rental             @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  rentalItem             RentalItem         @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
+  tenant                 Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_charge")
+}
+
+model RentalStatusHistory {
+  id         String       @id @default(uuid())
+  tenantId   String
+  rentalId   String
+  fromStatus RentalStatus
+  toStatus   RentalStatus
+  reason     String?
+  changedBy  String?
+  createdAt  DateTime     @default(now())
+  rental     Rental       @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_status_history")
+}
+
+model RentalItemStatusHistory {
+  id           String           @id @default(uuid())
+  tenantId     String
+  rentalItemId String
+  fromStatus   RentalItemStatus
+  toStatus     RentalItemStatus
+  reason       String?
+  changedBy    String?
+  createdAt    DateTime         @default(now())
+  rentalItem   RentalItem       @relation(fields: [rentalItemId], references: [id], onDelete: Cascade)
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("rental_item_status_history")
+}
+
+model Reservation {
+  id            String            @id @default(uuid())
+  tenantId      String
+  operationId   String
+  customerId    String
+  branchId      String
+  startDate     DateTime
+  endDate       DateTime
+  hour          String
+  createdAt     DateTime          @default(now())
+  createdBy     String?
+  updatedAt     DateTime          @updatedAt
+  updatedBy     String?
+  deletedAt     DateTime?
+  status        ReservationStatus
+  operationType OperationType
+  branch        Branch            @relation(fields: [branchId], references: [id])
+  customer      Client            @relation(fields: [customerId], references: [id])
+  operation     Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items         ReservationItem[]
+
+  @@map("reservation")
+}
+
+model ReservationItem {
+  id                             String                         @id @default(uuid())
+  tenantId                       String
+  operationId                    String?
+  productId                      String
+  stockId                        String?
+  reservationId                  String
+  variantId                      String
+  quantity                       Int                            @default(1)
+  priceAtMoment                  Float
+  listPrice                      Float?
+  discountAmount                 Float                          @default(0)
+  discountReason                 String?
+  bundleId                       String?
+  promotionId                    String?
+  notes                          String?
+  itemStatus                     ReservationStatus
+  isSerial                       Boolean                        @default(false)
+  inventoryItemId                String?
+  inventoryItem                  InventoryItem?                 @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  operation                      Operation?                     @relation(fields: [operationId], references: [id])
+  product                        Product                        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reservation                    Reservation                    @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  stock                          StockLot?                      @relation(fields: [stockId], references: [id])
+  tenant                         Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                        ProductVariant                 @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  reservationItemStatusHistories ReservationItemStatusHistory[]
+
+  @@map("reservation_item")
+}
+
+model ReservationItemStatusHistory {
+  id                String            @id @default(uuid())
+  tenantId          String
+  reservationItemId String
+  fromStatus        ReservationStatus
+  toStatus          ReservationStatus
+  reason            String?
+  changedBy         String?
+  createdAt         DateTime          @default(now())
+  reservationItem   ReservationItem   @relation(fields: [reservationItemId], references: [id], onDelete: Cascade)
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("reservation_item_status_history")
+}
+
+model Sale {
+  id             String         @id @default(uuid())
+  tenantId       String
+  operationId    String
+  customerMode   CustomerMode   @default(registered)
+  customerId     String?        @default("")
+  branchId       String
+  sellerId       String
+  reservationId  String?
+  totalAmount    Float
+  saleDate       DateTime
+  subTotal       Float?
+  totalDiscount  Float          @default(0)
+  status         SaleStatus
+  notes          String?
+  outDate        DateTime?
+  realOutDate    DateTime?
+  canceledAt     DateTime?
+  returnedAt     DateTime?
+  amountRefunded Float          @default(0)
+  createdAt      DateTime       @default(now())
+  createdBy      String?
+  updatedAt      DateTime       @updatedAt
+  updatedBy      String?
+  deletedAt      DateTime?
+  branch         Branch         @relation(fields: [branchId], references: [id])
+  operation      Operation      @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  charges        SaleCharge[]
+  items          SaleItem[]
+  saleReversals  SaleReversal[]
+
+  @@map("sale")
+}
+
+model SaleItem {
+  id                      String                  @id @default(uuid())
+  tenantId                String
+  saleId                  String
+  productId               String
+  stockId                 String?
+  variantId               String
+  priceAtMoment           Float
+  listPrice               Float?
+  quantity                Int                     @default(1)
+  discountAmount          Float                   @default(0)
+  discountReason          String?
+  bundleId                String?
+  promotionId             String?
+  productName             String?
+  variantCode             String?
+  serialCode              String?
+  isSerial                Boolean                 @default(false)
+  isReturned              Boolean                 @default(false)
+  returnedAt              DateTime?
+  returnCondition         String?
+  inventoryItemId         String?
+  reversalItems           ReversalItem[]
+  saleCharges             SaleCharge[]
+  inventoryItem           InventoryItem?          @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  promotion               Promotion?              @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  sale                    Sale                    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  stock                   StockLot?               @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant                 ProductVariant          @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  saleItemStatusHistories SaleItemStatusHistory[]
+
+  @@map("sale_item")
+}
+
+model SaleCharge {
+  id          String       @id @default(uuid())
+  tenantId    String
+  saleId      String
+  saleItemId  String
+  operationId String
+  type        ChargeType
+  description String
+  amount      Float
+  reason      String?
+  status      ChargeStatus
+  createdAt   DateTime     @default(now())
+  createdBy   String?
+  operation   Operation    @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  sale        Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  saleItem    SaleItem     @relation(fields: [saleItemId], references: [id], onDelete: Cascade)
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_charge")
+}
+
+model SaleReversal {
+  id            String         @id @default(cuid())
+  tenantId      String
+  saleId        String
+  type          ReversalType
+  reason        String
+  totalRefunded Decimal        @db.Decimal(10, 2)
+  createdAt     DateTime       @default(now())
+  createdBy     String?
+  items         ReversalItem[]
+  sale          Sale           @relation(fields: [saleId], references: [id])
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_reversals")
+}
+
+model ReversalItem {
+  id             String         @id @default(cuid())
+  tenantId       String
+  reversalId     String
+  saleItemId     String
+  condition      ItemCondition?
+  restockingFee  Decimal        @default(0) @db.Decimal(10, 2)
+  refundedAmount Decimal        @db.Decimal(10, 2)
+  reversal       SaleReversal   @relation(fields: [reversalId], references: [id])
+  saleItem       SaleItem       @relation(fields: [saleItemId], references: [id])
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([reversalId, saleItemId])
+  @@map("reversal_items")
+}
+
+model SaleItemStatusHistory {
+  id         String         @id @default(cuid())
+  tenantId   String
+  saleItemId String
+  fromStatus SaleItemStatus
+  toStatus   SaleItemStatus
+  reason     String?
+  changedBy  String?
+  createdAt  DateTime       @default(now())
+  createdBy  String?
+  saleItem   SaleItem       @relation(fields: [saleItemId], references: [id])
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sale_item_status_history")
+}
+
+model Shift {
+  id                      String                  @id @default(cuid())
+  tenantId                String
+  name                    String
+  startTime               DateTime
+  endTime                 DateTime?
+  toleranceMinutes        Int
+  workingDays             Int[]
+  status                  ShiftStatus
+  createdAt               DateTime                @default(now())
+  createdBy               String?
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userAttendances         UserAttendance[]
+  userRoleBranchHistories UserRoleBranchHistory[]
+  userShiftAssignments    UserShiftAssignment[]
+
+  @@map("shift")
+}
+
+model Tenant {
+  id                             String                         @id @default(uuid())
+  name                           String
+  slug                           String                         @unique
+  ownerId                        String
+  status                         TenantStatus                   @default(active)
+  tenantConfig                   Json?
+  currentSubscriptionId          String?
+  metadata                       Json?
+  createdAt                      DateTime                       @default(now())
+  updatedAt                      DateTime                       @updatedAt
+  guaranteeStatusHistories       GuaranteeStatusHistory[]
+  tenantModules                  TenantModule[]
+  attributeTypes                 AttributeType[]
+  attributeValues                AttributeValue[]
+  branches                       Branch[]
+  brands                         Brand[]
+  cashSessions                   CashSession[]
+  categories                     Category[]
+  clients                        Client[]
+  clientCreditLedgers            ClientCreditLedger[]
+  clientLoyaltyLedgers           ClientLoyaltyLedger[]
+  coupons                        Coupon[]
+  guarantees                     Guarantee[]
+  inventoryItems                 InventoryItem[]
+  inventoryItemStatusHistories   InventoryItemStatusHistory[]
+  inventoryMovements             InventoryMovement[]
+  invitations                    Invitation[]
+  models                         Model[]
+  modules                        Module[]
+  moduleFeatures                 ModuleFeature[]
+  operations                     Operation[]
+  payments                       Payment[]
+  paymentMethods                 PaymentMethod[]
+  payrollConfigs                 PayrollConfig[]
+  payrollItems                   PayrollItem[]
+  payrollLineItems               PayrollLineItem[]
+  payrollPolicies                PayrollPolicy[]
+  payrollRuns                    PayrollRun[]
+  permissions                    Permission[]
+  planFeatures                   PlanFeature[]
+  planLimits                     PlanLimit[]
+  planModules                    PlanModule[]
+  plans                          Plan[]
+  priceHistories                 PriceHistory[]
+  products                       Product[]
+  productVariants                ProductVariant[]
+  promotionUsages                PromotionUsage[]
+  promotions                     Promotion[]
+  referrals                      Referral[]
+  referralPrograms               ReferralProgram[]
+  referralRewards                ReferralReward[]
+  rentals                        Rental[]
+  rentalCharges                  RentalCharge[]
+  rentalItems                    RentalItem[]
+  rentalItemStatusHistories      RentalItemStatusHistory[]
+  rentalStatusHistories          RentalStatusHistory[]
+  reservations                   Reservation[]
+  reservationItems               ReservationItem[]
+  reservationItemStatusHistories ReservationItemStatusHistory[]
+  reversalItems                  ReversalItem[]
+  rolePermissions                RolePermission[]
+  roles                          Role[]
+  sales                          Sale[]
+  saleCharges                    SaleCharge[]
+  saleItems                      SaleItem[]
+  saleItemStatusHistories        SaleItemStatusHistory[]
+  saleReversals                  SaleReversal[]
+  shifts                         Shift[]
+  stockLots                      StockLot[]
+  stockMovements                 StockMovement[]
+  owner                          User                           @relation("TenantOwner", fields: [ownerId], references: [id])
+  tenantConfigs                  TenantConfig?
+  userTenantMemberships          UserTenantMembership[]
+  tenantPolicies                 TenantPolicy[]
+  tenantSubscriptions            TenantSubscription[]
+  transfers                      Transfer[]
+  transferRoutes                 TransferRoute[]
+  userAttendances                UserAttendance[]
+  userBranchAccesses             UserBranchAccess[]
+  userRoleBranchHistories        UserRoleBranchHistory[]
+  userShiftAssignments           UserShiftAssignment[]
+
+  @@map("tenant")
+}
+
+model TenantConfig {
+  tenantId  String   @id
+  config    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_configs")
+}
+
+model TenantSubscription {
+  id                     String                   @id @default(uuid())
+  tenantId               String
+  planId                 String
+  status                 TenantSubsCriptionStatus
+  billingCycle           BillingCycle             @default(monthly)
+  startedAt              DateTime
+  trialEndsAt            DateTime?
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  provider               Provider
+  externalSubscriptionId String?
+  createdAt              DateTime                 @default(now())
+  createdBy              String?
+  plan                   Plan                     @relation(fields: [planId], references: [id])
+  tenant                 Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_subscriptions")
+}
+
+model TenantModule {
+  id        String             @id @default(uuid())
+  tenantId  String
+  moduleId  String
+  status    TenantModuleStatus
+  staterdAt DateTime
+  module    Module             @relation(fields: [moduleId], references: [id])
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantPolicy {
+  id                    String                @id @default(cuid())
+  tenantId              String
+  version               Int
+  isActive              Boolean               @default(true)
+  createdAt             DateTime              @default(now())
+  updatedBy             String
+  changeReason          String?
+  sales                 Json
+  rentals               Json
+  reservations          Json
+  inventory             Json
+  financial             Json
+  security              Json
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  updatedByUser         User                  @relation(fields: [updatedBy], references: [id])
+  tenantPolicyHistories TenantPolicyHistory[]
+
+  @@unique([tenantId, version])
+  @@map("tenant_policies")
+}
+
+model TenantPolicyHistory {
+  id            String       @id @default(uuid())
+  policyId      String
+  version       Int
+  sales         Json
+  rentals       Json
+  reservations  Json
+  inventory     Json
+  financial     Json
+  security      Json
+  changedAt     DateTime     @default(now())
+  changedBy     String
+  changeReason  String?
+  changedByUser User         @relation(fields: [changedBy], references: [id])
+  policy        TenantPolicy @relation(fields: [policyId], references: [id])
+
+  @@unique([policyId, version])
+  @@map("tenant_policy_history")
+}
+
+model Invitation {
+  id               String           @id @default(uuid())
+  tenantId         String
+  branchId         String
+  roleId           String
+  email            String
+  token            String           @unique @default(uuid())
+  status           InvitationStatus @default(pending)
+  invitedById      String
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  acceptedBy       User?            @relation("InvitationsAccepted", fields: [acceptedByUserId], references: [id])
+  branch           Branch           @relation(fields: [branchId], references: [id])
+  invitedBy        User             @relation("InvitationsSent", fields: [invitedById], references: [id])
+  role             Role             @relation(fields: [roleId], references: [id])
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([token])
+  @@index([email])
+  @@map("invitation")
+}
+
+model UserTenantMembership {
+  id                      String                  @id @default(uuid())
+  userId                  String
+  tenantId                String
+  roleId                  String
+  defaultBranchId         String
+  status                  TenantMemberShipStatus
+  invitedBy               String?
+  createdAt               DateTime
+  updatedAt               DateTime
+  pinHash                 String?
+  pinSetAt                DateTime?
+  payrollConfigs          PayrollConfig[]
+  payrollItems            PayrollItem[]
+  branch                  Branch                  @relation(fields: [defaultBranchId], references: [id])
+  role                    Role                    @relation(fields: [roleId], references: [id])
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user                    User                    @relation(fields: [userId], references: [id])
+  userRoleBranchHistories UserRoleBranchHistory[]
+  userShiftAssignments    UserShiftAssignment[]
+
+  @@map("tenant_member_ship")
+}
+
+model Transfer {
+  id                  String         @id @default(uuid())
+  tenantId            String
+  originBranchId      String
+  destinationBranchId String
+  status              TransferStatus
+  sentAt              DateTime
+  receivedAt          DateTime
+  notes               String
+  createdAt           DateTime
+  createdBy           String
+  transferItems       TransferItem[]
+  branchDestination   Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
+  branchOrigin        Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
+  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("transfer")
+}
+
+model TransferItem {
+  id               String         @id @default(uuid())
+  transferId       String
+  productId        String
+  variantId        String
+  quantitySent     Int
+  quantityReceived Int?
+  createdAt        DateTime
+  product          Product        @relation(fields: [productId], references: [id])
+  transfer         Transfer       @relation(fields: [transferId], references: [id])
+  variant          ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@map("tranfer_item")
+}
+
+model TransferRoute {
+  id                  String              @id @default(uuid())
+  tenantId            String
+  originBranchId      String
+  destinationBranchId String
+  estimatedTimeHours  Int
+  status              TransferRouteStatus
+  createdAt           DateTime
+  destinationBranch   Branch              @relation("DestinationRoutes", fields: [destinationBranchId], references: [id])
+  originBranch        Branch              @relation("OriginRoutes", fields: [originBranchId], references: [id])
+  tenant              Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("transfer_route")
+}
+
+model InventoryMovement {
+  id            String                         @id @default(uuid())
+  tenantId      String
+  branchId      String
+  productId     String
+  variantId     String?
+  type          InventoryMovementType
+  referenceType InventoryMovementReferenceType
+  referenceId   String
+  quantity      Int
+  unitCost      Float
+  createdBy     DateTime
+  createdAt     DateTime
+  branch        Branch                         @relation(fields: [branchId], references: [id])
+  product       Product                        @relation(fields: [productId], references: [id])
+  tenant        Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant       ProductVariant?                @relation(fields: [variantId], references: [id])
+
+  @@map("inventory_movement")
+}
+
+enum TenantStatus {
+  active
+  suspended
+  trial
+}
+
+enum BranchStatus {
+  active
+  inactive
+}
+
+enum ClientType {
+  individual
+  company
+}
+
+enum ClientStatus {
+  active
+  inactive
+  suspended
+  blocked
+}
+
+enum OperationType {
+  alquiler
+  venta
+  reserva
+}
+
+enum CustomerMode {
+  registered
+  general
+}
+
+enum OperationStatus {
+  pendiente
+  en_progreso
+  completado
+  cancelado
+}
+
+enum PaymentStatus {
+  pendiente
+  parcial
+  pagado
+}
+
+enum SaleStatus {
+  pendiente_pago
+  reservado
+  vendido_pendiente_entrega
+  vendido
+  cancelado
+  baja
+  devuelto
+}
+
+enum InventoryCondition {
+  Nuevo
+  Usado
+  Vintage
+}
+
+enum StockLotCondition {
+  Nuevo
+  Usado
+  Vintage
+}
+
+enum InventoryStatus {
+  disponible
+  en_mantenimiento
+  alquilado
+  reservado
+  alquilado_pendiente_entrega
+  vendido_pendiente_entrega
+  en_lavanderia
+  retirado
+  vendido
+  en_transito
+}
+
+enum StockLotStatus {
+  disponible
+  bajo_pedido
+  discontinuado
+  en_transito
+  alquilado
+  vendido
+}
+
+enum RentUnit {
+  dia
+  evento
+  hora
+  semana
+  mes
+}
+
+enum StatusUser {
+  active
+  inactive
+  suspended
+  blocked
+}
+
+enum GlobalRole {
+  SUPER_ADMIN
+  USER
+}
+
+enum AttributeInputType {
+  text
+  number
+  select
+  boolean
+  color
+  date
+}
+
+enum CashSessionStatus {
+  open
+  closed
+}
+
+enum ClientCreditLedgerDirection {
+  credit
+  debit
+}
+
+enum ClientCreditLedgerStatus {
+  confirmed
+  voided
+}
+
+enum ClientCreditLedgerReason {
+  overpayment
+  used_in_operation
+  manual_adjustment
+  refund
+}
+
+enum ClientLoyaltyLedgerDirection {
+  credit
+  debit
+}
+
+enum ClientLoyaltyLedgerStatus {
+  confirmed
+  voided
+}
+
+enum ClientLoyaltyLedgerType {
+  earned_purchase
+  redeemed
+  expired
+  manual_adjustment
+  bonus_referral
+}
+
+enum DiscountType {
+  percentage
+  fixed_amount
+}
+
+enum CouponOrigin {
+  referral
+  promotion
+  birthday
+  manual_adjustment
+}
+
+enum CouponStatus {
+  available
+  used
+  expired
+}
+
+enum GuaranteeType {
+  dinero
+  dni
+  joyas
+  reloj
+  otros
+  no_aplica
+  por_cobrar
+}
+
+enum GuaranteeStatus {
+  pendiente
+  liberada
+  custodia
+  devuelta
+  retenida
+}
+
+enum PaymentMethodType {
+  cash
+  digital
+  card
+  transfer
+}
+
+enum PaymentDirection {
+  in
+  out
+}
+
+enum PaymentStatusLog {
+  pending
+  posted
+}
+
+enum PaymentCategory {
+  payment
+  refund
+  correction
+}
+
+enum PayrollRunStatus {
+  draft
+  processing
+  finalized
+  paid
+}
+
+enum PayrollItemStatus {
+  draft
+  calculated
+  paid
+}
+
+enum PayrollItemType {
+  earning
+  deduction
+}
+
+enum PayrollItemCategory {
+  salary
+  hourly
+  overtime
+  bonus
+  commission
+  tax
+  pension
+  health_insurance
+  advance
+  penalty
+  adjustment
+}
+
+enum PayScheduleType {
+  weekly
+  biweekly
+  semimonthly
+  monthly
+  manual
+}
+
+enum PlanFeatureKey {
+  sales
+  rentals
+  inventory
+  products
+  payments
+  userAttendance
+  users
+  branches
+  permissions
+  tenants
+  analytics
+  promotions
+  referrals
+  reservations
+  referralRewards
+  loyalty
+  clients
+  inventoryItems
+  subscriptions
+  shifts
+  payroll
+  reports
+}
+
+enum PlanLimitKey {
+  users
+  branches
+  products
+  clients
+  inventoryItems
+  promotions
+  analytics
+  referrals
+  referralRewards
+  loyalty
+  subscriptions
+}
+
+enum PlanModuleKey {
+  sales
+  rentals
+}
+
+enum StockMovementType {
+  stock_inicial
+  salida_alquiler
+  retorno_alquiler
+  vendido
+  vendido_pendiente_entrega
+  reservado
+  liberacion_reserva
+  mantenimiento_salida
+  mantenimiento_retorno
+  ajuste_incremento
+  ajuste_decremento
+  recepcion_transito
+  recepcion_disponible
+}
+
+enum PriceHistoryReason {
+  purchase
+  adjustment
+  import
+  restock_return
+}
+
+enum PromotionType {
+  percentage
+  fixed_amount
+  bundle
+}
+
+enum PromotionScope {
+  global
+  category
+  product_specific
+  pack
+}
+
+enum AppliesToType {
+  venta
+  alquiler
+}
+
+enum ProrateStrategy {
+  proportional
+  equal
+}
+
+enum UsageType {
+  automatic
+  coupon
+  referral
+}
+
+enum ReferralStatus {
+  pending
+  qualified
+  rewarded
+}
+
+enum ReferralRewardType {
+  wallet_credit
+  discount_coupon
+  loyalty_points
+}
+
+enum ReferralTriggerCondition {
+  first_purchase
+  first_payment
+}
+
+enum ReferralRewardStatus {
+  pending
+  available
+  used
+  expired
+}
+
+enum RentalStatus {
+  alquilado
+  devuelto
+  reservado_fisico
+  atrasado
+  con_danos
+  perdido
+  anulado
+}
+
+enum RentalItemStatus {
+  alquilado
+  devuelto
+  en_lavanderia
+  en_mantenimiento
+  baja
+}
+
+enum RentalChargeType {
+  damage
+  late_fee
+  loss
+  cleaning
+  repair
+  other
+}
+
+enum RentalChargeStatus {
+  pending
+  covered
+  partially_paid
+  paid
+  cancelled
+}
+
+enum ReservationStatus {
+  confirmada
+  cancelada
+  convertida
+  expirada
+}
+
+enum SaleItemStatus {
+  pendiente_pago
+  reservado
+  vendido_pendiente_entrega
+  vendido
+  cancelado
+  baja
+  devuelto
+}
+
+enum ChargeType {
+  restocking_fee
+  damage
+  cleaning
+  admin_fee
+  late_return
+  other
+}
+
+enum ChargeStatus {
+  pending
+  paid
+  cancelled
+}
+
+enum ReversalType {
+  annulment
+  return
+}
+
+enum ItemCondition {
+  perfecto
+  manchado
+}
+
+enum ShiftStatus {
+  active
+  inactive
+}
+
+enum Provider {
+  paypal
+  mercadopago
+  manual
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum TenantSubsCriptionStatus {
+  trial
+  active
+  past_due
+  canceled
+}
+
+enum TenantModuleStatus {
+  active
+  canceled
+}
+
+enum YesNo {
+  YES
+  NO
+}
+
+enum TenantMemberShipStatus {
+  active
+  invited
+  suspended
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  revoked
+}
+
+enum TransferStatus {
+  draft
+  sent
+  in_transit
+  received
+  canceled
+}
+
+enum TransferRouteStatus {
+  active
+  inactive
+}
+
+enum InventoryMovementType {
+  sale
+  purchase
+  transfer_out
+  transfer_in
+  adjustment
+  initial_stock
+  return
+  rental_out
+  rental_return
+}
+
+enum InventoryMovementReferenceType {
+  sale
+  purchase
+  transfer
+  adjustment
+  rental
+}

@@ -24,7 +24,18 @@ export async function requireTenantMembership() {
       userId: session.user.id,
       status: "active",
     },
-    include: {
+    select: {
+      id: true,
+      userId: true,
+      tenantId: true,
+      roleId: true,
+      defaultBranchId: true,
+      status: true,
+      invitedBy: true,
+      createdAt: true,
+      updatedAt: true,
+      pinHash: true,
+      pinSetAt: true,
       tenant: {
         select: {
           id: true,

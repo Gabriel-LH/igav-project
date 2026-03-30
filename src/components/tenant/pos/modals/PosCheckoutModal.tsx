@@ -53,6 +53,8 @@ import { authClient } from "@/src/lib/auth-client";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
 
+import { PinAuthModal } from "./PinAuthModal";
+
 interface PosCheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -194,6 +196,28 @@ export function PosCheckoutModal({
 
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // --- ESTADOS DE AUTORIZACIÓN PIN ---
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [authorizedByName, setAuthorizedByName] = useState("");
+
+  const requiresAuth = useMemo(() => {
+    return items.some((item) => {
+      if (item.requiresAdminAuth) return true;
+
+      const listPrice = item.listPrice ?? item.unitPrice;
+      const discountAmount = item.discountAmount ?? 0;
+      if (listPrice <= 0 || discountAmount <= 0) return false;
+
+      const discountPercent =
+        Math.round(((discountAmount / listPrice) * 100) * 100) / 100;
+      return (
+        tenantConfig.pricing?.requirePinForHighDiscount &&
+        discountPercent >= (tenantConfig.pricing?.highDiscountThreshold ?? 0)
+      );
+    });
+  }, [items, tenantConfig]);
+
   // ─── CLASIFICACIÓN DE ITEMS ───
   const ventaItems = useMemo(
     () => items.filter((i) => i.operationType === "venta"),
@@ -257,7 +281,16 @@ export function PosCheckoutModal({
     0,
   );
 
-  const taxTotals = calculateTaxTotals(baseAmount, tenantConfig.tax);
+  const itemAmounts = useMemo(() => items.map(item => ({
+    amount: (item.listPrice ?? item.unitPrice) * item.quantity * getMultiplier(item)
+  })), [items, getMultiplier]);
+
+  const taxTotals = calculateTaxTotals(
+    baseAmount, 
+    tenantConfig.tax, 
+    selectedPaymentMethod?.type as "cash" | "digital" | "card" | "transfer" | undefined,
+    itemAmounts
+  );
   const totalBrutoConIGV = taxTotals.total;
   const subtotalSinIGV = taxTotals.subtotal;
   const taxAmount = taxTotals.taxAmount;
@@ -317,6 +350,12 @@ export function PosCheckoutModal({
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
     if (!selectedPaymentMethod) return toast.error("Seleccione un método de pago");
+
+    // Validar Autorización de PIN si es necesario
+    if (requiresAuth && !isAuthorized) {
+      setShowPinModal(true);
+      return;
+    }
 
     const baseData = {
       tenantId: activeTenantId ?? items[0]?.product.tenantId,
@@ -472,6 +511,8 @@ export function PosCheckoutModal({
             totalDiscount: Math.round(totalDiscount * saleShare * 100) / 100,
             taxAmount: Math.round(taxAmount * saleShare * 100) / 100,
             totalAmount: saleTotalAmount,
+            totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * saleShare * 100) / 100,
+            roundingDifference: Math.round(taxTotals.roundingDifference * saleShare * 100) / 100,
             keepAsCredit: false,
             receivedAmount: saleReceived,
             paymentMethodId: selectedPaymentMethod.id,
@@ -500,6 +541,8 @@ export function PosCheckoutModal({
             totalDiscount: Math.round(totalDiscount * rentalShare * 100) / 100,
             taxAmount: Math.round(taxAmount * rentalShare * 100) / 100,
             totalAmount: rentalTotalAmount,
+            totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * rentalShare * 100) / 100,
+            roundingDifference: Math.round(taxTotals.roundingDifference * rentalShare * 100) / 100,
             keepAsCredit: false,
             receivedAmount: rentalReceived,
             paymentMethodId: selectedPaymentMethod.id,
@@ -554,293 +597,307 @@ export function PosCheckoutModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="uppercase text-sm font-black flex items-center gap-2 text-emerald-600">
-            <Banknote className="w-5 h-5" />
-            Cobrar — Transacción Directa
-          </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
-            Confirma el pago total para procesar{" "}
-            {ventaItems.length > 0 && alquilerItems.length > 0
-              ? "la venta y el alquiler"
-              : ventaItems.length > 0
-                ? "la venta"
-                : "el alquiler"}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="uppercase text-sm font-black flex items-center gap-2 text-emerald-600">
+              <Banknote className="w-5 h-5" />
+              Cobrar — Transacción Directa
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Confirma el pago total para procesar{" "}
+              {ventaItems.length > 0 && alquilerItems.length > 0
+                ? "la venta y el alquiler"
+                : ventaItems.length > 0
+                  ? "la venta"
+                  : "el alquiler"}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto space-y-4 py-2 pr-1">
-          {/* RESUMEN DE ITEMS */}
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase font-black text-muted-foreground">
-              Resumen del carrito ({items.length} productos)
-            </Label>
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-4 py-2 pr-1">
+            {/* RESUMEN DE ITEMS */}
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase font-black text-muted-foreground">
+                Resumen del carrito ({items.length} productos)
+              </Label>
 
-            {ventaItems.length > 0 && (
-              <div className="border rounded-lg p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShoppingBag className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-black uppercase text-orange-500">
-                    Ventas
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="text-orange-400 text-[10px]"
-                  >
-                    {ventaItems.length} prod.
-                  </Badge>
-                </div>
-                {ventaItems.map((item) => (
-                  <div
-                    key={item.cartId}
-                    className="flex justify-between text-xs py-1 border-t "
-                  >
-                    <span className="text-slate-300">
-                      {item.product.name}{" "}
-                      <span className="text-muted-foreground">
-                        ×{item.quantity}
-                      </span>
+              {ventaItems.length > 0 && (
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShoppingBag className="w-4 h-4 text-orange-500" />
+                    <span className="text-xs font-black uppercase text-orange-500">
+                      Ventas
                     </span>
-                    <span className="font-bold">
-                      {formatCurrency(item.subtotal)}
-                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="text-orange-400 text-[10px]"
+                    >
+                      {ventaItems.length} prod.
+                    </Badge>
                   </div>
-                ))}
-                <div className="flex justify-between text-xs font-black text-orange-500 pt-1 border-t border-dashed">
-                  <span>Subtotal Ventas</span>
-                  <span>{formatCurrency(totalVentas)}</span>
-                </div>
-              </div>
-            )}
-
-            {alquilerItems.length > 0 && (
-              <div className="border rounded-lg p-3 ">
-                <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-black uppercase text-blue-500">
-                    Alquileres
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="text-blue-400 text-[10px]"
-                  >
-                    {alquilerItems.length} prod.
-                  </Badge>
-                </div>
-                {alquilerItems.map((item) => {
-                  const days = Math.max(
-                    differenceInDays(dateRange.to, dateRange.from),
-                    1,
-                  );
-                  const variant = productVariants.find(
-                    (v) => v.id === item.variantId,
-                  );
-                  const isEvent = variant?.rentUnit === "evento";
-
-                  return (
+                  {ventaItems.map((item) => (
                     <div
                       key={item.cartId}
-                      className="flex justify-between text-xs py-1 border-t"
+                      className="flex justify-between text-xs py-1 border-t "
                     >
-                      <div className="flex flex-col">
-                        <span className="text-slate-200">
-                          {item.product.name}{" "}
-                          <span className="text-muted-foreground text-[10px]">
-                            ×{item.quantity}
-                          </span>
+                      <span className="text-slate-300">
+                        {item.product.name}{" "}
+                        <span className="text-muted-foreground">
+                          ×{item.quantity}
                         </span>
-                        {!isEvent && (
-                          <span className="text-[9px] text-blue-400 font-bold">
-                            Alquiler por {days} {days === 1 ? "día" : "días"}
-                          </span>
-                        )}
-                      </div>
+                      </span>
                       <span className="font-bold">
                         {formatCurrency(item.subtotal)}
                       </span>
                     </div>
-                  );
-                })}
-                <div className="flex justify-between text-xs font-black text-blue-600 pt-1 border-t border-dashed">
-                  <span>Subtotal Alquileres</span>
-                  <span>{formatCurrency(totalAlquileres)}</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* FECHAS DE ALQUILER */}
-          {hasRentals && (
-            <div className="space-y-2">
-              <Label className="text-[10px] uppercase font-black text-muted-foreground">
-                Período de Alquiler
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="relative pointer-events-none opacity-50">
-                  <DateTimeContainer
-                    label="Inicio Alquiler"
-                    date={dateRange.from}
-                    time={pickupTime}
-                    onDateClick={() => {}}
-                    onTimeClick={() => {}}
-                    placeholderDate="Seleccionar"
-                    placeholderTime="Hora"
-                  />
-                </div>
-                <div className="relative">
-                  <DateTimeContainer
-                    label="Fecha Devolución"
-                    date={dateRange.to}
-                    time={returnTime}
-                    onDateClick={() => returnDateRef.current?.click()}
-                    onTimeClick={() => returnTimeRef.current?.click()}
-                    placeholderDate="Seleccionar"
-                    placeholderTime="Hora"
-                  />
-                  <div className="absolute opacity-0 pointer-events-none top-0">
-                    <DirectTransactionCalendar
-                      triggerRef={returnDateRef}
-                      selectedDate={dateRange.to}
-                      minDate={dateRange.from}
-                      mode="return"
-                      type="alquiler"
-                      productId=""
-                      variantId=""
-                      cartItems={items}
-                      quantity={1}
-                      onSelect={(d) => d && handleDateChange({ to: d })}
-                    />
-                    <TimePicker
-                      triggerRef={returnTimeRef}
-                      value={returnTime}
-                      onChange={(t) =>
-                        setGlobalTimes({ pickup: pickupTime, return: t })
-                      }
-                    />
+                  ))}
+                  <div className="flex justify-between text-xs font-black text-orange-500 pt-1 border-t border-dashed">
+                    <span>Subtotal Ventas</span>
+                    <span>{formatCurrency(totalVentas)}</span>
                   </div>
                 </div>
-              </div>
-              {conflicts.length > 0 && (
-                <div className="p-2 rounded text-xs border text-red-500 mt-2 flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <div>
-                    <strong>Conflictos de Disponibilidad:</strong>
-                    <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                      {conflicts.map((c, i) => (
-                        <li key={i}>{c}</li>
-                      ))}
-                    </ul>
+              )}
+
+              {alquilerItems.length > 0 && (
+                <div className="border rounded-lg p-3 ">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="w-4 h-4 text-blue-500" />
+                    <span className="text-xs font-black uppercase text-blue-500">
+                      Alquileres
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="text-blue-400 text-[10px]"
+                    >
+                      {alquilerItems.length} prod.
+                    </Badge>
+                  </div>
+                  {alquilerItems.map((item) => {
+                    const days = Math.max(
+                      differenceInDays(dateRange.to, dateRange.from),
+                      1,
+                    );
+                    const variant = productVariants.find(
+                      (v) => v.id === item.variantId,
+                    );
+                    const isEvent = variant?.rentUnit === "evento";
+
+                    return (
+                      <div
+                        key={item.cartId}
+                        className="flex justify-between text-xs py-1 border-t"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-slate-200">
+                            {item.product.name}{" "}
+                            <span className="text-muted-foreground text-[10px]">
+                              ×{item.quantity}
+                            </span>
+                          </span>
+                          {!isEvent && (
+                            <span className="text-[9px] text-blue-400 font-bold">
+                              Alquiler por {days} {days === 1 ? "día" : "días"}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-bold">
+                          {formatCurrency(item.subtotal)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="flex justify-between text-xs font-black text-blue-600 pt-1 border-t border-dashed">
+                    <span>Subtotal Alquileres</span>
+                    <span>{formatCurrency(totalAlquileres)}</span>
                   </div>
                 </div>
               )}
             </div>
-          )}
 
-          {hasRentals && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-xs font-semibold">
-                <span className="text-muted-foreground">
-                  Garantía Requerida:
-                </span>
-                <span className="font-black text-amber-600">
-                  Obligatorio registrar garantía
-                </span>
-              </div>
-            </div>
-          )}
-
-          {showCustomerSelector && (
-            <CustomerSelector
-              selected={selectedCustomer}
-              onSelect={setSelectedCustomer}
-            />
-          )}
-
-          <div className="bg-primary/5 p-3 rounded-lg border-l-2 border-primary">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-bold uppercase">
-                Total Operación
-              </span>
-              <span className="text-xl font-black text-primary">
-                {formatCurrency(totalBrutoConIGV)}
-              </span>
-            </div>
-            {tenantConfig.tax?.rate > 0 && (
-              <div className="mt-1 text-xs text-muted-foreground">
-                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
-                  ? "Incluye IGV"
-                  : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%): ${formatCurrency(taxAmount)}`}
+            {/* FECHAS DE ALQUILER */}
+            {hasRentals && (
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black text-muted-foreground">
+                  Período de Alquiler
+                </Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative pointer-events-none opacity-50">
+                    <DateTimeContainer
+                      label="Inicio Alquiler"
+                      date={dateRange.from}
+                      time={pickupTime}
+                      onDateClick={() => {}}
+                      onTimeClick={() => {}}
+                      placeholderDate="Seleccionar"
+                      placeholderTime="Hora"
+                    />
+                  </div>
+                  <div className="relative">
+                    <DateTimeContainer
+                      label="Fecha Devolución"
+                      date={dateRange.to}
+                      time={returnTime}
+                      onDateClick={() => returnDateRef.current?.click()}
+                      onTimeClick={() => returnTimeRef.current?.click()}
+                      placeholderDate="Seleccionar"
+                      placeholderTime="Hora"
+                    />
+                    <div className="absolute opacity-0 pointer-events-none top-0">
+                      <DirectTransactionCalendar
+                        triggerRef={returnDateRef}
+                        selectedDate={dateRange.to}
+                        minDate={dateRange.from}
+                        mode="return"
+                        type="alquiler"
+                        productId=""
+                        variantId=""
+                        cartItems={items}
+                        quantity={1}
+                        onSelect={(d) => d && handleDateChange({ to: d })}
+                      />
+                      <TimePicker
+                        triggerRef={returnTimeRef}
+                        value={returnTime}
+                        onChange={(t) =>
+                          setGlobalTimes({ pickup: pickupTime, return: t })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+                {conflicts.length > 0 && (
+                  <div className="p-2 rounded text-xs border text-red-500 mt-2 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Conflictos de Disponibilidad:</strong>
+                      <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                        {conflicts.map((c, i) => (
+                          <li key={i}>{c}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
 
-          {/* SECCIÓN FIDELIDAD / CUPONES */}
-          {showDiscountControls && (
-            <div className="pt-2 border-t flex flex-col gap-2">
-              {selectedClient && availablePoints > 0 && (
-                <UsePointsComponent
-                  usePoints={usePoints}
-                  setUsePoints={setUsePoints}
-                  availablePoints={availablePoints}
-                  pointValueInMoney={pointValueInMoney}
-                />
-              )}
-              <UseCouponComponent
-                tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
-                selectedClientId={selectedCustomer?.id}
-                appliedCoupon={appliedCoupon}
-                onApplyCoupon={setAppliedCoupon}
+            {hasRentals && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-xs font-semibold">
+                  <span className="text-muted-foreground">
+                    Garantía Requerida:
+                  </span>
+                  <span className="font-black text-amber-600">
+                    Obligatorio registrar garantía
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {showCustomerSelector && (
+              <CustomerSelector
+                selected={selectedCustomer}
+                onSelect={setSelectedCustomer}
               />
+            )}
+
+            <div className="bg-primary/5 p-3 rounded-lg border-l-2 border-primary">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold uppercase">
+                  Total Operación
+                </span>
+                <span className="text-xl font-black text-primary">
+                  {formatCurrency(totalBrutoConIGV)}
+                </span>
+              </div>
+              {tenantConfig.tax?.rate > 0 && (
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                    ? "Incluye IGV"
+                    : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%): ${formatCurrency(taxAmount)}`}
+                </div>
+              )}
             </div>
-          )}
 
-          <CashPaymentSummary
-            type={hasRentals ? "alquiler" : "venta"}
-            totalToPay={totalACobrarHoy}
-            paymentMethodId={paymentMethodId}
-            paymentMethods={paymentMethods}
-            isCashPayment={isCashPayment}
-            receivedAmount={receivedAmount}
-            setReceivedAmount={setReceivedAmount}
-            changeAmount={changeAmount}
-            setPaymentMethodId={setPaymentMethodId}
-            guarantee={guarantee}
-            setGuarantee={setGuarantee}
-            guaranteeType={guaranteeType}
-            setGuaranteeType={setGuaranteeType}
-          />
-        </div>
+            {/* SECCIÓN FIDELIDAD / CUPONES */}
+            {showDiscountControls && (
+              <div className="pt-2 border-t flex flex-col gap-2">
+                {selectedClient && availablePoints > 0 && (
+                  <UsePointsComponent
+                    usePoints={usePoints}
+                    setUsePoints={setUsePoints}
+                    availablePoints={availablePoints}
+                    pointValueInMoney={pointValueInMoney}
+                  />
+                )}
+                <UseCouponComponent
+                  tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
+                  selectedClientId={selectedCustomer?.id}
+                  appliedCoupon={appliedCoupon}
+                  onApplyCoupon={setAppliedCoupon}
+                />
+              </div>
+            )}
 
-        <div className="pt-4 border-t">
-          <Button
-            onClick={handleConfirm}
-            disabled={
-              isProcessing ||
-              items.some(
-                (i) =>
-                  i.product.is_serial && i.selectedCodes.length < i.quantity,
-              ) ||
-              (hasRentals && Number(receivedAmount) <= 0) ||
-              Number(receivedAmount) > totalBrutoConIGV ||
-              (hasRentals && guarantee.length === 0) ||
-              !selectedCustomer
-            }
-            className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
-          >
-            <HugeiconsIcon
-              icon={CheckmarkBadge03Icon}
-              className="w-5 h-5 mr-2"
+            <CashPaymentSummary
+              type={hasRentals ? "alquiler" : "venta"}
+              totalToPay={totalACobrarHoy}
+              paymentMethodId={paymentMethodId}
+              paymentMethods={paymentMethods}
+              isCashPayment={isCashPayment}
+              receivedAmount={receivedAmount}
+              setReceivedAmount={setReceivedAmount}
+              changeAmount={changeAmount}
+              setPaymentMethodId={setPaymentMethodId}
+              guarantee={guarantee}
+              setGuarantee={setGuarantee}
+              guaranteeType={guaranteeType}
+              setGuaranteeType={setGuaranteeType}
             />
-            {isProcessing
-              ? "PROCESANDO..."
-              : missingSerials
-                ? "ASIGNAR SERIES EN CARRITO"
-                : `CONFIRMAR COBRO — ${formatCurrency(totalACobrarHoy)}`}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+
+          <div className="pt-4 border-t">
+            <Button
+              onClick={handleConfirm}
+              disabled={
+                isProcessing ||
+                items.some(
+                  (i) =>
+                    i.product.is_serial && i.selectedCodes.length < i.quantity,
+                ) ||
+                (hasRentals && Number(receivedAmount) <= 0) ||
+                Number(receivedAmount) > totalBrutoConIGV ||
+                (hasRentals && guarantee.length === 0) ||
+                !selectedCustomer
+              }
+              className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
+            >
+              <HugeiconsIcon
+                icon={CheckmarkBadge03Icon}
+                className="w-5 h-5 mr-2"
+              />
+              {isProcessing
+                ? "PROCESANDO..."
+                : missingSerials
+                  ? "ASIGNAR SERIES EN CARRITO"
+                  : `CONFIRMAR COBRO — ${formatCurrency(totalACobrarHoy)}`}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <PinAuthModal
+        open={showPinModal}
+        onOpenChange={setShowPinModal}
+        onSuccess={(name) => {
+          setIsAuthorized(true);
+          setAuthorizedByName(name);
+          toast.info(`Operación autorizada por ${name}. Puedes confirmar el pago.`);
+        }}
+        title="Descuento Alto Detectado"
+        description="Esta venta contiene productos con descuentos superiores al límite permitido (20%). Se requiere la autorización de un administrador."
+      />
+    </>
   );
 }

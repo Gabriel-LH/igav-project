@@ -1,14 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { differenceInDays } from "date-fns";
 import { Product } from "@/src/types/product/type.product";
 import { CartItem, CartOperationType } from "@/src/types/cart/type.cart";
-import { differenceInDays } from "date-fns";
-import { PROMOTIONS_MOCK } from "@/src/mocks/mock.promotions";
 import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { useBranchStore, GLOBAL_BRANCH_ID } from "./useBranchStore";
-import { useSessionStore } from "./useSessionStore";
 import {
   BundleDomainService,
   BundleDefinition,
@@ -17,6 +15,8 @@ import { PromotionService } from "../domain/tenant/services/promotion.service";
 import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
 import { usePromotionStore } from "./usePromotionStore";
 import { Promotion } from "../types/promotion/type.promotion";
+import { calculateCartAction } from "@/src/app/(tenant)/tenant/actions/promotion.actions";
+import { toast } from "sonner";
 
 const bundleService = new BundleDomainService();
 const promotionService = new PromotionService();
@@ -44,8 +44,8 @@ const calculateSubtotal = (
   const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
 
   const multiplier = isEvent ? 1 : days;
-
-  return item.unitPrice * item.quantity * multiplier;
+  const rawSubtotal = item.unitPrice * item.quantity * multiplier;
+  return Math.round(rawSubtotal * 100) / 100;
 };
 
 const getProductListPrice = (
@@ -102,6 +102,8 @@ interface CartState {
     startDate: Date,
     endDate: Date,
   ) => void;
+  syncCartWithServer: () => Promise<void>;
+  applyPromotions: (branchId: string) => void;
 
   removeItem: (cartId: string) => void;
   updateQuantity: (cartId: string, quantity: number) => void;
@@ -112,7 +114,6 @@ interface CartState {
   setCustomer: (id: string | null) => void;
   clearCart: () => void;
   getTotal: () => number;
-  applyPromotions: (branchId: string) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -138,6 +139,53 @@ export const useCartStore = create<CartState>()(
         set({ referralRewardAmount: amount });
         const bid = useBranchStore.getState().selectedBranchId;
         if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
+      },
+
+      syncCartWithServer: async () => {
+        const { items, globalRentalDates } = get();
+        const branchId = useBranchStore.getState().selectedBranchId || GLOBAL_BRANCH_ID;
+        
+        if (items.length === 0) return;
+
+        const res = await calculateCartAction(
+          items,
+          branchId,
+          globalRentalDates ? { from: globalRentalDates.from, to: globalRentalDates.to } : undefined
+        );
+
+        if (res.success && res.data) {
+          // Check if a bundle was applied that wasn't before
+          const hadBundles = items.some(i => !!i.bundleId);
+          const hasBundles = (res.data as CartItem[]).some(i => !!i.bundleId);
+          
+          if (!hadBundles && hasBundles) {
+            toast.success("¡Combo detectado!", {
+              description: "Se han aplicado descuentos automáticos por combo."
+            });
+          }
+
+          const currentItems = items;
+          const nextItems = (res.data as CartItem[]).map((nextItem) => {
+            const previousItem =
+              currentItems.find((item) => item.cartId === nextItem.cartId) ??
+              currentItems.find((item) =>
+                item.product.id === nextItem.product.id &&
+                item.operationType === nextItem.operationType &&
+                item.variantId === nextItem.variantId &&
+                item.unitPrice === nextItem.unitPrice &&
+                (item.appliedPromotionId ?? "") ===
+                  (nextItem.appliedPromotionId ?? "") &&
+                (item.bundleId ?? "") === (nextItem.bundleId ?? ""),
+              );
+
+            return {
+              ...nextItem,
+              requiresAdminAuth: previousItem?.requiresAdminAuth ?? false,
+            };
+          });
+
+          set({ items: nextItems });
+        }
       },
 
       addItem: (
@@ -169,6 +217,7 @@ export const useCartStore = create<CartState>()(
                 listPrice,
                 promotions: [],
                 config: useTenantConfigStore.getState().config!,
+                policy: useTenantConfigStore.getState().policy,
                 explicitBundle: {
                   promotionId: customData!.appliedPromotionId!,
                   bundleId: customData!.bundleId!,
@@ -231,6 +280,8 @@ export const useCartStore = create<CartState>()(
             updatedItems[existingIndex] = {
               ...item,
               quantity: newQuantity,
+              requiresAdminAuth:
+                item.requiresAdminAuth || pricing.requiresAdminAuth,
               selectedCodes: newCodes,
               subtotal: calculateSubtotal(
                 {
@@ -260,6 +311,7 @@ export const useCartStore = create<CartState>()(
             discountReason: pricing.discountReason,
             bundleId: pricing.bundleId,
             appliedPromotionId: pricing.promotionId,
+            requiresAdminAuth: pricing.requiresAdminAuth,
             subtotal: calculateSubtotal(
               {
                 product,
@@ -279,10 +331,15 @@ export const useCartStore = create<CartState>()(
             activeTenantId: state.activeTenantId ?? incomingTenantId,
           };
         });
+        
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
+        get().syncCartWithServer();
       },
 
       addBundleToCart: (promotionId) => {
-        const promotion = PROMOTIONS_MOCK.find((p) => p.id === promotionId);
+        const promotions = usePromotionStore.getState().promotions;
+        const promotion = promotions.find((p) => p.id === promotionId);
         if (
           !promotion ||
           promotion.type !== "bundle" ||
@@ -407,6 +464,7 @@ export const useCartStore = create<CartState>()(
         }
 
         const config = useTenantConfigStore.getState().config!;
+        const policy = useTenantConfigStore.getState().policy;
 
         const { cart, eligibility } = bundleService.applyBundleToCart(
           get().items,
@@ -415,8 +473,9 @@ export const useCartStore = create<CartState>()(
           branchId,
           startDate ?? new Date(),
           endDate ?? new Date(),
-          PROMOTIONS_MOCK,
+          usePromotionStore.getState().promotions,
           config,
+          policy,
           useInventoryStore.getState().inventoryItems,
           useInventoryStore.getState().stockLots,
           useInventoryStore.getState().productVariants,
@@ -456,6 +515,7 @@ export const useCartStore = create<CartState>()(
         }
 
         const config = useTenantConfigStore.getState().config!;
+        const policy = useTenantConfigStore.getState().policy;
         const variants = useInventoryStore.getState().productVariants;
 
         const updatedItems = bundleService.clearBundleAssignments(
@@ -463,6 +523,7 @@ export const useCartStore = create<CartState>()(
           get().globalRentalDates?.from ?? new Date(),
           get().globalRentalDates?.to ?? new Date(),
           config,
+          policy,
           variants,
         );
 
@@ -486,7 +547,7 @@ export const useCartStore = create<CartState>()(
 
         const products = useInventoryStore.getState().products;
         const definitions = bundleService.createBundleDefinitionsFromPromotions(
-          PROMOTIONS_MOCK,
+          usePromotionStore.getState().promotions,
           products,
           tenantId,
         );
@@ -505,8 +566,9 @@ export const useCartStore = create<CartState>()(
             branchId,
             startDate,
             endDate,
-            PROMOTIONS_MOCK,
+            usePromotionStore.getState().promotions,
             useTenantConfigStore.getState().config!,
+            useTenantConfigStore.getState().policy,
             useInventoryStore.getState().inventoryItems,
             useInventoryStore.getState().stockLots,
             useInventoryStore.getState().productVariants,
@@ -541,13 +603,14 @@ export const useCartStore = create<CartState>()(
         }));
 
         const dates = get().globalRentalDates;
-        const activeBundles = get().activeBundles;
-        if (dates && activeBundles.length) {
-          const bid = useBranchStore.getState().selectedBranchId;
-          if (bid && bid !== GLOBAL_BRANCH_ID) {
-            get().reevaluateActiveBundle(bid, dates.from, dates.to);
-          }
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) {
+           get().applyPromotions(bid);
+           if (dates && get().activeBundles.length) {
+             get().reevaluateActiveBundle(bid, dates.from, dates.to);
+           }
         }
+        get().syncCartWithServer();
       },
 
       updateSelectedStock: (cartId, stockIds) => {
@@ -582,9 +645,10 @@ export const useCartStore = create<CartState>()(
           })),
         }));
 
-        if (get().activeBundles.length) {
-          const bid = useBranchStore.getState().selectedBranchId;
-          if (bid && bid !== GLOBAL_BRANCH_ID) {
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) {
+          get().applyPromotions(bid);
+          if (get().activeBundles.length) {
             get().reevaluateActiveBundle(bid, range.from, range.to);
           }
         }
@@ -603,14 +667,15 @@ export const useCartStore = create<CartState>()(
           };
         });
 
-        const dates = get().globalRentalDates;
-        const active = get().activeBundles.length;
-        if (dates && active) {
-          const bid = useBranchStore.getState().selectedBranchId;
-          if (bid && bid !== GLOBAL_BRANCH_ID) {
-            get().reevaluateActiveBundle(bid, dates.from, dates.to);
-          }
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) {
+            get().applyPromotions(bid);
+            const dates = get().globalRentalDates;
+            if (dates && get().activeBundles.length) {
+                get().reevaluateActiveBundle(bid, dates.from, dates.to);
+            }
         }
+        get().syncCartWithServer();
       },
       clearCart: () =>
         set({
@@ -693,8 +758,54 @@ export const useCartStore = create<CartState>()(
             !promotion.tenantId || promotion.tenantId === tenantId,
         );
 
+        // 🔹 4. Detección y aplicación de BUNDLES (Combos)
+        const products = useInventoryStore.getState().products;
+        const bundleDefinitions = bundleService.createBundleDefinitionsFromPromotions(
+            tenantSafePromotions,
+            products,
+            tenantId ?? undefined
+        );
+
+        let finalItemsForSubtotal = tenantSafeItems;
+
+        if (bundleDefinitions.length > 0) {
+            const config = useTenantConfigStore.getState().config;
+            
+            // 🛡️ Si la configuración no ha cargado, saltamos la aplicación de bundles
+            // para evitar errores de referencia nula en el motor de precios.
+            if (config) {
+              const inventoryItems = useInventoryStore.getState().inventoryItems;
+              const stockLots = useInventoryStore.getState().stockLots;
+              const productVariants = useInventoryStore.getState().productVariants;
+              const policy = useTenantConfigStore.getState().policy;
+
+              // Ordenar por valor de descuento (mejor combo primero)
+              const sortedBundles = [...bundleDefinitions].sort((a, b) => b.discountValue - a.discountValue);
+
+              for (const bundleDef of sortedBundles) {
+                  const { cart, eligibility } = bundleService.applyBundleToCart(
+                      finalItemsForSubtotal,
+                      bundleDef,
+                      tenantId!,
+                      branchId,
+                      rentalDates?.from ?? now,
+                      rentalDates?.to ?? now,
+                      tenantSafePromotions,
+                      config,
+                      policy,
+                      inventoryItems,
+                      stockLots,
+                      productVariants
+                  );
+                  if (eligibility.eligible) {
+                      finalItemsForSubtotal = cart;
+                  }
+              }
+            }
+        }
+
         const promotedItems = promotionService.applyPromotionsUseCase(
-          tenantSafeItems,
+          finalItemsForSubtotal,
           tenantSafePromotions,
           {
             branchId,
@@ -703,19 +814,36 @@ export const useCartStore = create<CartState>()(
           },
         );
 
-        const updatedItems = promotedItems.map((item) => ({
-          ...item,
-          subtotal: calculateSubtotal(
-            {
-              product: item.product,
-              unitPrice: item.unitPrice,
-              quantity: item.quantity,
-              variantId: item.variantId,
-            },
-            rentalDates,
-            item.operationType,
-          ),
-        }));
+        const updatedItems = promotedItems.map((item) => {
+          const listPrice = item.listPrice ?? item.unitPrice;
+          const discountAmount = item.discountAmount ?? 0;
+          const discountPercent =
+            listPrice > 0
+              ? Math.round(((discountAmount / listPrice) * 100) * 100) / 100
+              : 0;
+          const requiresAdminAuth = Boolean(
+            useTenantConfigStore.getState().config?.pricing
+              .requirePinForHighDiscount &&
+              discountPercent >=
+                (useTenantConfigStore.getState().config?.pricing
+                  .highDiscountThreshold ?? 0),
+          );
+
+          return {
+            ...item,
+            requiresAdminAuth,
+            subtotal: calculateSubtotal(
+              {
+                product: item.product,
+                unitPrice: item.unitPrice,
+                quantity: item.quantity,
+                variantId: item.variantId,
+              },
+              rentalDates,
+              item.operationType,
+            ),
+          };
+        });
 
         const currentItems = state.items;
         const hasSameLength = currentItems.length === updatedItems.length;
@@ -731,6 +859,7 @@ export const useCartStore = create<CartState>()(
               (next.discountReason ?? "") !== (prev.discountReason ?? "") ||
               (next.appliedPromotionId ?? "") !==
                 (prev.appliedPromotionId ?? "") ||
+              (next.bundleId ?? "") !== (prev.bundleId ?? "") ||
               next.subtotal !== prev.subtotal
             );
           });

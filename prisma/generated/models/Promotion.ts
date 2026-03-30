@@ -63,6 +63,9 @@ export type PromotionMinAggregateOutputType = {
   createdBy: string | null
   updatedAt: Date | null
   updatedBy: string | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
 }
 
 export type PromotionMaxAggregateOutputType = {
@@ -88,6 +91,9 @@ export type PromotionMaxAggregateOutputType = {
   createdBy: string | null
   updatedAt: Date | null
   updatedBy: string | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
 }
 
 export type PromotionCountAggregateOutputType = {
@@ -117,6 +123,9 @@ export type PromotionCountAggregateOutputType = {
   createdBy: number
   updatedAt: number
   updatedBy: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
   _all: number
 }
 
@@ -158,6 +167,9 @@ export type PromotionMinAggregateInputType = {
   createdBy?: true
   updatedAt?: true
   updatedBy?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
 }
 
 export type PromotionMaxAggregateInputType = {
@@ -183,6 +195,9 @@ export type PromotionMaxAggregateInputType = {
   createdBy?: true
   updatedAt?: true
   updatedBy?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
 }
 
 export type PromotionCountAggregateInputType = {
@@ -212,6 +227,9 @@ export type PromotionCountAggregateInputType = {
   createdBy?: true
   updatedAt?: true
   updatedBy?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
   _all?: true
 }
 
@@ -328,6 +346,9 @@ export type PromotionGroupByOutputType = {
   createdBy: string | null
   updatedAt: Date
   updatedBy: string | null
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
   _count: PromotionCountAggregateOutputType | null
   _avg: PromotionAvgAggregateOutputType | null
   _sum: PromotionSumAggregateOutputType | null
@@ -380,6 +401,9 @@ export type PromotionWhereInput = {
   createdBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
+  isDeleted?: Prisma.BoolFilter<"Promotion"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Promotion"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   branchRelations?: Prisma.PromotionBranchListRelationFilter
   usageRecords?: Prisma.PromotionUsageListRelationFilter
   tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
@@ -413,6 +437,9 @@ export type PromotionOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   branchRelations?: Prisma.PromotionBranchOrderByRelationAggregateInput
   usageRecords?: Prisma.PromotionUsageOrderByRelationAggregateInput
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -449,6 +476,9 @@ export type PromotionWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
+  isDeleted?: Prisma.BoolFilter<"Promotion"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Promotion"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   branchRelations?: Prisma.PromotionBranchListRelationFilter
   usageRecords?: Prisma.PromotionUsageListRelationFilter
   tenant?: Prisma.XOR<Prisma.TenantNullableScalarRelationFilter, Prisma.TenantWhereInput> | null
@@ -482,6 +512,9 @@ export type PromotionOrderByWithAggregationInput = {
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PromotionCountOrderByAggregateInput
   _avg?: Prisma.PromotionAvgOrderByAggregateInput
   _max?: Prisma.PromotionMaxOrderByAggregateInput
@@ -519,6 +552,9 @@ export type PromotionScalarWhereWithAggregatesInput = {
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableWithAggregatesFilter<"Promotion"> | string | null
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"Promotion"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Promotion"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Promotion"> | string | null
 }
 
 export type PromotionCreateInput = {
@@ -547,6 +583,9 @@ export type PromotionCreateInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
   tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
@@ -580,6 +619,9 @@ export type PromotionUncheckedCreateInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutPromotionInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutPromotionInput
@@ -611,6 +653,9 @@ export type PromotionUpdateInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
   tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
@@ -644,6 +689,9 @@ export type PromotionUncheckedUpdateInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUncheckedUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUncheckedUpdateManyWithoutPromotionNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutPromotionNestedInput
@@ -676,6 +724,9 @@ export type PromotionCreateManyInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
 }
 
 export type PromotionUpdateManyMutationInput = {
@@ -704,6 +755,9 @@ export type PromotionUpdateManyMutationInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PromotionUncheckedUpdateManyInput = {
@@ -733,6 +787,9 @@ export type PromotionUncheckedUpdateManyInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EnumAppliesToTypeNullableListFilter<$PrismaModel = never> = {
@@ -770,6 +827,9 @@ export type PromotionCountOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
 }
 
 export type PromotionAvgOrderByAggregateInput = {
@@ -802,6 +862,9 @@ export type PromotionMaxOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
 }
 
 export type PromotionMinOrderByAggregateInput = {
@@ -827,6 +890,9 @@ export type PromotionMinOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
 }
 
 export type PromotionSumOrderByAggregateInput = {
@@ -1007,6 +1073,9 @@ export type PromotionCreateWithoutBranchRelationsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
   tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
@@ -1039,6 +1108,9 @@ export type PromotionUncheckedCreateWithoutBranchRelationsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   usageRecords?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutPromotionInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutPromotionInput
 }
@@ -1085,6 +1157,9 @@ export type PromotionUpdateWithoutBranchRelationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
   tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
@@ -1117,6 +1192,9 @@ export type PromotionUncheckedUpdateWithoutBranchRelationsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usageRecords?: Prisma.PromotionUsageUncheckedUpdateManyWithoutPromotionNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutPromotionNestedInput
 }
@@ -1147,6 +1225,9 @@ export type PromotionCreateWithoutUsageRecordsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
@@ -1179,6 +1260,9 @@ export type PromotionUncheckedCreateWithoutUsageRecordsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutPromotionInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutPromotionInput
 }
@@ -1225,6 +1309,9 @@ export type PromotionUpdateWithoutUsageRecordsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
@@ -1257,6 +1344,9 @@ export type PromotionUncheckedUpdateWithoutUsageRecordsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUncheckedUpdateManyWithoutPromotionNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutPromotionNestedInput
 }
@@ -1287,6 +1377,9 @@ export type PromotionCreateWithoutSaleItemsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
   tenant?: Prisma.TenantCreateNestedOneWithoutPromotionsInput
@@ -1319,6 +1412,9 @@ export type PromotionUncheckedCreateWithoutSaleItemsInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutPromotionInput
 }
@@ -1365,6 +1461,9 @@ export type PromotionUpdateWithoutSaleItemsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
   tenant?: Prisma.TenantUpdateOneWithoutPromotionsNestedInput
@@ -1397,6 +1496,9 @@ export type PromotionUncheckedUpdateWithoutSaleItemsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUncheckedUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUncheckedUpdateManyWithoutPromotionNestedInput
 }
@@ -1427,6 +1529,9 @@ export type PromotionCreateWithoutTenantInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageCreateNestedManyWithoutPromotionInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutPromotionInput
@@ -1458,6 +1563,9 @@ export type PromotionUncheckedCreateWithoutTenantInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   branchRelations?: Prisma.PromotionBranchUncheckedCreateNestedManyWithoutPromotionInput
   usageRecords?: Prisma.PromotionUsageUncheckedCreateNestedManyWithoutPromotionInput
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutPromotionInput
@@ -1519,6 +1627,9 @@ export type PromotionScalarWhereInput = {
   createdBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Promotion"> | Date | string
   updatedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
+  isDeleted?: Prisma.BoolFilter<"Promotion"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Promotion"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Promotion"> | string | null
 }
 
 export type PromotionCreateManyTenantInput = {
@@ -1547,6 +1658,9 @@ export type PromotionCreateManyTenantInput = {
   createdBy?: string | null
   updatedAt?: Date | string
   updatedBy?: string | null
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
 }
 
 export type PromotionUpdateWithoutTenantInput = {
@@ -1575,6 +1689,9 @@ export type PromotionUpdateWithoutTenantInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUpdateManyWithoutPromotionNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutPromotionNestedInput
@@ -1606,6 +1723,9 @@ export type PromotionUncheckedUpdateWithoutTenantInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branchRelations?: Prisma.PromotionBranchUncheckedUpdateManyWithoutPromotionNestedInput
   usageRecords?: Prisma.PromotionUsageUncheckedUpdateManyWithoutPromotionNestedInput
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutPromotionNestedInput
@@ -1637,6 +1757,9 @@ export type PromotionUncheckedUpdateManyWithoutTenantInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1715,6 +1838,9 @@ export type PromotionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   branchRelations?: boolean | Prisma.Promotion$branchRelationsArgs<ExtArgs>
   usageRecords?: boolean | Prisma.Promotion$usageRecordsArgs<ExtArgs>
   tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
@@ -1749,6 +1875,9 @@ export type PromotionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
 }, ExtArgs["result"]["promotion"]>
 
@@ -1779,6 +1908,9 @@ export type PromotionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   tenant?: boolean | Prisma.Promotion$tenantArgs<ExtArgs>
 }, ExtArgs["result"]["promotion"]>
 
@@ -1809,9 +1941,12 @@ export type PromotionSelectScalar = {
   createdBy?: boolean
   updatedAt?: boolean
   updatedBy?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
 }
 
-export type PromotionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "type" | "scope" | "value" | "appliesTo" | "bundleConfig" | "isExclusive" | "code" | "targetIds" | "startDate" | "endDate" | "isActive" | "branchIds" | "minPurchaseAmount" | "maxUses" | "usedCount" | "combinable" | "requiresCode" | "singleUsePerCustomer" | "usageType" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy", ExtArgs["result"]["promotion"]>
+export type PromotionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "type" | "scope" | "value" | "appliesTo" | "bundleConfig" | "isExclusive" | "code" | "targetIds" | "startDate" | "endDate" | "isActive" | "branchIds" | "minPurchaseAmount" | "maxUses" | "usedCount" | "combinable" | "requiresCode" | "singleUsePerCustomer" | "usageType" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy" | "isDeleted" | "deletedAt" | "deletedBy", ExtArgs["result"]["promotion"]>
 export type PromotionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branchRelations?: boolean | Prisma.Promotion$branchRelationsArgs<ExtArgs>
   usageRecords?: boolean | Prisma.Promotion$usageRecordsArgs<ExtArgs>
@@ -1861,6 +1996,9 @@ export type $PromotionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     createdBy: string | null
     updatedAt: Date
     updatedBy: string | null
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
   }, ExtArgs["result"]["promotion"]>
   composites: {}
 }
@@ -2314,6 +2452,9 @@ export interface PromotionFieldRefs {
   readonly createdBy: Prisma.FieldRef<"Promotion", 'String'>
   readonly updatedAt: Prisma.FieldRef<"Promotion", 'DateTime'>
   readonly updatedBy: Prisma.FieldRef<"Promotion", 'String'>
+  readonly isDeleted: Prisma.FieldRef<"Promotion", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"Promotion", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Promotion", 'String'>
 }
     
 

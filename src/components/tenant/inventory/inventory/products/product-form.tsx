@@ -27,10 +27,14 @@ import {
   RefreshCcwIcon,
   Info,
   Loader2,
+  History,
+  FileEdit,
 } from "lucide-react";
 import { VariantAttributeSelector } from "./selected-atribute";
 import { VariantsTable } from "./table/variant-table";
 import { useVariantGenerator } from "@/src/utils/variants/useVariantGenarate";
+import { PriceHistoryTable } from "./ui/PriceHistoryTable";
+import { getPriceHistoryAction } from "@/src/app/(tenant)/tenant/actions/product.actions";
 import {
   ProductFormData,
   VariantOverride,
@@ -307,6 +311,27 @@ export function ProductForm({
   const [openModelPopover, setOpenModelPopover] = useState(false);
   const [openBrandPopover, setOpenBrandPopover] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
+
+  // Cargar historial al cambiar a la pestaña de historial
+  useEffect(() => {
+    if (activeTab === "history" && !hasLoadedHistory && initialValues?.id) {
+      const loadHistory = async () => {
+        setHistoryLoading(true);
+        const result = await getPriceHistoryAction(initialValues.id!);
+        if (result.success && result.data) {
+          setHistory(result.data);
+          setHasLoadedHistory(true);
+        } else {
+          toast.error("Error al cargar el historial de precios");
+        }
+        setHistoryLoading(false);
+      };
+      void loadHistory();
+    }
+  }, [activeTab, hasLoadedHistory, initialValues?.id]);
 
   // Preparar datos para selectores
   const modelOptions = useMemo(() => {
@@ -397,10 +422,37 @@ export function ProductForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 w-full max-w-full min-w-0"
-    >
+    <div className="space-y-6 w-full max-w-full min-w-0">
+      {initialValues?.id && (
+        <div className="flex items-center gap-2 border-b pb-4">
+          <Button
+            type="button"
+            variant={activeTab === "general" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("general")}
+            className="gap-2"
+          >
+            <FileEdit className="w-4 h-4" />
+            Edición
+          </Button>
+          <Button
+            type="button"
+            variant={activeTab === "history" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("history")}
+            className="gap-2"
+          >
+            <History className="w-4 h-4" />
+            Historial de Precios
+          </Button>
+        </div>
+      )}
+
+      {activeTab === "general" ? (
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 w-full max-w-full min-w-0"
+        >
       {/* TAB 1: GENERAL */}
       <div className="space-y-4">
         {/* FLAGS PRINCIPALES */}
@@ -930,6 +982,30 @@ export function ProductForm({
         </div>
       </div>
     </form>
+    ) : (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <History className="w-5 h-5" />
+            Auditoría de Cambios de Precio
+          </h3>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              setHasLoadedHistory(false);
+              setActiveTab("history");
+            }}
+            disabled={historyLoading}
+          >
+            {historyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcwIcon className="w-4 h-4 mr-2" />}
+            Actualizar
+          </Button>
+        </div>
+        <PriceHistoryTable history={history} />
+      </div>
+    )}
+    </div>
   );
 }
 

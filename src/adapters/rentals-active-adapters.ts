@@ -23,6 +23,9 @@ export interface RentalTableRow {
   gurantee_type: string;
   gurantee_value: string;
   guarantee_status: string;
+  taxAmount: number;
+  roundingAmount: number;
+  totalBeforeRounding: number;
   status: string;
   damage: string;
   returnDate: string;

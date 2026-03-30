@@ -31,8 +31,11 @@ export async function processTransactionAction(dto: any) {
     }
 
     const rawPaymentMethod =
+      (dto as { financials?: { paymentMethod?: unknown; paymentMethodId?: unknown } })?.financials
+        ?.paymentMethodId ??
       (dto as { financials?: { paymentMethod?: unknown } })?.financials
-        ?.paymentMethod ?? null;
+        ?.paymentMethod ??
+      null;
     const resolvedPaymentMethodId =
       await resolvePaymentMethodId(rawPaymentMethod);
 
@@ -52,6 +55,7 @@ export async function processTransactionAction(dto: any) {
       sellerId: userId,
       financials: {
         ...(dto as { financials?: Record<string, unknown> }).financials,
+        paymentMethodId: resolvedPaymentMethodId,
         paymentMethod: resolvedPaymentMethodId,
       },
       configSnapshot: {

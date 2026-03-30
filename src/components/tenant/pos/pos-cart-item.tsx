@@ -36,7 +36,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
     [item.variantId, productVariants],
   );
 
-  const { getSizeById, getColorById, getCategoryById, getModelById } =
+  const { getCategoryById } =
     useAttributeStore();
 
   // 1. Obtener disponibilidad REAL de este producto/variante en el local

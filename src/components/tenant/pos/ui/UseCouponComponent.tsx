@@ -1,6 +1,5 @@
 import { Tag } from "lucide-react";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { Switch } from "@/components/ui/switch";
 import { useCouponStore } from "@/src/store/useCouponStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ interface UseCouponComponentProps {
 
 export function UseCouponComponent({
   tenantId,
-  selectedClientId,
   appliedCoupon,
   onApplyCoupon,
 }: UseCouponComponentProps) {
@@ -59,61 +57,56 @@ export function UseCouponComponent({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-3 border rounded-xl bg-orange-50/50 mt-2">
-      <div className="flex justify-between items-center w-full">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-orange-100 rounded-md">
-            <Tag className="w-4 h-4 text-orange-600" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-black uppercase text-orange-700">
-              Cupón de Descuento
-            </span>
-            <span className="text-[10px] text-muted-foreground font-medium">
-              Aplica un cupón promocional
-            </span>
-          </div>
+    <div className="flex flex-col  px-2 py-1 border rounded-xl">
+      <div className="flex gap-4 items-center w-full">
+        <div className="p-1.5 bg-yellow-100 rounded-full">
+          <Tag className="w-5 h-5 text-orange-600" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[11px] -mb-1 font-bold uppercase text-orange-500">
+            Cupón de Descuento
+          </span>
+
+          {!appliedCoupon ? (
+            <div className="flex w-full justify-between gap-2 mt-2">
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                placeholder="CÓDIGO"
+                className="h-7 text-xs uppercase"
+              />
+              <Button
+                onClick={handleApply}
+                size="sm"
+                className="h-7 text-xs shrink-0 text-white bg-orange-600 hover:bg-orange-700"
+              >
+                Aplicar
+              </Button>
+            </div>
+          ) : (
+            <div className="flex w-full justify-between mt-2 p-2 bg-orange-100 rounded-lg border border-orange-200">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-orange-800">
+                  {appliedCoupon.code}
+                </span>
+                <span className="text-[10px] text-orange-600">
+                  {appliedCoupon.discountType === "percentage"
+                    ? `-${appliedCoupon.discountValue}%`
+                    : `-${formatCurrency(appliedCoupon.discountValue)}`}
+                </span>
+              </div>
+              <Button
+                onClick={handleRemove}
+                variant="ghost"
+                size="sm"
+                className="h-6 text-[10px] text-orange-700 hover:bg-orange-200"
+              >
+                Remover
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-
-      {!appliedCoupon ? (
-        <div className="flex items-center gap-2 mt-2">
-          <Input
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="CÓDIGO"
-            className="h-8 text-xs uppercase"
-          />
-          <Button
-            onClick={handleApply}
-            size="sm"
-            className="h-8 text-xs shrink-0 bg-orange-600 hover:bg-orange-700"
-          >
-            Aplicar
-          </Button>
-        </div>
-      ) : (
-        <div className="flex items-center justify-between mt-2 p-2 bg-orange-100 rounded-lg border border-orange-200">
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-orange-800">
-              {appliedCoupon.code}
-            </span>
-            <span className="text-[10px] text-orange-600">
-              {appliedCoupon.discountType === "percentage"
-                ? `-${appliedCoupon.discountValue}%`
-                : `-${formatCurrency(appliedCoupon.discountValue)}`}
-            </span>
-          </div>
-          <Button
-            onClick={handleRemove}
-            variant="ghost"
-            size="sm"
-            className="h-6 text-[10px] text-orange-700 hover:bg-orange-200"
-          >
-            Remover
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

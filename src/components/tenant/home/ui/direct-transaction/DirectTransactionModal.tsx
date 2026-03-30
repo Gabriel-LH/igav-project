@@ -58,6 +58,7 @@ import { StockLot } from "@/src/types/product/type.stockLote";
 import { getTenantConfigAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
 import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 import { calculateTaxTotals } from "@/src/utils/pricing/tax-calculation";
+import { PinAuthModal } from "@/src/components/tenant/pos/modals/PinAuthModal";
 
 interface DisplayAttributeValue {
   keyName: string;
@@ -91,6 +92,8 @@ export function DirectTransactionModal({
   const { data: session } = authClient.useSession();
   const sellerId = session?.user?.id || "";
   const [tenantConfig, setTenantConfig] = React.useState(DEFAULT_TENANT_CONFIG);
+  const [showPinModal, setShowPinModal] = React.useState(false);
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
 
   // 1. Creamos referencias para "disparar" los clics
   const pickupDateRef = React.useRef<HTMLButtonElement>(null);
@@ -315,9 +318,20 @@ export function DirectTransactionModal({
     0,
   );
 
+  const selectedPaymentMethod = useMemo(
+    () => paymentMethods.find((method) => method.id === paymentMethodId),
+    [paymentMethodId, paymentMethods],
+  );
+  const isCashPayment = selectedPaymentMethod?.type === "cash";
+
   const taxTotals = useMemo(
-    () => calculateTaxTotals(totalOperacionConDescuento, tenantConfig.tax),
-    [totalOperacionConDescuento, tenantConfig.tax],
+    () => calculateTaxTotals(
+      totalOperacionConDescuento, 
+      tenantConfig.tax, 
+      selectedPaymentMethod?.type as "cash" | "digital" | "card" | "transfer" | undefined,
+      [{ amount: totalOperacionConDescuento }] // Single line with the full amount
+    ),
+    [totalOperacionConDescuento, tenantConfig.tax, selectedPaymentMethod?.type],
   );
 
   const totalACobrarHoy = useMemo(() => {
@@ -329,18 +343,22 @@ export function DirectTransactionModal({
     );
   }, [type, taxTotals.total, guaranteeType, guarantee]);
 
-  const selectedPaymentMethod = useMemo(
-    () => paymentMethods.find((method) => method.id === paymentMethodId),
-    [paymentMethodId, paymentMethods],
-  );
-  const isCashPayment = selectedPaymentMethod?.type === "cash";
-
   const changeAmount = useMemo(() => {
     if (!isCashPayment) return 0;
     if (Number(receivedAmount) <= 0) return 0;
     if (Number(receivedAmount) < totalACobrarHoy) return 0;
     return Number(receivedAmount) - totalACobrarHoy;
   }, [receivedAmount, totalACobrarHoy, isCashPayment]);
+
+  const discountBasePrice = isVenta ? originalPriceSell : originalPriceRent;
+  const discountPercent =
+    discountBasePrice > 0
+      ? Math.round(((unitDiscountAmount / discountBasePrice) * 100) * 100) /
+        100
+      : 0;
+  const requiresPinForDiscount =
+    tenantConfig.pricing?.requirePinForHighDiscount &&
+    discountPercent >= (tenantConfig.pricing?.highDiscountThreshold ?? 0);
 
   const validateTransaction = () => {
     const check = getAvailabilityByAttributes(
@@ -371,6 +389,10 @@ export function DirectTransactionModal({
       return toast.error(
         `Solo hay ${stockCount} unidades disponibles para ${type}.`,
       );
+    if (requiresPinForDiscount && !isAuthorized) {
+      setShowPinModal(true);
+      return;
+    }
 
     let transactionItems: (RentalDTO["items"][number] | SaleDTO["items"][number])[] = [];
 
@@ -440,13 +462,15 @@ export function DirectTransactionModal({
           ),
           taxAmount: taxTotals.taxAmount,
           totalAmount: Number(taxTotals.total),
+          totalBeforeRounding: taxTotals.totalBeforeRounding,
+          roundingDifference: taxTotals.roundingDifference,
           receivedAmount:
             isCashPayment
               ? Number(receivedAmount)
               : Number(taxTotals.total) +
                 (guaranteeType === "dinero" ? Number(guarantee) : 0),
           keepAsCredit: false,
-          paymentMethod: paymentMethodId,
+          paymentMethodId: paymentMethodId,
         },
         status: !checklist.deliverAfter ? "alquilado" : "reservado_fisico",
         id: "",
@@ -493,12 +517,14 @@ export function DirectTransactionModal({
           ),
           taxAmount: taxTotals.taxAmount,
           totalAmount: Number(taxTotals.total),
+          totalBeforeRounding: taxTotals.totalBeforeRounding,
+          roundingDifference: taxTotals.roundingDifference,
           receivedAmount:
             isCashPayment
               ? Number(receivedAmount)
               : Number(taxTotals.total),
           keepAsCredit: false,
-          paymentMethod: paymentMethodId,
+          paymentMethodId: paymentMethodId,
         },
         notes,
         status: !checklist.deliverAfter
@@ -526,6 +552,7 @@ export function DirectTransactionModal({
       } else {
         toast.success("Registro para entrega posterior exitoso");
       }
+      setIsAuthorized(false);
       setOpen(false);
       onSuccess?.();
       } catch (err: unknown) {
@@ -535,9 +562,10 @@ export function DirectTransactionModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-lg">
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="uppercase text-sm font-black">
             {type === "alquiler" ? (
@@ -824,7 +852,23 @@ export function DirectTransactionModal({
               : "ENTREGAR AHORA"}
           </Button>
         )}
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <PinAuthModal
+        open={showPinModal}
+        onOpenChange={setShowPinModal}
+        onSuccess={() => {
+          setIsAuthorized(true);
+          toast.info("Operacion autorizada. Ya puedes confirmar el cobro.");
+        }}
+        title="Descuento Alto Detectado"
+        description={`Esta operacion contiene un descuento de ${discountPercent.toFixed(
+          1,
+        )}%. Se requiere PIN desde ${
+          tenantConfig.pricing?.highDiscountThreshold ?? 0
+        }%.`}
+      />
+    </>
   );
 }

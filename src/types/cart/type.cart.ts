@@ -25,4 +25,7 @@ export interface CartItem {
 
   // Packs o combos
   bundleId?: string;
+
+  // Authorization flags
+  requiresAdminAuth?: boolean;
 }

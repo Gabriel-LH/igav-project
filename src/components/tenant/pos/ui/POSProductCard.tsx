@@ -4,7 +4,7 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { Minus, Plus, ShoppingBag, Truck, Eye } from "lucide-react";
+import { ShoppingBag, Eye } from "lucide-react";
 import Image from "next/image";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
@@ -162,7 +162,7 @@ function VariantSelector({
 export function PosProductCard({ product, inventoryItems, stockLots, allVariants }: PosProductCardProps) {
   const router = useRouter();
   const { addItem, items } = useCartStore();
-  const { getModelById, getCategoryById } = useAttributeStore();
+  const { getCategoryById } = useAttributeStore();
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
 
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -447,7 +447,7 @@ export function PosProductCard({ product, inventoryItems, stockLots, allVariants
       <Dialog open={selectorOpen} onOpenChange={setSelectorOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+              <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
                 Seleccionar Variante - {product.name}
               </DialogTitle>
               <DialogDescription>

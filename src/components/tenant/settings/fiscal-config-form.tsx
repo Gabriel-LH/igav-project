@@ -40,6 +40,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import { Label } from "@/components/label";
+import { roundValue } from "@/src/utils/pricing/tax-calculation";
 
 const fiscalFormSchema = z.object({
   currency: z.string(),
@@ -75,32 +76,9 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
   const calculatePreview = (
     amount: number,
     roundTo: number,
-    strategy: string,
+    strategy: any,
   ) => {
-    const factor = amount / roundTo;
-    let rounded;
-
-    switch (strategy) {
-      case "FLOOR":
-        rounded = Math.floor(factor);
-        break;
-      case "CEIL":
-        rounded = Math.ceil(factor);
-        break;
-      case "HALF_UP":
-        rounded = Math.round(factor);
-        break;
-      case "HALF_EVEN":
-        // Lógica de redondeo bancario (al par más cercano)
-        const i = Math.floor(factor);
-        const f = factor - i;
-        if (f !== 0.5) rounded = Math.round(factor);
-        else rounded = i % 2 === 0 ? i : i + 1;
-        break;
-      default:
-        rounded = Math.round(factor);
-    }
-    return (rounded * roundTo).toFixed(2);
+    return roundValue(amount, roundTo, strategy).toFixed(2);
   };
 
   // Actualizar cuando cambie el formulario
@@ -287,7 +265,7 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
             {/* Configuración de redondeo */}
             <div className="space-y-4 mb-3">
               <h3 className="font-medium flex items-center gap-2">
-                Configuración de Redondeo
+                Configuración de Redondeo 
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -309,7 +287,7 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                 name="strategy"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estrategia de redondeo</FormLabel>
+                    <FormLabel>Estrategia de redondeo (Solo aplica para pagos en efectivo)</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -347,6 +325,39 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
+                  {/* Redondear a */}
+                  <FormField
+                    control={form.control}
+                    name="roundTo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Redondear a</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(parseFloat(value))
+                          }
+                          defaultValue={field.value.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Seleccionar precisión" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="0.01">
+                              0.01 (Centésimos)
+                            </SelectItem>
+                            <SelectItem value="0.05">
+                              0.05 (Medio décimo)
+                            </SelectItem>
+                            <SelectItem value="0.1">0.10 (Décimos)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   {/* Aplicar redondeo */}
                   <FormField
                     control={form.control}
@@ -382,39 +393,6 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       </FormItem>
                     )}
                   />
-
-                  {/* Redondear a */}
-                  <FormField
-                    control={form.control}
-                    name="roundTo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Redondear a</FormLabel>
-                        <Select
-                          onValueChange={(value) =>
-                            field.onChange(parseFloat(value))
-                          }
-                          defaultValue={field.value.toString()}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar precisión" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="0.01">
-                              0.01 (Centésimos)
-                            </SelectItem>
-                            <SelectItem value="0.05">
-                              0.05 (Medio décimo)
-                            </SelectItem>
-                            <SelectItem value="0.10">0.10 (Décimos)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 {/* Sección de Simulador */}
@@ -437,10 +415,11 @@ export function FiscalConfigForm({ config, onChange }: FiscalConfigFormProps) {
                       <Label className="text-xs">Monto de prueba</Label>
                       <Input
                         type="number"
-                        defaultValue="45.99"
-                        onChange={(e) =>
-                          setTestAmount(parseFloat(e.target.value))
-                        }
+                        placeholder="0.00"
+                        onChange={(e) => {
+                          const value =  parseFloat(e.target.value) || 0;
+                          setTestAmount(value);
+                        }}
                       />
                     </div>
                     <div className="flex flex-col justify-end">

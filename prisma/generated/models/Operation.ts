@@ -29,13 +29,23 @@ export type AggregateOperation = {
 export type OperationAvgAggregateOutputType = {
   subtotal: number | null
   discountAmount: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  roundingAmount: number | null
+  totalBeforeRounding: number | null
   totalAmount: number | null
+  policyVersion: number | null
 }
 
 export type OperationSumAggregateOutputType = {
   subtotal: number | null
   discountAmount: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  roundingAmount: number | null
+  totalBeforeRounding: number | null
   totalAmount: number | null
+  policyVersion: number | null
 }
 
 export type OperationMinAggregateOutputType = {
@@ -51,9 +61,15 @@ export type OperationMinAggregateOutputType = {
   paymentStatus: $Enums.PaymentStatus | null
   subtotal: number | null
   discountAmount: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  roundingAmount: number | null
+  totalBeforeRounding: number | null
   totalAmount: number | null
   date: Date | null
   createdAt: Date | null
+  policyVersion: number | null
+  configVersion: Date | null
 }
 
 export type OperationMaxAggregateOutputType = {
@@ -69,9 +85,15 @@ export type OperationMaxAggregateOutputType = {
   paymentStatus: $Enums.PaymentStatus | null
   subtotal: number | null
   discountAmount: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  roundingAmount: number | null
+  totalBeforeRounding: number | null
   totalAmount: number | null
   date: Date | null
   createdAt: Date | null
+  policyVersion: number | null
+  configVersion: Date | null
 }
 
 export type OperationCountAggregateOutputType = {
@@ -87,9 +109,17 @@ export type OperationCountAggregateOutputType = {
   paymentStatus: number
   subtotal: number
   discountAmount: number
+  taxAmount: number
+  taxRate: number
+  roundingAmount: number
+  totalBeforeRounding: number
   totalAmount: number
   date: number
   createdAt: number
+  policySnapshot: number
+  configSnapshot: number
+  policyVersion: number
+  configVersion: number
   _all: number
 }
 
@@ -97,13 +127,23 @@ export type OperationCountAggregateOutputType = {
 export type OperationAvgAggregateInputType = {
   subtotal?: true
   discountAmount?: true
+  taxAmount?: true
+  taxRate?: true
+  roundingAmount?: true
+  totalBeforeRounding?: true
   totalAmount?: true
+  policyVersion?: true
 }
 
 export type OperationSumAggregateInputType = {
   subtotal?: true
   discountAmount?: true
+  taxAmount?: true
+  taxRate?: true
+  roundingAmount?: true
+  totalBeforeRounding?: true
   totalAmount?: true
+  policyVersion?: true
 }
 
 export type OperationMinAggregateInputType = {
@@ -119,9 +159,15 @@ export type OperationMinAggregateInputType = {
   paymentStatus?: true
   subtotal?: true
   discountAmount?: true
+  taxAmount?: true
+  taxRate?: true
+  roundingAmount?: true
+  totalBeforeRounding?: true
   totalAmount?: true
   date?: true
   createdAt?: true
+  policyVersion?: true
+  configVersion?: true
 }
 
 export type OperationMaxAggregateInputType = {
@@ -137,9 +183,15 @@ export type OperationMaxAggregateInputType = {
   paymentStatus?: true
   subtotal?: true
   discountAmount?: true
+  taxAmount?: true
+  taxRate?: true
+  roundingAmount?: true
+  totalBeforeRounding?: true
   totalAmount?: true
   date?: true
   createdAt?: true
+  policyVersion?: true
+  configVersion?: true
 }
 
 export type OperationCountAggregateInputType = {
@@ -155,9 +207,17 @@ export type OperationCountAggregateInputType = {
   paymentStatus?: true
   subtotal?: true
   discountAmount?: true
+  taxAmount?: true
+  taxRate?: true
+  roundingAmount?: true
+  totalBeforeRounding?: true
   totalAmount?: true
   date?: true
   createdAt?: true
+  policySnapshot?: true
+  configSnapshot?: true
+  policyVersion?: true
+  configVersion?: true
   _all?: true
 }
 
@@ -260,9 +320,17 @@ export type OperationGroupByOutputType = {
   paymentStatus: $Enums.PaymentStatus
   subtotal: number | null
   discountAmount: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  roundingAmount: number | null
+  totalBeforeRounding: number | null
   totalAmount: number
   date: Date
   createdAt: Date
+  policySnapshot: runtime.JsonValue | null
+  configSnapshot: runtime.JsonValue | null
+  policyVersion: number | null
+  configVersion: Date | null
   _count: OperationCountAggregateOutputType | null
   _avg: OperationAvgAggregateOutputType | null
   _sum: OperationSumAggregateOutputType | null
@@ -301,9 +369,17 @@ export type OperationWhereInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Operation"> | $Enums.PaymentStatus
   subtotal?: Prisma.FloatNullableFilter<"Operation"> | number | null
   discountAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxRate?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  roundingAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  totalBeforeRounding?: Prisma.FloatNullableFilter<"Operation"> | number | null
   totalAmount?: Prisma.FloatFilter<"Operation"> | number
   date?: Prisma.DateTimeFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
+  policySnapshot?: Prisma.JsonNullableFilter<"Operation">
+  configSnapshot?: Prisma.JsonNullableFilter<"Operation">
+  policyVersion?: Prisma.IntNullableFilter<"Operation"> | number | null
+  configVersion?: Prisma.DateTimeNullableFilter<"Operation"> | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerListRelationFilter
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
@@ -335,9 +411,17 @@ export type OperationOrderByWithRelationInput = {
   paymentStatus?: Prisma.SortOrder
   subtotal?: Prisma.SortOrderInput | Prisma.SortOrder
   discountAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  policySnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  configSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  policyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  configVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   clientCreditLedgers?: Prisma.ClientCreditLedgerOrderByRelationAggregateInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerOrderByRelationAggregateInput
   guarantees?: Prisma.GuaranteeOrderByRelationAggregateInput
@@ -372,9 +456,17 @@ export type OperationWhereUniqueInput = Prisma.AtLeast<{
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Operation"> | $Enums.PaymentStatus
   subtotal?: Prisma.FloatNullableFilter<"Operation"> | number | null
   discountAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxRate?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  roundingAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  totalBeforeRounding?: Prisma.FloatNullableFilter<"Operation"> | number | null
   totalAmount?: Prisma.FloatFilter<"Operation"> | number
   date?: Prisma.DateTimeFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
+  policySnapshot?: Prisma.JsonNullableFilter<"Operation">
+  configSnapshot?: Prisma.JsonNullableFilter<"Operation">
+  policyVersion?: Prisma.IntNullableFilter<"Operation"> | number | null
+  configVersion?: Prisma.DateTimeNullableFilter<"Operation"> | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerListRelationFilter
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerListRelationFilter
   guarantees?: Prisma.GuaranteeListRelationFilter
@@ -406,9 +498,17 @@ export type OperationOrderByWithAggregationInput = {
   paymentStatus?: Prisma.SortOrder
   subtotal?: Prisma.SortOrderInput | Prisma.SortOrder
   discountAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  policySnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  configSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  policyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  configVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OperationCountOrderByAggregateInput
   _avg?: Prisma.OperationAvgOrderByAggregateInput
   _max?: Prisma.OperationMaxOrderByAggregateInput
@@ -432,9 +532,17 @@ export type OperationScalarWhereWithAggregatesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Operation"> | $Enums.PaymentStatus
   subtotal?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
   discountAmount?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
+  taxAmount?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
+  taxRate?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
+  roundingAmount?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
+  totalBeforeRounding?: Prisma.FloatNullableWithAggregatesFilter<"Operation"> | number | null
   totalAmount?: Prisma.FloatWithAggregatesFilter<"Operation"> | number
   date?: Prisma.DateTimeWithAggregatesFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Operation"> | Date | string
+  policySnapshot?: Prisma.JsonNullableWithAggregatesFilter<"Operation">
+  configSnapshot?: Prisma.JsonNullableWithAggregatesFilter<"Operation">
+  policyVersion?: Prisma.IntNullableWithAggregatesFilter<"Operation"> | number | null
+  configVersion?: Prisma.DateTimeNullableWithAggregatesFilter<"Operation"> | Date | string | null
 }
 
 export type OperationCreateInput = {
@@ -446,9 +554,17 @@ export type OperationCreateInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -480,9 +596,17 @@ export type OperationUncheckedCreateInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -506,9 +630,17 @@ export type OperationUpdateInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -540,9 +672,17 @@ export type OperationUncheckedUpdateInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -570,9 +710,17 @@ export type OperationCreateManyInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
 }
 
 export type OperationUpdateManyMutationInput = {
@@ -584,9 +732,17 @@ export type OperationUpdateManyMutationInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OperationUncheckedUpdateManyInput = {
@@ -602,9 +758,17 @@ export type OperationUncheckedUpdateManyInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OperationListRelationFilter = {
@@ -640,15 +804,28 @@ export type OperationCountOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
+  taxRate?: Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  policySnapshot?: Prisma.SortOrder
+  configSnapshot?: Prisma.SortOrder
+  policyVersion?: Prisma.SortOrder
+  configVersion?: Prisma.SortOrder
 }
 
 export type OperationAvgOrderByAggregateInput = {
   subtotal?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
+  taxRate?: Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  policyVersion?: Prisma.SortOrder
 }
 
 export type OperationMaxOrderByAggregateInput = {
@@ -664,9 +841,15 @@ export type OperationMaxOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
+  taxRate?: Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  policyVersion?: Prisma.SortOrder
+  configVersion?: Prisma.SortOrder
 }
 
 export type OperationMinOrderByAggregateInput = {
@@ -682,15 +865,26 @@ export type OperationMinOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
+  taxRate?: Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  policyVersion?: Prisma.SortOrder
+  configVersion?: Prisma.SortOrder
 }
 
 export type OperationSumOrderByAggregateInput = {
   subtotal?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
+  taxRate?: Prisma.SortOrder
+  roundingAmount?: Prisma.SortOrder
+  totalBeforeRounding?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  policyVersion?: Prisma.SortOrder
 }
 
 export type OperationCreateNestedManyWithoutSellerInput = {
@@ -1062,9 +1256,17 @@ export type OperationCreateWithoutSellerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -1094,9 +1296,17 @@ export type OperationUncheckedCreateWithoutSellerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -1153,9 +1363,17 @@ export type OperationScalarWhereInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Operation"> | $Enums.PaymentStatus
   subtotal?: Prisma.FloatNullableFilter<"Operation"> | number | null
   discountAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  taxRate?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  roundingAmount?: Prisma.FloatNullableFilter<"Operation"> | number | null
+  totalBeforeRounding?: Prisma.FloatNullableFilter<"Operation"> | number | null
   totalAmount?: Prisma.FloatFilter<"Operation"> | number
   date?: Prisma.DateTimeFilter<"Operation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
+  policySnapshot?: Prisma.JsonNullableFilter<"Operation">
+  configSnapshot?: Prisma.JsonNullableFilter<"Operation">
+  policyVersion?: Prisma.IntNullableFilter<"Operation"> | number | null
+  configVersion?: Prisma.DateTimeNullableFilter<"Operation"> | Date | string | null
 }
 
 export type OperationCreateWithoutBranchInput = {
@@ -1167,9 +1385,17 @@ export type OperationCreateWithoutBranchInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -1199,9 +1425,17 @@ export type OperationUncheckedCreateWithoutBranchInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -1251,9 +1485,17 @@ export type OperationCreateWithoutCustomerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -1283,9 +1525,17 @@ export type OperationUncheckedCreateWithoutCustomerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -1335,9 +1585,17 @@ export type OperationCreateWithoutClientCreditLedgersInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
   branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
@@ -1368,9 +1626,17 @@ export type OperationUncheckedCreateWithoutClientCreditLedgersInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
@@ -1409,9 +1675,17 @@ export type OperationUpdateWithoutClientCreditLedgersInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
@@ -1442,9 +1716,17 @@ export type OperationUncheckedUpdateWithoutClientCreditLedgersInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
@@ -1467,9 +1749,17 @@ export type OperationCreateWithoutClientLoyaltyLedgersInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
   branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
@@ -1500,9 +1790,17 @@ export type OperationUncheckedCreateWithoutClientLoyaltyLedgersInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
@@ -1541,9 +1839,17 @@ export type OperationUpdateWithoutClientLoyaltyLedgersInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
@@ -1574,9 +1880,17 @@ export type OperationUncheckedUpdateWithoutClientLoyaltyLedgersInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
@@ -1599,9 +1913,17 @@ export type OperationCreateWithoutGuaranteesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   branch: Prisma.BranchCreateNestedOneWithoutOperationsInput
@@ -1632,9 +1954,17 @@ export type OperationUncheckedCreateWithoutGuaranteesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOperationInput
@@ -1673,9 +2003,17 @@ export type OperationUpdateWithoutGuaranteesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   branch?: Prisma.BranchUpdateOneRequiredWithoutOperationsNestedInput
@@ -1706,9 +2044,17 @@ export type OperationUncheckedUpdateWithoutGuaranteesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOperationNestedInput
@@ -1731,9 +2077,17 @@ export type OperationCreateWithoutPaymentsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -1764,9 +2118,17 @@ export type OperationUncheckedCreateWithoutPaymentsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -1805,9 +2167,17 @@ export type OperationUpdateWithoutPaymentsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -1838,9 +2208,17 @@ export type OperationUncheckedUpdateWithoutPaymentsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -1863,9 +2241,17 @@ export type OperationCreateWithoutStockMovementsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -1896,9 +2282,17 @@ export type OperationUncheckedCreateWithoutStockMovementsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -1937,9 +2331,17 @@ export type OperationUpdateWithoutStockMovementsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -1970,9 +2372,17 @@ export type OperationUncheckedUpdateWithoutStockMovementsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -1995,9 +2405,17 @@ export type OperationCreateWithoutRentalsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2028,9 +2446,17 @@ export type OperationUncheckedCreateWithoutRentalsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2069,9 +2495,17 @@ export type OperationUpdateWithoutRentalsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2102,9 +2536,17 @@ export type OperationUncheckedUpdateWithoutRentalsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2127,9 +2569,17 @@ export type OperationCreateWithoutRentalItemsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2160,9 +2610,17 @@ export type OperationUncheckedCreateWithoutRentalItemsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2201,9 +2659,17 @@ export type OperationUpdateWithoutRentalItemsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2234,9 +2700,17 @@ export type OperationUncheckedUpdateWithoutRentalItemsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2259,9 +2733,17 @@ export type OperationCreateWithoutRentalChargesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2292,9 +2774,17 @@ export type OperationUncheckedCreateWithoutRentalChargesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2333,9 +2823,17 @@ export type OperationUpdateWithoutRentalChargesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2366,9 +2864,17 @@ export type OperationUncheckedUpdateWithoutRentalChargesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2391,9 +2897,17 @@ export type OperationCreateWithoutReservationsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2424,9 +2938,17 @@ export type OperationUncheckedCreateWithoutReservationsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2465,9 +2987,17 @@ export type OperationUpdateWithoutReservationsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2498,9 +3028,17 @@ export type OperationUncheckedUpdateWithoutReservationsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2523,9 +3061,17 @@ export type OperationCreateWithoutReservationItemsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2556,9 +3102,17 @@ export type OperationUncheckedCreateWithoutReservationItemsInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2597,9 +3151,17 @@ export type OperationUpdateWithoutReservationItemsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2630,9 +3192,17 @@ export type OperationUncheckedUpdateWithoutReservationItemsInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2655,9 +3225,17 @@ export type OperationCreateWithoutSalesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2688,9 +3266,17 @@ export type OperationUncheckedCreateWithoutSalesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2729,9 +3315,17 @@ export type OperationUpdateWithoutSalesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2762,9 +3356,17 @@ export type OperationUncheckedUpdateWithoutSalesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2787,9 +3389,17 @@ export type OperationCreateWithoutSaleChargesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2820,9 +3430,17 @@ export type OperationUncheckedCreateWithoutSaleChargesInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -2861,9 +3479,17 @@ export type OperationUpdateWithoutSaleChargesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -2894,9 +3520,17 @@ export type OperationUncheckedUpdateWithoutSaleChargesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -2919,9 +3553,17 @@ export type OperationCreateWithoutTenantInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeCreateNestedManyWithoutOperationInput
@@ -2951,9 +3593,17 @@ export type OperationUncheckedCreateWithoutTenantInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedCreateNestedManyWithoutOperationInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedCreateNestedManyWithoutOperationInput
   guarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutOperationInput
@@ -3006,9 +3656,17 @@ export type OperationCreateManySellerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
 }
 
 export type OperationUpdateWithoutSellerInput = {
@@ -3020,9 +3678,17 @@ export type OperationUpdateWithoutSellerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -3052,9 +3718,17 @@ export type OperationUncheckedUpdateWithoutSellerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -3081,9 +3755,17 @@ export type OperationUncheckedUpdateManyWithoutSellerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OperationCreateManyBranchInput = {
@@ -3098,9 +3780,17 @@ export type OperationCreateManyBranchInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
 }
 
 export type OperationUpdateWithoutBranchInput = {
@@ -3112,9 +3802,17 @@ export type OperationUpdateWithoutBranchInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -3144,9 +3842,17 @@ export type OperationUncheckedUpdateWithoutBranchInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -3173,9 +3879,17 @@ export type OperationUncheckedUpdateManyWithoutBranchInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OperationCreateManyCustomerInput = {
@@ -3190,9 +3904,17 @@ export type OperationCreateManyCustomerInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
 }
 
 export type OperationUpdateWithoutCustomerInput = {
@@ -3204,9 +3926,17 @@ export type OperationUpdateWithoutCustomerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -3236,9 +3966,17 @@ export type OperationUncheckedUpdateWithoutCustomerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -3265,9 +4003,17 @@ export type OperationUncheckedUpdateManyWithoutCustomerInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OperationCreateManyTenantInput = {
@@ -3282,9 +4028,17 @@ export type OperationCreateManyTenantInput = {
   paymentStatus: $Enums.PaymentStatus
   subtotal?: number | null
   discountAmount?: number | null
+  taxAmount?: number | null
+  taxRate?: number | null
+  roundingAmount?: number | null
+  totalBeforeRounding?: number | null
   totalAmount: number
   date: Date | string
   createdAt?: Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: number | null
+  configVersion?: Date | string | null
 }
 
 export type OperationUpdateWithoutTenantInput = {
@@ -3296,9 +4050,17 @@ export type OperationUpdateWithoutTenantInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUpdateManyWithoutOperationNestedInput
@@ -3328,9 +4090,17 @@ export type OperationUncheckedUpdateWithoutTenantInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   clientCreditLedgers?: Prisma.ClientCreditLedgerUncheckedUpdateManyWithoutOperationNestedInput
   clientLoyaltyLedgers?: Prisma.ClientLoyaltyLedgerUncheckedUpdateManyWithoutOperationNestedInput
   guarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutOperationNestedInput
@@ -3357,9 +4127,17 @@ export type OperationUncheckedUpdateManyWithoutTenantInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   subtotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   discountAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  roundingAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalBeforeRounding?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  policySnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  configSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  policyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  configVersion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -3505,9 +4283,17 @@ export type OperationSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   paymentStatus?: boolean
   subtotal?: boolean
   discountAmount?: boolean
+  taxAmount?: boolean
+  taxRate?: boolean
+  roundingAmount?: boolean
+  totalBeforeRounding?: boolean
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
+  policySnapshot?: boolean
+  configSnapshot?: boolean
+  policyVersion?: boolean
+  configVersion?: boolean
   clientCreditLedgers?: boolean | Prisma.Operation$clientCreditLedgersArgs<ExtArgs>
   clientLoyaltyLedgers?: boolean | Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs>
   guarantees?: boolean | Prisma.Operation$guaranteesArgs<ExtArgs>
@@ -3540,9 +4326,17 @@ export type OperationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   paymentStatus?: boolean
   subtotal?: boolean
   discountAmount?: boolean
+  taxAmount?: boolean
+  taxRate?: boolean
+  roundingAmount?: boolean
+  totalBeforeRounding?: boolean
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
+  policySnapshot?: boolean
+  configSnapshot?: boolean
+  policyVersion?: boolean
+  configVersion?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
   seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3562,9 +4356,17 @@ export type OperationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   paymentStatus?: boolean
   subtotal?: boolean
   discountAmount?: boolean
+  taxAmount?: boolean
+  taxRate?: boolean
+  roundingAmount?: boolean
+  totalBeforeRounding?: boolean
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
+  policySnapshot?: boolean
+  configSnapshot?: boolean
+  policyVersion?: boolean
+  configVersion?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Operation$customerArgs<ExtArgs>
   seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3584,12 +4386,20 @@ export type OperationSelectScalar = {
   paymentStatus?: boolean
   subtotal?: boolean
   discountAmount?: boolean
+  taxAmount?: boolean
+  taxRate?: boolean
+  roundingAmount?: boolean
+  totalBeforeRounding?: boolean
   totalAmount?: boolean
   date?: boolean
   createdAt?: boolean
+  policySnapshot?: boolean
+  configSnapshot?: boolean
+  policyVersion?: boolean
+  configVersion?: boolean
 }
 
-export type OperationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "referenceCode" | "branchId" | "sellerId" | "type" | "customerMode" | "customerId" | "status" | "paymentStatus" | "subtotal" | "discountAmount" | "totalAmount" | "date" | "createdAt", ExtArgs["result"]["operation"]>
+export type OperationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "referenceCode" | "branchId" | "sellerId" | "type" | "customerMode" | "customerId" | "status" | "paymentStatus" | "subtotal" | "discountAmount" | "taxAmount" | "taxRate" | "roundingAmount" | "totalBeforeRounding" | "totalAmount" | "date" | "createdAt" | "policySnapshot" | "configSnapshot" | "policyVersion" | "configVersion", ExtArgs["result"]["operation"]>
 export type OperationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   clientCreditLedgers?: boolean | Prisma.Operation$clientCreditLedgersArgs<ExtArgs>
   clientLoyaltyLedgers?: boolean | Prisma.Operation$clientLoyaltyLedgersArgs<ExtArgs>
@@ -3655,9 +4465,17 @@ export type $OperationPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     paymentStatus: $Enums.PaymentStatus
     subtotal: number | null
     discountAmount: number | null
+    taxAmount: number | null
+    taxRate: number | null
+    roundingAmount: number | null
+    totalBeforeRounding: number | null
     totalAmount: number
     date: Date
     createdAt: Date
+    policySnapshot: runtime.JsonValue | null
+    configSnapshot: runtime.JsonValue | null
+    policyVersion: number | null
+    configVersion: Date | null
   }, ExtArgs["result"]["operation"]>
   composites: {}
 }
@@ -4109,9 +4927,17 @@ export interface OperationFieldRefs {
   readonly paymentStatus: Prisma.FieldRef<"Operation", 'PaymentStatus'>
   readonly subtotal: Prisma.FieldRef<"Operation", 'Float'>
   readonly discountAmount: Prisma.FieldRef<"Operation", 'Float'>
+  readonly taxAmount: Prisma.FieldRef<"Operation", 'Float'>
+  readonly taxRate: Prisma.FieldRef<"Operation", 'Float'>
+  readonly roundingAmount: Prisma.FieldRef<"Operation", 'Float'>
+  readonly totalBeforeRounding: Prisma.FieldRef<"Operation", 'Float'>
   readonly totalAmount: Prisma.FieldRef<"Operation", 'Float'>
   readonly date: Prisma.FieldRef<"Operation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Operation", 'DateTime'>
+  readonly policySnapshot: Prisma.FieldRef<"Operation", 'Json'>
+  readonly configSnapshot: Prisma.FieldRef<"Operation", 'Json'>
+  readonly policyVersion: Prisma.FieldRef<"Operation", 'Int'>
+  readonly configVersion: Prisma.FieldRef<"Operation", 'DateTime'>
 }
     
 

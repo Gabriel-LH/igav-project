@@ -7,19 +7,18 @@ export const DEFAULT_TENANT_CONFIG: Omit<TenantConfig, "tenantId" | "createdAt">
     rate: 0.18,
     calculationMode: "TAX_EXCLUDED",
     rounding: {
-      strategy: "HALF_UP",
+      strategy: "FLOOR",
       applyOn: "TOTAL",
-      roundTo: 0.01,
+      roundTo: 0.10,
     },
   },
   pricing: {
     allowNegativeStock: false,
     pricePrecision: 2,
-  },
-  discounts: {
-    maxPercentageAllowed: 50,
-    requireAdminAuthOver: 20,
-    allowStacking: true,
+    allowDiscountStacking: true,
+    maxDiscountLimit: 50,
+    requirePinForHighDiscount: true,
+    highDiscountThreshold: 20,
   },
   loyalty: {
     enabled: true,
@@ -85,7 +84,6 @@ export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<
     allowManualAdjustments: true,
     requireReasonForAdjustment: true,
     autoOrderThreshold: 5,
-    autoBlockStockIfReserved: true,
   },
   financial: {
     allowNegativeBalance: false,
@@ -94,8 +92,6 @@ export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<
     autoApplyChargesOnDamage: true,
   },
   security: {
-    requirePinForHighDiscount: true,
-    highDiscountThreshold: 20,
     requirePinForCancelOperation: true,
     requirePinForManualPriceEdit: true,
     requireManagerApprovalForVoid: true,

@@ -7,6 +7,7 @@ export interface PromotionRepository {
   getPromotionById(tenantId: string, promotionId: string): Promise<Promotion | null>;
   getPromotionsByTenant(tenantId: string, opts?: { includeInactive?: boolean }): Promise<Promotion[]>;
   togglePromotion(promotionId: string, isActive: boolean): Promise<void>;
+  deletePromotion(promotionId: string): Promise<void>;
 
   // Memoria / UI State (Zustand)
   setPromotions(promotions: Promotion[]): void;

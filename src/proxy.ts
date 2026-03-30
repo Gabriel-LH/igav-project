@@ -1,29 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "./lib/auth";
+import { getSessionCookie } from "better-auth/cookies";
 
 export async function proxy(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
+  const sessionToken = getSessionCookie(request.headers);
+  const hasSession = Boolean(sessionToken);
 
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/superadmin/auth/login")) {
-    if (session?.user.globalRole === "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
-    }
-    if (session) {
+    if (hasSession) {
       return NextResponse.redirect(new URL("/tenant/home", request.url));
     }
     return NextResponse.next();
   }
 
   if (pathname.startsWith("/auth/login")) {
-    if (session?.user.globalRole === "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
-    }
-    if (session) {
+    if (hasSession) {
       return NextResponse.redirect(new URL("/tenant/home", request.url));
     }
     return NextResponse.next();
@@ -34,19 +27,15 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith("/superadmin")) {
-    if (!session) {
+    if (!hasSession) {
       return NextResponse.redirect(
         new URL("/superadmin/auth/login", request.url),
       );
     }
-
-    if (session.user.globalRole !== "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/tenant/home", request.url));
-    }
   }
 
   if (pathname.startsWith("/tenant")) {
-    if (!session) {
+    if (!hasSession) {
       // Avoid redirect loops on prefetch or during cookie propagation.
       if (request.headers.get("purpose") === "prefetch") {
         return NextResponse.next();
@@ -55,9 +44,6 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(
         new URL(`/auth/login?redirect=${encodeURIComponent(from.pathname + from.search)}`, request.url),
       );
-    }
-    if (session.user.globalRole === "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", request.url));
     }
   }
 

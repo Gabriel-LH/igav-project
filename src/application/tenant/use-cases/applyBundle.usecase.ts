@@ -7,6 +7,7 @@ import { InventoryRepository } from "../../../domain/tenant/repositories/Invento
 import { PromotionRepository } from "../../../domain/tenant/repositories/PromotionRepository";
 import { CartItem } from "../../../types/cart/type.cart";
 import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
+import { TenantPolicy } from "../../../types/tenant/type.tenantPolicy";
 
 export class ApplyBundleUseCase {
   private bundleDomainService: BundleDomainService;
@@ -40,6 +41,7 @@ export class ApplyBundleUseCase {
     startDate: Date,
     endDate: Date,
     config: TenantConfig,
+    policy?: TenantPolicy | null,
   ) {
     const promotions = await this.promotionRepo.getPromotionsByTenant(tenantId);
     const inventoryItems = await this.inventoryRepo.getInventoryItems();
@@ -55,6 +57,7 @@ export class ApplyBundleUseCase {
       endDate,
       promotions,
       config,
+      policy,
       inventoryItems,
       stockLots,
       productVariants,

@@ -30,10 +30,27 @@ export const promotionSchema = z.object({
   requiresCode: z.boolean().default(false),
   singleUsePerCustomer: z.boolean().default(false),
   usageType: z.enum(["automatic", "coupon", "referral"]).default("automatic").optional(),
+  isDeleted: z.boolean().default(false),
+  deletedAt: z.date().optional(),
+  deletedBy: z.string().optional(),
   createdAt: z.date(),
   createdBy: z.string().optional(),
   updatedAt: z.date().optional(),
   updatedBy: z.string().optional(),
 });
 
+
 export type Promotion = z.infer<typeof promotionSchema>;
+
+// Esquema específico para la creación (omite campos generados por el servidor)
+export const createPromotionSchema = promotionSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  usedCount: true,
+  createdBy: true,
+  updatedBy: true,
+  tenantId: true,
+});
+
+export type CreatePromotionInput = z.infer<typeof createPromotionSchema>;

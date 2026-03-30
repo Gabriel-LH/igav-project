@@ -263,6 +263,7 @@ export type UserWhereInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryListRelationFilter
   userAttendances?: Prisma.UserAttendanceListRelationFilter
   userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -296,6 +297,7 @@ export type UserOrderByWithRelationInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryOrderByRelationAggregateInput
   userAttendances?: Prisma.UserAttendanceOrderByRelationAggregateInput
   userBranchAccesses?: Prisma.UserBranchAccessOrderByRelationAggregateInput
+  priceHistories?: Prisma.PriceHistoryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -332,6 +334,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryListRelationFilter
   userAttendances?: Prisma.UserAttendanceListRelationFilter
   userBranchAccesses?: Prisma.UserBranchAccessListRelationFilter
+  priceHistories?: Prisma.PriceHistoryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -403,6 +406,7 @@ export type UserCreateInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -436,6 +440,7 @@ export type UserUncheckedCreateInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -469,6 +474,7 @@ export type UserUpdateInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -502,6 +508,7 @@ export type UserUncheckedUpdateInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -782,6 +789,20 @@ export type UserUpdateOneRequiredWithoutPaymentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPaymentsInput, Prisma.UserUpdateWithoutPaymentsInput>, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
 }
 
+export type UserCreateNestedOneWithoutPriceHistoriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPriceHistoriesInput, Prisma.UserUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPriceHistoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPriceHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPriceHistoriesInput, Prisma.UserUncheckedCreateWithoutPriceHistoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPriceHistoriesInput
+  upsert?: Prisma.UserUpsertWithoutPriceHistoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPriceHistoriesInput, Prisma.UserUpdateWithoutPriceHistoriesInput>, Prisma.UserUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
 export type UserCreateNestedOneWithoutStockMovementsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutStockMovementsInput, Prisma.UserUncheckedCreateWithoutStockMovementsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutStockMovementsInput
@@ -914,6 +935,7 @@ export type UserCreateWithoutSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -946,6 +968,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -994,6 +1017,7 @@ export type UserUpdateWithoutSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1026,6 +1050,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1058,6 +1083,7 @@ export type UserCreateWithoutAccountsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1090,6 +1116,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1138,6 +1165,7 @@ export type UserUpdateWithoutAccountsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1170,6 +1198,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserBranchAccessesInput = {
@@ -1202,6 +1231,7 @@ export type UserCreateWithoutUserBranchAccessesInput = {
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserBranchAccessesInput = {
@@ -1234,6 +1264,7 @@ export type UserUncheckedCreateWithoutUserBranchAccessesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserBranchAccessesInput = {
@@ -1282,6 +1313,7 @@ export type UserUpdateWithoutUserBranchAccessesInput = {
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserBranchAccessesInput = {
@@ -1314,6 +1346,7 @@ export type UserUncheckedUpdateWithoutUserBranchAccessesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserAttendancesInput = {
@@ -1346,6 +1379,7 @@ export type UserCreateWithoutUserAttendancesInput = {
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserAttendancesInput = {
@@ -1378,6 +1412,7 @@ export type UserUncheckedCreateWithoutUserAttendancesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserAttendancesInput = {
@@ -1426,6 +1461,7 @@ export type UserUpdateWithoutUserAttendancesInput = {
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserAttendancesInput = {
@@ -1458,6 +1494,7 @@ export type UserUncheckedUpdateWithoutUserAttendancesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutClosedCashSessionsInput = {
@@ -1490,6 +1527,7 @@ export type UserCreateWithoutClosedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClosedCashSessionsInput = {
@@ -1522,6 +1560,7 @@ export type UserUncheckedCreateWithoutClosedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClosedCashSessionsInput = {
@@ -1559,6 +1598,7 @@ export type UserCreateWithoutOpenedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOpenedCashSessionsInput = {
@@ -1591,6 +1631,7 @@ export type UserUncheckedCreateWithoutOpenedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOpenedCashSessionsInput = {
@@ -1639,6 +1680,7 @@ export type UserUpdateWithoutClosedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClosedCashSessionsInput = {
@@ -1671,6 +1713,7 @@ export type UserUncheckedUpdateWithoutClosedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutOpenedCashSessionsInput = {
@@ -1714,6 +1757,7 @@ export type UserUpdateWithoutOpenedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpenedCashSessionsInput = {
@@ -1746,6 +1790,7 @@ export type UserUncheckedUpdateWithoutOpenedCashSessionsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReceivedGuaranteesInput = {
@@ -1778,6 +1823,7 @@ export type UserCreateWithoutReceivedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReceivedGuaranteesInput = {
@@ -1810,6 +1856,7 @@ export type UserUncheckedCreateWithoutReceivedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReceivedGuaranteesInput = {
@@ -1847,6 +1894,7 @@ export type UserCreateWithoutReturnedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReturnedGuaranteesInput = {
@@ -1879,6 +1927,7 @@ export type UserUncheckedCreateWithoutReturnedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReturnedGuaranteesInput = {
@@ -1927,6 +1976,7 @@ export type UserUpdateWithoutReceivedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReceivedGuaranteesInput = {
@@ -1959,6 +2009,7 @@ export type UserUncheckedUpdateWithoutReceivedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReturnedGuaranteesInput = {
@@ -2002,6 +2053,7 @@ export type UserUpdateWithoutReturnedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReturnedGuaranteesInput = {
@@ -2034,6 +2086,7 @@ export type UserUncheckedUpdateWithoutReturnedGuaranteesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOperationsInput = {
@@ -2066,6 +2119,7 @@ export type UserCreateWithoutOperationsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOperationsInput = {
@@ -2098,6 +2152,7 @@ export type UserUncheckedCreateWithoutOperationsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOperationsInput = {
@@ -2146,6 +2201,7 @@ export type UserUpdateWithoutOperationsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOperationsInput = {
@@ -2178,6 +2234,7 @@ export type UserUncheckedUpdateWithoutOperationsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPaymentsInput = {
@@ -2210,6 +2267,7 @@ export type UserCreateWithoutPaymentsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -2242,6 +2300,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -2290,6 +2349,7 @@ export type UserUpdateWithoutPaymentsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -2314,6 +2374,155 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPriceHistoriesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionCreateNestedManyWithoutOpenedByInput
+  receivedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPriceHistoriesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.StatusUser
+  createdBy?: string
+  updatedBy?: string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  globalRole?: $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  closedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutClosedByInput
+  openedCashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutOpenedByInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReceivedByInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedCreateNestedManyWithoutReturnedByInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutSellerInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutChangedByUserInput
+  tenants?: Prisma.TenantUncheckedCreateNestedManyWithoutOwnerInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUncheckedCreateNestedManyWithoutUserInput
+  tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
+  userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
+  userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPriceHistoriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPriceHistoriesInput, Prisma.UserUncheckedCreateWithoutPriceHistoriesInput>
+}
+
+export type UserUpsertWithoutPriceHistoriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPriceHistoriesInput, Prisma.UserUncheckedUpdateWithoutPriceHistoriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPriceHistoriesInput, Prisma.UserUncheckedCreateWithoutPriceHistoriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPriceHistoriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPriceHistoriesInput, Prisma.UserUncheckedUpdateWithoutPriceHistoriesInput>
+}
+
+export type UserUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUpdateManyWithoutOpenedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUpdateManyWithoutReturnedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutReceivedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutChangedByUserNestedInput
+  tenants?: Prisma.TenantUpdateManyWithoutOwnerNestedInput
+  userTenantMemberships?: Prisma.UserTenantMembershipUpdateManyWithoutUserNestedInput
+  tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
+  tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
+  userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
+  userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPriceHistoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumStatusUserFieldUpdateOperationsInput | $Enums.StatusUser
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  globalRole?: Prisma.EnumGlobalRoleFieldUpdateOperationsInput | $Enums.GlobalRole
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  closedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutClosedByNestedInput
+  openedCashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutOpenedByNestedInput
+  receivedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReceivedByNestedInput
+  returnedGuarantees?: Prisma.GuaranteeUncheckedUpdateManyWithoutReturnedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutSellerNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutReceivedByNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutChangedByUserNestedInput
   tenants?: Prisma.TenantUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2354,6 +2563,7 @@ export type UserCreateWithoutStockMovementsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStockMovementsInput = {
@@ -2386,6 +2596,7 @@ export type UserUncheckedCreateWithoutStockMovementsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStockMovementsInput = {
@@ -2434,6 +2645,7 @@ export type UserUpdateWithoutStockMovementsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStockMovementsInput = {
@@ -2466,6 +2678,7 @@ export type UserUncheckedUpdateWithoutStockMovementsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantsInput = {
@@ -2498,6 +2711,7 @@ export type UserCreateWithoutTenantsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantsInput = {
@@ -2530,6 +2744,7 @@ export type UserUncheckedCreateWithoutTenantsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantsInput = {
@@ -2578,6 +2793,7 @@ export type UserUpdateWithoutTenantsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantsInput = {
@@ -2610,6 +2826,7 @@ export type UserUncheckedUpdateWithoutTenantsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantPoliciesInput = {
@@ -2642,6 +2859,7 @@ export type UserCreateWithoutTenantPoliciesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantPoliciesInput = {
@@ -2674,6 +2892,7 @@ export type UserUncheckedCreateWithoutTenantPoliciesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantPoliciesInput = {
@@ -2722,6 +2941,7 @@ export type UserUpdateWithoutTenantPoliciesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantPoliciesInput = {
@@ -2754,6 +2974,7 @@ export type UserUncheckedUpdateWithoutTenantPoliciesInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTenantPolicyHistoriesInput = {
@@ -2786,6 +3007,7 @@ export type UserCreateWithoutTenantPolicyHistoriesInput = {
   tenantPolicies?: Prisma.TenantPolicyCreateNestedManyWithoutUpdatedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTenantPolicyHistoriesInput = {
@@ -2818,6 +3040,7 @@ export type UserUncheckedCreateWithoutTenantPolicyHistoriesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedCreateNestedManyWithoutUpdatedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTenantPolicyHistoriesInput = {
@@ -2866,6 +3089,7 @@ export type UserUpdateWithoutTenantPolicyHistoriesInput = {
   tenantPolicies?: Prisma.TenantPolicyUpdateManyWithoutUpdatedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantPolicyHistoriesInput = {
@@ -2898,6 +3122,7 @@ export type UserUncheckedUpdateWithoutTenantPolicyHistoriesInput = {
   tenantPolicies?: Prisma.TenantPolicyUncheckedUpdateManyWithoutUpdatedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsAcceptedInput = {
@@ -2930,6 +3155,7 @@ export type UserCreateWithoutInvitationsAcceptedInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
@@ -2962,6 +3188,7 @@ export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsAcceptedInput = {
@@ -2999,6 +3226,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsSentInput = {
@@ -3031,6 +3259,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsSentInput = {
@@ -3079,6 +3308,7 @@ export type UserUpdateWithoutInvitationsAcceptedInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
@@ -3111,6 +3341,7 @@ export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutInvitationsSentInput = {
@@ -3154,6 +3385,7 @@ export type UserUpdateWithoutInvitationsSentInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsSentInput = {
@@ -3186,6 +3418,7 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserTenantMembershipsInput = {
@@ -3218,6 +3451,7 @@ export type UserCreateWithoutUserTenantMembershipsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserTenantMembershipsInput = {
@@ -3250,6 +3484,7 @@ export type UserUncheckedCreateWithoutUserTenantMembershipsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userAttendances?: Prisma.UserAttendanceUncheckedCreateNestedManyWithoutUserInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedCreateNestedManyWithoutUserInput
+  priceHistories?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserTenantMembershipsInput = {
@@ -3298,6 +3533,7 @@ export type UserUpdateWithoutUserTenantMembershipsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserTenantMembershipsInput = {
@@ -3330,6 +3566,7 @@ export type UserUncheckedUpdateWithoutUserTenantMembershipsInput = {
   tenantPolicyHistories?: Prisma.TenantPolicyHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userAttendances?: Prisma.UserAttendanceUncheckedUpdateManyWithoutUserNestedInput
   userBranchAccesses?: Prisma.UserBranchAccessUncheckedUpdateManyWithoutUserNestedInput
+  priceHistories?: Prisma.PriceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -3355,6 +3592,7 @@ export type UserCountOutputType = {
   tenantPolicyHistories: number
   userAttendances: number
   userBranchAccesses: number
+  priceHistories: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3375,6 +3613,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   tenantPolicyHistories?: boolean | UserCountOutputTypeCountTenantPolicyHistoriesArgs
   userAttendances?: boolean | UserCountOutputTypeCountUserAttendancesArgs
   userBranchAccesses?: boolean | UserCountOutputTypeCountUserBranchAccessesArgs
+  priceHistories?: boolean | UserCountOutputTypeCountPriceHistoriesArgs
 }
 
 /**
@@ -3506,6 +3745,13 @@ export type UserCountOutputTypeCountUserBranchAccessesArgs<ExtArgs extends runti
   where?: Prisma.UserBranchAccessWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPriceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PriceHistoryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3538,6 +3784,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   tenantPolicyHistories?: boolean | Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>
   userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
   userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.User$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3608,6 +3855,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   tenantPolicyHistories?: boolean | Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>
   userAttendances?: boolean | Prisma.User$userAttendancesArgs<ExtArgs>
   userBranchAccesses?: boolean | Prisma.User$userBranchAccessesArgs<ExtArgs>
+  priceHistories?: boolean | Prisma.User$priceHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3633,6 +3881,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     tenantPolicyHistories: Prisma.$TenantPolicyHistoryPayload<ExtArgs>[]
     userAttendances: Prisma.$UserAttendancePayload<ExtArgs>[]
     userBranchAccesses: Prisma.$UserBranchAccessPayload<ExtArgs>[]
+    priceHistories: Prisma.$PriceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4059,6 +4308,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   tenantPolicyHistories<T extends Prisma.User$tenantPolicyHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tenantPolicyHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantPolicyHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userAttendances<T extends Prisma.User$userAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userBranchAccesses<T extends Prisma.User$userBranchAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userBranchAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBranchAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  priceHistories<T extends Prisma.User$priceHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$priceHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4894,6 +5144,30 @@ export type User$userBranchAccessesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.UserBranchAccessScalarFieldEnum | Prisma.UserBranchAccessScalarFieldEnum[]
+}
+
+/**
+ * User.priceHistories
+ */
+export type User$priceHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PriceHistory
+   */
+  select?: Prisma.PriceHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PriceHistory
+   */
+  omit?: Prisma.PriceHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PriceHistoryInclude<ExtArgs> | null
+  where?: Prisma.PriceHistoryWhereInput
+  orderBy?: Prisma.PriceHistoryOrderByWithRelationInput | Prisma.PriceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.PriceHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PriceHistoryScalarFieldEnum | Prisma.PriceHistoryScalarFieldEnum[]
 }
 
 /**

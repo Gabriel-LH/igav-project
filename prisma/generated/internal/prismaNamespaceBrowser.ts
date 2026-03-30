@@ -596,9 +596,17 @@ export const OperationScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   subtotal: 'subtotal',
   discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  taxRate: 'taxRate',
+  roundingAmount: 'roundingAmount',
+  totalBeforeRounding: 'totalBeforeRounding',
   totalAmount: 'totalAmount',
   date: 'date',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  policySnapshot: 'policySnapshot',
+  configSnapshot: 'configSnapshot',
+  policyVersion: 'policyVersion',
+  configVersion: 'configVersion'
 } as const
 
 export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof typeof OperationScalarFieldEnum]
@@ -606,6 +614,7 @@ export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof t
 
 export const PaymentMethodScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   type: 'type',
   active: 'active',
@@ -965,7 +974,10 @@ export const PromotionScalarFieldEnum = {
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
-  updatedBy: 'updatedBy'
+  updatedBy: 'updatedBy',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 } as const
 
 export type PromotionScalarFieldEnum = (typeof PromotionScalarFieldEnum)[keyof typeof PromotionScalarFieldEnum]

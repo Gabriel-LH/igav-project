@@ -1,0 +1,20 @@
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 28.8s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/(superadmin)/superadmin/(protected)/layout.tsx:28:5
+Type error: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+  26 |
+  27 |   const mappedUser: AppUser = {
+> 28 |     id: session.user.id,
+     |     ^
+  29 |     userName: session.user.name,
+  30 |     firstName: firstName,
+  31 |     lastName: lastName,
+Next.js build worker exited with code: 1 and signal: null

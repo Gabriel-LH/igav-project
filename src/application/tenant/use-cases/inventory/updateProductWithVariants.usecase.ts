@@ -107,6 +107,28 @@ export class UpdateProductWithVariantsUseCase {
     }
 
     for (const { variantId, updates: variantUpdates } of toUpdate) {
+      const existing = currentVariants.find((v) => v.id === variantId);
+      if (existing) {
+        const priceKeys: ("priceSell" | "priceRent" | "purchasePrice")[] = [
+          "priceSell",
+          "priceRent",
+          "purchasePrice",
+        ];
+        for (const key of priceKeys) {
+          const newVal = variantUpdates[key];
+          const oldVal = existing[key as keyof typeof existing] as number;
+          if (newVal !== undefined && newVal !== oldVal) {
+            await this.productRepo.createPriceHistory({
+              tenantId: input.tenantId,
+              variantId: variantId,
+              oldPrice: oldVal || 0,
+              newPrice: newVal,
+              reason: "adjustment",
+              userId: input.userId,
+            });
+          }
+        }
+      }
       await this.productRepo.updateVariant(variantId, variantUpdates);
     }
 

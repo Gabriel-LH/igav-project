@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const salesPolicySchema = z.object({
   allowReturns: z.boolean().default(true),
-  maxReturnDays: z.number().default(30),
+  maxReturnDays: z.number().min(0).default(30),
   allowPriceEdit: z.boolean().default(false),
   requireReasonForCancel: z.boolean().default(true),
   autoCompleteDelivery: z.boolean().default(true),
@@ -41,7 +41,6 @@ export const inventoryPolicySchema = z.object({
   allowManualAdjustments: z.boolean().default(true),
   requireReasonForAdjustment: z.boolean().default(true),
   autoOrderThreshold: z.number().default(5),
-  autoBlockStockIfReserved: z.boolean().default(true),
 });
 
 export const financialPolicySchema = z.object({
@@ -52,8 +51,6 @@ export const financialPolicySchema = z.object({
 });
 
 export const securityPolicySchema = z.object({
-  requirePinForHighDiscount: z.boolean().default(true),
-  highDiscountThreshold: z.number().default(20),
   requirePinForCancelOperation: z.boolean().default(true),
   requirePinForManualPriceEdit: z.boolean().default(true),
   requireManagerApprovalForVoid: z.boolean().default(true),

@@ -48,6 +48,13 @@ export class CreateOperationUseCase {
       type: dto.type,
       status: "en_progreso",
       paymentStatus: operationPaymentStatus,
+      subtotal: dto.financials?.subtotal,
+      discountAmount: dto.financials?.totalDiscount,
+      taxAmount: dto.financials?.taxAmount,
+      taxRate: (snapshots?.configSnapshot as Record<string, any>)?.tenant?.tax?.rate
+        ?? (snapshots?.configSnapshot as Record<string, any>)?.tax?.rate,
+      roundingAmount: dto.financials?.roundingDifference,
+      totalBeforeRounding: dto.financials?.totalBeforeRounding,
       totalAmount,
       date: now,
       createdAt: now,

@@ -1,7 +1,9 @@
-import { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { DEFAULT_TENANT_CONFIG, DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { CartOperationType } from "@/src/types/cart/type.cart";
 import { Product } from "@/src/types/product/type.product";
 import { Promotion } from "@/src/types/promotion/type.promotion";
+import { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
+import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export interface ApplyPricingEngineInput {
   product: Product;
@@ -9,6 +11,7 @@ export interface ApplyPricingEngineInput {
   listPrice: number;
   promotions: Promotion[];
   config: TenantConfig;
+  policy?: TenantPolicy | null;
   manualDiscountAmount?: number;
   manualDiscountReason?: string;
   explicitBundle?: {
@@ -40,7 +43,10 @@ const isPromotionActive = (promotion: Promotion, now = new Date()) => {
 const appliesToProduct = (promotion: Promotion, product: Product) => {
   if (promotion.scope === "global") return true;
   if (promotion.scope === "category") {
-    return (product.categoryId && promotion.targetIds?.includes(product.categoryId)) ?? false;
+    return (
+      (product.categoryId && promotion.targetIds?.includes(product.categoryId)) ??
+      false
+    );
   }
   if (promotion.scope === "product_specific") {
     return promotion.targetIds?.includes(product.id) ?? false;
@@ -48,10 +54,7 @@ const appliesToProduct = (promotion: Promotion, product: Product) => {
   return false;
 };
 
-const calculatePromotionDiscount = (
-  listPrice: number,
-  promotion: Promotion,
-): number => {
+const calculatePromotionDiscount = (listPrice: number, promotion: Promotion): number => {
   if (promotion.type === "percentage") {
     const percent = promotion.value ?? 0;
     return listPrice * (percent / 100);
@@ -62,20 +65,32 @@ const calculatePromotionDiscount = (
   return 0;
 };
 
-export function applyPricingEngine(
-  input: ApplyPricingEngineInput,
-): ApplyPricingEngineResult {
+const buildFallbackPolicy = (): TenantPolicy =>
+  ({
+    id: "default",
+    tenantId: "default",
+    version: 1,
+    isActive: true,
+    createdAt: new Date(),
+    updatedBy: "system",
+    ...DEFAULT_TENANT_POLICY_SECTIONS,
+  }) as TenantPolicy;
+
+export function applyPricingEngine(input: ApplyPricingEngineInput): ApplyPricingEngineResult {
   const {
     product,
     listPrice,
     operationType,
     promotions,
     config,
+    policy,
     manualDiscountAmount = 0,
     manualDiscountReason,
     explicitBundle,
   } = input;
 
+  const safeConfig = config || (DEFAULT_TENANT_CONFIG as TenantConfig);
+  const safePolicy = policy ?? buildFallbackPolicy();
   const safeListPrice = Math.max(0, listPrice);
 
   if (explicitBundle) {
@@ -95,20 +110,17 @@ export function applyPricingEngine(
   const activePromotions = promotions
     .filter((promotion) => isPromotionActive(promotion))
     .filter((promotion) => appliesToProduct(promotion, product))
-    .filter((promotion) => {
+    .filter(() => {
       if (operationType === "venta") return product.can_sell;
       return product.can_rent;
     });
 
-  const bestPromotion = activePromotions.reduce<Promotion | null>(
-    (best, current) => {
-      if (!best) return current;
-      const bestDiscount = calculatePromotionDiscount(safeListPrice, best);
-      const currentDiscount = calculatePromotionDiscount(safeListPrice, current);
-      return currentDiscount > bestDiscount ? current : best;
-    },
-    null,
-  );
+  const bestPromotion = activePromotions.reduce<Promotion | null>((best, current) => {
+    if (!best) return current;
+    const bestDiscount = calculatePromotionDiscount(safeListPrice, best);
+    const currentDiscount = calculatePromotionDiscount(safeListPrice, current);
+    return currentDiscount > bestDiscount ? current : best;
+  }, null);
 
   const isExclusive = bestPromotion?.isExclusive ?? false;
   const promotionDiscount = bestPromotion
@@ -116,7 +128,7 @@ export function applyPricingEngine(
     : 0;
 
   const allowPromotionAndManual =
-    !isExclusive && config.discounts.allowStacking;
+    !isExclusive && safeConfig.pricing.allowDiscountStacking;
 
   const desiredManualDiscount = allowPromotionAndManual
     ? manualDiscountAmount
@@ -124,15 +136,21 @@ export function applyPricingEngine(
       ? 0
       : manualDiscountAmount;
 
-  // En el nuevo schema, maxPercentageAllowed es un número entero (ej: 50 para 50%)
-  const maxManualDiscount = safeListPrice * (config.discounts.maxPercentageAllowed / 100);
-  const boundedManualDiscount = Math.min(Math.max(0, desiredManualDiscount), maxManualDiscount);
+  const maxManualDiscount =
+    safeListPrice * (safeConfig.pricing.maxDiscountLimit / 100);
+  const boundedManualDiscount = Math.min(
+    Math.max(0, desiredManualDiscount),
+    maxManualDiscount,
+  );
+  const discountPercent =
+    safeListPrice > 0
+      ? roundToCents((boundedManualDiscount / safeListPrice) * 100)
+      : 0;
 
-  // requireAdminAuthOver también es un entero (ej: 20 para 20%)
   const requiresAdminAuth =
+    safeConfig.pricing.requirePinForHighDiscount &&
     safeListPrice > 0 &&
-    (boundedManualDiscount / safeListPrice) * 100 >
-      config.discounts.requireAdminAuthOver;
+    discountPercent >= safeConfig.pricing.highDiscountThreshold;
 
   const totalDiscount = Math.min(
     safeListPrice,
@@ -148,6 +166,7 @@ export function applyPricingEngine(
       bestPromotion?.name ??
       (boundedManualDiscount > 0 ? manualDiscountReason : undefined),
     promotionId: bestPromotion?.id,
+    bundleId: undefined,
     requiresAdminAuth,
   };
 }

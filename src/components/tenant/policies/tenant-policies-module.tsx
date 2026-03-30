@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PolicyConfigForm } from "./policy-config-form";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   getActivePolicyAction,
   upsertPolicyAction,
@@ -11,9 +9,14 @@ import {
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { toast } from "sonner";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { File02Icon } from "@hugeicons/core-free-icons";
 import { PolicyHeader } from "./policy-header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
+import { SalesPoliciesTab } from "./sales-policy-tab";
+import { InventoryPoliciesTab } from "./inventory-policy-tab";
+import { FinancialPoliciesTab } from "./financials-policy-tab";
+import { RentalsPoliciesTab } from "./rentals-policy-tab";
+import { ReservationsPoliciesTab } from "./reservation-policy-tab";
+import { SecurityPoliciesTab } from "./security-policy-tab";
 
 export function TenantPoliciesModule() {
   const [policy, setPolicy] = useState<TenantPolicy | null>(null);
@@ -24,6 +27,11 @@ export function TenantPoliciesModule() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  // 👇 Inicializa react-hook-form
+  const formMethods = useForm({
+    defaultValues: DEFAULT_TENANT_POLICY_SECTIONS,
+  });
+
   useEffect(() => {
     async function loadData() {
       setIsLoading(true);
@@ -32,6 +40,8 @@ export function TenantPoliciesModule() {
         if (res.success && res.data) {
           setPolicy(res.data);
           setOriginalPolicy(res.data);
+          // 👇 Actualiza los valores del formulario cuando carga la data
+          formMethods.reset(res.data);
         } else {
           const defPolicy: TenantPolicy = {
             id: "default",
@@ -44,32 +54,41 @@ export function TenantPoliciesModule() {
           };
           setPolicy(defPolicy);
           setOriginalPolicy(defPolicy);
+          // 👇 Reset con valores por defecto
+          formMethods.reset(defPolicy);
         }
-      } catch (error) {
-        console.error("Error loading policies:", error);
+      } catch (err) {
+        console.error("Error loading policies:", err);
       } finally {
         setIsLoading(false);
       }
     }
     loadData();
-  }, []);
+  }, [formMethods]);
+
+  // 👇 Escucha cambios del formulario para actualizar el estado
+  useEffect(() => {
+    const subscription = formMethods.watch((values) => {
+      if (policy) {
+        setPolicy((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            ...values,
+          } as TenantPolicy;
+        });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [formMethods, policy]);
+
+
 
   useEffect(() => {
     if (!policy || !originalPolicy) return;
     const changed = JSON.stringify(policy) !== JSON.stringify(originalPolicy);
     setHasUnsavedChanges(changed);
   }, [policy, originalPolicy]);
-
-  const handlePolicyChange = (section: keyof TenantPolicy, values: any) => {
-    if (!policy) return;
-    setPolicy({
-      ...policy,
-      [section]: {
-        ...(policy[section] as any),
-        ...values,
-      },
-    });
-  };
 
   const handleSave = async () => {
     if (!policy) return;
@@ -83,10 +102,13 @@ export function TenantPoliciesModule() {
         toast.success("Políticas actualizadas correctamente");
         setOriginalPolicy(policy);
         setHasUnsavedChanges(false);
+        // 👇 Confirma los cambios en el formulario
+        formMethods.reset(policy);
       } else {
         toast.error("Error al guardar políticas: " + res.error);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Error saving policies:", err);
       toast.error("Error de conexión al guardar políticas");
     } finally {
       setIsSaving(false);
@@ -95,6 +117,10 @@ export function TenantPoliciesModule() {
 
   const handleCancel = () => {
     setPolicy(originalPolicy);
+    // 👇 Restaura los valores originales en el formulario
+    if (originalPolicy) {
+      formMethods.reset(originalPolicy);
+    }
   };
 
   if (isLoading) {
@@ -111,14 +137,45 @@ export function TenantPoliciesModule() {
   if (!policy) return null;
 
   return (
-    <div className="space-y-6">
-      <PolicyHeader
-        hasUnsavedChanges={hasUnsavedChanges}
-        isSaving={isSaving}
-        handleCancel={handleCancel}
-        handleSave={handleSave}
-      />
-      <PolicyConfigForm policy={policy} onChange={handlePolicyChange} />
-    </div>
+    // 👇 Envuelve TODO con FormProvider
+    <FormProvider {...formMethods}>
+      <div className="space-y-6">
+        <PolicyHeader
+          hasUnsavedChanges={hasUnsavedChanges}
+          isSaving={isSaving}
+          handleCancel={handleCancel}
+          handleSave={handleSave}
+        />
+
+        <Tabs defaultValue="sales">
+          <TabsList>
+            <TabsTrigger value="sales">Ventas</TabsTrigger>
+            <TabsTrigger value="rentals">Alquileres</TabsTrigger>
+            <TabsTrigger value="inventory">Inventario</TabsTrigger>
+            <TabsTrigger value="financials">Finanzas</TabsTrigger>
+            <TabsTrigger value="reservations">Reservaciones</TabsTrigger>
+            <TabsTrigger value="security">Seguridad</TabsTrigger>
+          </TabsList>
+          <TabsContent value="sales">
+            <SalesPoliciesTab />
+          </TabsContent>
+          <TabsContent value="rentals">
+            <RentalsPoliciesTab />
+          </TabsContent>
+          <TabsContent value="inventory">
+            <InventoryPoliciesTab />
+          </TabsContent>
+          <TabsContent value="financials">
+            <FinancialPoliciesTab />
+          </TabsContent>
+          <TabsContent value="reservations">
+            <ReservationsPoliciesTab />
+          </TabsContent>
+          <TabsContent value="security">
+            <SecurityPoliciesTab />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </FormProvider>
   );
 }

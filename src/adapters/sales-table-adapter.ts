@@ -5,6 +5,8 @@ import { Sale } from "../types/sales/type.sale";
 import { SaleItem } from "../types/sales/type.saleItem";
 import { User } from "../types/user/type.user";
 
+import { Operation } from "../types/operation/type.operations";
+
 export interface SaleTableRow {
   id: string;
   amountRefunded: number;
@@ -22,6 +24,9 @@ export interface SaleTableRow {
   product: string;
   count: number;
   income: number;
+  taxAmount: number;
+  roundingAmount: number;
+  totalBeforeRounding: number;
   status: string;
   damage: string;
   searchContent: string;
@@ -33,12 +38,16 @@ export const mapSaleToTable = (
   salesItems: SaleItem[],
   products: Product[],
   users: User[],
+  operations: Operation[],
 ): SaleTableRow[] => {
   const usersById = new Map(users.map(u => [u.id, u]));
+  const operationsById = new Map(operations.map(op => [op.id, op]));
+  
   return sales.map((sale) => {
     const branchName = "Principal";
     const customer = customers.find((c) => c.id === sale.customerId);
     const seller = usersById.get(sale.sellerId);
+    const operation = operationsById.get(sale.operationId);
 
     // 1. Buscamos TODOS los items de esta venta
     const currentItems = salesItems.filter((s) => s.saleId === sale.id);
@@ -121,6 +130,9 @@ export const mapSaleToTable = (
       product: cleanSummary,
       count: totalItems,
       income: sale.totalAmount,
+      taxAmount: operation?.taxAmount || 0,
+      roundingAmount: operation?.roundingAmount || 0,
+      totalBeforeRounding: operation?.totalBeforeRounding || sale.totalAmount,
       status: sale.status,
       damage: "---",
       searchContent,

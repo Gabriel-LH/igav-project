@@ -11,8 +11,10 @@ import { PrismaLoyaltyRepository } from "../repositories/PrismaLoyaltyRepository
 import { PrismaClientCreditRepository } from "../repositories/PrismaClientCreditRepository";
 import { PrismaReferralRepository } from "../repositories/PrismaReferralRepository";
 import { PrismaCouponRepository } from "../repositories/PrismaCouponRepository";
+import { PrismaPromotionAdapter } from "../stores-adapters/prisma-promotion.adapter";
 import { PrismaConfigAdapter } from "../stores-adapters/prisma-config.adapter";
 import { PrismaUnitOfWork } from "../repositories/PrismaUnitOfWork";
+import { CalculateCartPromotionsUseCase } from "@/src/application/tenant/use-cases/promotion/CalculateCartPromotionsUseCase";
 
 import { ProcessTransactionUseCase } from "@/src/application/tenant/use-cases/process-transaction/ProcessTransaction.usecase";
 import { CreateOperationUseCase } from "@/src/application/tenant/use-cases/createOperation.usecase";
@@ -45,6 +47,7 @@ export function makeServerProcessTransaction(
   const clientCreditRepo = new PrismaClientCreditRepository(tx);
   const referralRepo = new PrismaReferralRepository(tx);
   const couponRepo = new PrismaCouponRepository(tx);
+  const promoRepo = new PrismaPromotionAdapter();
   const configRepo = new PrismaConfigAdapter();
 
   // 2. Base Use Cases
@@ -75,6 +78,11 @@ export function makeServerProcessTransaction(
     loyaltyRepo,
     configRepo,
   );
+  
+  const calculatePromotionsUC = new CalculateCartPromotionsUseCase(
+    promoRepo,
+    inventoryRepo
+  );
 
   // 4. Strategies
   const saleStrategy = new SaleTransactionStrategy(createSaleUC);
@@ -93,5 +101,6 @@ export function makeServerProcessTransaction(
     addClientCreditUC,
     rewardLoyaltyUC,
     processReferralUC,
+    calculatePromotionsUC,
   );
 }

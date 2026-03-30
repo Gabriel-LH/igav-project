@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { useBranchStore, GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
+import { GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
 import { useCartStore } from "@/src/store/useCartStore";
 import { toast } from "sonner";
 import { PosProductSection } from "./pos-product-section";
@@ -12,43 +12,28 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
-import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 
 export function PosLayout() {
   const { products, inventoryItems, stockLots } = useInventoryStore();
   const { selectedBranchId } = useInventorySync();
-  const { addItem, applyPromotions, items } = useCartStore();
+  
+  // Use selectors for stability and to prevent unnecessary re-renders
+  const items = useCartStore((s) => s.items);
+  const addItem = useCartStore((s) => s.addItem);
+  const ensureLoaded = useTenantConfigStore((s) => s.ensureLoaded);
 
   const [preferredMode, setPreferredMode] = useState<"venta" | "alquiler">(
     "alquiler",
   );
 
-
-  const promotionsFingerprint = useMemo(
-    () =>
-      items
-        .map((i) =>
-          [
-            i.cartId,
-            i.product.id,
-            i.product.tenantId,
-            i.operationType,
-            i.quantity,
-            i.listPrice ?? 0,
-            i.bundleId ?? "",
-            i.appliedPromotionId ?? "",
-          ].join("::"),
-        )
-        .join("|"),
-    [items],
-  );
-
   useEffect(() => {
-    if (items.length === 0) return;
-    if (!selectedBranchId || selectedBranchId === GLOBAL_BRANCH_ID) return;
-    applyPromotions(selectedBranchId);
-  }, [promotionsFingerprint, items.length, applyPromotions, selectedBranchId]);
+    ensureLoaded();
+  }, [ensureLoaded]);
+
+  // The promotion calculation is now handled internally by the store actions
+  // (addItem, removeItem, updateQuantity, etc.), so we remove the reactive effect.
 
   useBarcodeScanner({
     onScan: (code) => {

@@ -32,6 +32,9 @@ export class PrismaPromotionAdapter implements PromotionRepository {
         usageType: promotion.usageType as any,
         createdBy: promotion.createdBy,
         updatedBy: promotion.updatedBy,
+        isDeleted: promotion.isDeleted ?? false,
+        deletedAt: promotion.deletedAt,
+        deletedBy: promotion.deletedBy,
       },
     });
   }
@@ -59,7 +62,7 @@ export class PrismaPromotionAdapter implements PromotionRepository {
     promotionId: string,
   ): Promise<Promotion | null> {
     const promotion = await this.prisma.promotion.findFirst({
-      where: { id: promotionId, tenantId },
+      where: { id: promotionId, tenantId, isDeleted: false },
     });
 
     if (!promotion) return null;
@@ -81,6 +84,7 @@ export class PrismaPromotionAdapter implements PromotionRepository {
     const promotions = await this.prisma.promotion.findMany({
       where: {
         tenantId,
+        isDeleted: false,
         isActive: opts?.includeInactive ? undefined : true,
       },
       orderBy: { createdAt: "desc" },
@@ -103,6 +107,13 @@ export class PrismaPromotionAdapter implements PromotionRepository {
     await this.prisma.promotion.update({
       where: { id: promotionId },
       data: { isActive },
+    });
+  }
+  
+  async deletePromotion(promotionId: string): Promise<void> {
+    await this.prisma.promotion.update({
+      where: { id: promotionId },
+      data: { isDeleted: true, deletedAt: new Date(), isActive: false },
     });
   }
 

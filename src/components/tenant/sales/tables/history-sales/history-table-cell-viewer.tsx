@@ -162,6 +162,24 @@ export function TableCellViewerHistory({
                 <p className="text-2xl font-black text-emerald-600 tracking-tight">
                   {formatCurrency(item.income)}
                 </p>
+                {item.taxAmount > 0 && (
+                  <div className="mt-2 space-y-1 border-t pt-2 border-dashed">
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>Subtotal (Base):</span>
+                      <span>{formatCurrency(item.totalBeforeRounding - item.taxAmount)}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>IGV:</span>
+                      <span>{formatCurrency(item.taxAmount)}</span>
+                    </div>
+                    {Math.abs(item.roundingAmount) > 0.001 && (
+                      <div className="flex justify-between text-[10px] text-amber-600 font-medium">
+                        <span>Redondeo:</span>
+                        <span>{item.roundingAmount > 0 ? "+" : ""}{formatCurrency(item.roundingAmount)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div>
                 <h4 className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1 mb-1">

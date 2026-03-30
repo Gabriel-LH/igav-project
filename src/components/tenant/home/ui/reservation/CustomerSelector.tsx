@@ -65,7 +65,7 @@ export function CustomerSelector({
           <Button
             variant="outline"
             role="combobox"
-            className="w-full font-normal justify-between h-12"
+            className="w-full font-normal justify-between h-9"
           >
             {value
               ? selected?.firstName + " " + selected?.lastName

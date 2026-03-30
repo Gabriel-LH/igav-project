@@ -4,10 +4,13 @@ import { CartItem } from "../../../types/cart/type.cart";
 import { applyPricingEngine } from "../../../utils/pricing/applyPricingEngine";
 import { getAvailabilityByAttributes } from "../../../utils/reservation/checkAvailability";
 import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
+import { TenantPolicy } from "../../../types/tenant/type.tenantPolicy";
 import { Product } from "../../../types/product/type.product";
 import { InventoryItem } from "../../../types/product/type.inventoryItem";
 import { StockLot } from "../../../types/product/type.stockLote";
 import { ProductVariant } from "../../../types/product/type.productVariant";
+
+const roundToCents = (value: number) => Math.round(value * 100) / 100;
 
 export interface BundleDefinition {
   id: string;
@@ -173,6 +176,7 @@ export class BundleDomainService {
     startDate: Date,
     endDate: Date,
     config: TenantConfig,
+    policy: TenantPolicy | null | undefined,
     productVariants: ProductVariant[],
   ): CartItem[] {
     return cart.map((item) => {
@@ -183,6 +187,7 @@ export class BundleDomainService {
         listPrice,
         promotions: [],
         config: config,
+        policy,
       });
       const unitPrice = pricing.priceAtMoment;
       const subtotal =
@@ -378,6 +383,7 @@ export class BundleDomainService {
     endDate: Date,
     promotions: Promotion[],
     config: TenantConfig,
+    policy: TenantPolicy | null | undefined,
     inventoryItems: InventoryItem[],
     stockLots: StockLot[],
     productVariants: ProductVariant[],
@@ -403,6 +409,7 @@ export class BundleDomainService {
           startDate,
           endDate,
           config,
+          policy,
           productVariants,
         ),
         eligibility,
@@ -414,6 +421,7 @@ export class BundleDomainService {
       startDate,
       endDate,
       config,
+      policy,
       productVariants,
     );
     const requiredTotalByProduct = new Map<string, number>();
@@ -520,14 +528,13 @@ export class BundleDomainService {
 
       if (line.quantity > consumedQty) {
         const remainingQty = line.quantity - consumedQty;
+        const multiplier = this.rentalMultiplier(line, startDate, endDate, productVariants);
+        const rawSubtotal = line.unitPrice * remainingQty * multiplier;
         result.push({
           ...line,
-          cartId: crypto.randomUUID(),
+          cartId: `${line.cartId}-remainder`,
           quantity: remainingQty,
-          subtotal:
-            line.unitPrice *
-            remainingQty *
-            this.rentalMultiplier(line, startDate, endDate, productVariants),
+          subtotal: roundToCents(rawSubtotal),
         });
       }
 
@@ -540,7 +547,7 @@ export class BundleDomainService {
       );
       const baseLineTotal = listPrice * multiplier;
       const adjustedLineTotal = baseLineTotal * factor;
-      const proratedUnitPrice = adjustedLineTotal / multiplier;
+      const proratedUnitPrice = roundToCents(adjustedLineTotal / multiplier);
 
       const pricing = applyPricingEngine({
         product: line.product,
@@ -548,6 +555,7 @@ export class BundleDomainService {
         listPrice,
         promotions: promotions,
         config: config,
+        policy,
         explicitBundle: {
           promotionId: bundleDefinition.id,
           bundleId: sharedBundleGroupId,
@@ -556,9 +564,12 @@ export class BundleDomainService {
         manualDiscountReason: bundleDefinition.name,
       });
 
+      const itemMultiplier = this.rentalMultiplier(line, startDate, endDate, productVariants);
+      const rawLineSubtotal = pricing.priceAtMoment * consumedQty * itemMultiplier;
+
       result.push({
         ...line,
-        cartId: crypto.randomUUID(),
+        cartId: `${line.cartId}-bundle`,
         quantity: consumedQty,
         unitPrice: pricing.priceAtMoment,
         listPrice: pricing.listPrice,
@@ -566,10 +577,7 @@ export class BundleDomainService {
         discountReason: bundleDefinition.name,
         appliedPromotionId: bundleDefinition.id,
         bundleId: sharedBundleGroupId,
-        subtotal:
-          pricing.priceAtMoment *
-          consumedQty *
-          this.rentalMultiplier(line, startDate, endDate, productVariants),
+        subtotal: roundToCents(rawLineSubtotal),
       });
     });
 
@@ -584,6 +592,7 @@ export class BundleDomainService {
     startDate: Date,
     endDate: Date,
     config: TenantConfig,
+    policy: TenantPolicy | null | undefined,
     productVariants: ProductVariant[],
   ): CartItem[] {
     return this.cloneWithoutBundle(
@@ -591,6 +600,7 @@ export class BundleDomainService {
       startDate,
       endDate,
       config,
+      policy,
       productVariants,
     );
   }
