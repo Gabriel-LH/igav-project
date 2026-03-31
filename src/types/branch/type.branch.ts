@@ -25,6 +25,7 @@ export const branchSchema = z.object({
   updatedBy: z.string().optional(),
 
   metadata: z.record(z.string(), z.any()).optional(),
+  config: z.any().optional(), // Using any to avoid circular dependencies if any, but will be BranchConfig
 });
 
 export type Branch = z.infer<typeof branchSchema>;

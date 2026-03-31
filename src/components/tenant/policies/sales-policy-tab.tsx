@@ -103,9 +103,8 @@ export function SalesPoliciesTab() {
                       <Input
                         type="number"
                         min="0"
-                        placeholder="72"
                         className="pr-16"
-                        value={field.value ?? ""}
+                        value={field.value}
                         onChange={(e) => {
                           const value = parseInt(e.target.value, 10);
                           field.onChange(isNaN(value) ? 0 : value);
@@ -147,7 +146,7 @@ export function SalesPoliciesTab() {
             control={control}
             name="sales.maxCancelHours"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="mb-3">
                 <FormLabel className="flex items-center gap-2">
                   Horas máximas para anulación
                   <TooltipProvider>
@@ -166,9 +165,8 @@ export function SalesPoliciesTab() {
                     <Input
                       type="number"
                       min="0"
-                      placeholder="24"
                       className="pr-16"
-                      value={field.value ?? ""}
+                      value={field.value}
                       onChange={(e) => {
                         const value = parseInt(e.target.value, 10);
                         field.onChange(isNaN(value) ? 0 : value);
@@ -182,6 +180,7 @@ export function SalesPoliciesTab() {
               </FormItem>
             )}
           />
+
 
         </div>
       </CardContent>

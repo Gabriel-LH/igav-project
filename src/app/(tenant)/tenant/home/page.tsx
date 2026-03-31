@@ -5,14 +5,17 @@ import {
   getAttributeTypesAction,
   getAttributeValuesAction,
 } from "@/src/app/(tenant)/tenant/actions/attribute.actions";
+import { checkAndExpireReservationsAction } from "@/src/app/(tenant)/tenant/actions/reservation.actions";
 
 export default async function HomePage() {
-  const [categoriesResult, attributeTypesResult, attributeValuesResult] =
+  const [categoriesResult, attributeTypesResult, attributeValuesResult, _expireResult] =
     await Promise.all([
       getCategoriesAction(),
       getAttributeTypesAction(),
       getAttributeValuesAction(),
+      checkAndExpireReservationsAction(),
     ]);
+
 
   const categories = categoriesResult.success ? (categoriesResult.data ?? []) : [];
   const attributeTypes = attributeTypesResult.success

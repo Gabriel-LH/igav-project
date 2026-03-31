@@ -1,7 +1,7 @@
 // components/branches/BranchConfigModal.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -13,27 +13,28 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { z } from "zod";
+import { type SubmitHandler } from "react-hook-form";
 import { type Branch } from "@/src/types/branch/type.branch";
 import { type BranchConfig } from "@/src/types/branch/type.branchConfig";
-import { branchConfigSchema } from "@/src/types/branch/type.branchConfig";
+import { DEFAULT_BRANCH_CONFIG, DEFAULT_LAUNCH_HOURS } from "@/src/lib/tenant-defaults";
+import { BusinessHoursEditor } from "./BusinessHoursEditor";
 
-// Extendemos el schema para el formulario (omitiendo lo que no es del form y los campos deprecados)
-const formSchema = branchConfigSchema.omit({
-  id: true,
-  branchId: true,
-  createdAt: true,
-  updatedAt: true,
-  daysInLaundry: true,
-  daysInMaintenance: true,
+// Definimos el schema del formulario de forma explícita para evitar problemas de inferencia con omit()
+const formSchema = z.object({
+  openHours: z.object({
+    open: z.string().default(DEFAULT_LAUNCH_HOURS.open),
+    close: z.string().default(DEFAULT_LAUNCH_HOURS.close),
+    schedule: z.array(z.object({
+      day: z.string(),
+      enabled: z.boolean(),
+      open: z.string(),
+      close: z.string(),
+    })).optional(),
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,10 +55,7 @@ export function BranchConfigModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      openHours: {
-        open: "08:00",
-        close: "20:00",
-      },
+      openHours: DEFAULT_BRANCH_CONFIG.openHours,
     },
   });
 
@@ -69,7 +67,7 @@ export function BranchConfigModal({
     }
   }, [config, form]);
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit: SubmitHandler<FormValues> = (values) => {
     const newConfig: BranchConfig = {
       id: config?.id || crypto.randomUUID(),
       branchId: branch.id,
@@ -89,7 +87,6 @@ export function BranchConfigModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span>⚙️</span>
             Configuración de {branch.name}
           </DialogTitle>
         </DialogHeader>
@@ -97,62 +94,36 @@ export function BranchConfigModal({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
+            className="flex flex-col h-full overflow-hidden"
           >
-            {/* Información de la sucursal (solo lectura) */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <p className="text-sm font-medium">Información de la sucursal</p>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <span className="text-muted-foreground">Código:</span>
-                <span className="font-mono">{branch.code}</span>
-                <span className="text-muted-foreground">Ciudad:</span>
-                <span>{branch.city}</span>
+            <ScrollArea className="flex-1 pr-4 max-h-[60vh]">
+              <div className="space-y-6">
+                {/* Información de la sucursal (solo lectura) */}
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <p className="text-sm font-medium">Información de la sucursal</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <span className="text-muted-foreground">Código:</span>
+                    <span className="font-mono">{branch.code}</span>
+                    <span className="text-muted-foreground">Ciudad:</span>
+                    <span>{branch.city}</span>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Horario de atención extendido */}
+                <BusinessHoursEditor />
+
+                <Separator />
+
+                <p className="text-xs text-muted-foreground italic">
+                  Nota: Los días de lavandería y mantenimiento globales se gestionan
+                  ahora desde el módulo de Políticas.
+                </p>
               </div>
-            </div>
+            </ScrollArea>
 
-            <Separator />
-
-            {/* Horario de atención */}
-            <div className="space-y-4">
-              <h3 className="font-medium">Horario de atención</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="openHours.open"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Apertura</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="openHours.close"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cierre</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            <Separator />
-            
-            <p className="text-xs text-muted-foreground italic">
-              Nota: Los días de lavandería y mantenimiento globales se gestionan ahora desde el módulo de Políticas.
-            </p>
-
-            <div className="flex justify-end gap-4 pt-4">
+            <div className="flex justify-end gap-4 pt-6 mt-4 border-t">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
               </Button>

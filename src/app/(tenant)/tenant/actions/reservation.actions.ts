@@ -9,8 +9,12 @@ import { PrismaGuaranteeRepository } from "@/src/infrastructure/tenant/repositor
 import { PrismaRentalRepository } from "@/src/infrastructure/tenant/repositories/PrismaRentalRepository";
 import { PrismaPaymentRepository } from "@/src/infrastructure/tenant/repositories/PrismaPaymentRepository";
 import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositories/PrismaOperationRepository";
-import { ConvertReservationUseCase, ConvertReservationInput } from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
+import {
+  ConvertReservationUseCase,
+  ConvertReservationInput,
+} from "@/src/application/tenant/use-cases/reservation/convertReservation.usecase";
 import { CancelReservationUseCase } from "@/src/application/tenant/use-cases/reservation/cancelReservation.usecase";
+import { ExpireReservationsUseCase } from "@/src/application/tenant/use-cases/reservation/ExpireReservationsUseCase";
 import { makeServerProcessTransaction } from "@/src/infrastructure/tenant/factories/serverProcessTransaction.factory";
 import { PrismaConfigAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-config.adapter";
 import { PrismaPolicyAdapter } from "@/src/infrastructure/tenant/stores-adapters/prisma-policy.adapter";
@@ -85,11 +89,13 @@ export async function cancelReservationAction(reservationId: string, reason: str
       const reservationRepo = new PrismaReservationRepository(tx);
       const paymentRepo = new PrismaPaymentRepository(tx);
       const operationRepo = new PrismaOperationRepository(tx);
+      const inventoryRepo = new PrismaInventoryRepository(tx);
 
       const cancelUseCase = new CancelReservationUseCase(
         reservationRepo,
         paymentRepo,
         operationRepo,
+        inventoryRepo,
       );
 
     const userId = user.id as string;
@@ -135,3 +141,61 @@ try {
   };
 }
 }
+
+/**
+ * Acción para verificar y expirar reservas automáticamente según políticas.
+ */
+export async function checkAndExpireReservationsAction() {
+  try {
+    const membership = await requireTenantMembership();
+    const { tenantId, user } = membership;
+
+    if (!tenantId || !user?.id) {
+       return { success: false, error: "No autorizado" };
+    }
+
+    // 1. Obtener políticas del tenant
+    const configRepo = new PrismaConfigAdapter();
+    const policyRepo = new PrismaPolicyAdapter();
+    const settingsUC = new ResolveTenantSettingsUseCase(configRepo, policyRepo);
+    
+    // El branchId no es estrictamente necesario para la política de expiración global,
+    // pero ResolveTenantSettingsUseCase lo pide. Usaremos el default del usuario.
+    const { policy } = await settingsUC.execute(tenantId, user.id as string, membership.defaultBranchId);
+
+    if (!policy.reservations.autoExpireReservations) {
+      return { success: true, expiredCount: 0, message: "Auto-expiración desactivada" };
+    }
+
+    const expireAfterHours = policy.reservations.expireAfterHours;
+
+    // 2. Ejecutar expiración en una transacción
+    const expiredCount = await prisma.$transaction(async (tx) => {
+      const reservationRepo = new PrismaReservationRepository(tx);
+      const inventoryRepo = new PrismaInventoryRepository(tx);
+      const operationRepo = new PrismaOperationRepository(tx);
+
+      const expireUC = new ExpireReservationsUseCase(
+        reservationRepo,
+        inventoryRepo,
+        operationRepo
+      );
+
+      return await expireUC.execute(tenantId, expireAfterHours);
+    });
+
+    if (expiredCount > 0) {
+      revalidatePath("/tenant/home");
+      revalidatePath("/tenant/calendar");
+    }
+
+    return { success: true, expiredCount };
+  } catch (error) {
+    console.error("Error en checkAndExpireReservationsAction:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Error desconocido al procesar expiraciones" 
+    };
+  }
+}
+

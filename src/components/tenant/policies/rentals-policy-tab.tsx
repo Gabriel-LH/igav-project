@@ -67,7 +67,7 @@ export function RentalsPoliciesTab() {
             control={control}
             name="rentals.lateToleranceHours"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="mb-3">
                 <FormLabel>Horas de tolerancia</FormLabel>
                 <FormControl>
                   <div className="relative w-fit">
@@ -82,7 +82,7 @@ export function RentalsPoliciesTab() {
                     </span>
                   </div>
                 </FormControl>
-                <FormDescription>
+                <FormDescription >
                   Tiempo de gracia antes de considerar atrasado
                 </FormDescription>
               </FormItem>

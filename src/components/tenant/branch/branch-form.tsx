@@ -40,7 +40,6 @@ import { Star } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Call02Icon,
-  CallEnd01Icon,
   InformationCircleIcon,
   Settings01Icon,
 } from "@hugeicons/core-free-icons";
@@ -275,7 +274,7 @@ export function BranchForm({
                     <FormItem>
                       <FormLabel>Teléfono</FormLabel>
                       <FormControl>
-                        <Input placeholder="+51 1 234-5678" {...field} />
+                        <Input placeholder="987654321" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

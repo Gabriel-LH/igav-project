@@ -1,6 +1,7 @@
 import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
 import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepository";
 import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
+import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { Payment } from "@/src/types/payments/type.payments";
 
 export class CancelReservationUseCase {
@@ -8,16 +9,33 @@ export class CancelReservationUseCase {
     private reservationRepo: ReservationRepository,
     private paymentRepo: PaymentRepository,
     private operationRepo: OperationRepository,
+    private inventoryRepo: InventoryRepository,
   ) {}
 
-  async execute(reservationId: string, reason: string, userId: string): Promise<void> {
-    const reservation = await this.reservationRepo.getReservationById(reservationId);
+  async execute(
+    reservationId: string,
+    reason: string,
+    userId: string,
+  ): Promise<void> {
+    const reservation =
+      await this.reservationRepo.getReservationWithItemsById(reservationId);
 
     if (!reservation) {
       throw new Error("Reserva no encontrada");
     }
 
     await this.reservationRepo.cancelReservation(reservationId);
+
+    // --- Liberación de Stock ---
+    for (const item of reservation.items) {
+      if (item.stockId) {
+        // Solo intentamos liberar si es un ítem de stock (serializado o con lote)
+        // La lógica de CreateReservationUseCase solo actualiza si isSerial es true
+        if (await this.inventoryRepo.isSerial(item.stockId)) {
+          await this.inventoryRepo.updateItemStatus(item.stockId, "disponible");
+        }
+      }
+    }
 
     await this.operationRepo.updateOperationStatus(
       reservation.operationId,
@@ -54,3 +72,4 @@ export class CancelReservationUseCase {
     }
   }
 }
+

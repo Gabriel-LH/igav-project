@@ -6,22 +6,28 @@ export class PrismaBranchAdapter implements BranchRepository {
   async getBranchesByTenant(tenantId: string): Promise<Branch[]> {
     const branches = await prisma.branch.findMany({
       where: { tenantId },
+      include: { branchConfigs: true },
       orderBy: { createdAt: "desc" },
     });
 
-    return branches.map((b) => ({
+    return branches.map((b: any) => ({
       ...b,
       phone: b.phone ?? undefined,
       email: b.email ?? undefined,
       createdBy: b.createdBy ?? undefined,
       updatedBy: b.updatedBy ?? undefined,
       metadata: (b.metadata as Record<string, any>) ?? undefined,
+      config: b.branchConfigs?.[0] ? {
+        ...b.branchConfigs[0],
+        openHours: b.branchConfigs[0].openHours as any,
+      } : undefined,
     })) as Branch[];
   }
 
   async getBranchById(tenantId: string, branchId: string): Promise<Branch | null> {
     const branch = await prisma.branch.findFirst({
       where: { id: branchId, tenantId },
+      include: { branchConfigs: true },
     });
 
     if (!branch) return null;
@@ -33,6 +39,12 @@ export class PrismaBranchAdapter implements BranchRepository {
       createdBy: branch.createdBy ?? undefined,
       updatedBy: branch.updatedBy ?? undefined,
       metadata: (branch.metadata as Record<string, any>) ?? undefined,
+      config: (branch as any).branchConfigs?.[0] ? {
+        ...(branch as any).branchConfigs[0],
+        openHours: (branch as any).branchConfigs[0].openHours as any,
+        openingCashRequired: (branch as any).branchConfigs[0].openingCashRequired ?? true,
+        requireClosingReport: (branch as any).branchConfigs[0].requireClosingReport ?? true,
+      } : undefined,
     } as Branch;
   }
 }

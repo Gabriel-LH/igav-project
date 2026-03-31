@@ -1,4 +1,7 @@
-import { Reservation } from "../../../types/reservation/type.reservation";
+import {
+  Reservation,
+  ReservationWithItems,
+} from "../../../types/reservation/type.reservation";
 import { ReservationItem } from "../../../types/reservation/type.reservationItem";
 
 export interface ReservationRepository {
@@ -7,9 +10,20 @@ export interface ReservationRepository {
     reservationItems: ReservationItem[],
   ): Promise<void>;
   getReservations(): Promise<Reservation[]>;
-  updateStatus(id: string, newStatus: string, itemStatus: string): Promise<void>;
+  updateStatus(
+    id: string,
+    newStatus: string,
+    itemStatus: string,
+  ): Promise<void>;
   updateReservationItemStatus(itemId: string, status: string): Promise<void>;
   getReservationItems(): Promise<ReservationItem[]>;
   getReservationById(id: string): Promise<Reservation | undefined>;
+  getReservationWithItemsById(
+    id: string,
+  ): Promise<ReservationWithItems | undefined>;
+  getExpiredReservations(
+    tenantId: string,
+    hoursThreshold: number,
+  ): Promise<ReservationWithItems[]>;
   cancelReservation(id: string): Promise<void>;
 }

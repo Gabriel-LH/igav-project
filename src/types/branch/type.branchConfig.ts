@@ -4,9 +4,16 @@ export const branchConfigSchema = z.object({
   id: z.string(),
   branchId: z.string(),
 
+  // Expanded schedule configuration
   openHours: z.object({
-    open: z.string(),
-    close: z.string(),
+    open: z.string().default("09:00"),
+    close: z.string().default("18:00"),
+    schedule: z.array(z.object({
+      day: z.string(),
+      enabled: z.boolean(),
+      open: z.string(),
+      close: z.string(),
+    })).optional(),
   }),
 
   // Deprecated: Moving to TenantPolicy (plural or singular)

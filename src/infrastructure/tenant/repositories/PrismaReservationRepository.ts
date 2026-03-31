@@ -1,5 +1,7 @@
-import { ReservationRepository } from "@/src/domain/tenant/repositories/ReservationRepository";
-import { Reservation } from "@/src/types/reservation/type.reservation";
+import {
+  Reservation,
+  ReservationWithItems,
+} from "@/src/types/reservation/type.reservation";
 import { ReservationItem } from "@/src/types/reservation/type.reservationItem";
 import { PrismaClient, Prisma } from "@/prisma/generated/client";
 
@@ -90,6 +92,37 @@ export class PrismaReservationRepository implements ReservationRepository {
     const res = await this.prisma.reservation.findUnique({ where: { id } });
     if (!res) return undefined;
     return res as unknown as Reservation;
+  }
+
+  async getReservationWithItemsById(
+    id: string,
+  ): Promise<ReservationWithItems | undefined> {
+    const res = await this.prisma.reservation.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+    if (!res) return undefined;
+    return res as unknown as ReservationWithItems;
+  }
+
+  async getExpiredReservations(
+    tenantId: string,
+    hoursThreshold: number,
+  ): Promise<ReservationWithItems[]> {
+    const thresholdDate = new Date();
+    thresholdDate.setHours(thresholdDate.getHours() - hoursThreshold);
+
+    const expired = await this.prisma.reservation.findMany({
+      where: {
+        tenantId,
+        status: "confirmada",
+        createdAt: {
+          lte: thresholdDate,
+        },
+      },
+      include: { items: true },
+    });
+    return expired as unknown as ReservationWithItems[];
   }
 
   async cancelReservation(id: string): Promise<void> {

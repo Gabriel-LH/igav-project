@@ -1,5 +1,28 @@
 import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
+import type { BranchConfig } from "@/src/types/branch/type.branchConfig";
+
+export const DEFAULT_LAUNCH_HOURS = {
+  open: "08:00",
+  close: "20:00",
+};
+
+export const DEFAULT_BRANCH_CONFIG: Omit<BranchConfig, "id" | "branchId" | "createdAt" | "updatedAt"> = {
+  openHours: {
+    ...DEFAULT_LAUNCH_HOURS,
+    schedule: [
+      { day: "Lunes", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Martes", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Miércoles", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Jueves", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Viernes", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Sábado", enabled: true, ...DEFAULT_LAUNCH_HOURS },
+      { day: "Domingo", enabled: false, ...DEFAULT_LAUNCH_HOURS },
+    ],
+  },
+  daysInLaundry: 2,
+  daysInMaintenance: 1,
+};
 
 export const DEFAULT_TENANT_CONFIG: Omit<TenantConfig, "tenantId" | "createdAt"> = {
   currency: "PEN",

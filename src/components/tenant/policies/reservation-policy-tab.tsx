@@ -127,7 +127,7 @@ export function ReservationsPoliciesTab() {
             control={control}
             name="reservations.requireDownPayment"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <FormItem className="flex mb-3 flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">Requerir depósito</FormLabel>
                   <FormDescription>
@@ -142,6 +142,51 @@ export function ReservationsPoliciesTab() {
                 </FormControl>
               </FormItem>
             )}
+          />
+
+          {watch("reservations.requireDownPayment") && (
+            <FormField
+              control={control}
+              name="reservations.minDownPaymentPercentage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    Porcentaje mínimo de adelanto
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            El monto mínimo que el cliente debe pagar para
+                            reservar
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative mb-3 max-w-[200px]">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value) || 0)
+                        }
+                      />
+                      <span className="absolute right-9 top-1.5 text-muted-foreground">
+                        %
+                      </span>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          )}
+
         </div>
       </CardContent>
     </Card>

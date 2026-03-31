@@ -89,9 +89,31 @@ export function PosReservationModal({
   const hasSales = ventaItems.length > 0;
   const hasRentals = alquilerItems.length > 0;
 
-  const totalVentas = useMemo(() => ventaItems.reduce((acc, i) => acc + i.subtotal, 0), [ventaItems]);
-  const totalAlquileres = useMemo(() => alquilerItems.reduce((acc, i) => acc + i.subtotal, 0), [alquilerItems]);
-  const totalOperacion = useMemo(() => items.reduce((acc, i) => acc + i.subtotal, 0), [items]);
+  const totalVentas = useMemo(
+    () => ventaItems.reduce((acc, i) => acc + i.subtotal, 0),
+    [ventaItems],
+  );
+  const totalAlquileres = useMemo(
+    () => alquilerItems.reduce((acc, i) => acc + i.subtotal, 0),
+    [alquilerItems],
+  );
+  const totalOperacion = useMemo(
+    () => items.reduce((acc, i) => acc + i.subtotal, 0),
+    [items],
+  );
+
+  // ─── CALCULOS DE POLITICA ───
+  const minRequiredDP = useMemo(() => {
+    if (!policy?.reservations.requireDownPayment) return 0;
+    const percentage = policy.reservations.minDownPaymentPercentage || 0;
+    return (totalOperacion * percentage) / 100;
+  }, [policy, totalOperacion]);
+
+  const isDPValid = useMemo(() => {
+    if (!policy?.reservations.requireDownPayment) return true;
+    const amount = parseFloat(downPayment) || 0;
+    return amount >= minRequiredDP;
+  }, [downPayment, minRequiredDP, policy]);
 
   // ─── VALIDACIONES ───
   const buildReservationItems = (type: "venta" | "alquiler") => {
@@ -147,11 +169,19 @@ export function PosReservationModal({
 
     const totalDP = parseFloat(downPayment) || 0;
 
+    // Validación de política de adelanto
+    if (policy?.reservations.requireDownPayment && totalDP < minRequiredDP) {
+      toast.error(
+        `El adelanto mínimo es ${formatCurrency(minRequiredDP)} (${policy.reservations.minDownPaymentPercentage}%)`,
+      );
+      return;
+    }
+
     // ─── BUNDLES LOCKER ───
     if (items.some((item) => item.bundleId)) {
       const tenantId = activeTenantId ?? items[0]?.product.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-      
+
       const res = await reserveBundlesAction(
         items,
         tenantId,
@@ -315,7 +345,7 @@ export function PosReservationModal({
                 <h4 className="flex items-center gap-2 text-sm font-semibold">
                   <Calendar className="w-4 h-4" /> Fechas de Alquiler
                 </h4>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs">Fecha Recojo</Label>
@@ -327,10 +357,7 @@ export function PosReservationModal({
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">Hora Recojo</Label>
-                    <TimePicker
-                      value={pickupTime}
-                      onChange={setPickupTime}
-                    />
+                    <TimePicker value={pickupTime} onChange={setPickupTime} />
                   </div>
                 </div>
 
@@ -346,10 +373,7 @@ export function PosReservationModal({
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">Hora Devolución</Label>
-                    <TimePicker
-                      value={returnTime}
-                      onChange={setReturnTime}
-                    />
+                    <TimePicker value={returnTime} onChange={setReturnTime} />
                   </div>
                 </div>
               </div>
@@ -378,22 +402,42 @@ export function PosReservationModal({
                 <Separator className="my-2" />
                 <div className="space-y-1 text-xs text-muted-foreground">
                   {hasSales && <p>Ventas: {formatCurrency(totalVentas)}</p>}
-                  {hasRentals && <p>Alquileres: {formatCurrency(totalAlquileres)}</p>}
+                  {hasRentals && (
+                    <p>Alquileres: {formatCurrency(totalAlquileres)}</p>
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="space-y-4 border rounded-lg p-4">
-              <h4 className="text-sm font-semibold">Adelanto</h4>
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-semibold">Adelanto</h4>
+                {policy?.reservations.requireDownPayment && (
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded-full ${isDPValid ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700 font-medium"}`}
+                  >
+                    Mínimo: {formatCurrency(minRequiredDP)} (
+                    {policy.reservations.minDownPaymentPercentage}%)
+                  </span>
+                )}
+              </div>
               <Input
                 type="number"
                 placeholder="0.00"
+                className={
+                  !isDPValid && policy?.reservations.requireDownPayment
+                    ? "border-orange-500 focus-visible:ring-orange-500"
+                    : ""
+                }
                 value={downPayment}
                 onChange={(e) => setDownPayment(e.target.value)}
               />
-              
+
               <Label className="text-xs">Método</Label>
-              <Select value={paymentMethod} onValueChange={(v: any) => setPaymentMethod(v)}>
+              <Select
+                value={paymentMethod}
+                onValueChange={(v: any) => setPaymentMethod(v)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -407,13 +451,17 @@ export function PosReservationModal({
 
             <Button
               className="w-full h-12"
-              disabled={!selectedCustomer}
+              disabled={
+                !selectedCustomer ||
+                (policy?.reservations.requireDownPayment && !isDPValid)
+              }
               onClick={handleCreateReservation}
             >
               Procesar Reserva
             </Button>
           </div>
         </div>
+
       </DialogContent>
     </Dialog>
   );

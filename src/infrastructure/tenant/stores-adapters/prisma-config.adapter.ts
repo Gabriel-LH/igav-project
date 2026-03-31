@@ -1,7 +1,7 @@
 import { ConfigRepository } from "../../../domain/tenant/repositories/ConfigRepository";
 import { TenantConfig } from "../../../types/tenant/type.tenantConfig";
 import { BranchConfig } from "../../../types/branch/type.branchConfig";
-import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
+import { DEFAULT_TENANT_CONFIG, DEFAULT_BRANCH_CONFIG } from "@/src/lib/tenant-defaults";
 import prisma from "@/src/lib/prisma";
 
 export class PrismaConfigAdapter implements ConfigRepository {
@@ -119,7 +119,6 @@ export class PrismaConfigAdapter implements ConfigRepository {
       where: { tenantId },
       data: {
         config: {
-          ...DEFAULT_TENANT_CONFIG,
           ...existingConfig,
           ...cleanUpdates,
         },
@@ -136,8 +135,9 @@ export class PrismaConfigAdapter implements ConfigRepository {
     if (!config) return null;
 
     return {
+      ...DEFAULT_BRANCH_CONFIG,
       ...config,
-      openHours: config.openHours as any,
+      openHours: (config.openHours as any) || DEFAULT_BRANCH_CONFIG.openHours,
     } as BranchConfig;
   }
 
@@ -153,10 +153,10 @@ export class PrismaConfigAdapter implements ConfigRepository {
       await this.prisma.branchConfig.create({
         data: {
           branchId,
-          openHours: updates.openHours as any || { open: "09:00", close: "18:00" },
-          daysInLaundry: updates.daysInLaundry ?? 2,
-          daysInMaintenance: updates.daysInMaintenance ?? 1,
-        },
+          openHours: (updates.openHours as any) || DEFAULT_BRANCH_CONFIG.openHours,
+          daysInLaundry: updates.daysInLaundry ?? DEFAULT_BRANCH_CONFIG.daysInLaundry,
+          daysInMaintenance: updates.daysInMaintenance ?? DEFAULT_BRANCH_CONFIG.daysInMaintenance,
+        } as any,
       });
       return;
     }
@@ -167,7 +167,7 @@ export class PrismaConfigAdapter implements ConfigRepository {
         openHours: updates.openHours as any,
         daysInLaundry: updates.daysInLaundry,
         daysInMaintenance: updates.daysInMaintenance,
-      },
+      } as any,
     });
   }
 }

@@ -39,8 +39,18 @@ export function TenantPoliciesModule() {
         if (res.success && res.data) {
           setPolicy(res.data);
           setOriginalPolicy(res.data);
-          // 👇 Actualiza los valores del formulario cuando carga la data
-          formMethods.reset(res.data);
+          // 👇 Actualiza los valores del formulario fusionando profundamente con los defaults para asegurar campos anidados
+          const data = res.data as any;
+          formMethods.reset({
+            ...DEFAULT_TENANT_POLICY_SECTIONS,
+            ...data,
+            sales: { ...DEFAULT_TENANT_POLICY_SECTIONS.sales, ...(data.sales || {}) },
+            rentals: { ...DEFAULT_TENANT_POLICY_SECTIONS.rentals, ...(data.rentals || {}) },
+            reservations: { ...DEFAULT_TENANT_POLICY_SECTIONS.reservations, ...(data.reservations || {}) },
+            inventory: { ...DEFAULT_TENANT_POLICY_SECTIONS.inventory, ...(data.inventory || {}) },
+            financial: { ...DEFAULT_TENANT_POLICY_SECTIONS.financial, ...(data.financial || {}) },
+            security: { ...DEFAULT_TENANT_POLICY_SECTIONS.security, ...(data.security || {}) },
+          });
         } else {
           const defPolicy: TenantPolicy = {
             id: "default",

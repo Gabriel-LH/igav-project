@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BranchesTable } from "./table/branches-table";
 import { BranchDetails } from "./branch-details";
-import { getBranchesAction } from "@/src/app/(tenant)/tenant/actions/branch.actions"; 
+import { getBranchesAction, getBranchConfigAction, getBranchMetricsAction } from "@/src/app/(tenant)/tenant/actions/branch.actions"; 
 import type { Branch } from "@/src/types/branch/type.branch";
 import type { BranchConfig } from "@/src/types/branch/type.branchConfig";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -34,7 +34,37 @@ export function BranchesModule() {
     loadData();
   }, []);
 
+  // Cargar configuración cuando se selecciona una sucursal
+  useEffect(() => {
+    if (!selectedBranch) return;
+
+    const loadBranchData = async () => {
+      // 1. Cargar Configuración
+      const configRes = await getBranchConfigAction(selectedBranch.id);
+      if (configRes.success && configRes.data) {
+        setBranchConfigs((prev) => ({
+          ...prev,
+          [selectedBranch.id]: configRes.data as BranchConfig,
+        }));
+      }
+
+      // 2. Cargar Métricas Reales
+      const metricsRes = await getBranchMetricsAction(selectedBranch.id);
+      if (metricsRes.success && metricsRes.data) {
+        setBranchMetrics((prev) => ({
+          ...prev,
+          [selectedBranch.id]: metricsRes.data,
+        }));
+      }
+    };
+
+    loadBranchData();
+  }, [selectedBranch]);
+
   const handleSelectBranch = (branch: Branch) => {
+    // Limpiar estados previos para evitar "datos fantasmas"
+    setBranchConfigs({});
+    setBranchMetrics({});
     setSelectedBranch(branch);
   };
 

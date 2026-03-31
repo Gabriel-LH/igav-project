@@ -1,26 +1,26 @@
 // components/branches/BranchDetails.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/badge';
-import { 
-  ArrowLeft, 
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/badge";
+import {
+  ArrowLeft,
   MapPin,
   Phone,
   Mail,
   Globe,
   Star,
-  Settings,
-  TrendingUp,
-  DollarSign,
+  CreditCard,
   Users,
-  Calendar
-} from 'lucide-react';
-import { BranchConfigModal } from './ui/BranchConfigModal';
-import type { Branch } from '@/src/types/branch/type.branch';
-import type { BranchConfig } from '@/src/types/branch/type.branchConfig';
+  Calendar,
+  Settings,
+} from "lucide-react";
+import { BranchConfigModal } from "./ui/BranchConfigModal";
+import type { Branch } from "@/src/types/branch/type.branch";
+import type { BranchConfig } from "@/src/types/branch/type.branchConfig";
+import { formatCurrency } from "@/src/utils/currency-format";
 
 interface BranchDetailsProps {
   branch: Branch;
@@ -31,22 +31,14 @@ interface BranchDetailsProps {
   onBack: () => void;
 }
 
-export function BranchDetails({ 
-  branch, 
+export function BranchDetails({
+  branch,
   config,
   metrics,
-  onUpdate,
   onUpdateConfig,
-  onBack 
+  onBack,
 }: BranchDetailsProps) {
   const [showConfigModal, setShowConfigModal] = useState(false);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(amount);
-  };
 
   return (
     <>
@@ -58,29 +50,36 @@ export function BranchDetails({
               <Button variant="ghost" size="icon" onClick={onBack}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              
+
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 mb-2">
                     <h2 className="text-2xl font-bold">{branch.name}</h2>
-                    <Badge variant={branch.status === 'active' ? 'default' : 'secondary'}>
-                      {branch.status === 'active' ? 'Activo' : 'Inactivo'}
+                    <Badge
+                      variant={
+                        branch.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {branch.status === "active" ? "Activo" : "Inactivo"}
                     </Badge>
                     {branch.isPrimary && (
-                      <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 gap-1">
+                      <Badge
+                        variant="default"
+                        className="bg-amber-500 hover:bg-amber-600 gap-1"
+                      >
                         <Star className="h-3 w-3" />
                         Principal
                       </Badge>
                     )}
                   </div>
-                  
+
                   <Button onClick={() => setShowConfigModal(true)}>
                     <Settings className="mr-2 h-4 w-4" />
                     Configuración de sucursal
                   </Button>
                 </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+
+                <div className="grid grid-cols-2 mb-3 md:grid-cols-4 gap-4 mt-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     {branch.address}, {branch.city}
@@ -114,31 +113,17 @@ export function BranchDetails({
 
         {/* Métricas principales */}
         {metrics && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Ventas del mes</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {formatCurrency(metrics.monthSales)}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-green-500" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Caja actual</p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <p className="text-sm text-muted-foreground">Caja de hoy</p>
+                    <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
                       {formatCurrency(metrics.currentCash)}
                     </p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-blue-500" />
+                  <CreditCard className="h-8 w-8 text-green-500" />
                 </div>
               </CardContent>
             </Card>
@@ -148,9 +133,11 @@ export function BranchDetails({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Empleados</p>
-                    <p className="text-2xl font-bold">{metrics.employeeCount || 12}</p>
+                    <p className="text-2xl font-semibold">
+                      {metrics.employeeCount}
+                    </p>
                   </div>
-                  <Users className="h-8 w-8 text-purple-500" />
+                  <Users className="h-8 w-8 text-blue-500" />
                 </div>
               </CardContent>
             </Card>
@@ -159,8 +146,12 @@ export function BranchDetails({
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Asistencias hoy</p>
-                    <p className="text-2xl font-bold">{metrics.todayAttendance}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Asistencias hoy
+                    </p>
+                    <p className="text-2xl font-semibold">
+                      {metrics.todayAttendance || 0}
+                    </p>
                   </div>
                   <Calendar className="h-8 w-8 text-orange-500" />
                 </div>
@@ -179,8 +170,12 @@ export function BranchDetails({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Horario de atención</p>
-                  <p className="font-medium">{config.openHours.open} - {config.openHours.close}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Horario de atención
+                  </p>
+                  <p className="font-medium">
+                    {config.openHours.open} - {config.openHours.close}
+                  </p>
                 </div>
               </div>
             </CardContent>

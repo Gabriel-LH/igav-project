@@ -6,6 +6,19 @@ import prisma from "@/src/lib/prisma";
 export class PrismaPolicyAdapter implements PolicyRepository {
   private prisma = prisma;
 
+  private normalizePolicy(policy: any): TenantPolicy {
+    return {
+      ...DEFAULT_TENANT_POLICY_SECTIONS,
+      ...policy,
+      sales: { ...DEFAULT_TENANT_POLICY_SECTIONS.sales, ...(policy.sales as any || {}) },
+      rentals: { ...DEFAULT_TENANT_POLICY_SECTIONS.rentals, ...(policy.rentals as any || {}) },
+      reservations: { ...DEFAULT_TENANT_POLICY_SECTIONS.reservations, ...(policy.reservations as any || {}) },
+      inventory: { ...DEFAULT_TENANT_POLICY_SECTIONS.inventory, ...(policy.inventory as any || {}) },
+      financial: { ...DEFAULT_TENANT_POLICY_SECTIONS.financial, ...(policy.financial as any || {}) },
+      security: { ...DEFAULT_TENANT_POLICY_SECTIONS.security, ...(policy.security as any || {}) },
+    } as TenantPolicy;
+  }
+
   async upsertPolicy(policy: TenantPolicy): Promise<void> {
     // 1. Desactivar políticas anteriores para este tenant
     await this.prisma.tenantPolicy.updateMany({
@@ -56,15 +69,7 @@ export class PrismaPolicyAdapter implements PolicyRepository {
 
     if (!policy) return null;
 
-    return {
-      ...policy,
-      sales: policy.sales as any,
-      rentals: policy.rentals as any,
-      reservations: policy.reservations as any,
-      inventory: policy.inventory as any,
-      financial: policy.financial as any,
-      security: policy.security as any,
-    } as TenantPolicy;
+    return this.normalizePolicy(policy);
   }
 
   async getOrCreateActivePolicy(
@@ -85,7 +90,7 @@ export class PrismaPolicyAdapter implements PolicyRepository {
       updatedBy: userId,
       changeReason: "Bootstrap inicial",
       ...DEFAULT_TENANT_POLICY_SECTIONS,
-    };
+    } as TenantPolicy;
 
     await this.upsertPolicy(seededPolicy);
     return seededPolicy;
@@ -101,15 +106,7 @@ export class PrismaPolicyAdapter implements PolicyRepository {
 
     if (!policy) return null;
 
-    return {
-      ...policy,
-      sales: policy.sales as any,
-      rentals: policy.rentals as any,
-      reservations: policy.reservations as any,
-      inventory: policy.inventory as any,
-      financial: policy.financial as any,
-      security: policy.security as any,
-    } as TenantPolicy;
+    return this.normalizePolicy(policy);
   }
 
   async getHistory(tenantId: string): Promise<TenantPolicy[]> {
@@ -118,17 +115,6 @@ export class PrismaPolicyAdapter implements PolicyRepository {
       orderBy: { version: "desc" },
     });
 
-    return policies.map(
-      (p) =>
-        ({
-          ...p,
-          sales: p.sales as any,
-          rentals: p.rentals as any,
-          reservations: p.reservations as any,
-          inventory: p.inventory as any,
-          financial: p.financial as any,
-          security: p.security as any,
-        }) as TenantPolicy,
-    );
+    return policies.map((p) => this.normalizePolicy(p));
   }
 }
