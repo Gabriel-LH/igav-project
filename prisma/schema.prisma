@@ -129,15 +129,17 @@ model UserAttendance {
   branchId     String
   userId       String
   shiftId      String
-  checkIn      DateTime
+  checkIn      DateTime?
   checkOut     DateTime?
   notes        String?
   createdBy    String
-  status       BranchStatus @default(active)
+  status       String       @default("present")
   source       String
-  lateMinutes  Int
-  extraMinutes Int
+  lateMinutes  Int          @default(0)
+  extraMinutes Int          @default(0)
   workDate     DateTime
+  isManual     Boolean      @default(false)
+  justification String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -176,7 +178,7 @@ model UserShiftAssignment {
   membershipId String
   shiftId      String
   startDate    DateTime
-  endDate      DateTime
+  endDate      DateTime?
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
   createdBy    String

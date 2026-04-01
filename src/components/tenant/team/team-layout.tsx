@@ -49,6 +49,7 @@ interface TeamLayoutProps {
 function mapMemberToTableRow(m: DBMember): TeamMember {
   const roleNameLower = m.role.name.toLowerCase() as TeamMember["role"];
   const validRoles: TeamMember["role"][] = [
+    "owner",
     "admin",
     "manager",
     "seller",

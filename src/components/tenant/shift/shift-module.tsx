@@ -12,7 +12,6 @@ import type {
 
 
 
-// Definimos tipos para el estado y acciones del reducer
 type State = {
   shifts: Shift[];
   assignments: ShiftAssignment[];
@@ -22,13 +21,8 @@ type State = {
 type Action =
   | { type: "SET_SHIFTS"; payload: Shift[] }
   | { type: "SET_ASSIGNMENTS"; payload: ShiftAssignment[] }
-  | { type: "SET_LOADING"; payload: boolean }
-  | {
-      type: "INIT_DATA";
-      payload: { shifts: Shift[]; assignments: ShiftAssignment[] };
-    };
+  | { type: "SET_LOADING"; payload: boolean };
 
-// Reducer para manejar el estado
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "SET_SHIFTS":
@@ -37,59 +31,42 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, assignments: action.payload };
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
-    case "INIT_DATA":
-      return {
-        ...state,
-        shifts: action.payload.shifts,
-        assignments: action.payload.assignments,
-        isLoading: false,
-      };
     default:
       return state;
   }
 };
 
-export function ShiftsModule() {
+interface ShiftsModuleProps {
+  initialShifts?: Shift[];
+}
+
+import { getShiftAssignmentsAction } from "@/src/app/(tenant)/tenant/actions/shift.actions";
+
+export function ShiftsModule({ initialShifts = [] }: ShiftsModuleProps) {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
 
-  // Usamos useReducer en lugar de múltiples useState
   const [state, dispatch] = useReducer(reducer, {
-    shifts: [],
+    shifts: initialShifts,
     assignments: [],
-    isLoading: true,
+    isLoading: false,
   });
 
-  // Inicializar datos con useRef para evitar doble ejecución
+  // Re-sync if initialShifts change (e.g. from server action revalidation)
   useEffect(() => {
-    let isMounted = true;
+    dispatch({ type: "SET_SHIFTS", payload: initialShifts });
+  }, [initialShifts]);
 
-    console.log("Inicializando datos...");
-
-    // Simulamos una carga asíncrona
-    const loadData = async () => {
-      // Pequeño delay para simular carga de API
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      if (isMounted) {
-        dispatch({
-          type: "INIT_DATA",
-          payload: {
-            shifts: [],
-            assignments: [],
-          },
-        });
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []); // La dependencia vacía está bien ahora
-
-  const handleSelectShift = useCallback((shift: Shift) => {
+  const handleSelectShift = useCallback(async (shift: Shift) => {
     setSelectedShift(shift);
+    dispatch({ type: "SET_LOADING", payload: true });
+    try {
+      const fetchedAssignments = await getShiftAssignmentsAction(shift.id);
+      dispatch({ type: "SET_ASSIGNMENTS", payload: fetchedAssignments });
+    } catch (err) {
+      console.error("Failed to load assignments", err);
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
+    }
   }, []);
 
   const handleBackToList = useCallback(() => {
@@ -121,7 +98,7 @@ export function ShiftsModule() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container py-6 space-y-6">
 
       <Tabs
         value={selectedShift ? "details" : "list"}

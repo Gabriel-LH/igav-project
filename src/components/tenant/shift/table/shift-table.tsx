@@ -10,7 +10,7 @@ import {
   ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Plus, Pencil, Copy, Eye, Power } from "lucide-react";
+import { MoreHorizontal, Plus, Pencil, Copy, Eye, Power, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,11 +38,22 @@ import {
 } from "@/components/select";
 import { Badge } from "@/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ShiftForm } from "../shift-form";
 import type {
   Shift,
   WorkingDay,
 } from "@/src/application/interfaces/shift/shift";
+import { createShiftAction, updateShiftAction, deleteShiftAction } from "@/src/app/(tenant)/tenant/actions/shift.actions";
 
 interface ShiftsTableProps {
   shifts: Shift[];
@@ -57,6 +68,7 @@ export function ShiftsTable({
 }: ShiftsTableProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
+  const [deletingShift, setDeletingShift] = useState<Shift | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -70,52 +82,70 @@ export function ShiftsTable({
   }, [shifts, statusFilter]);
 
   const handleCreateShift = useCallback(
-    (newShift: Shift) => {
-      onShiftsChange([...shifts, newShift]);
-      setShowCreateForm(false);
+    async (newShift: Shift) => {
+      try {
+        const created = await createShiftAction(newShift);
+        onShiftsChange([...shifts, created]);
+        setShowCreateForm(false);
+      } catch (err) {
+        console.error("Error creating shift", err);
+      }
     },
     [shifts, onShiftsChange],
   );
 
   const handleUpdateShift = useCallback(
-    (updatedShift: Shift) => {
-      onShiftsChange(
-        shifts.map((s) => (s.id === updatedShift.id ? updatedShift : s)),
-      );
-      setEditingShift(null);
+    async (updatedShift: Shift) => {
+      try {
+        const updated = await updateShiftAction(updatedShift.id, updatedShift);
+        onShiftsChange(shifts.map((s) => (s.id === updated.id ? updated : s)));
+        setEditingShift(null);
+      } catch (err) {
+        console.error("Error updating shift", err);
+      }
     },
     [shifts, onShiftsChange],
   );
 
   const handleDuplicateShift = useCallback(
-    (shift: Shift) => {
-      const duplicatedShift: Shift = {
-        ...shift,
-        id: crypto.randomUUID(),
-        name: `${shift.name} (copia)`,
-        status: "inactive",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      onShiftsChange([...shifts, duplicatedShift]);
+    async (shift: Shift) => {
+      try {
+        const duplicated = await createShiftAction({
+          ...shift,
+          name: `${shift.name} (copia)`,
+          status: "inactive",
+        });
+        onShiftsChange([...shifts, duplicated]);
+      } catch (err) {
+        console.error("Error duplicating shift", err);
+      }
     },
     [shifts, onShiftsChange],
   );
 
   const handleToggleStatus = useCallback(
-    (shift: Shift) => {
-      const newStatus: "active" | "inactive" =
-        shift.status === "active" ? "inactive" : "active";
-
-      const updatedShift: Shift = {
-        ...shift,
-        status: newStatus,
-        updatedAt: new Date(),
-      };
-      onShiftsChange(shifts.map((s) => (s.id === shift.id ? updatedShift : s)));
+    async (shift: Shift) => {
+      try {
+        const newStatus = shift.status === "active" ? "inactive" : "active";
+        const updated = await updateShiftAction(shift.id, { status: newStatus });
+        onShiftsChange(shifts.map((s) => (s.id === shift.id ? updated : s)));
+      } catch (err) {
+        console.error("Error toggling status", err);
+      }
     },
     [shifts, onShiftsChange],
   );
+
+  const handleDeleteShiftConfirmed = useCallback(async () => {
+    if (!deletingShift) return;
+    try {
+      await deleteShiftAction(deletingShift.id);
+      onShiftsChange(shifts.filter((s) => s.id !== deletingShift.id));
+      setDeletingShift(null);
+    } catch (err) {
+      console.error("Error deleting shift", err);
+    }
+  }, [deletingShift, shifts, onShiftsChange]);
 
   const formatWorkingDays = useCallback((days: WorkingDay[]): string => {
     const activeDays = days.filter((d) => d.active).map((d) => d.label);
@@ -194,6 +224,11 @@ export function ShiftsTable({
                 <DropdownMenuItem onClick={() => onSelectShift(shift)}>
                   <Eye className="mr-2 h-4 w-4" />
                   Ver empleados
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setDeletingShift(shift)} className="text-red-600 focus:text-red-600">
+                  <Trash className="mr-2 h-4 w-4" />
+                  Eliminar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -336,6 +371,31 @@ export function ShiftsTable({
           onSubmit={editingShift ? handleUpdateShift : handleCreateShift}
         />
       )}
+
+      {/* Modal de confirmación para eliminar turno */}
+      <AlertDialog
+        open={!!deletingShift}
+        onOpenChange={(open) => !open && setDeletingShift(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Está seguro de eliminar este turno?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente el turno
+              "{deletingShift?.name}" y todas las asignaciones de empleado vinculadas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancerlar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteShiftConfirmed}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Sí, eliminar turno
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

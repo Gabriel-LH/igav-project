@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -22,11 +22,26 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AssignmentForm } from "./assigment-form";
 import type {
   Shift,
   ShiftAssignment,
 } from "@/src/application/interfaces/shift/shift";
+import {
+  assignEmployeeToShiftAction,
+  removeEmployeeFromShiftAction,
+} from "@/src/app/(tenant)/tenant/actions/shift.actions";
+import { toast } from "sonner";
 
 interface ShiftDetailsProps {
   shift: Shift;
@@ -42,6 +57,8 @@ export function ShiftDetails({
   onBack,
 }: ShiftDetailsProps) {
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
+  const [deletingAssignment, setDeletingAssignment] =
+    useState<ShiftAssignment | null>(null);
 
   const columns: ColumnDef<ShiftAssignment>[] = [
     {
@@ -78,6 +95,22 @@ export function ShiftDetails({
         );
       },
     },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const assignment = row.original;
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            onClick={() => setDeletingAssignment(assignment)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        );
+      },
+    },
   ];
 
   const table = useReactTable({
@@ -86,80 +119,101 @@ export function ShiftDetails({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleCreateAssignment = (assignment: ShiftAssignment) => {
-    onAssignmentsChange([...assignments, assignment]);
-    setShowAssignmentForm(false);
+  const handleCreateAssignment = async (assignment: ShiftAssignment) => {
+    try {
+      const created = await assignEmployeeToShiftAction({
+        shiftId: assignment.shiftId,
+        employeeId: assignment.employeeId,
+        startDate: assignment.startDate,
+        endDate: assignment.endDate,
+      });
+      onAssignmentsChange([...assignments, created]);
+      setShowAssignmentForm(false);
+    } catch (err) {
+      toast.error("Error al asignar empleado", { description: !err });
+    }
+  };
+
+  const handleDeleteAssignmentConfirmed = async () => {
+    if (!deletingAssignment) return;
+    try {
+      await removeEmployeeFromShiftAction(deletingAssignment.id);
+      onAssignmentsChange(
+        assignments.filter((a) => a.id !== deletingAssignment.id),
+      );
+      setDeletingAssignment(null);
+    } catch (err) {
+      toast.error("Error al eliminar asignación", { description: !err });
+    }
   };
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div className="flex-1">
-              <CardTitle>{shift.name}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                {shift.startTime} - {shift.endTime} | Tolerancia:{" "}
-                {shift.toleranceMinutes} min
-              </p>
-            </div>
-            <Button onClick={() => setShowAssignmentForm(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Asignar empleado
-            </Button>
+      <div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex-1">
+            <CardTitle>{shift.name}</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              {shift.startTime} - {shift.endTime} | Tolerancia:{" "}
+              {shift.toleranceMinutes} min
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
+          <Button onClick={() => setShowAssignmentForm(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Asignar empleado
+          </Button>
+        </div>
+      </div>
+      <div>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader className="bg-muted/80">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No hay empleados asignados a este turno.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No hay empleados asignados a este turno.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
 
       {showAssignmentForm && (
         <AssignmentForm
@@ -168,6 +222,32 @@ export function ShiftDetails({
           onSubmit={handleCreateAssignment}
         />
       )}
+
+      {/* Modal de confirmación para eliminar asignación */}
+      <AlertDialog
+        open={!!deletingAssignment}
+        onOpenChange={(open) => !open && setDeletingAssignment(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Retirar empleado del turno?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Retirará as "
+              {deletingAssignment?.employeeName}" de las asignaciones activas de
+              este turno.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAssignmentConfirmed}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Sí, retirar empleado
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

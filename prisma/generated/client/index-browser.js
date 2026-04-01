@@ -208,6 +208,8 @@ exports.Prisma.UserAttendanceScalarFieldEnum = {
   lateMinutes: 'lateMinutes',
   extraMinutes: 'extraMinutes',
   workDate: 'workDate',
+  isManual: 'isManual',
+  justification: 'justification',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

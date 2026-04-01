@@ -124,26 +124,28 @@ model UserBranchAccess {
 }
 
 model UserAttendance {
-  id           String       @id @default(uuid())
-  tenantId     String
-  branchId     String
-  userId       String
-  shiftId      String
-  checkIn      DateTime
-  checkOut     DateTime?
-  notes        String?
-  createdBy    String
-  status       BranchStatus @default(active)
-  source       String
-  lateMinutes  Int
-  extraMinutes Int
-  workDate     DateTime
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  shift        Shift        @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String    @id @default(uuid())
+  tenantId      String
+  branchId      String
+  userId        String
+  shiftId       String
+  checkIn       DateTime?
+  checkOut      DateTime?
+  notes         String?
+  createdBy     String
+  status        String    @default("present")
+  source        String
+  lateMinutes   Int       @default(0)
+  extraMinutes  Int       @default(0)
+  workDate      DateTime
+  isManual      Boolean   @default(false)
+  justification String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  branch        Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  shift         Shift     @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_attendance")
 }
@@ -176,7 +178,7 @@ model UserShiftAssignment {
   membershipId String
   shiftId      String
   startDate    DateTime
-  endDate      DateTime
+  endDate      DateTime?
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
   createdBy    String

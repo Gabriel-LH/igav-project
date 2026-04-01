@@ -1,5 +1,10 @@
 import { ShiftsModule } from "./shift-module";
+import type { Shift } from "@/src/application/interfaces/shift/shift";
 
-export default function ShiftLayout() {
-  return <ShiftsModule />;
+interface ShiftLayoutProps {
+  initialShifts: Shift[];
+}
+
+export default function ShiftLayout({ initialShifts }: ShiftLayoutProps) {
+  return <ShiftsModule initialShifts={initialShifts} />;
 }

@@ -1,7 +1,7 @@
 // components/attendance/AttendanceCalendar.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { useUserStore } from "@/src/store/useUserStore";
 import {
@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
@@ -58,6 +58,8 @@ import {
 import { es } from "date-fns/locale";
 import { DniScanner } from "./DniScanner";
 import { AttendanceRecord, MarkAttendanceModal } from "./MarkAttendanceModal";
+import { toast } from "sonner";
+import { getWeeklyAttendanceAction, scanDniAction } from "@/src/app/(tenant)/tenant/actions/attendance.actions";
 
 const SHIFT_CONFIG = {
   morning: { label: "Mañana", start: "08:00", end: "17:00", icon: Clock },
@@ -180,7 +182,26 @@ export function AttendanceCalendar({
     return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   }, [weekStart]);
 
-  const allRecords = useMemo(() => generateMockRecords(weekStart), [weekStart]);
+  const [allRecords, setAllRecords] = useState<AttendanceRecord[]>([]);
+  const [isLoadingRecords, setIsLoadingRecords] = useState(false);
+
+  // Fetch true records when weekStart changes
+  useEffect(() => {
+    async function loadRecords() {
+      setIsLoadingRecords(true);
+      try {
+        // weekStart is Monday. End is Sunday.
+        const end = addDays(weekStart, 6);
+        const data = await getWeeklyAttendanceAction(weekStart, end);
+        setAllRecords(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoadingRecords(false);
+      }
+    }
+    loadRecords();
+  }, [weekStart]);
 
   const filteredRecords = useMemo(() => {
     return allRecords.filter((record) => {
@@ -214,18 +235,19 @@ export function AttendanceCalendar({
     setMarkModalOpen(true);
   };
 
-  const handleScanDni = (dni: string) => {
-    const employee = employeesToUse.find((e) => e.dni === dni);
-    if (employee) {
-      const today = new Date();
-      const existing = filteredRecords.find(
-        (r) => r.employeeId === employee.id && isSameDay(r.date, today),
-      );
-      setSelectedCell({ employee, date: today, record: existing });
-      setMarkModalOpen(true);
+  const handleScanDni = async (dni: string) => {
+    try {
       setScanModalOpen(false);
-    } else {
-      alert("Empleado no encontrado");
+      // Calls the real SCAN ACTION and refreshes!
+      const res = await scanDniAction(dni);
+      toast.success(`Asistencia marcada para ${res.employeeName}`);
+      
+      // Reload current week locally
+      const end = addDays(weekStart, 6);
+      const data = await getWeeklyAttendanceAction(weekStart, end);
+      setAllRecords(data);
+    } catch (e: any) {
+      toast.error("Error al escanear DNI", { description: e.message });
     }
   };
 

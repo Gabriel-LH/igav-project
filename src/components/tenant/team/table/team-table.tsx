@@ -55,6 +55,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Filter,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,7 @@ export interface TeamMember {
   email: string;
   name: string;
   avatar?: string;
-  role: "admin" | "manager" | "seller" | "inventory" | "viewer";
+  role: "owner" | "admin" | "manager" | "seller" | "inventory" | "viewer";
   branchId: string;
   branchName: string;
   status: "active" | "invited" | "suspended";
@@ -85,6 +86,7 @@ interface TeamTableProps {
 }
 
 const ROLE_LABELS: Record<string, { label: string; color: string; icon: any }> = {
+  owner: { label: "Propietario", color: "bg-amber-100 text-amber-800", icon: Crown },
   admin: { label: "Administrador", color: "bg-purple-100 text-purple-800", icon: Shield },
   manager: { label: "Gerente", color: "bg-blue-100 text-blue-800", icon: Building2 },
   seller: { label: "Vendedor", color: "bg-green-100 text-green-800", icon: Mail },
@@ -360,6 +362,7 @@ export function TeamTable({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los roles</SelectItem>
+              <SelectItem value="owner">Propietarios</SelectItem>
               <SelectItem value="admin">Administradores</SelectItem>
               <SelectItem value="manager">Gerentes</SelectItem>
               <SelectItem value="seller">Vendedores</SelectItem>
