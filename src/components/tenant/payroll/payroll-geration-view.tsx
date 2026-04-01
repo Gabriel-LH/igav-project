@@ -243,7 +243,6 @@ export function PayrollGenerationView({
     <div>
       <div className="mb-4">
         <span className="flex text-2xl items-center gap-2">
-          <CalendarIcon className="h-5 w-5" />
           Generar planilla
         </span>
         <span className="text-xs text-slate-400">

@@ -315,7 +315,7 @@ export function TeamTable({
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/50 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-3 rounded-lg">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -328,7 +328,7 @@ export function TeamTable({
         
         <div className="flex gap-2 flex-wrap">
           <Select value={branchFilter} onValueChange={setBranchFilter}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-fit">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue placeholder="Sucursal" />
             </SelectTrigger>
@@ -343,7 +343,7 @@ export function TeamTable({
           </Select>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="w-fit">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
@@ -355,7 +355,7 @@ export function TeamTable({
           </Select>
 
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-fit">
               <SelectValue placeholder="Rol" />
             </SelectTrigger>
             <SelectContent>

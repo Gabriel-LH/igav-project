@@ -3,14 +3,8 @@ import { Branch } from "@/src/types/branch/type.branch";
 import prisma from "@/src/lib/prisma";
 
 export class PrismaBranchAdapter implements BranchRepository {
-  async getBranchesByTenant(tenantId: string): Promise<Branch[]> {
-    const branches = await prisma.branch.findMany({
-      where: { tenantId },
-      include: { branchConfigs: true },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return branches.map((b: any) => ({
+  private mapBranch(b: any): Branch {
+    return {
       ...b,
       phone: b.phone ?? undefined,
       email: b.email ?? undefined,
@@ -21,7 +15,17 @@ export class PrismaBranchAdapter implements BranchRepository {
         ...b.branchConfigs[0],
         openHours: b.branchConfigs[0].openHours as any,
       } : undefined,
-    })) as Branch[];
+    } as Branch;
+  }
+
+  async getBranchesByTenant(tenantId: string): Promise<Branch[]> {
+    const branches = await prisma.branch.findMany({
+      where: { tenantId },
+      include: { branchConfigs: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return branches.map((b: any) => this.mapBranch(b));
   }
 
   async getBranchById(tenantId: string, branchId: string): Promise<Branch | null> {
@@ -31,20 +35,73 @@ export class PrismaBranchAdapter implements BranchRepository {
     });
 
     if (!branch) return null;
+    return this.mapBranch(branch);
+  }
 
-    return {
-      ...branch,
-      phone: branch.phone ?? undefined,
-      email: branch.email ?? undefined,
-      createdBy: branch.createdBy ?? undefined,
-      updatedBy: branch.updatedBy ?? undefined,
-      metadata: (branch.metadata as Record<string, any>) ?? undefined,
-      config: (branch as any).branchConfigs?.[0] ? {
-        ...(branch as any).branchConfigs[0],
-        openHours: (branch as any).branchConfigs[0].openHours as any,
-        openingCashRequired: (branch as any).branchConfigs[0].openingCashRequired ?? true,
-        requireClosingReport: (branch as any).branchConfigs[0].requireClosingReport ?? true,
-      } : undefined,
-    } as Branch;
+  async createBranch(tenantId: string, data: Partial<Branch>): Promise<Branch> {
+    const branch = await prisma.$transaction(async (tx) => {
+      // Si es primaria, quitar primaria a las demás
+      if (data.isPrimary) {
+        await tx.branch.updateMany({
+          where: { tenantId, isPrimary: true },
+          data: { isPrimary: false },
+        });
+      }
+
+      const newBranch = await tx.branch.create({
+        data: {
+          tenantId,
+          code: data.code!,
+          name: data.name!,
+          city: data.city!,
+          address: data.address!,
+          phone: data.phone || null,
+          email: data.email || null,
+          timezone: data.timezone ?? "America/Lima",
+          isPrimary: data.isPrimary ?? false,
+          status: data.status ?? "active",
+          createdBy: data.createdBy ?? "system",
+          updatedBy: data.createdBy ?? "system",
+          metadata: (data.metadata as any) ?? {},
+        },
+      });
+
+      return newBranch;
+    });
+
+    return this.mapBranch(branch);
+  }
+
+  async updateBranch(tenantId: string, id: string, data: Partial<Branch>): Promise<Branch> {
+    const branch = await prisma.$transaction(async (tx) => {
+      // Si se está marcando como primaria, quitar primaria a las demás
+      if (data.isPrimary) {
+        await tx.branch.updateMany({
+          where: { tenantId, isPrimary: true, id: { not: id } },
+          data: { isPrimary: false },
+        });
+      }
+
+      const updated = await tx.branch.update({
+        where: { id, tenantId },
+        data: {
+          code: data.code,
+          name: data.name,
+          city: data.city,
+          address: data.address,
+          phone: data.phone === undefined ? undefined : (data.phone || null),
+          email: data.email === undefined ? undefined : (data.email || null),
+          timezone: data.timezone,
+          isPrimary: data.isPrimary,
+          status: data.status,
+          updatedBy: data.updatedBy ?? "system",
+          metadata: (data.metadata as any),
+        },
+      });
+
+      return updated;
+    });
+
+    return this.mapBranch(branch);
   }
 }

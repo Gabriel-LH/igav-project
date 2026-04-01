@@ -113,3 +113,72 @@ export async function getBranchMetricsAction(branchId: string) {
     };
   }
 }
+
+export async function createBranchAction(branchData: any) {
+  try {
+    const membership = await requireTenantMembership();
+    const tenantId = membership.tenantId;
+    if (!tenantId) throw new Error("Tenant ID not found");
+
+    console.log(`[Branch Action] Creating branch:`, branchData);
+    const branchRepo = new PrismaBranchAdapter();
+    const newBranch = await branchRepo.createBranch(tenantId, {
+      ...branchData,
+      createdBy: membership.user.id,
+    });
+
+    return { success: true, data: newBranch };
+  } catch (error) {
+    console.error("Error al crear sucursal:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Error al crear sucursal" 
+    };
+  }
+}
+
+export async function updateBranchAction(branchId: string, branchData: any) {
+  try {
+    const membership = await requireTenantMembership();
+    const tenantId = membership.tenantId;
+    if (!tenantId) throw new Error("Tenant ID not found");
+
+    console.log(`[Branch Action] Updating branch ${branchId}:`, branchData);
+    const branchRepo = new PrismaBranchAdapter();
+    const updatedBranch = await branchRepo.updateBranch(tenantId, branchId, {
+      ...branchData,
+      updatedBy: membership.user.id,
+    });
+
+    return { success: true, data: updatedBranch };
+  } catch (error) {
+    console.error("Error al actualizar sucursal:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Error al actualizar sucursal" 
+    };
+  }
+}
+
+export async function toggleBranchStatusAction(branchId: string, currentStatus: "active" | "inactive") {
+  try {
+    const membership = await requireTenantMembership();
+    const tenantId = membership.tenantId;
+    if (!tenantId) throw new Error("Tenant ID not found");
+
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const branchRepo = new PrismaBranchAdapter();
+    const updatedBranch = await branchRepo.updateBranch(tenantId, branchId, {
+      status: newStatus,
+      updatedBy: membership.user.id,
+    });
+
+    return { success: true, data: updatedBranch };
+  } catch (error) {
+    console.error("Error al cambiar estado de sucursal:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Error al cambiar estado" 
+    };
+  }
+}

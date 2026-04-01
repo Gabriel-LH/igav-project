@@ -36,7 +36,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { PayrollConfigForm } from "./payroll-config-form";
 import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
@@ -187,7 +186,6 @@ export function PayrollConfigView({
       <div>
         <div className="flex mb-5 items-center justify-between">
           <span className="flex text-2xl items-center gap-2">
-            <DollarSign className="h-5 w-5" />
             Configuracion salarial
           </span>
         </div>

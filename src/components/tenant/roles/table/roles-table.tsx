@@ -30,13 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import {
   Shield,
   Users,
@@ -78,6 +72,9 @@ interface RolesTableProps {
   onDelete: (id: string) => void;
   onViewDetail: (role: Role) => void;
   onToggleActive: (id: string, active: boolean) => void;
+  setEditingRole: (role: Role | null) => void;
+  setIsFormOpen: (open: boolean) => void;
+  isPending: boolean;
 }
 
 export function RolesTable({
@@ -88,6 +85,10 @@ export function RolesTable({
   onDelete,
   onViewDetail,
   onToggleActive,
+  setEditingRole,
+  setIsFormOpen,
+  isPending,
+
 }: RolesTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -300,7 +301,7 @@ export function RolesTable({
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+      <div className="flex justify-between">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -310,6 +311,18 @@ export function RolesTable({
             className="pl-9"
           />
         </div>
+
+        <Button
+          onClick={() => {
+            setEditingRole(null);
+            setIsFormOpen(true);
+          }}
+          className="gap-2"
+          disabled={isPending}
+        >
+          <Plus className="w-4 h-4" />
+          Crear Rol
+        </Button>
       </div>
 
       {/* Tabla */}

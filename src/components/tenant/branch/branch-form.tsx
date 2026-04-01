@@ -73,7 +73,8 @@ interface BranchFormProps {
   branch?: Branch | null;
   allBranches: Branch[];
   onClose: () => void;
-  onSubmit: (branch: Branch) => void;
+  onSubmit: (values: Partial<Branch>) => void;
+  isSubmitting?: boolean;
 }
 
 const TIMEZONES = [
@@ -93,6 +94,7 @@ export function BranchForm({
   allBranches,
   onClose,
   onSubmit,
+  isSubmitting = false,
 }: BranchFormProps) {
   const [codeError, setCodeError] = useState<string>("");
   const [primaryWarning, setPrimaryWarning] = useState<string>("");
@@ -148,7 +150,7 @@ export function BranchForm({
   }, [watchIsPrimary, allBranches, branch]);
 
   const handleSubmit = (values: FormValues) => {
-    // Validar código único
+    // Validar código único localmente
     const existingCode = allBranches.find(
       (b) => b.code === values.code && b.id !== branch?.id,
     );
@@ -159,19 +161,7 @@ export function BranchForm({
     }
 
     setCodeError("");
-
-    const newBranch: Branch = {
-      id: branch?.id || crypto.randomUUID(),
-      tenantId: "tenant-1", // En producción, vendría del contexto
-      ...values,
-      createdAt: branch?.createdAt || new Date(),
-      updatedAt: new Date(),
-      createdBy: branch?.createdBy || "current-user",
-      updatedBy: "current-user",
-      metadata: branch?.metadata || {},
-    };
-
-    onSubmit(newBranch);
+    onSubmit(values as Partial<Branch>);
   };
 
   return (
@@ -401,11 +391,23 @@ export function BranchForm({
             )}
 
             <div className="flex justify-end gap-4 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
-              <Button type="submit">
-                {branch ? "Actualizar" : "Crear"} sucursal
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    {branch ? "Actualizando..." : "Creando..."}
+                  </div>
+                ) : (
+                  branch ? "Actualizar sucursal" : "Crear sucursal"
+                )}
               </Button>
             </div>
           </form>

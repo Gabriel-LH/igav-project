@@ -2,28 +2,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  Shield,
-  Users,
-  Plus,
-  Lock,
-  CheckCircle2,
-  AlertCircle,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Shield, Users, Lock, CheckCircle2, AlertCircle } from "lucide-react";
 import { RolesTable, Role } from "./table/roles-table";
 import { RoleForm } from "./role-form";
 import { RoleDetail } from "./role-details";
@@ -69,6 +55,8 @@ export function RolesLayout({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [roles, setRoles] = useState<Role[]>(initialRoles.map(mapToTableRole));
+
+
 
   // isOwner would come from session, for now assume true (layout-level protection should handle it)
   const isOwner = true;
@@ -171,8 +159,25 @@ export function RolesLayout({
     setIsDetailOpen(true);
   };
 
+  if (roles.length === 0) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <div className="col-span-full py-10 flex flex-col items-center justify-center text-muted-foreground">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
+              <p className="text-sm animate-pulse font-semibold">
+                Cargando módulo de sucursales...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
@@ -223,20 +228,6 @@ export function RolesLayout({
         </Card>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
-        <Button
-          onClick={() => {
-            setEditingRole(null);
-            setIsFormOpen(true);
-          }}
-          className="gap-2"
-          disabled={isPending}
-        >
-          <Plus className="w-4 h-4" />
-          Crear Rol
-        </Button>
-      </div>
-
       {/* Info banner */}
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3 dark:bg-blue-950/30 dark:border-blue-800">
         <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
@@ -252,28 +243,21 @@ export function RolesLayout({
       </div>
 
       {/* Tabla */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            Roles configurados
-          </CardTitle>
-          <CardDescription>
-            Haz clic en cualquier rol para ver detalles y editar permisos
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RolesTable
-            data={roles}
-            isOwner={isOwner}
-            onEdit={handleEdit}
-            onClone={handleClone}
-            onDelete={handleDelete}
-            onViewDetail={handleViewDetail}
-            onToggleActive={handleToggleActive}
-          />
-        </CardContent>
-      </Card>
+
+      <div>
+        <RolesTable
+          data={roles}
+          isOwner={isOwner}
+          onEdit={handleEdit}
+          onClone={handleClone}
+          onDelete={handleDelete}
+          onViewDetail={handleViewDetail}
+          onToggleActive={handleToggleActive}
+          setEditingRole={setEditingRole}
+          setIsFormOpen={setIsFormOpen}
+          isPending={isPending}
+        />
+      </div>
 
       {/* Modal de creación/edición */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>

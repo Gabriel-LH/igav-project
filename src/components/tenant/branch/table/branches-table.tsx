@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createBranchAction, updateBranchAction, toggleBranchStatusAction } from "@/src/app/(tenant)/tenant/actions/branch.actions";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -46,7 +48,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BranchForm } from "../branch-form";
 import type { Branch } from "@/src/types/branch/type.branch";
 
@@ -65,35 +66,54 @@ export function BranchesTable({
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const filteredData = useMemo(() => {
     if (statusFilter === "all") return branches;
     return branches.filter((branch) => branch.status === statusFilter);
   }, [branches, statusFilter]);
 
-  const handleCreateBranch = (newBranch: Branch) => {
-    onBranchesChange([...branches, newBranch]);
-    setShowCreateForm(false);
+  const handleCreateBranch = async (newBranchData: Partial<Branch>) => {
+    setIsProcessing(true);
+    const res = await createBranchAction(newBranchData);
+    if (res.success) {
+      onBranchesChange([...branches, res.data as Branch]);
+      setShowCreateForm(false);
+      toast.success("Sucursal creada correctamente");
+    } else {
+      toast.error(res.error || "Error al crear sucursal");
+    }
+    setIsProcessing(false);
   };
 
-  const handleUpdateBranch = (updatedBranch: Branch) => {
-    onBranchesChange(
-      branches.map((b) => (b.id === updatedBranch.id ? updatedBranch : b)),
-    );
-    setEditingBranch(null);
+  const handleUpdateBranch = async (updatedBranchData: Partial<Branch>) => {
+    if (!editingBranch) return;
+    setIsProcessing(true);
+    const res = await updateBranchAction(editingBranch.id, updatedBranchData);
+    if (res.success) {
+      onBranchesChange(
+        branches.map((b) => (b.id === editingBranch.id ? res.data as Branch : b)),
+      );
+      setEditingBranch(null);
+      toast.success("Sucursal actualizada correctamente");
+    } else {
+      toast.error(res.error || "Error al actualizar sucursal");
+    }
+    setIsProcessing(false);
   };
 
-  const handleToggleStatus = (branch: Branch) => {
-    const newStatus: "active" | "inactive" =
-      branch.status === "active" ? "inactive" : "active";
-    const updatedBranch: Branch = {
-      ...branch,
-      status: newStatus,
-      updatedAt: new Date(),
-    };
-    onBranchesChange(
-      branches.map((b) => (b.id === branch.id ? updatedBranch : b)),
-    );
+  const handleToggleStatus = async (branch: Branch) => {
+    setIsProcessing(true);
+    const res = await toggleBranchStatusAction(branch.id, branch.status);
+    if (res.success) {
+      onBranchesChange(
+        branches.map((b) => (b.id === branch.id ? res.data as Branch : b)),
+      );
+      toast.success("Estado actualizado");
+    } else {
+      toast.error(res.error || "Error al cambiar estado");
+    }
+    setIsProcessing(false);
   };
 
   const columns: ColumnDef<Branch>[] = [
@@ -223,7 +243,7 @@ export function BranchesTable({
 
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted/50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
@@ -291,6 +311,7 @@ export function BranchesTable({
             setEditingBranch(null);
           }}
           onSubmit={editingBranch ? handleUpdateBranch : handleCreateBranch}
+          isSubmitting={isProcessing}
         />
       )}
     </>

@@ -1,15 +1,8 @@
 // components/team/TeamLayout.tsx
 "use client";
 
-import { useState, useTransition } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Building2 } from "lucide-react";
+import { useTransition } from "react";
+
 import { TeamTable, TeamMember } from "./table/team-table";
 import { InviteMemberModal } from "./ui/InviteMemberModal";
 import { StatsTeams } from "./ui/StatsTeams";
@@ -160,7 +153,7 @@ export function TeamLayout({
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Stats */}
       <StatsTeams stats={stats} />
 
@@ -169,29 +162,19 @@ export function TeamLayout({
       </div>
 
       {/* Tabla */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="w-5 h-5" />
-            Miembros del equipo
-          </CardTitle>
-          <CardDescription>
-            Administra roles, permisos y estados de tu equipo
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <TeamTable
-            data={members}
-            branches={branches}
-            onEdit={handleEdit}
-            onSuspend={handleSuspend}
-            onActivate={handleActivate}
-            onDelete={handleDelete}
-            onChangeRole={handleChangeRole}
-            onResendInvite={handleResendInvite}
-          />
-        </CardContent>
-      </Card>
+
+      <div>
+        <TeamTable
+          data={members}
+          branches={branches}
+          onEdit={handleEdit}
+          onSuspend={handleSuspend}
+          onActivate={handleActivate}
+          onDelete={handleDelete}
+          onChangeRole={handleChangeRole}
+          onResendInvite={handleResendInvite}
+        />
+      </div>
     </div>
   );
 }
