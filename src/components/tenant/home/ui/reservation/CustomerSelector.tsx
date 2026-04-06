@@ -67,9 +67,11 @@ export function CustomerSelector({
             role="combobox"
             className="w-full font-normal justify-between h-9"
           >
-            {value
-              ? selected?.firstName + " " + selected?.lastName
-              : "Buscar por nombre o DNI..."}
+            {value === "general"
+              ? "Cliente General"
+              : value
+                ? selected?.firstName + " " + selected?.lastName
+                : "Buscar por nombre o DNI..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -100,7 +102,31 @@ export function CustomerSelector({
               </div>
             </CommandEmpty>
 
-            <CommandGroup>
+            <CommandGroup heading="Operaciones Rápidas">
+              <CommandItem
+                value="cliente general"
+                onSelect={() => {
+                  setValue("general");
+                  onSelect(null as any);
+                  setOpen(false);
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === "general" ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <div className="flex flex-col">
+                  <span className="font-bold">Cliente General</span>
+                  <span className="text-[10px] text-muted-foreground uppercase">
+                    Venta rápida / Sin registro
+                  </span>
+                </div>
+              </CommandItem>
+            </CommandGroup>
+
+            <CommandGroup heading="Clientes Registrados">
               {customers.map((client) => (
                 <CommandItem
                   key={client.id}

@@ -32,6 +32,8 @@ import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
 import { useBranchStore } from "@/src/store/useBranchStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
 import type { StockLot } from "@/src/types/product/type.stockLote";
@@ -45,6 +47,7 @@ export function DetailsProductViewer({
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
   const { branches } = useBranchStore();
   const { getSizeById, getColorById, getCategoryById } = useAttributeStore();
+  const { config } = useTenantConfigStore();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -180,7 +183,7 @@ export function DetailsProductViewer({
         getEstimatedTransferTime(
           s.branchId,
           currentBranchId!,
-          null,
+          config || (DEFAULT_TENANT_CONFIG as any),
         ),
       ),
     );
@@ -240,7 +243,7 @@ export function DetailsProductViewer({
 
         <div className="flex px-4 py-2">
           {item.categoryId
-            ? getCategoryById("", item.categoryId)?.name || "General"
+            ? getCategoryById(item.tenantId, item.categoryId)?.name || "General"
             : "General"}
         </div>
         <div className="flex flex-col gap-6 p-6 overflow-y-auto">
@@ -406,7 +409,7 @@ export function DetailsProductViewer({
                   ? getEstimatedTransferTime(
                       bId,
                       currentBranchId!,
-                      null,
+                      config || (DEFAULT_TENANT_CONFIG as any),
                     )
                   : 0;
 

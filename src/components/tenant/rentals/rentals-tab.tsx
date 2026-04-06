@@ -7,8 +7,24 @@ export const RentalsTab = () => {
   const { rentals } = useRentalStore();
 
   // Cálculo de métricas rápidas (Auditoría)
-  const totalIngresos = rentals.reduce(
-    (acc, res) => acc + (res.operationId ? 0 : 0), // Adjust this if there's a specific field to sum
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const rentalsThisMonth = rentals.filter((rental) => {
+    // Note: Supporting both Rental/Operation (Date) and RentalTableRow (string)
+    const rawDate = (rental as any).outDate || (rental as any).date || rental.createdAt;
+    const rentalDate = new Date(rawDate);
+    
+    return (
+      rentalDate.getMonth() === currentMonth &&
+      rentalDate.getFullYear() === currentYear &&
+      rental.status !== "anulado"
+    );
+  });
+
+  const totalIngresos = rentalsThisMonth.reduce(
+    (acc, res) => acc + ((res as any).income || (res as any).totalAmount || 0),
     0,
   );
   return (

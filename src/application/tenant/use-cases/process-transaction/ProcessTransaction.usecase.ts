@@ -1,6 +1,7 @@
 import { IUnitOfWork } from "../../../../domain/tenant/repositories/IUnitOfWork";
 import { TransactionFinancials } from "../../../../domain/tenant/logic/TransactionFinancials";
 import { TenantRepository } from "../../../../domain/tenant/repositories/TenantRepository";
+import { CashSessionRepository } from "../../../../domain/tenant/repositories/CashSessionRepository";
 import { ITransactionStrategy } from "./ITransactionStrategy";
 
 // Sub-cases
@@ -16,6 +17,7 @@ export class ProcessTransactionUseCase {
   constructor(
     private readonly unitOfWork: IUnitOfWork,
     private readonly tenantRepo: TenantRepository,
+    private readonly cashSessionRepo: CashSessionRepository,
     private readonly transactionStrategies: ITransactionStrategy[],
     private readonly createOperationUC: CreateOperationUseCase,
     private readonly processPaymentUC: ProcessInitialPaymentUseCase,
@@ -28,6 +30,19 @@ export class ProcessTransactionUseCase {
   async execute(dto: any): Promise<any> {
     return this.unitOfWork.execute(async () => {
       const tenantId = this.tenantRepo.getTenantIdByTransaction(dto);
+      
+      // Configuration & Session Check
+      const config = dto.configSnapshot?.tenant || dto.configSnapshot;
+      if (config?.cash?.openingCashRequired) {
+        const activeSession = await this.cashSessionRepo.findActiveSession(
+          tenantId,
+          dto.branchId,
+        );
+        
+        if (!activeSession) {
+          throw new Error("No se puede procesar la transacción: No hay una sesión de caja abierta en esta sucursal.");
+        }
+      }
       
       // Re-calculate promotions on server to ensure consistency and security
       const recalculatedItems = await this.calculatePromotionsUC.execute({
@@ -66,7 +81,7 @@ export class ProcessTransactionUseCase {
       );
       const operationId = String(operation.id);
 
-      if (financials.hasOverpaymentToKeep) {
+      if (financials.hasOverpaymentToKeep && dto.customerId) {
         await this.addClientCreditUC.execute(
           dto.customerId,
           financials.overpayment,
@@ -101,19 +116,21 @@ export class ProcessTransactionUseCase {
         financials,
       );
 
-      await this.rewardLoyaltyUC.execute(
-        financials.downPayment,
-        financials.totalAmount,
-        dto.customerId,
-        dto.type,
-        operationId,
-      );
-
-      await this.processReferralUC.execute(
-        dto.customerId,
-        tenantId,
-        "first_purchase",
-      );
+      if (dto.customerId) {
+        await this.rewardLoyaltyUC.execute(
+          financials.downPayment,
+          financials.totalAmount,
+          dto.customerId,
+          dto.type,
+          operationId,
+        );
+  
+        await this.processReferralUC.execute(
+          dto.customerId,
+          tenantId,
+          "first_purchase",
+        );
+      }
 
       return {
         operation,

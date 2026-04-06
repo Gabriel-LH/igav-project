@@ -33,6 +33,7 @@ import {
   getCashDashboardDataAction,
   openCashSessionAction,
 } from "@/src/app/(tenant)/tenant/actions/cash.actions";
+import { useCashSessionStore } from "@/src/store/useCashSessionStore";
 import { toast } from "sonner";
 
 const normalizePayment = (payment: any): Payment => ({
@@ -78,6 +79,11 @@ export function CashLayout() {
   const [operations, setOperations] = useState<Operation[]>([]);
   const branches = useBranchStore((state) => state.branches);
   const { config: tenantConfig } = useTenantConfigStore();
+  const {
+    addSession: syncAddSession,
+    updateSession: syncUpdateSession,
+    setSessions: syncSetSessions,
+  } = useCashSessionStore();
 
   const loadCashData = useCallback(async () => {
     const result = await getCashDashboardDataAction();
@@ -87,7 +93,9 @@ export function CashLayout() {
       return;
     }
 
-    setSessions(result.data.sessions.map(normalizeSession));
+    const sessions = result.data.sessions.map(normalizeSession);
+    setSessions(sessions);
+    syncSetSessions(sessions);
     setPayments(result.data.payments.map(normalizePayment));
     setUsers(result.data.users.map(normalizeUser));
     setPaymentMethods(result.data.paymentMethods);
@@ -108,7 +116,7 @@ export function CashLayout() {
         configVersion: operation.configVersion ? new Date(operation.configVersion) : undefined,
       })),
     );
-  }, []);
+  }, [syncSetSessions]);
 
   useEffect(() => {
     loadCashData();
@@ -159,11 +167,13 @@ export function CashLayout() {
         return false;
       }
 
-      setSessions((current) => [normalizeSession(result.data), ...current]);
+      const newSession = normalizeSession(result.data);
+      setSessions((current) => [newSession, ...current]);
+      syncAddSession(newSession);
       toast.success("Caja abierta correctamente");
       return true;
     },
-    [],
+    [syncAddSession],
   );
 
   const handleConfirmClose = useCallback(
@@ -186,11 +196,12 @@ export function CashLayout() {
           session.id === updatedSession.id ? updatedSession : session,
         ),
       );
+      syncUpdateSession(updatedSession.id, updatedSession);
       setShowCloseSession(false);
       setSelectedSession(null);
       toast.success("Caja cerrada correctamente");
     },
-    [selectedSession],
+    [selectedSession, syncUpdateSession],
   );
 
   return (

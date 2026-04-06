@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/src/utils/currency-format";
 import {
@@ -78,16 +79,27 @@ export function CashPaymentSummary({
           <Label className="text-[10px] font-bold uppercase  flex items-center gap-1">
             <Banknote className="w-3 h-3" /> Monto recibido
           </Label>
-          <div className="relative">
-            <span className="absolute left-2.5 top-2.5 text-xs font-bold">
-              S/.
-            </span>
-            <Input
-              className="pl-7 h-9 font-semibold"
-              placeholder="0.00"
-              value={receivedAmount}
-              onChange={(e) => setReceivedAmount(e.target.value)}
-            />
+          <div className="relative flex items-center gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-2.5 top-2.5 text-xs font-bold">
+                S/.
+              </span>
+              <Input
+                className="pl-7 h-9 font-semibold"
+                placeholder="0.00"
+                value={receivedAmount}
+                onChange={(e) => setReceivedAmount(e.target.value)}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 text-[10px] uppercase font-bold text-primary border-primary/20 hover:bg-primary/5 shrink-0"
+              onClick={() => setReceivedAmount(totalToPay.toFixed(2))}
+            >
+              Exacto
+            </Button>
           </div>
         </div>
         <div className="space-y-2">

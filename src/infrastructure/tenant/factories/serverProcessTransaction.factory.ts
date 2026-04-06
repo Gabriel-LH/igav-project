@@ -14,6 +14,7 @@ import { PrismaCouponRepository } from "../repositories/PrismaCouponRepository";
 import { PrismaPromotionAdapter } from "../stores-adapters/prisma-promotion.adapter";
 import { PrismaConfigAdapter } from "../stores-adapters/prisma-config.adapter";
 import { PrismaUnitOfWork } from "../repositories/PrismaUnitOfWork";
+import { PrismaCashSessionRepository } from "../repositories/PrismaCashSessionRepository";
 import { CalculateCartPromotionsUseCase } from "@/src/application/tenant/use-cases/promotion/CalculateCartPromotionsUseCase";
 
 import { ProcessTransactionUseCase } from "@/src/application/tenant/use-cases/process-transaction/ProcessTransaction.usecase";
@@ -49,6 +50,7 @@ export function makeServerProcessTransaction(
   const couponRepo = new PrismaCouponRepository(tx);
   const promoRepo = new PrismaPromotionAdapter();
   const configRepo = new PrismaConfigAdapter();
+  const cashSessionRepo = new PrismaCashSessionRepository(tx);
 
   // 2. Base Use Cases
   const createSaleUC = new CreateSaleUseCase(
@@ -95,6 +97,7 @@ export function makeServerProcessTransaction(
   return new ProcessTransactionUseCase(
     unitOfWork,
     tenantRepo,
+    cashSessionRepo,
     strategies,
     createOperationUC,
     processInitialPaymentUC,

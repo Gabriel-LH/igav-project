@@ -179,7 +179,7 @@ export function PosReservationModal({
 
     // ─── BUNDLES LOCKER ───
     if (items.some((item) => item.bundleId)) {
-      const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+      const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
       if (!tenantId) throw new Error("Tenant no resuelto para bundle");
 
       const res = await reserveBundlesAction(
@@ -193,7 +193,7 @@ export function PosReservationModal({
       if (!res.success) throw new Error(res.error);
     }
 
-    const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+    const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
     if (!tenantId) throw new Error("Tenant no resuelto");
 
     if (hasSales && hasRentals) {

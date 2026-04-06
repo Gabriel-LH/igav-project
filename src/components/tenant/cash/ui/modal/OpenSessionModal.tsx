@@ -38,7 +38,7 @@ export function OpenSessionModal({
   const [notes, setNotes] = useState("");
 
   const handleSubmit = async () => {
-    if (tenantConfig?.cash.openingCashRequired && (openingAmount === null || openingAmount === undefined || openingAmount <= 0)) {
+    if (tenantConfig?.cash.openingCashRequired && (openingAmount === null || openingAmount === undefined || openingAmount < 0)) {
       toast.error("El monto inicial es obligatorio por configuración de caja.");
       return;
     }
@@ -88,7 +88,7 @@ export function OpenSessionModal({
             type="number"
             min="0"
             step="0.01"
-            value={openingAmount || ""}
+            value={openingAmount}
             onChange={(e) => setOpeningAmount(parseFloat(e.target.value) || 0)}
           />
         </div>

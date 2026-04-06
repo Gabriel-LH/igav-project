@@ -41,6 +41,7 @@ import { DateTimeContainer } from "./DataTimeContainer";
 import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
 import { StockAssignmentWidget } from "../widget/StockAssignmentWidget";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { useRequireCashSession } from "@/src/hooks/useRequireCashSession";
 import { UsePointsComponent } from "@/src/components/tenant/pos/ui/UsePointsComponent";
 import { UseCouponComponent } from "@/src/components/tenant/pos/ui/UseCouponComponent";
 import { Coupon } from "@/src/types/coupon/type.coupon";
@@ -374,9 +375,23 @@ export function DirectTransactionModal({
     return true;
   };
 
+  const { canProceed: canProceedCash } = useRequireCashSession();
+
   const handleConfirm = async () => {
+    if (!canProceedCash) {
+       return toast.error("Caja no abierta", {
+         description: "Debes abrir la caja antes de procesar cobros (Configuración obligatoria)."
+       });
+    }
     if (!validateTransaction()) return;
-    if (!selectedCustomer) return toast.error("Seleccione un cliente");
+    const isGeneral = !selectedCustomer;
+    const requiresCustomer = type === "alquiler" || type === "reserva";
+    
+    if (isGeneral && requiresCustomer) {
+      return toast.error("Seleccione un cliente", {
+        description: `Las operaciones de ${type} requieren un cliente registrado.`
+      });
+    }
     if (!paymentMethodId) {
       return toast.error("Selecciona un método de pago válido");
     }
@@ -433,8 +448,11 @@ export function DirectTransactionModal({
     }
 
     const baseData = {
-      customerId: selectedCustomer.id,
-      customerName: selectedCustomer.firstName + " " + selectedCustomer.lastName,
+      tenantId: items[0]?.product?.tenantId,
+      customerId: selectedCustomer?.id || "",
+      customerName: selectedCustomer 
+        ? selectedCustomer.firstName + " " + selectedCustomer.lastName
+        : "Cliente General",
       sellerId,
       branchId: currentBranchId,
       notes,

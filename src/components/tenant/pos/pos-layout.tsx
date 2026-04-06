@@ -189,7 +189,7 @@ export function PosLayout() {
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden gap-2">
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 text-white rounded-lg mx-4 mt-2 shadow-md">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 text-white rounded-lg  mt-2 shadow-md">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono opacity-70">MODO ESCÁNER:</span>
           <Badge
@@ -230,8 +230,8 @@ export function PosLayout() {
         </div>
       </div>
 
-      <div className="flex flex-1 gap-4 min-h-0 px-4 pb-4 items-stretch">
-        <div className="flex-1 flex flex-col bg-card border rounded-xl shadow-sm overflow-hidden min-h-0">
+      <div className="flex flex-1 gap-2 min-h-0  pb-4 items-stretch">
+        <div className="flex-1 flex flex-col overflow-hidden">
           <PosProductSection />
         </div>
 

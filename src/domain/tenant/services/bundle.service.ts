@@ -238,7 +238,7 @@ export class BundleDomainService {
     checkAvailability: CheckAvailabilityFn = this.defaultCheckAvailability,
   ): BundleEligibilityResult {
     const hasCrossTenantItem = cart.some(
-      (item) => item.product.tenantId !== tenantId,
+      (item) => item.product?.tenantId !== tenantId,
     );
     if (hasCrossTenantItem) {
       return {
@@ -274,7 +274,7 @@ export class BundleDomainService {
 
     const eligibleItems = cart.filter(
       (item) =>
-        item.product.tenantId === tenantId &&
+        item.product?.tenantId === tenantId &&
         this.operationMatchesBundle(bundleDefinition, item.operationType) &&
         this.isItemInBranch(item, branchId, inventoryItems, stockLots),
     );
@@ -437,7 +437,7 @@ export class BundleDomainService {
       const remainingForProduct =
         requiredTotalByProduct.get(line.product.id) ?? 0;
       if (remainingForProduct <= 0) return;
-      if (line.product.tenantId !== tenantId) return;
+      if (line.product?.tenantId !== tenantId) return;
       if (!this.operationMatchesBundle(bundleDefinition, line.operationType))
         return;
       const consume = Math.min(line.quantity, remainingForProduct);

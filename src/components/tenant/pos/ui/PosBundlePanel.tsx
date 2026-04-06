@@ -22,7 +22,7 @@ export function PosBundlesPanel() {
   const startDate = globalRentalDates?.from ?? new Date();
   const endDate = globalRentalDates?.to ?? new Date();
 
-  const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+  const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
 
   const { products, inventoryItems, stockLots, productVariants } = useInventoryStore();
   const { promotions } = usePromotionStore();

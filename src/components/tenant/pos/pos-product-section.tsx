@@ -83,7 +83,7 @@ export function PosProductSection() {
   return (
     <div className="flex flex-col h-full">
       {/* Barra de Búsqueda */}
-      <div className="p-4 border-b bg-muted/20">
+      <div className="py-2">
         <div className="relative">
           <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -97,7 +97,7 @@ export function PosProductSection() {
       </div>
 
       {/* Grid de Productos */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto ">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-10 text-muted-foreground animate-pulse">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"/>

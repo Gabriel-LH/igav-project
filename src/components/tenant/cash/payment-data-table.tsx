@@ -21,7 +21,13 @@ import {
 import React from "react";
 
 import { Button } from "@/components/button";
-import { CustomDropdown, CustomPopover } from "./ui/custom/CustomDropdown";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/dropdown-menu";
+import { CustomPopover } from "./ui/custom/CustomDropdown";
 import { Input } from "@/components/input";
 import { CustomSelect } from "./ui/custom/CustomSelect";
 import type { PaymentDatePreset } from "@/src/utils/cash/cashPayment";
@@ -205,17 +211,15 @@ export function PaymentDataTable({
             </>
           ) : null}
 
-          <CustomDropdown
-            align="right"
-            trigger={
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-10 gap-2">
                 <IconLayoutColumns className="size-4" />
                 <span className="hidden xl:inline text-xs">Columnas</span>
                 <IconChevronDown className="size-4" />
               </Button>
-            }
-          >
-            <div className="flex flex-col w-56 p-1">
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
               {table
                 .getAllColumns()
                 .filter(
@@ -224,22 +228,17 @@ export function PaymentDataTable({
                     !["drag", "select", "actions"].includes(column.id),
                 )
                 .map((column) => (
-                  <button
+                  <DropdownMenuCheckboxItem
                     key={column.id}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Avoid closing the dropdown when toggling visibility
-                      column.toggleVisibility(!column.getIsVisible());
-                    }}
-                    className="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground text-left w-full bg-transparent border-none capitalize"
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                      {column.getIsVisible() && <Check className="h-4 w-4" />}
-                    </span>
                     {COLUMN_LABELS_ES[column.id] ?? column.id}
-                  </button>
+                  </DropdownMenuCheckboxItem>
                 ))}
-            </div>
-          </CustomDropdown>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

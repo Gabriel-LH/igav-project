@@ -52,6 +52,7 @@ import { useCouponStore } from "@/src/store/useCouponStore";
 import { authClient } from "@/src/lib/auth-client";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { PaymentMethod } from "@/src/types/payments/type.paymentMethod";
+import { useRequireCashSession } from "@/src/hooks/useRequireCashSession";
 
 import { PinAuthModal } from "./PinAuthModal";
 
@@ -198,6 +199,9 @@ export function PosCheckoutModal({
   const [receivedAmount, setReceivedAmount] = useState("");
   const [guarantee, setGuarantee] = useState("");
   const [guaranteeType, setGuaranteeType] = useState<GuaranteeType>("dinero");
+  
+  // Trackea el último total sugerido para saber si el usuario lo modificó
+  const lastSuggestedTotal = React.useRef<string>("");
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -316,10 +320,31 @@ export function PosCheckoutModal({
     return received - totalACobrarHoy;
   }, [receivedAmount, totalACobrarHoy, isCashPayment]);
 
+  // EFECTO: Autocompletar monto recibido con el total exacto de forma inteligente
+  useEffect(() => {
+    const currentTotalStr = totalACobrarHoy.toFixed(2);
+    const isEffectivelyEmpty = !receivedAmount || receivedAmount === "" || receivedAmount === "0" || receivedAmount === "0.00";
+    
+    // CASO 1: El modal se abre por primera vez o el monto está vacío/en cero
+    if (open && isEffectivelyEmpty) {
+      setReceivedAmount(currentTotalStr);
+      lastSuggestedTotal.current = currentTotalStr;
+      return;
+    }
+
+    // CASO 2: El total cambió (ej. cargó el config del tenant) y el usuario aún tiene el monto sugerido anterior
+    if (open && receivedAmount === lastSuggestedTotal.current && currentTotalStr !== lastSuggestedTotal.current) {
+      setReceivedAmount(currentTotalStr);
+      lastSuggestedTotal.current = currentTotalStr;
+    }
+  }, [open, totalACobrarHoy, receivedAmount]);
+
   const withTime = (date: Date, time: string) => {
     const [h, m] = time.split(":").map(Number);
     return setMinutes(setHours(date, h), m);
   };
+
+  const { canProceed: canProceedCash } = useRequireCashSession();
 
   // ─── VALIDACIONES ───
   const conflicts = useMemo(() => {
@@ -350,7 +375,17 @@ export function PosCheckoutModal({
 
   // ─── HANDLER: CONFIRMAR PAGO ───
   const handleConfirm = async () => {
-    if (!selectedCustomer) return toast.error("Seleccione un cliente");
+    if (!canProceedCash) {
+       return toast.error("Caja no abierta", {
+         description: "Debes abrir la caja antes de procesar cobros (Configuración obligatoria)."
+       });
+    }
+    const isGeneral = !selectedCustomer;
+    if (isGeneral && hasRentals) {
+      return toast.error("Seleccione un cliente", {
+        description: "Los alquileres requieren un cliente registrado por seguridad y seguimiento."
+      });
+    }
     if (conflicts.length > 0)
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
@@ -363,9 +398,11 @@ export function PosCheckoutModal({
     }
 
     const baseData = {
-      tenantId: activeTenantId ?? items[0]?.product.tenantId,
-        customerId: selectedCustomer.id,
-        customerName: `${selectedCustomer.firstName ?? ""} ${selectedCustomer.lastName ?? ""}`.trim(),
+      tenantId: activeTenantId ?? items[0]?.product?.tenantId,
+      customerId: selectedCustomer?.id || "",
+      customerName: selectedCustomer 
+        ? `${selectedCustomer.firstName ?? ""} ${selectedCustomer.lastName ?? ""}`.trim()
+        : "Cliente General",
       sellerId,
       branchId: currentBranchId,
       notes,
@@ -376,7 +413,7 @@ export function PosCheckoutModal({
     setIsProcessing(true);
     try {
       if (items.some((item) => item.bundleId)) {
-        const tenantId = activeTenantId ?? items[0]?.product.tenantId;
+        const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
         if (!tenantId) throw new Error("Tenant no resuelto para bundle");
         const resBundle = await reserveBundlesAction(
           items,
@@ -439,6 +476,7 @@ export function PosCheckoutModal({
             if (remaining <= 0) break;
 
             const take = Math.min(remaining, lot.quantity);
+            if (take <= 0) continue; // SEGURIDAD: No añadir items con cantidad 0 si el lote está vacío
 
             results.push({
               productId: cartItem.product.id,
@@ -485,15 +523,30 @@ export function PosCheckoutModal({
         Math.round(totalBrutoConIGV * rentalShare * 100) / 100 +
         guaranteeAmount;
 
-      let remainingCash =
-        isCashPayment
-          ? Number(receivedAmount) || 0
-          : totalACobrarHoy;
+      // Función para limpiar y parsear el monto ingresado (maneja comas y símbolos)
+      const parseReceivedAmount = (val: string) => {
+        if (!val || val.trim() === "") return 0;
+        // Eliminar todo lo que no sea número, coma o punto
+        const cleaned = val.replace(/[^0-9.,]/g, "").replace(",", ".");
+        const num = parseFloat(cleaned);
+        return isNaN(num) ? 0 : num;
+      };
+
+      let amountToProcess = parseReceivedAmount(receivedAmount);
+      
+      // FALLBACK DE SEGURIDAD: Si el monto es 0 pero el total es positivo y NO es una venta a crédito,
+      // asumimos que el usuario quiere cobrar el total (especialmente si es digital/tarjeta)
+      if (amountToProcess <= 0 && totalACobrarHoy > 0 && !isCashPayment) {
+        amountToProcess = totalACobrarHoy;
+      }
+
+      let remainingCash = isCashPayment ? amountToProcess : totalACobrarHoy;
 
       const saleReceived =
         isCashPayment
           ? Math.min(saleTotalAmount, remainingCash)
           : saleTotalAmount;
+
       if (isCashPayment)
         remainingCash = Math.max(0, remainingCash - saleReceived);
 
@@ -569,7 +622,7 @@ export function PosCheckoutModal({
         if (!res.success) throw new Error(res.error);
       }
 
-      if (usePoints && pointsConsumed > 0) {
+      if (usePoints && pointsConsumed > 0 && selectedCustomer) {
         await redeemPointsAction(
           selectedCustomer.id,
           pointsConsumed,
@@ -830,7 +883,7 @@ export function PosCheckoutModal({
             </div>
 
             {/* SECCIÓN FIDELIDAD / CUPONES */}
-            {showDiscountControls && (
+            {showDiscountControls && selectedCustomer && (
               <div className="pt-2 border-t flex flex-col gap-2 relative">
                 <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
                   {selectedClient && availablePoints > 0 && (
@@ -842,7 +895,7 @@ export function PosCheckoutModal({
                     />
                   )}
                   <UseCouponComponent
-                    tenantId={activeTenantId ?? items[0]?.product.tenantId ?? null}
+                    tenantId={activeTenantId ?? items[0]?.product?.tenantId ?? null}
                     selectedClientId={selectedCustomer?.id}
                     appliedCoupon={appliedCoupon}
                     onApplyCoupon={setAppliedCoupon}
@@ -885,8 +938,8 @@ export function PosCheckoutModal({
                   (i) =>
                     i.product.is_serial && i.selectedCodes.length < i.quantity,
                 ) ||
-                (hasRentals && Number(receivedAmount) <= 0) ||
-                Number(receivedAmount) > totalBrutoConIGV ||
+                (isCashPayment && Number(receivedAmount) < totalACobrarHoy && !hasRentals) ||
+                (hasRentals && Number(receivedAmount) < totalACobrarHoy) ||
                 (hasRentals && guarantee.length === 0) ||
                 !selectedCustomer
               }

@@ -17,6 +17,8 @@ import { getCategoriesAction } from "./actions/category.actions";
 import { CategoryHydrator } from "@/src/components/tenant/category/CategoryHydrator";
 import { getCashSessionsAction } from "./actions/cash-session.actions";
 import { CashSessionHydrator } from "@/src/components/tenant/cash/CashSessionHydrator";
+import { getTenantConfigAction } from "./actions/settings.actions";
+import { TenantConfigHydrator } from "@/src/components/tenant/settings/TenantConfigHydrator";
 
 export default async function TenantLayout({
   children,
@@ -35,13 +37,14 @@ export default async function TenantLayout({
   }
 
   // Parallel fetching
-  const [planFeatures, branchesRes, promotionsRes, usersRes, categoriesRes, cashSessionsRes] = await Promise.all([
+  const [planFeatures, branchesRes, promotionsRes, usersRes, categoriesRes, cashSessionsRes, tenantConfigRes] = await Promise.all([
     getActivePlanFeaturesAction(),
     getBranchesAction(),
     getPromotionsAction(),
     getTenantUsersAction(),
     getCategoriesAction(),
     getCashSessionsAction(),
+    getTenantConfigAction(),
   ]);
 
   const branches = branchesRes.success ? branchesRes.data : [];
@@ -49,6 +52,7 @@ export default async function TenantLayout({
   const users = usersRes.success ? usersRes.data : [];
   const categories = categoriesRes.success ? categoriesRes.data : [];
   const cashSessions = cashSessionsRes.success ? cashSessionsRes.data : [];
+  const tenantConfig = tenantConfigRes.success ? tenantConfigRes.data : null;
   const tenant = access.membership.tenant;
   
   const logoUrl =
@@ -77,6 +81,7 @@ export default async function TenantLayout({
       <BranchHydrator data={branches as any} />
       <CategoryHydrator data={categories as any} />
       <CashSessionHydrator data={cashSessions as any} />
+      {tenantConfig && <TenantConfigHydrator data={tenantConfig as any} />}
       
       <SidebarProvider
         style={

@@ -357,7 +357,7 @@ export const useCartStore = create<CartState>()(
           return;
         }
         const tenantId =
-          get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+          get().activeTenantId ?? get().items[0]?.product?.tenantId ?? null;
         if (!tenantId) return;
 
         const cartOperationTypes = Array.from(
@@ -455,7 +455,7 @@ export const useCartStore = create<CartState>()(
         endDate,
       ) => {
         const tenantId =
-          get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+          get().activeTenantId ?? get().items[0]?.product?.tenantId ?? null;
         if (!tenantId) {
           return {
             eligible: false,
@@ -546,7 +546,7 @@ export const useCartStore = create<CartState>()(
         const activeBundles = get().activeBundles;
         if (!activeBundles.length) return;
         const tenantId =
-          get().activeTenantId ?? get().items[0]?.product.tenantId ?? null;
+          get().activeTenantId ?? get().items[0]?.product?.tenantId ?? null;
         if (!tenantId) return;
 
         let updatedCart: CartItem[] = get().items.map((item) => {
@@ -751,7 +751,7 @@ export const useCartStore = create<CartState>()(
         const now = new Date();
 
         const tenantId =
-          state.activeTenantId ?? state.items[0]?.product.tenantId ?? null;
+          state.activeTenantId ?? state.items[0]?.product?.tenantId ?? null;
         const allPromotions = usePromotionStore.getState().promotions;
         let promotions = promotionService.getActivePromotions(
           tenantId ?? undefined,
@@ -792,7 +792,7 @@ export const useCartStore = create<CartState>()(
         }
 
         const tenantSafeItems = tenantId
-          ? state.items.filter((i) => i.product.tenantId === tenantId)
+          ? state.items.filter((i) => i.product?.tenantId === tenantId)
           : state.items;
 
         // 🔹 3. Calcular subtotal base

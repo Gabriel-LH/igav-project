@@ -42,7 +42,7 @@ export class PromotionService {
 
     return sourcePromotions.filter(
       (promotion) =>
-        (!tenantId || !promotion.tenantId || promotion.tenantId === tenantId) &&
+        (!tenantId || !promotion?.tenantId || promotion.tenantId === tenantId) &&
         usageTypes.includes(promotion.usageType ?? "automatic") &&
         promotion.isActive &&
         this.isPromotionActiveAtDate(promotion.startDate, promotion.endDate),

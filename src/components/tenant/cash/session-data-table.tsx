@@ -17,7 +17,14 @@ import { es } from "date-fns/locale";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { Badge } from "@/components/badge";
-import { CustomDropdown } from "./ui/custom/CustomDropdown";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/dropdown-menu";
 import { CustomSelect } from "./ui/custom/CustomSelect";
 import { SessionTable } from "./tables/session-table";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -130,39 +137,34 @@ export function SessionDataTable({
           const isOpen = session.status === "open";
 
           return (
-            <CustomDropdown
-              align="right"
-              trigger={
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
-              }
-            >
-              <div className="flex flex-col">
-                <div className="px-2 py-1.5 text-sm font-semibold">Acciones</div>
-                <button
-                  onClick={() => onViewSession(session)}
-                  className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground border-none bg-transparent w-full text-left"
-                >
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => onViewSession(session)}>
                   <Eye className="mr-2 h-4 w-4" />
                   Ver detalle
-                </button>
+                </DropdownMenuItem>
                 {isOpen && onCloseSession && (
-                  <button
+                  <DropdownMenuItem
                     onClick={() => onCloseSession(session)}
-                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground border-none bg-transparent w-full text-left text-red-600"
+                    className="text-red-600 focus:text-red-600"
                   >
                     <AlertCircle className="mr-2 h-4 w-4" />
                     Cerrar sesion
-                  </button>
+                  </DropdownMenuItem>
                 )}
-                <div className="h-px bg-muted my-1" />
-                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground border-none bg-transparent w-full text-left">
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
                   <Download className="mr-2 h-4 w-4" />
                   Exportar reporte
-                </button>
-              </div>
-            </CustomDropdown>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
       },
