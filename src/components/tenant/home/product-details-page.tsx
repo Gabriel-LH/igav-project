@@ -432,7 +432,7 @@ export function ProductDetailsPage({
     return Array.from(map.entries()).map(([branchId, qty]) => {
       const branch = branches.find((branchItem) => branchItem.id === branchId);
       const isLocal = branchId === currentBranchId;
-      const transferDays = !isLocal
+      const transferHours = !isLocal
         ? getEstimatedTransferTime(
             branchId,
             currentBranchId,
@@ -445,7 +445,7 @@ export function ProductDetailsPage({
         branchName: branch?.name || branchId,
         qty,
         isLocal,
-        transferDays,
+        transferHours,
       };
     });
   }, [currentBranchId, stockEntries, branches]);
@@ -920,7 +920,7 @@ export function ProductDetailsPage({
                         {!row.isLocal && row.qty > 0 && (
                           <div className="flex items-center gap-1 text-xs text-blue-600">
                             <Clock className="w-3 h-3" />
-                            <span>Traslado: {row.transferDays}d hábiles</span>
+                            <span>Traslado: {row.transferHours} h</span>
                           </div>
                         )}
 

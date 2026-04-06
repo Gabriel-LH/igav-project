@@ -254,7 +254,7 @@ export function CatalogProductCard({
     });
   }, [variantsToDisplay, attributeTypes, attributeValues]);
 
-  const days = hasRemote
+  const transferHours = hasRemote
     ? getEstimatedTransferTime(
         currentBranchId,
         remoteStock[0].branchId,
@@ -295,8 +295,8 @@ export function CatalogProductCard({
             </Badge>
           ) : hasRemote ? (
             <Badge className="w-fit animate-pulse bg-blue-500/90 text-[8px] uppercase text-white">
-              Disponible para traslado (Llega en {days}{" "}
-              {days === 1 ? "día" : "días"}) <Truck className="h-4 w-4" />
+              Disponible para traslado (Llega en {transferHours}{" "}
+              {transferHours === 1 ? "hora" : "horas"}) <Truck className="h-4 w-4" />
             </Badge>
           ) : (
             <Badge variant="destructive" className="w-fit text-[8px] uppercase">

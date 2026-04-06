@@ -1,5 +1,13 @@
 import { z } from "zod";
-import { PaymentMethod, paymentMethodSchema } from "@/src/types/payments/type.paymentMethod";
+import { paymentMethodSchema } from "@/src/types/payments/type.paymentMethod";
+
+export const transferRouteConfigSchema = z.object({
+  id: z.string(),
+  originBranchId: z.string(),
+  destinationBranchId: z.string(),
+  estimatedTimeHours: z.number().min(0),
+  status: z.enum(["active", "inactive"]).default("active"),
+});
 
 export const tenantConfigSchema = z
   .object({
@@ -58,6 +66,7 @@ export const tenantConfigSchema = z
         .default("first_purchase"),
     }),
     defaultTransferTime: z.number().default(2),
+    transferRoutes: z.array(transferRouteConfigSchema).default([]),
     createdAt: z.date(),
     updatedAt: z.date().optional(),
   })
@@ -76,3 +85,4 @@ export const tenantConfigSchema = z
   });
 
 export type TenantConfig = z.infer<typeof tenantConfigSchema>;
+export type TransferRouteConfig = z.infer<typeof transferRouteConfigSchema>;

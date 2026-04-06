@@ -31,8 +31,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
-import { PAYROLL_MEMBER_OPTIONS } from "@/src/application/interfaces/payroll/PayrollPresentation";
-import { Separator } from "@/components/separator";
 
 const configSchema = z
   .object({
@@ -78,12 +76,14 @@ const configSchema = z
 
 interface PayrollConfigFormProps {
   config?: PayrollConfig | null;
+  members: { membershipId: string; userId: string; displayName: string; email?: string }[];
   onClose: () => void;
-  onSubmit: (config: PayrollConfig) => void;
+  onSubmit: (config: any) => void;
 }
 
 export function PayrollConfigForm({
   config,
+  members,
   onClose,
   onSubmit,
 }: PayrollConfigFormProps) {
@@ -96,6 +96,10 @@ export function PayrollConfigForm({
       hourlyRate: 0,
       paySchedule: "monthly",
       applyOvertime: true,
+      applyhealthInsurancePercen: true,
+      applypensionPercent: true,
+      applytaxPercent: true,
+      otherDeductions: 0,
     },
   });
 
@@ -106,7 +110,7 @@ export function PayrollConfigForm({
         salaryType: config.salaryType,
         baseSalary: config.baseSalary ?? 0,
         hourlyRate: config.hourlyRate ?? 0,
-        paySchedule: config.paySchedule,
+        paySchedule: config.paySchedule as any,
         applyOvertime: config.applyOvertime,
         applyhealthInsurancePercen: config.applyhealthInsurancePercent,
         applypensionPercent: config.applypensionPercent,
@@ -122,29 +126,21 @@ export function PayrollConfigForm({
   });
 
   const handleSubmit = (values: z.infer<typeof configSchema>) => {
-    const next: PayrollConfig = {
-      id: config?.id ?? crypto.randomUUID(),
+    const payload = {
+      id: config?.id,
       membershipId: values.membershipId,
       salaryType: values.salaryType,
-      baseSalary:
-        values.salaryType === "monthly"
-          ? Number(values.baseSalary ?? 0)
-          : undefined,
-      hourlyRate:
-        values.salaryType === "hourly"
-          ? Number(values.hourlyRate ?? 0)
-          : undefined,
+      baseSalary: values.salaryType === "monthly" ? Number(values.baseSalary) : 0,
+      hourlyRate: values.salaryType === "hourly" ? Number(values.hourlyRate) : 0,
       paySchedule: values.paySchedule,
       applyOvertime: values.applyOvertime,
-      applyhealthInsurancePercent: values.applyhealthInsurancePercen,
-      applypensionPercent: values.applypensionPercent,
-      applytaxPercent: values.applytaxPercent,
+      applyHealthInsurance: values.applyhealthInsurancePercen,
+      applyPension: values.applypensionPercent,
+      applyTax: values.applytaxPercent,
       otherDeductions: values.otherDeductions,
-      createdAt: config?.createdAt ?? new Date(),
-      updatedAt: new Date(),
     };
 
-    onSubmit(next);
+    onSubmit(payload);
   };
 
   return (
@@ -161,6 +157,7 @@ export function PayrollConfigForm({
         <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
           <Form {...form}>
             <form
+              id="payroll-config-form"
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
@@ -172,20 +169,21 @@ export function PayrollConfigForm({
                     <FormLabel>Empleado</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
+                      disabled={!!config}
                     >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Seleccionar empleado" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {PAYROLL_MEMBER_OPTIONS.map((option) => (
+                      <SelectContent portal={false}>
+                        {members.map((option) => (
                           <SelectItem
                             key={option.membershipId}
                             value={option.membershipId}
                           >
-                            {option.displayName} - {option.membershipId}
+                            {option.displayName}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -204,14 +202,14 @@ export function PayrollConfigForm({
                       <FormLabel>Tipo de salario</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent portal={false}>
                           <SelectItem value="monthly">Mensual</SelectItem>
                           <SelectItem value="hourly">Por hora</SelectItem>
                         </SelectContent>
@@ -229,14 +227,14 @@ export function PayrollConfigForm({
                       <FormLabel>Frecuencia de pago</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent portal={false}>
                           <SelectItem value="weekly">Semanal</SelectItem>
                           <SelectItem value="biweekly">Quincenal</SelectItem>
                           <SelectItem value="semimonthly">
@@ -262,6 +260,7 @@ export function PayrollConfigForm({
                       <FormControl>
                         <Input
                           type="number"
+                          step="0.01"
                           min={0}
                           value={field.value ?? 0}
                           onChange={(e) =>
@@ -283,6 +282,7 @@ export function PayrollConfigForm({
                       <FormControl>
                         <Input
                           type="number"
+                          step="0.01"
                           min={0}
                           value={field.value ?? 0}
                           onChange={(e) =>
@@ -301,12 +301,12 @@ export function PayrollConfigForm({
                 name="applyOvertime"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                    <div>
+                    <div className="space-y-0.5">
                       <FormLabel className="text-base">
                         Aplicar horas extra
                       </FormLabel>
                       <FormDescription>
-                        Usa el multiplicador definido en Política de Nómina
+                        Multiplicador de política
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -319,24 +319,15 @@ export function PayrollConfigForm({
                 )}
               />
 
-              <Separator />
-
               <div className="space-y-4">
-                <h3 className="font-medium">Descuentos automáticos</h3>
+                <h3 className="text-sm font-medium">Deducciones Aplicables</h3>
 
                 <FormField
                   control={form.control}
                   name="applyhealthInsurancePercen"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div>
-                        <FormLabel className="text-base">
-                          Seguro de salud
-                        </FormLabel>
-                        <FormDescription>
-                          Descuento por seguro médico
-                        </FormDescription>
-                      </div>
+                      <FormLabel className="text-sm">Seguro de Salud</FormLabel>
                       <FormControl>
                         <Switch
                           checked={field.value}
@@ -352,14 +343,7 @@ export function PayrollConfigForm({
                   name="applypensionPercent"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div>
-                        <FormLabel className="text-base">
-                          Fondo de pensiones
-                        </FormLabel>
-                        <FormDescription>
-                          Aporte al sistema de pensiones
-                        </FormDescription>
-                      </div>
+                      <FormLabel className="text-sm">Fondo de Pensiones</FormLabel>
                       <FormControl>
                         <Switch
                           checked={field.value}
@@ -375,12 +359,7 @@ export function PayrollConfigForm({
                   name="applytaxPercent"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div>
-                        <FormLabel className="text-base">Impuestos</FormLabel>
-                        <FormDescription>
-                          Retención de impuestos
-                        </FormDescription>
-                      </div>
+                      <FormLabel className="text-sm">Impuesto a la Renta</FormLabel>
                       <FormControl>
                         <Switch
                           checked={field.value}
@@ -396,21 +375,16 @@ export function PayrollConfigForm({
                   name="otherDeductions"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Otros descuentos</FormLabel>
+                      <FormLabel>Otros descuentos fijos</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute text-sm left-3 top-2">
-                            S/.
-                          </span>
-                          <Input
-                            type="number"
-                            className="pl-8"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseFloat(e.target.value))
-                            }
-                          />
-                        </div>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -425,7 +399,9 @@ export function PayrollConfigForm({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit">{config ? "Actualizar" : "Guardar"}</Button>
+          <Button form="payroll-config-form" type="submit">
+            {config ? "Actualizar" : "Guardar"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

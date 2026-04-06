@@ -1,15 +1,17 @@
-import { BusinessRules } from "@/src/types/tenant/type.businessRules"; 
+import type { TenantConfig } from "@/src/types/tenant/type.tenantConfig";
 
 export const getEstimatedTransferTime = (
   fromId: string,
   toId: string,
-  rules: BusinessRules,
+  rules: Pick<TenantConfig, "defaultTransferTime" | "transferRoutes">,
 ) => {
-  const route = (rules as any).transferRoutes?.find(
-    (r: any) =>
+  const route = rules.transferRoutes?.find(
+    (r) =>
       (r.originBranchId === fromId && r.destinationBranchId === toId) ||
       (r.originBranchId === toId && r.destinationBranchId === fromId),
   );
 
-  return route ? (route.estimatedTime || route.estimatedTimeHours) : (rules.defaultTransferTime ?? 2);
+  return route?.status === "active"
+    ? route.estimatedTimeHours
+    : (rules.defaultTransferTime ?? 2);
 };

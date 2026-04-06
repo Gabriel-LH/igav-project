@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 
+import { formatCurrency } from "@/src/utils/currency-format";
 import { useAnalyticsData } from "@/src/hooks/useAnalyticsData";
 
 export function GarmentsPerformanceTable() {
@@ -20,7 +21,7 @@ export function GarmentsPerformanceTable() {
   return (
     <div className="rounded-lg border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead>Prenda</TableHead>
             <FeatureGuard feature="rentals">
@@ -51,23 +52,23 @@ export function GarmentsPerformanceTable() {
               <FeatureGuard feature="rentals">
                 <TableCell>{item.usageDays}</TableCell>
               </FeatureGuard>
-              <TableCell>${item.revenue.toLocaleString()}</TableCell>
+              <TableCell>{formatCurrency(item.revenue)}</TableCell>
               <TableCell>{item.roi}%</TableCell>
               <TableCell>
                 <span
                   className={cn(
                     "rounded px-2 py-1 text-xs font-medium",
-                    item.status === "scale" && "bg-green-100 text-green-700",
-                    item.status === "maintain" &&
+                    item.status === "potenciar" && "bg-green-100 text-green-700",
+                    item.status === "sostenible" &&
                       "bg-yellow-100 text-yellow-700",
-                    item.status === "review" && "bg-red-100 text-red-700",
+                    item.status === "en_revision" && "bg-red-100 text-red-700",
                   )}
                 >
-                  {item.status === "scale"
-                    ? "Escalar"
-                    : item.status === "maintain"
-                      ? "Mantener"
-                      : "Revisar"}
+                  {item.status === "potenciar"
+                    ? "Potenciar"
+                    : item.status === "sostenible"
+                      ? "Sostenible"
+                      : "En Revisión"}
                 </span>
               </TableCell>
             </TableRow>

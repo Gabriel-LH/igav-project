@@ -133,6 +133,7 @@ export async function getTenantMembersAction() {
           id: true,
           name: true,
           email: true,
+          dni: true,
           image: true,
           status: true,
         },
@@ -142,4 +143,76 @@ export async function getTenantMembersAction() {
     },
     orderBy: { createdAt: "asc" },
   });
+}
+
+export async function updateTeamMemberAction(input: {
+  membershipId: string;
+  name: string;
+  dni: string;
+}) {
+  const membership = await requireTenantMembership();
+  const tenantId = membership.tenantId;
+
+  if (!tenantId) {
+    throw new Error("El ID del tenant es obligatorio.");
+  }
+
+  const targetMembership = await prisma.userTenantMembership.findFirst({
+    where: {
+      id: input.membershipId,
+      tenantId,
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  if (!targetMembership) {
+    throw new Error("Miembro no encontrado.");
+  }
+
+  const name = input.name.trim();
+  const dni = input.dni.trim();
+
+  if (!name) {
+    throw new Error("El nombre es obligatorio.");
+  }
+
+  if (!dni) {
+    throw new Error("El DNI es obligatorio.");
+  }
+
+  if (!/^\d{8,12}$/.test(dni)) {
+    throw new Error("El DNI debe tener entre 8 y 12 dígitos.");
+  }
+
+  const existingDni = await prisma.user.findFirst({
+    where: {
+      dni,
+      NOT: {
+        id: targetMembership.userId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (existingDni) {
+    throw new Error("Ese DNI ya está asignado a otro usuario.");
+  }
+
+  await prisma.user.update({
+    where: {
+      id: targetMembership.userId,
+    },
+    data: {
+      name,
+      dni,
+    },
+  });
+
+  revalidatePath("/tenant/team");
+  revalidatePath("/tenant/attendance");
+  revalidatePath("/tenant/attendance/calendar");
 }

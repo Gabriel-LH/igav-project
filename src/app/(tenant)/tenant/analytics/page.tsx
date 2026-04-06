@@ -4,16 +4,19 @@ import { AnalyticsHeader } from "@/src/components/tenant/analytics/analytics-hea
 import { AnalyticsOverview } from "@/src/components/tenant/analytics/analytics-overview";
 import { AnalyticsInsights } from "@/src/components/tenant/analytics/insights";
 import { GarmentsPerformanceTable } from "@/src/components/tenant/analytics/tables/garments-performance-table";
+import { DashboardDataLoader } from "@/src/components/tenant/dashboard/dashboard-data-loader";
 
 export default function AnalyticsPage() {
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <AnalyticsHeader />
-      <AnalyticsFilters />
-      <AnalyticsOverview />
-      <AnalyticsCharts />
-      <GarmentsPerformanceTable />
-      <AnalyticsInsights />
-    </div>
+    <DashboardDataLoader>
+      <div className="flex flex-col gap-6 p-6">
+        <AnalyticsHeader />
+        <AnalyticsFilters />
+        <AnalyticsOverview />
+        <AnalyticsCharts />
+        <GarmentsPerformanceTable />
+        <AnalyticsInsights />
+      </div>
+    </DashboardDataLoader>
   );
 }

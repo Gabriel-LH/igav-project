@@ -443,7 +443,7 @@ export function DetailsProductViewer({
                           className="w-3 h-3"
                         />
                         Traslado estimado: {transferTime}{" "}
-                        {transferTime === 1 ? "día hábil" : "días hábiles"}
+                        {transferTime === 1 ? "hora" : "horas"}
                       </p>
                     )}
                   </div>
@@ -570,7 +570,7 @@ export function DetailsProductViewer({
                     />
                     {localStock > 0
                       ? "Realizar una reserva"
-                      : `Solicitar traslado y reservar (${maxTransferTime} días)`}
+                      : `Solicitar traslado y reservar (${maxTransferTime} horas)`}
                   </Button>
                 </ReservationModal>
               </FeatureGuard>

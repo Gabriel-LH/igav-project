@@ -1,10 +1,11 @@
 // components/team/TeamLayout.tsx
 "use client";
 
-import { useTransition } from "react";
+import { useState, useMemo } from "react";
 
 import { TeamTable, TeamMember } from "./table/team-table";
 import { InviteMemberModal } from "./ui/InviteMemberModal";
+import { EditMemberModal } from "./ui/EditMemberModal";
 import { StatsTeams } from "./ui/StatsTeams";
 import { revokeInvitationAction } from "@/src/app/(tenant)/tenant/actions/invitation.actions";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ type DBMember = {
     id: string;
     name: string;
     email: string;
+    dni: string | null;
     image: string | null;
     status: string;
   };
@@ -60,8 +62,10 @@ function mapMemberToTableRow(m: DBMember): TeamMember {
 
   return {
     id: m.id,
+    userId: m.user.id,
     email: m.user.email,
     name: m.user.name,
+    dni: m.user.dni ?? undefined,
     avatar: m.user.image ?? undefined,
     role,
     branchId: m.branch.id,
@@ -94,55 +98,55 @@ export function TeamLayout({
   roles,
 }: TeamLayoutProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
 
   // Merge members + pending invitations into a single list
-  const members: TeamMember[] = [
-    ...initialMembers.map(mapMemberToTableRow),
-    ...initialInvitations
-      .filter((inv) => inv.status === "pending")
-      .map(mapInvitationToTableRow),
-  ];
+  const members = useMemo<TeamMember[]>(() => {
+    return [
+      ...initialMembers.map(mapMemberToTableRow),
+      ...initialInvitations
+        .filter((inv) => inv.status === "pending")
+        .map(mapInvitationToTableRow),
+    ];
+  }, [initialMembers, initialInvitations]);
 
-  const stats = {
+  const stats = useMemo(() => ({
     total: members.length,
     active: members.filter((m) => m.status === "active").length,
     invited: members.filter((m) => m.status === "invited").length,
     suspended: members.filter((m) => m.status === "suspended").length,
-  };
+  }), [members]);
 
   const handleEdit = (member: TeamMember) => {
-    console.log("Editar:", member);
+    if (member.status === "invited") {
+      toast.info("Completa primero la invitación para poder editar al miembro.");
+      return;
+    }
+    setEditingMember(member);
   };
 
-  const handleSuspend = (id: string) => {
-    // TODO: wire to a suspendMemberAction
+  const handleSuspend = (_id: string) => {
     toast.info("Función de suspender en desarrollo");
   };
 
-  const handleActivate = (id: string) => {
-    // TODO: wire to an activateMemberAction
+  const handleActivate = (_id: string) => {
     toast.info("Función de activar en desarrollo");
   };
 
-  const handleDelete = (id: string) => {
-    // TODO: wire to a removeMemberAction
+  const handleDelete = (_id: string) => {
     toast.info("Función de eliminar en desarrollo");
   };
 
-  const handleChangeRole = (id: string, role: TeamMember["role"]) => {
-    // TODO: wire to a changeRoleAction
+  const handleChangeRole = (_id: string, _role: TeamMember["role"]) => {
     toast.info("Función de cambio de rol en desarrollo");
   };
 
-  const handleResendInvite = (id: string) => {
-    // The id here is `inv-{invitationId}`, so extract real invitationId
-    const realId = id.replace("inv-", "");
+  const handleResendInvite = (_id: string) => {
     toast.info("Por ahora re-genera una nueva invitación desde el modal.");
   };
 
   const handleRevokeInvite = (invitationId: string) => {
-    startTransition(async () => {
+    (async () => {
       try {
         await revokeInvitationAction(invitationId);
         toast.success("Invitación revocada.");
@@ -150,7 +154,7 @@ export function TeamLayout({
       } catch {
         toast.error("No se pudo revocar la invitación.");
       }
-    });
+    })();
   };
 
   return (
@@ -174,8 +178,18 @@ export function TeamLayout({
           onDelete={handleDelete}
           onChangeRole={handleChangeRole}
           onResendInvite={handleResendInvite}
+          onRevokeInvite={handleRevokeInvite}
         />
       </div>
+
+      <EditMemberModal
+        key={editingMember?.id ?? "empty"}
+        member={editingMember}
+        open={!!editingMember}
+        onOpenChange={(open) => {
+          if (!open) setEditingMember(null);
+        }}
+      />
     </div>
   );
 }

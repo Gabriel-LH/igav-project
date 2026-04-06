@@ -43,6 +43,9 @@ export class PrismaConfigAdapter implements ConfigRepository {
         ...DEFAULT_TENANT_CONFIG.referrals,
         ...(raw.referrals ?? {}),
       },
+      transferRoutes: Array.isArray(raw.transferRoutes)
+        ? raw.transferRoutes
+        : DEFAULT_TENANT_CONFIG.transferRoutes,
       createdAt,
       updatedAt: updatedAt ?? undefined,
     } as TenantConfig;

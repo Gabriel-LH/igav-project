@@ -57,6 +57,10 @@ export function TopMostPopularTable({
 }) {
   const [data, setData] = React.useState(() => initialData);
 
+  React.useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
+
   const sortableId = React.useId();
   const sensors = useSensors(
     useSensor(MouseSensor, {}),

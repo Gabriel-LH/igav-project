@@ -124,6 +124,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  dni: 'dni',
   emailVerified: 'emailVerified',
   image: 'image',
   createdAt: 'createdAt',
@@ -1218,14 +1219,20 @@ exports.Prisma.UserTenantMembershipScalarFieldEnum = {
 exports.Prisma.TransferScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  referenceNumber: 'referenceNumber',
   originBranchId: 'originBranchId',
   destinationBranchId: 'destinationBranchId',
+  priority: 'priority',
+  requiresApproval: 'requiresApproval',
   status: 'status',
   sentAt: 'sentAt',
   receivedAt: 'receivedAt',
   notes: 'notes',
+  metadata: 'metadata',
   createdAt: 'createdAt',
-  createdBy: 'createdBy'
+  createdBy: 'createdBy',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt'
 };
 
 exports.Prisma.TransferItemScalarFieldEnum = {
@@ -1782,6 +1789,13 @@ exports.TenantMemberShipStatus = exports.$Enums.TenantMemberShipStatus = {
   active: 'active',
   invited: 'invited',
   suspended: 'suspended'
+};
+
+exports.TransferPriority = exports.$Enums.TransferPriority = {
+  baja: 'baja',
+  normal: 'normal',
+  alta: 'alta',
+  urgente: 'urgente'
 };
 
 exports.TransferStatus = exports.$Enums.TransferStatus = {

@@ -5,6 +5,10 @@ import { useState, useMemo, useEffect } from "react";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import {
+  useTenantConfigStore,
+  DEFAULT_CONFIG,
+} from "@/src/store/useTenantConfigStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +35,8 @@ import {
   ScanLine,
   Plus,
   Trash2,
+  Minus,
+  Plus as PlusIcon,
   AlertCircle,
   CheckCircle2,
   Barcode,
@@ -43,6 +49,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "../barcode/Scanner";
+import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
+import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
+import type { Product } from "@/src/types/product/type.product";
+import type { ProductVariant } from "@/src/types/product/type.productVariant";
+import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
+import type { StockLot } from "@/src/types/product/type.stockLote";
 
 // Tipos
 export interface TransferItem {
@@ -73,7 +85,20 @@ export interface TransferFormData {
   requiresApproval: boolean;
 }
 
-
+type AvailableStockItem = {
+  id: string;
+  productId: string;
+  productName: string;
+  variantId: string;
+  variantName?: string;
+  variantCode: string;
+  barcode: string;
+  isSerial: boolean;
+  serialCode?: string;
+  quantity: number;
+  branchId: string;
+  condition: string;
+};
 
 interface TransferFormProps {
   onSubmit: (data: TransferFormData) => void;
@@ -84,8 +109,8 @@ function StockScanner({
   onScan,
   availableStock,
 }: {
-  onScan: (stock: any) => void;
-  availableStock: any[];
+  onScan: (stock: AvailableStockItem) => void;
+  availableStock: AvailableStockItem[];
 }) {
   const [error, setError] = useState<string | null>(null);
 
@@ -119,6 +144,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
   const { products, productVariants, inventoryItems, stockLots } =
     useInventoryStore();
   const { getSizeById, getColorById } = useAttributeStore();
+  const { config, ensureLoaded } = useTenantConfigStore();
 
   const [formData, setFormData] = useState<Partial<TransferFormData>>({
     referenceNumber: `TRF-${Date.now().toString(36).toUpperCase().slice(-6)}`,
@@ -133,21 +159,86 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [originProducts, setOriginProducts] = useState<Product[]>([]);
+  const [originVariants, setOriginVariants] = useState<ProductVariant[]>([]);
+  const [originInventoryItems, setOriginInventoryItems] = useState<
+    InventoryItem[]
+  >([]);
+  const [originStockLots, setOriginStockLots] = useState<StockLot[]>([]);
+  const [isLoadingOriginInventory, setIsLoadingOriginInventory] =
+    useState(false);
+
+  useEffect(() => {
+    ensureLoaded();
+  }, [ensureLoaded]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadOriginInventory() {
+      if (!formData.fromBranchId) {
+        setOriginProducts([]);
+        setOriginVariants([]);
+        setOriginInventoryItems([]);
+        setOriginStockLots([]);
+        return;
+      }
+
+      setIsLoadingOriginInventory(true);
+      try {
+        const result = await getBranchInventoryAction(formData.fromBranchId);
+        if (cancelled) return;
+
+        if (!result.success || !result.data) {
+          setOriginProducts([]);
+          setOriginVariants([]);
+          setOriginInventoryItems([]);
+          setOriginStockLots([]);
+          return;
+        }
+
+        setOriginProducts(result.data.products as Product[]);
+        setOriginVariants(result.data.variants as ProductVariant[]);
+        setOriginInventoryItems(result.data.inventoryItems as InventoryItem[]);
+        setOriginStockLots(result.data.stockLots as StockLot[]);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingOriginInventory(false);
+        }
+      }
+    }
+
+    loadOriginInventory();
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.fromBranchId]);
+
+  const effectiveProducts = formData.fromBranchId ? originProducts : products;
+  const effectiveVariants = formData.fromBranchId
+    ? originVariants
+    : productVariants;
+  const effectiveInventoryItems = formData.fromBranchId
+    ? originInventoryItems
+    : inventoryItems;
+  const effectiveStockLots = formData.fromBranchId
+    ? originStockLots
+    : stockLots;
 
   // Filtrar stock disponible según sucursal origen
-  const availableStock = useMemo(() => {
+  const availableStock = useMemo<AvailableStockItem[]>(() => {
     if (!formData.fromBranchId) return [];
 
     // Map serial items
-    const serials = inventoryItems
+    const serials = effectiveInventoryItems
       .filter(
         (item) =>
           item.branchId === formData.fromBranchId &&
           item.status === "disponible",
       )
       .map((item) => {
-        const product = products.find((p) => p.id === item.productId);
-        const variant = productVariants.find((v) => v.id === item.variantId);
+        const product = effectiveProducts.find((p) => p.id === item.productId);
+        const variant = effectiveVariants.find((v) => v.id === item.variantId);
         const size = variant?.attributes?.size
           ? getSizeById(variant.attributes.size)?.name
           : "";
@@ -172,7 +263,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
       });
 
     // Map lot items
-    const lots = stockLots
+    const lots = effectiveStockLots
       .filter(
         (lot) =>
           lot.branchId === formData.fromBranchId &&
@@ -180,8 +271,8 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
           lot.quantity > 0,
       )
       .map((lot) => {
-        const product = products.find((p) => p.id === lot.productId);
-        const variant = productVariants.find((v) => v.id === lot.variantId);
+        const product = effectiveProducts.find((p) => p.id === lot.productId);
+        const variant = effectiveVariants.find((v) => v.id === lot.variantId);
         const size = variant?.attributes?.size
           ? getSizeById(variant.attributes.size)?.name
           : "";
@@ -207,10 +298,10 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
     return [...serials, ...lots];
   }, [
     formData.fromBranchId,
-    inventoryItems,
-    stockLots,
-    products,
-    productVariants,
+    effectiveInventoryItems,
+    effectiveStockLots,
+    effectiveProducts,
+    effectiveVariants,
     getSizeById,
     getColorById,
   ]);
@@ -219,7 +310,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
 
   // Agrupar stock por variante para no serializados
   const groupedStock = useMemo(() => {
-    const groups: Record<string, any[]> = {};
+    const groups: Record<string, AvailableStockItem[]> = {};
     availableStock.forEach((item) => {
       const key = item.variantId;
       if (!groups[key]) groups[key] = [];
@@ -234,8 +325,17 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
   const selectedToBranch = branchesToUse.find(
     (b) => b.id === formData.toBranchId,
   );
+  const tenantConfig = config || (DEFAULT_CONFIG as any);
+  const estimatedTransferTime =
+    formData.fromBranchId && formData.toBranchId
+      ? getEstimatedTransferTime(
+          formData.fromBranchId,
+          formData.toBranchId,
+          tenantConfig,
+        )
+      : null;
 
-  const handleAddItem = (stockItem: any) => {
+  const handleAddItem = (stockItem: AvailableStockItem) => {
     // Verificar si ya está agregado
     const existingIndex = formData.items?.findIndex((item) =>
       item.isSerial
@@ -300,6 +400,11 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
         prev.items?.map((i) => (i.id === itemId ? { ...i, quantity } : i)) ||
         [],
     }));
+  };
+
+  const getAvailableLotQuantity = (stockId?: string) => {
+    if (!stockId) return 0;
+    return availableStock.find((stock) => stock.id === stockId)?.quantity || 0;
   };
 
   const handleRemoveItem = (itemId: string) => {
@@ -382,7 +487,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 mb-3">
               <Label>Notas / Instrucciones</Label>
               <Input
                 placeholder="Instrucciones especiales para la transferencia..."
@@ -396,8 +501,8 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Resumen</CardTitle>
+          <CardHeader>
+            <CardTitle className="pt-1 text-sm">Resumen</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -425,12 +530,12 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card
           className={cn(
-            "border-l-4",
+            "border-l",
             selectedFromBranch ? "border-l-blue-500" : "border-l-muted",
           )}
         >
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-blue-900">
+          <CardHeader>
+            <CardTitle className="text-base mt-1 flex items-center gap-2 text-blue-400">
               <Store className="w-4 h-4" />
               Origen *
             </CardTitle>
@@ -449,28 +554,25 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar sucursal origen..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portal={false}>
                 {branchesToUse.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{branch.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {branch.address}
-                      </span>
-                    </div>
+                    {branch.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             {selectedFromBranch && (
-              <div className="p-3 bg-blue-50 rounded-lg text-sm space-y-1">
-                <p className="font-medium text-blue-900">
+              <div className="p-3 mb-3 bg-blue-500/10 rounded-lg text-sm space-y-1">
+                <p className="font-medium text-blue-300">
                   {selectedFromBranch.name}
                 </p>
                 <p className="text-blue-700">{selectedFromBranch.address}</p>
                 <p className="text-blue-600 text-xs">
-                  {availableStock.length} items disponibles para transferir
+                  {isLoadingOriginInventory
+                    ? "Cargando inventario..."
+                    : `${availableStock.length} items disponibles para transferir`}
                 </p>
               </div>
             )}
@@ -479,12 +581,12 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
 
         <Card
           className={cn(
-            "border-l-4",
+            "border-l",
             selectedToBranch ? "border-l-green-500" : "border-l-muted",
           )}
         >
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-green-900">
+          <CardHeader>
+            <CardTitle className="text-base pt-1 flex items-center gap-2 text-green-400">
               <Truck className="w-4 h-4" />
               Destino *
             </CardTitle>
@@ -500,25 +602,20 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar sucursal destino..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portal={false}>
                 {branchesToUse
                   .filter((b) => b.id !== formData.fromBranchId)
                   .map((branch) => (
                     <SelectItem key={branch.id} value={branch.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{branch.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {branch.address}
-                        </span>
-                      </div>
+                      {branch.name}
                     </SelectItem>
                   ))}
               </SelectContent>
             </Select>
 
             {selectedToBranch && (
-              <div className="p-3 bg-green-50 rounded-lg text-sm space-y-1">
-                <p className="font-medium text-green-900">
+              <div className="p-3 bg-green-500/10 rounded-lg text-sm space-y-1">
+                <p className="font-medium text-green-300">
                   {selectedToBranch.name}
                 </p>
                 <p className="text-green-700">{selectedToBranch.address}</p>
@@ -528,11 +625,27 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
         </Card>
       </div>
 
+      {estimatedTransferTime !== null && (
+        <div className="border-l p-2 rounded-lg border bg-card border-l-amber-500 flex items-center justify-between gap-4 pt-6">
+          <div>
+            <p className="text-sm font-medium">Tiempo estimado de traslado</p>
+            <p className="text-sm text-muted-foreground">
+              Esta transferencia usara las horas configuradas para la ruta o el
+              tiempo global por defecto.
+            </p>
+          </div>
+          <Badge variant="outline" className="text-sm">
+            {estimatedTransferTime}{" "}
+            {estimatedTransferTime === 1 ? "hora" : "horas"}
+          </Badge>
+        </div>
+      )}
+
       {/* Agregar Items */}
       {formData.fromBranchId && (
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
+          <CardHeader>
+            <CardTitle className="text-base mt-1 flex items-center gap-2">
               <Package className="w-4 h-4" />
               Agregar Items a Transferir
             </CardTitle>
@@ -555,7 +668,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                     </div>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80">
+                <PopoverContent className="w-80" portal={false}>
                   <div className="space-y-3">
                     <h4 className="font-semibold flex items-center gap-2">
                       <ScanLine className="w-4 h-4" />
@@ -584,7 +697,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                     </div>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-96">
+                <PopoverContent className="w-96" portal={false}>
                   <div className="space-y-3">
                     <h4 className="font-semibold">Stock Disponible</h4>
                     <ScrollArea className="h-64">
@@ -636,8 +749,8 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                 className={cn(
                   "flex items-center gap-2 text-sm p-3 rounded-md",
                   scanMessage.type === "success"
-                    ? "bg-green-50 text-green-700 border border-green-200"
-                    : "bg-red-50 text-red-700 border border-red-200",
+                    ? "bg-green-500/30 text-green-400 border border-green-500"
+                    : "bg-red-500/30 text-red-400 border border-red-500",
                 )}
               >
                 {scanMessage.type === "success" ? (
@@ -651,7 +764,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
 
             {/* Lista de items agregados */}
             {formData.items && formData.items.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 mb-3">
                 <Label className="text-sm text-muted-foreground">
                   {formData.items.length} items en transferencia:
                 </Label>
@@ -703,13 +816,24 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
 
                       {!item.isSerial && (
                         <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.id,
+                                Math.max(1, item.quantity - 1),
+                              )
+                            }
+                          >
+                            <Minus className="w-4 h-4" />
+                          </Button>
                           <Input
                             type="number"
                             min={1}
-                            max={
-                              availableStock.find((s) => s.id === item.stockId)
-                                ?.quantity || 1
-                            }
+                            max={getAvailableLotQuantity(item.stockId) || 1}
                             value={item.quantity}
                             onChange={(e) =>
                               handleUpdateQuantity(
@@ -719,8 +843,25 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
                             }
                             className="w-20 h-8 text-center"
                           />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.id,
+                                Math.min(
+                                  getAvailableLotQuantity(item.stockId) || 1,
+                                  item.quantity + 1,
+                                ),
+                              )
+                            }
+                          >
+                            <PlusIcon className="w-4 h-4" />
+                          </Button>
                           <span className="text-xs text-muted-foreground">
-                            unidades
+                            de {getAvailableLotQuantity(item.stockId) || 1}
                           </span>
                         </div>
                       )}
@@ -747,7 +888,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
             )}
 
             {(!formData.items || formData.items.length === 0) && (
-              <div className="text-center py-8 border-2 border-dashed rounded-lg text-muted-foreground">
+              <div className="text-center mb-3 py-8 border-2 border-dashed rounded-lg text-muted-foreground">
                 <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">No hay items agregados</p>
                 <p className="text-xs">Escanea o busca items para agregarlos</p>
@@ -758,44 +899,46 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
       )}
 
       {/* Prioridad y opciones */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Prioridad</Label>
-              <Select
-                value={formData.priority}
-                onValueChange={(val: any) =>
-                  setFormData({ ...formData, priority: val })
-                }
-              >
-                <SelectContent>
-                  <SelectItem value="baja">Baja</SelectItem>
-                  <SelectItem value="normal">Normal</SelectItem>
-                  <SelectItem value="alta">Alta</SelectItem>
-                  <SelectItem value="urgente">Urgente</SelectItem>
+
+      <div className="border w-full rounded-lg bg-card p-2">
+        <div className="grid grid-cols-1 items-center justify-center md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Prioridad</Label>
+            <Select
+              value={formData.priority}
+              onValueChange={(val: "baja" | "normal" | "alta" | "urgente") =>
+                setFormData({ ...formData, priority: val })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar prioridad" />
+              </SelectTrigger>
+                <SelectContent portal={false}>
+                <SelectItem value="baja">Baja</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
+                <SelectItem value="alta">Alta</SelectItem>
+                <SelectItem value="urgente">Urgente</SelectItem>
                 </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.requiresApproval}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      requiresApproval: e.target.checked,
-                    })
-                  }
-                  className="rounded border-gray-300"
-                />
-                <span className="text-sm">Requiere aprobación</span>
-              </label>
-            </div>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-end">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.requiresApproval}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    requiresApproval: e.target.checked,
+                  })
+                }
+                className="rounded border-gray-300"
+              />
+              <span className="text-sm">Requiere aprobación</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       {/* Botón Submit */}
       <div className="flex justify-end gap-3">

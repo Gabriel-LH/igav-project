@@ -4,6 +4,9 @@ interface User {
   id: string;
   name: string | null;
   email: string;
+  dni?: string | null;
+  createdAt?: string | Date;
+  membershipId?: string;
 }
 
 interface UserState {

@@ -4,6 +4,7 @@ import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { useIsMobile } from "@/src/hooks/use-mobile";
+import { usePlanFeatures } from "@/src/hooks/usePlanFeatures";
 import {
   Card,
   CardAction,
@@ -26,10 +27,11 @@ import {
 } from "@/components/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/toggle-group";
 import { SortedTooltipContent } from "./ui/sorted-tootip-content";
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
+// import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard"; // Removed to fix recharts rendering issue
 
 import { getChartAreaMetrics } from "@/src/utils/dashboard/metrics";
 import { useOperationStore } from "@/src/store/useOperationStore";
+import { useReservationStore } from "@/src/store/useReservationStore";
 
 export const description = "An interactive area chart";
 
@@ -49,14 +51,22 @@ const chartConfig = {
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
+  const { hasFeature } = usePlanFeatures();
   const operations = useOperationStore((s) => s.operations);
+  const reservations = useReservationStore((s) => s.reservations);
   const chartData = React.useMemo(
-    () => getChartAreaMetrics(operations),
-    [operations],
+    () => getChartAreaMetrics(operations, reservations),
+    [operations, reservations],
   );
 
   const [timeRange, setTimeRange] = React.useState("now");
   const [timeRange2, setTimeRange2] = React.useState("hoy");
+
+  // Helper to parse YYYY-MM-DD as local Date
+  const parseLocalDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
 
   React.useEffect(() => {
     if (isMobile) {
@@ -64,18 +74,19 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile]);
 
-  const filteredData = chartData.filter((item) => {
-    if (chartData.length === 0) return false;
-    const date = new Date(item.date);
-    const referenceDate = new Date(chartData[chartData.length - 1].date);
-
+  const filteredData = React.useMemo(() => {
+    if (chartData.length === 0) return [];
+    
+    // We'll use actual current time as reference instead of last data point
+    const now = new Date();
+    const referenceDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
     if (timeRange === "now") {
-      // Using only pure YYYY-MM-DD string comparisons might be safer, but Date objects work for range if parsed safely.
-      // Easiest is to compare the ISO strings up to day
-      return (
-        date.toISOString().split("T")[0] ===
-        referenceDate.toISOString().split("T")[0]
-      );
+      // For "Hoy", show at least the last 2 days so there's a line, or just current day if desired.
+      // Let's show last 48 hours relative to local midnight to give context.
+      const yesterday = new Date(referenceDate);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return chartData.filter((d) => parseLocalDate(d.date) >= yesterday);
     }
 
     let daysToSubtract = 90;
@@ -85,8 +96,8 @@ export function ChartAreaInteractive() {
     const startDate = new Date(referenceDate);
     startDate.setDate(startDate.getDate() - daysToSubtract);
 
-    return date >= startDate;
-  });
+    return chartData.filter((item) => parseLocalDate(item.date) >= startDate);
+  }, [chartData, timeRange]);
 
   return (
     <Card className="@container/card">
@@ -193,7 +204,7 @@ export function ChartAreaInteractive() {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
-                const date = new Date(value);
+                const date = parseLocalDate(value);
                 return date.toLocaleDateString("es-ES", {
                   month: "short",
                   day: "numeric",
@@ -201,22 +212,28 @@ export function ChartAreaInteractive() {
               }}
             />
             <ChartTooltip cursor={false} content={<SortedTooltipContent />} />
-            <FeatureGuard feature="sales">
-              <Area
-                dataKey="venta"
-                type="natural"
-                fill="url(#fillVenta)"
-                stroke="var(--color-venta)"
-              />
-            </FeatureGuard>
-            <FeatureGuard feature="rentals">
+            {hasFeature("rentals") && (
               <Area
                 dataKey="alquiler"
                 type="natural"
                 fill="url(#fillAlquiler)"
                 stroke="var(--color-alquiler)"
+                stackId="a"
+                dot={{ r: 4, fill: "var(--color-alquiler)" }}
+                activeDot={{ r: 6 }}
               />
-            </FeatureGuard>
+            )}
+            {hasFeature("sales") && (
+              <Area
+                dataKey="venta"
+                type="natural"
+                fill="url(#fillVenta)"
+                stroke="var(--color-venta)"
+                stackId="a"
+                dot={{ r: 4, fill: "var(--color-venta)" }}
+                activeDot={{ r: 6 }}
+              />
+            )}
           </AreaChart>
         </ChartContainer>
       </CardContent>

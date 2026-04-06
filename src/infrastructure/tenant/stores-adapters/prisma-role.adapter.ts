@@ -15,6 +15,20 @@ const roleInclude = {
     },
   },
   _count: { select: { userTenantMemberships: true } },
+  userTenantMemberships: {
+    select: {
+      user: {
+        select: { id: true, name: true, email: true, image: true },
+      },
+    },
+  },
+  userBranchAccesses: {
+    select: {
+      user: {
+        select: { id: true, name: true, email: true, image: true },
+      },
+    },
+  },
 } as const;
 
 function mapRole(raw: any): RoleDTO {
@@ -28,6 +42,14 @@ function mapRole(raw: any): RoleDTO {
     updatedAt: raw.updatedAt,
     permissions: raw.permissions.map((rp: any) => rp.permission),
     _count: raw._count,
+    users: Array.from(
+      new Map(
+        [
+          ...(raw.userTenantMemberships?.map((m: any) => m.user) ?? []),
+          ...(raw.userBranchAccesses?.map((m: any) => m.user) ?? []),
+        ].map((u) => [u.id, u]),
+      ).values(),
+    ),
   };
 }
 

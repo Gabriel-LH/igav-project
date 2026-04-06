@@ -13,43 +13,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 
 import { useAnalyticsData } from "@/src/hooks/useAnalyticsData";
-
-const dates = [
-  "01/01",
-  "02/01",
-  "03/01",
-  "04/01",
-  "05/01",
-  "06/01",
-  "07/01",
-  "08/01",
-  "09/01",
-  "10/01",
-  "11/01",
-  "12/01",
-  "13/01",
-  "14/01",
-  "15/01",
-  "16/01",
-  "17/01",
-  "18/01",
-  "19/01",
-  "20/01",
-  "21/01",
-  "22/01",
-  "23/01",
-  "24/01",
-  "25/01",
-  "26/01",
-  "27/01",
-  "28/01",
-  "29/01",
-  "30/01",
-  "31/01",
-];
 
 interface HeatmapProps {
   dataLevel?: "category" | "product";
@@ -60,13 +25,27 @@ export function ActivityHeatmap({
   dataLevel = "category",
   selectedProduct,
 }: HeatmapProps) {
-  const [mode, setMode] = useState<"rentals" | "sales" | "both">("rentals");
+  const [mode, setMode] = useState<"rentals" | "sales" | "both">("both");
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
 
   const { heatmapData: mockRevenue, hasSalesFeature } = useAnalyticsData();
 
-  const activeMode = !hasSalesFeature && mode !== "rentals" ? "rentals" : mode;
+  // Dynamically generate the last 31 days in DD/MM format
+  const dates = useMemo(() => {
+    const arr: string[] = [];
+    const now = new Date();
+    for (let i = 30; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      arr.push(`${day}/${month}`);
+    }
+    return arr;
+  }, []);
+
+  const activeMode = !hasSalesFeature && (mode === "sales" || mode === "both") ? "rentals" : mode;
 
   const yAxisLabels = useMemo(() => {
     if (selectedProduct) return [selectedProduct];
@@ -89,33 +68,25 @@ export function ActivityHeatmap({
               ? r.category === label
               : r.name === label) && r.date === date,
         );
-        const rentals = items.reduce(
-          (sum: number, i: any) => sum + (i.rentals || 0),
-          0,
-        );
-        const sales = items.reduce(
-          (sum: number, i: any) => sum + (i.sales || 0),
-          0,
-        );
+        const rentals = items.reduce((sum: number, i: any) => sum + (i.rentals || 0), 0);
+        const sales = items.reduce((sum: number, i: any) => sum + (i.sales || 0), 0);
         return { date, rentals, sales };
       }),
     }));
 
     const max = Math.max(
       ...dataMatrix.flatMap((row) =>
-        row.values.map((v) =>
-          activeMode === "rentals"
-            ? v.rentals
-            : activeMode === "sales"
-              ? v.sales
-              : v.rentals + v.sales,
-        ),
+        row.values.map((v) => {
+          if (activeMode === "rentals") return v.rentals;
+          if (activeMode === "sales") return v.sales;
+          return v.rentals + v.sales;
+        }),
       ),
       1,
     );
 
     return { matrix: dataMatrix, maxTotal: max };
-  }, [activeMode, yAxisLabels, dataLevel, mockRevenue]);
+  }, [activeMode, yAxisLabels, dataLevel, mockRevenue, dates]);
 
   const totalPages = Math.ceil(yAxisLabels.length / itemsPerPage);
   const paginatedMatrix = matrix.slice(
@@ -136,18 +107,12 @@ export function ActivityHeatmap({
         </CardTitle>
         <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
           <TabsList>
-            <FeatureGuard feature="rentals">
-              <TabsTrigger value="rentals">Alquileres</TabsTrigger>
-            </FeatureGuard>
+            <TabsTrigger value="rentals">Alquileres</TabsTrigger>
             {hasSalesFeature && (
-              <FeatureGuard feature="sales">
+              <>
                 <TabsTrigger value="sales">Ventas</TabsTrigger>
-              </FeatureGuard>
-            )}
-            {hasSalesFeature && (
-              <FeatureGuard feature={["rentals", "sales"]} requireAll>
                 <TabsTrigger value="both">Ambos</TabsTrigger>
-              </FeatureGuard>
+              </>
             )}
           </TabsList>
         </Tabs>
@@ -166,10 +131,7 @@ export function ActivityHeatmap({
                 Identificador
               </div>
               {dates.map((d) => (
-                <div
-                  key={d}
-                  className="text-center text-[10px] font-bold uppercase text-muted-foreground"
-                >
+                <div key={d} className="text-center text-[10px] font-bold uppercase text-muted-foreground">
                   {d}
                 </div>
               ))}
@@ -182,11 +144,10 @@ export function ActivityHeatmap({
 
                   {row.values.map((cell) => {
                     const val =
-                      activeMode === "rentals"
-                        ? cell.rentals
-                        : activeMode === "sales"
-                          ? cell.sales
-                          : cell.rentals + cell.sales;
+                      activeMode === "rentals" ? cell.rentals :
+                      activeMode === "sales" ? cell.sales :
+                      (cell.rentals + cell.sales);
+                    
                     const intensity = val / maxTotal;
 
                     return (
@@ -202,66 +163,40 @@ export function ActivityHeatmap({
                                 backgroundColor:
                                   val > 0
                                     ? activeMode === "sales"
-                                      ? `rgba(59, 130, 246, ${intensity})`
-                                      : `rgba(34, 197, 94, ${intensity})`
+                                      ? `rgba(59, 130, 246, ${Math.max(intensity, 0.15)})`
+                                      : activeMode === "both"
+                                      ? cell.rentals > 0 && cell.sales > 0
+                                        ? `rgba(99, 102, 241, ${Math.max(intensity, 0.15)})` // Indigo: Both
+                                        : cell.rentals > 0
+                                        ? `rgba(34, 197, 94, ${Math.max(intensity, 0.15)})`  // Green: Only Rent
+                                        : `rgba(59, 130, 246, ${Math.max(intensity, 0.15)})` // Blue: Only Sale
+                                      : `rgba(34, 197, 94, ${Math.max(intensity, 0.15)})` // Green: Default Rentals
                                     : undefined,
                               }}
-                            >
-                              {activeMode === "both" && val > 0 && (
-                                <>
-                                  <div
-                                    className="bg-green-500/60"
-                                    style={{ flex: cell.rentals }}
-                                  />
-                                  <div
-                                    className="bg-blue-600/60"
-                                    style={{ flex: cell.sales }}
-                                  />
-                                </>
-                              )}
-                            </div>
+                            />
                           </div>
                         </TooltipTrigger>
 
-                        <TooltipContent
-                          side="top"
-                          className="bg-popover text-popover-foreground border-border shadow-xl"
-                        >
-                          <div className="space-y-1.5 p-1">
-                            <p className="font-bold text-xs border-b border-border pb-1 mb-1">
-                              {row.label}
-                            </p>
-
-                            {(activeMode === "rentals" ||
-                              activeMode === "both") && (
+                        <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-xl">
+                          <div className="space-y-1.5 p-1 min-w-[140px]">
+                            <p className="font-bold text-xs border-b border-border pb-1 mb-1">{row.label} - {cell.date}</p>
+                            
+                            {(activeMode === "rentals" || activeMode === "both") && cell.rentals > 0 && (
                               <div className="flex justify-between gap-6 text-[11px]">
-                                <span className="text-muted-foreground font-medium">
-                                  Alquileres:
-                                </span>
-                                <span className="font-bold text-green-600 dark:text-green-400">
-                                  {cell.rentals}
-                                </span>
+                                <span className="text-muted-foreground">Alquileres:</span>
+                                <span className="font-bold text-green-600">{cell.rentals}</span>
                               </div>
                             )}
-
-                            {(activeMode === "sales" ||
-                              activeMode === "both") && (
+                            {(activeMode === "sales" || activeMode === "both") && cell.sales > 0 && (
                               <div className="flex justify-between gap-6 text-[11px]">
-                                <span className="text-muted-foreground font-medium">
-                                  Ventas:
-                                </span>
-                                <span className="font-bold text-blue-600 dark:text-blue-400">
-                                  {cell.sales}
-                                </span>
+                                <span className="text-muted-foreground">Ventas:</span>
+                                <span className="font-bold text-blue-600">{cell.sales}</span>
                               </div>
                             )}
-
-                            {activeMode === "both" && (
-                              <div className="flex justify-between gap-6 text-[11px] pt-1 border-t border-border mt-1">
-                                <span className="font-bold">Total:</span>
-                                <span className="font-bold">
-                                  {cell.rentals + cell.sales}
-                                </span>
+                            {activeMode === "both" && val > 0 && (
+                              <div className="flex justify-between gap-6 text-[11px] pt-1 border-t border-border mt-1 font-bold">
+                                <span>Total Actividad:</span>
+                                <span>{val}</span>
                               </div>
                             )}
                           </div>
@@ -276,7 +211,7 @@ export function ActivityHeatmap({
           </ScrollArea>
         </TooltipProvider>
 
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-6 mb-3 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -294,7 +229,7 @@ export function ActivityHeatmap({
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setPage((p) => Math.max(totalPages - 1, p + 1))}
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1 || totalPages === 0}
             >
               <ChevronRight className="h-4 w-4" />
@@ -302,33 +237,18 @@ export function ActivityHeatmap({
           </div>
 
           <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-            <div className="flex items-center gap-1.5">
-              <span>Menos</span>
-              <div className="flex gap-0.5">
-                {[0.2, 0.4, 0.6, 0.8, 1].map((o) => (
-                  <div
-                    key={o}
-                    className="h-3 w-3 rounded-[2px] bg-slate-300"
-                    style={{ opacity: o }}
-                  />
-                ))}
-              </div>
-              <span>Más</span>
-            </div>
-            <div className="h-3 w-px bg-border" />
             <div className="flex items-center gap-3">
-              <FeatureGuard feature="rentals">
-                <div className="flex items-center gap-1">
-                  <div className="h-2 w-2 rounded-full bg-green-500" /> Alquiler
-                </div>
-              </FeatureGuard>
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-green-500" /> Alquiler
+              </div>
               {hasSalesFeature && (
-                <FeatureGuard feature="sales">
-                  <div className="flex items-center gap-1">
-                    <div className="h-2 w-2 rounded-full bg-blue-500" /> Venta
-                  </div>
-                </FeatureGuard>
+                <div className="flex items-center gap-1">
+                  <div className="h-2 w-2 rounded-full bg-blue-500" /> Venta
+                </div>
               )}
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-indigo-500" /> Ambos
+              </div>
             </div>
           </div>
         </div>

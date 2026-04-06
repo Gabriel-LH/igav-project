@@ -98,7 +98,13 @@ export class PrismaShiftRepository implements ShiftRepository {
 
   async findAssignmentsByEmployee(employeeId: string, tenantId: string): Promise<ShiftAssignmentDTO[]> {
     const assignments = await this.prisma.userShiftAssignment.findMany({
-      where: { membershipId: employeeId, tenantId },
+      where: { 
+        membership: {
+          userId: employeeId,
+          tenantId: tenantId
+        },
+        tenantId 
+      },
       include: {
         membership: {
           include: {

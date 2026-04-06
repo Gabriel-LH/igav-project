@@ -1,7 +1,7 @@
 // components/team/TeamTable.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,7 +10,6 @@ import {
   getPaginationRowModel,
   flexRender,
   type ColumnDef,
-  type FilterFn,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -56,13 +55,16 @@ import {
   ChevronsRight,
   Filter,
   Crown,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface TeamMember {
   id: string;
+  userId?: string;
   email: string;
   name: string;
+  dni?: string;
   avatar?: string;
   role: "owner" | "admin" | "manager" | "seller" | "inventory" | "viewer";
   branchId: string;
@@ -83,9 +85,10 @@ interface TeamTableProps {
   onDelete: (id: string) => void;
   onChangeRole: (id: string, role: TeamMember["role"]) => void;
   onResendInvite: (id: string) => void;
+  onRevokeInvite: (id: string) => void;
 }
 
-const ROLE_LABELS: Record<string, { label: string; color: string; icon: any }> = {
+const ROLE_LABELS: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   owner: { label: "Propietario", color: "bg-amber-100 text-amber-800", icon: Crown },
   admin: { label: "Administrador", color: "bg-purple-100 text-purple-800", icon: Shield },
   manager: { label: "Gerente", color: "bg-blue-100 text-blue-800", icon: Building2 },
@@ -100,12 +103,6 @@ const STATUS_CONFIG = {
   suspended: { label: "Suspendido", color: "bg-red-100 text-red-800 border-red-300", icon: UserX },
 };
 
-const fuzzyFilter: FilterFn<TeamMember> = (row, columnId, value) => {
-  const searchValue = value.toLowerCase();
-  const cellValue = String(row.getValue(columnId)).toLowerCase();
-  return cellValue.includes(searchValue);
-};
-
 export function TeamTable({
   data,
   branches,
@@ -115,27 +112,28 @@ export function TeamTable({
   onDelete,
   onChangeRole,
   onResendInvite,
+  onRevokeInvite,
 }: TeamTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [branchFilter, setBranchFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [roleFilter, setRoleFilter] = useState<string>("all");
 
-  const filteredData = data.filter((member) => {
-    if (branchFilter !== "all" && member.branchId !== branchFilter) return false;
-    if (statusFilter !== "all" && member.status !== statusFilter) return false;
-    if (roleFilter !== "all" && member.role !== roleFilter) return false;
-    return true;
-  });
+  const filteredData = useMemo(() => {
+    return data.filter((member) => {
+      if (branchFilter !== "all" && member.branchId !== branchFilter) return false;
+      if (statusFilter !== "all" && member.status !== statusFilter) return false;
+      if (roleFilter !== "all" && member.role !== roleFilter) return false;
+      return true;
+    });
+  }, [data, branchFilter, statusFilter, roleFilter]);
 
-  const columns: ColumnDef<TeamMember>[] = [
+  const columns = useMemo<ColumnDef<TeamMember>[]>(() => [
     {
       accessorKey: "name",
       header: "Miembro",
       cell: ({ row }) => {
         const member = row.original;
-        const StatusIcon = STATUS_CONFIG[member.status].icon;
-        
         return (
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -157,6 +155,11 @@ export function TeamTable({
                 <Mail className="w-3 h-3" />
                 {member.email}
               </div>
+              {member.dni && (
+                <div className="text-xs text-muted-foreground">
+                  DNI: {member.dni}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -236,10 +239,19 @@ export function TeamTable({
               </DropdownMenuItem>
               
               {member.status === "invited" && (
-                <DropdownMenuItem onClick={() => onResendInvite(member.id)}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Reenviar invitación
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem onClick={() => onResendInvite(member.id)}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Reenviar invitación
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => onRevokeInvite(member._invitationId!)}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <UserX className="w-4 h-4 mr-2" />
+                    Revocar invitación
+                  </DropdownMenuItem>
+                </>
               )}
               
               <DropdownMenuSeparator />
@@ -298,7 +310,7 @@ export function TeamTable({
         );
       },
     },
-  ];
+  ], [onEdit, onResendInvite, onRevokeInvite, onChangeRole, onSuspend, onActivate, onDelete]);
 
   const table = useReactTable({
     data: filteredData,

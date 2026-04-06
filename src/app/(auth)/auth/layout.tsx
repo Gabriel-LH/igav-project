@@ -14,6 +14,16 @@ export default async function TenantAuthLayout({
   const session = await auth.api.getSession({
     headers: requestHeaders,
   });
+  const cookieHeader = requestHeaders.get("cookie") ?? "";
+  const hasBetterAuthCookie =
+    cookieHeader.includes("better-auth.session_token=") ||
+    cookieHeader.includes("__Secure-better-auth.session_token=") ||
+    cookieHeader.includes("better-auth.session_data=") ||
+    cookieHeader.includes("__Secure-better-auth.session_data=");
+
+  if (!session && hasBetterAuthCookie) {
+    redirect("/auth/clear-stale-session?returnTo=/auth/login");
+  }
 
   if (session?.user) {
     if (session.user.globalRole === "SUPER_ADMIN") {

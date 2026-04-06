@@ -24,6 +24,7 @@ import {
   markReceiveAvailableAction,
   receiveStockQuantityAction,
 } from "@/src/app/(tenant)/tenant/actions/stock.actions";
+import { listTransfersAction } from "@/src/app/(tenant)/tenant/actions/transfer.actions";
 import { Product } from "@/src/types/product/type.product";
 import { ProductVariant } from "@/src/types/product/type.productVariant";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
@@ -41,6 +42,9 @@ type ReceiveStockLine = {
   quantityExpected: number;
   scanCodes: string[];
   image?: string;
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
 };
 
 type ReceiveSerializedLine = {
@@ -52,9 +56,33 @@ type ReceiveSerializedLine = {
   destinationBranch: string;
   serialItems: Array<{ id: string; serialCode: string }>;
   image?: string;
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
 };
 
 type ReceiveLine = ReceiveStockLine | ReceiveSerializedLine;
+
+type TransferContext = {
+  referenceNumber: string;
+  fromBranchName: string;
+  priority: "baja" | "normal" | "alta" | "urgente";
+};
+
+type CommitStockResult = {
+  stockId: string;
+  quantity: number;
+  ok: boolean;
+  error?: string;
+};
+
+type CommitSerialResult = {
+  itemId: string;
+  ok: boolean;
+  error?: string;
+};
+
+type CommitResult = CommitStockResult | CommitSerialResult;
 
 interface Activity {
   id: string;
@@ -266,7 +294,7 @@ export const ReceiveModule: React.FC = () => {
   const loadPending = useCallback(async () => {
     if (!effectiveBranchId || isGlobal) { setReceiveLines([]); return; }
     setIsLoading(true);
-    const [pendingResult, productsResult] = await Promise.all([
+    const [pendingResult, productsResult, transfersResult] = await Promise.all([
       listReceivePendingAction({
         branchId: effectiveBranchId,
         lotStatuses: isTransitMode ? ["en_transito"] : [],
@@ -275,6 +303,7 @@ export const ReceiveModule: React.FC = () => {
           : ["en_lavanderia", "en_mantenimiento"],
       }),
       loadProducts(),
+      isTransitMode ? listTransfersAction() : Promise.resolve({ success: true, data: [] }),
     ]);
 
     if (!pendingResult.success || !pendingResult.data) {
@@ -288,10 +317,36 @@ export const ReceiveModule: React.FC = () => {
     const vars: ProductVariant[] = productsResult.variants ?? [];
     const productMap = new Map(prods.map((p) => [p.id, p]));
     const variantMap = new Map(vars.map((v) => [v.id, v]));
+    const transferByStockId = new Map<string, TransferContext>();
+    const transferByItemId = new Map<string, TransferContext>();
+
+    if (isTransitMode && transfersResult.success && Array.isArray(transfersResult.data)) {
+      for (const transfer of transfersResult.data) {
+        if (transfer.status !== "en_transito" || transfer.toBranchId !== effectiveBranchId) {
+          continue;
+        }
+
+        const transferContext: TransferContext = {
+          referenceNumber: transfer.referenceNumber,
+          fromBranchName: transfer.fromBranchName,
+          priority: transfer.priority,
+        };
+
+        for (const dispatchItem of transfer.dispatchItems) {
+          if (dispatchItem.stockId) {
+            transferByStockId.set(dispatchItem.stockId, transferContext);
+          }
+          if (dispatchItem.itemId) {
+            transferByItemId.set(dispatchItem.itemId, transferContext);
+          }
+        }
+      }
+    }
 
     const stockLines: ReceiveLine[] = pendingResult.data.stockLots.map((lot) => {
       const product = productMap.get(lot.productId);
       const variant = variantMap.get(lot.variantId);
+      const transferContext = transferByStockId.get(lot.id);
       return {
         id: lot.id,
         type: "stock" as const,
@@ -302,6 +357,9 @@ export const ReceiveModule: React.FC = () => {
         quantityExpected: lot.quantity,
         image: variant?.image || product?.image || "",
         scanCodes: [lot.barcode, variant?.barcode, lot.id, variant?.variantCode].filter(Boolean) as string[],
+        transferReference: transferContext?.referenceNumber,
+        originBranch: transferContext?.fromBranchName,
+        transferPriority: transferContext?.priority,
       };
     });
 
@@ -312,6 +370,7 @@ export const ReceiveModule: React.FC = () => {
       const variant = variantMap.get(item.variantId);
       const key = `${item.variantId}:${item.branchId}`;
       const image = variant?.image || product?.image || "";
+      const transferContext = transferByItemId.get(item.id);
       if (!serializedMap.has(key)) {
         serializedMap.set(key, {
           id: `serial-${key}`, type: "serialized",
@@ -321,6 +380,9 @@ export const ReceiveModule: React.FC = () => {
           destinationBranch: branchNameById.get(item.branchId) || item.branchId,
           image,
           serialItems: [],
+          transferReference: transferContext?.referenceNumber,
+          originBranch: transferContext?.fromBranchName,
+          transferPriority: transferContext?.priority,
         });
       }
       serializedMap.get(key)!.serialItems.push({ id: item.id, serialCode: item.serialCode });
@@ -575,7 +637,7 @@ export const ReceiveModule: React.FC = () => {
 
       results.forEach((result) => {
         if (result.status === "fulfilled") {
-          const val = result.value as any;
+          const val: CommitResult = result.value;
           if (val.ok) {
             successCount++;
             if ("stockId" in val) {
@@ -844,7 +906,6 @@ export const ReceiveModule: React.FC = () => {
             onSelectAll={handleSelectAll}
             onCommitLine={commitLine}
             activeBatchId={activeBatchId}
-            onClearBatchId={() => setActiveBatchId(null)}
             isCommitting={isCommitting}
           />
         </TabsContent>

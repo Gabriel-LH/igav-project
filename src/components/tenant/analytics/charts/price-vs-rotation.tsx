@@ -27,7 +27,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function PriceVsRotationChart() {
-  const [mode, setMode] = useState<"rentals" | "sales" | "both">("rentals");
+  const [mode, setMode] = useState<"rentals" | "sales" | "both">("both");
   const { priceRotationData: data, hasSalesFeature } = useAnalyticsData();
 
   const activeMode = !hasSalesFeature && mode !== "rentals" ? "rentals" : mode;
@@ -65,7 +65,7 @@ export function PriceVsRotationChart() {
 
             <XAxis
               type="number"
-              unit="S/"
+              unit=" S/"
               dataKey="price"
               name="Precio"
               tickLine={false}
@@ -78,7 +78,7 @@ export function PriceVsRotationChart() {
               name="Rotación"
               tickLine={false}
               axisLine={false}
-              tickMargin={10}
+              tickMargin={40}
             />
             {/* El ZAxis ayuda a definir el radio de los puntos si quisieras variarlo */}
             <ZAxis range={[64, 64]} />

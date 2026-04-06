@@ -62,6 +62,7 @@ export interface Role {
   permissionIds: string[];
   createdAt: Date;
   updatedAt: Date;
+  users?: { id: string; name: string; email: string; image: string | null }[];
 }
 
 interface RolesTableProps {
@@ -115,7 +116,12 @@ export function RolesTable({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">{role.name}</span>
+                <button 
+                  onClick={() => onViewDetail(role)}
+                  className="font-medium hover:text-primary transition-colors text-left"
+                >
+                  {role.name}
+                </button>
                 {role.isSystem && (
                   <Badge
                     variant="outline"
@@ -234,14 +240,22 @@ export function RolesTable({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={() => onViewDetail(role)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetail(role);
+              }}
             >
               <Eye className="w-4 h-4" />
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -348,8 +362,7 @@ export function RolesTable({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="hover:bg-muted/50 cursor-pointer"
-                    onClick={() => onViewDetail(row.original)}
+                    className="hover:bg-muted/30 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

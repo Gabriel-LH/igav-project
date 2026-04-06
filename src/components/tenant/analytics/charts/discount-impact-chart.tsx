@@ -44,10 +44,19 @@ export function DiscountImpactChart() {
           <BarChart data={chartData} margin={{ top: 20, left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const [year, month, day] = value.split("-").map(Number);
+                const date = new Date(year, month - 1, day);
+                return date.toLocaleDateString("es-ES", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
             />
             <YAxis hide />
             <ChartTooltip content={<SortedTooltipContent />} />

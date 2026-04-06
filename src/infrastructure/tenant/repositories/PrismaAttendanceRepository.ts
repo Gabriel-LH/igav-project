@@ -68,8 +68,8 @@ export class PrismaAttendanceRepository implements AttendanceRepository {
       return {
         ...dto,
         employeeName: record.user.name || "Desconocido",
-        employeeDni: record.user.id || "00000000",
-        shiftName: record.shift.name,
+        employeeDni: record.user.dni || "00000000",
+        shiftName: record.shift?.name || "Sin turno",
       } as unknown as AttendanceRecordDTO; // Cast to extend for Use Cases mapping
     });
   }
@@ -94,9 +94,18 @@ export class PrismaAttendanceRepository implements AttendanceRepository {
           lt: endOfDay,
         },
       },
+      include: {
+        user: { select: { name: true, id: true } },
+        shift: { select: { name: true } },
+      },
     });
 
-    return record ? this.mapToDTO(record) : null;
+    return record ? {
+      ...this.mapToDTO(record),
+      employeeName: (record as any).user?.name || "Desconocido",
+      employeeDni: (record as any).user?.dni || "00000000",
+      shiftName: (record as any).shift?.name || "Personalizado",
+    } as unknown as AttendanceRecordDTO : null;
   }
 
   async upsertAttendance(

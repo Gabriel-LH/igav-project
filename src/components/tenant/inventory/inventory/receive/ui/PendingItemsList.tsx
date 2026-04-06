@@ -32,7 +32,6 @@ import {
   ChevronRight,
   Plus,
   Upload,
-  Loader,
   Hourglass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,6 +46,9 @@ interface ReceiveStockLine {
   destinationBranch: string;
   quantityExpected: number;
   image?: string;
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
 }
 
 interface ReceiveSerializedLine {
@@ -61,6 +63,9 @@ interface ReceiveSerializedLine {
     serialCode: string;
   }>;
   image?: string;
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
 }
 
 type ReceiveLine = ReceiveStockLine | ReceiveSerializedLine;
@@ -78,6 +83,9 @@ type ReceiveGroupRow = {
   localCount: number;          // staged but not yet confirmed
   committedCount: number;      // already on server
   image?: string;
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
   subRows?: ReceiveSerialRow[];
 };
 
@@ -92,6 +100,9 @@ type ReceiveSerialRow = {
   destinationBranch: string;
   isLocal: boolean;       // scanned but not committed
   isCommitted: boolean;   // confirmed to server
+  transferReference?: string;
+  originBranch?: string;
+  transferPriority?: "baja" | "normal" | "alta" | "urgente";
 };
 
 type ReceiveTableRow = ReceiveGroupRow | ReceiveSerialRow;
@@ -108,7 +119,6 @@ interface PendingItemsListProps {
   onSelectAll: () => void;
   onCommitLine: (lineId: string) => void;
   activeBatchId: string | null;
-  onClearBatchId: () => void;
   isCommitting: boolean;
 }
 
@@ -124,7 +134,6 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
   onSelectAll,
   onCommitLine,
   activeBatchId,
-  onClearBatchId,
   isCommitting,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -163,6 +172,9 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           localCount: local,
           committedCount,
           image: line.image,
+          transferReference: line.transferReference,
+          originBranch: line.originBranch,
+          transferPriority: line.transferPriority,
         };
       }
 
@@ -183,6 +195,9 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
         localCount: local,
         committedCount: committed,
         image: line.image,
+        transferReference: line.transferReference,
+        originBranch: line.originBranch,
+        transferPriority: line.transferPriority,
         subRows: line.serialItems.map((serial) => ({
           rowType: "serial",
           id: serial.id,
@@ -194,6 +209,9 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           destinationBranch: line.destinationBranch,
           isLocal: localSerialIds.has(serial.id),
           isCommitted: receivedSerialIds.has(serial.id) && !localSerialIds.has(serial.id),
+          transferReference: line.transferReference,
+          originBranch: line.originBranch,
+          transferPriority: line.transferPriority,
         })),
       };
     });
@@ -205,7 +223,7 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
     return groupedRows
       .map((group) => {
         const groupText =
-          `${group.productName} ${group.variantName} ${group.variantCode} ${group.destinationBranch}`.toLowerCase();
+          `${group.productName} ${group.variantName} ${group.variantCode} ${group.destinationBranch} ${group.transferReference ?? ""} ${group.originBranch ?? ""}`.toLowerCase();
         if (groupText.includes(normalized)) return group;
         if (group.itemType !== "serialized" || !group.subRows) return null;
         const matched = group.subRows.filter((r) =>
@@ -234,6 +252,41 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
         },
       },
       {
+        id: "transfer",
+        header: "Transferencia",
+        cell: ({ row }) => {
+          const original = row.original;
+          if (original.rowType === "serial") {
+            return <span className="text-xs text-muted-foreground">-</span>;
+          }
+
+          if (!original.transferReference) {
+            return <span className="text-xs text-muted-foreground">Sin referencia</span>;
+          }
+
+          const priorityClassName = {
+            baja: "bg-slate-100 text-slate-700",
+            normal: "bg-blue-50 text-blue-700",
+            alta: "bg-amber-50 text-amber-700",
+            urgente: "bg-red-50 text-red-700",
+          }[original.transferPriority ?? "normal"];
+
+          return (
+            <div className="space-y-1 min-w-[170px]">
+              <code className="inline-flex rounded bg-muted px-2 py-1 text-[11px] font-semibold">
+                {original.transferReference}
+              </code>
+              <p className="text-xs text-muted-foreground">
+                Desde {original.originBranch ?? "Sucursal origen"}
+              </p>
+              <Badge variant="secondary" className={cn("text-[10px] uppercase", priorityClassName)}>
+                {original.transferPriority ?? "normal"}
+              </Badge>
+            </div>
+          );
+        },
+      },
+      {
         id: "productVariant",
         header: "Producto / Variante",
         cell: ({ row }) => {
@@ -241,8 +294,8 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
           if (original.rowType === "serial") {
             return (
               <div className="pl-8">
-                <div className="font-medium flex items-center gap-2">
-                  <code className="text-xs font-mono bg-muted px-2 py-1 rounded">{original.serialCode}</code>
+              <div className="font-medium flex items-center gap-2">
+                <code className="text-xs font-mono bg-muted px-2 py-1 rounded">{original.serialCode}</code>
                   {original.isCommitted ? (
                     <Badge variant="outline" className="text-[10px] border-green-300 text-green-700">✓ Confirmado</Badge>
                   ) : original.isLocal ? (
@@ -250,13 +303,18 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
                   ) : (
                     <Badge variant="outline" className="text-[10px]">Pendiente</Badge>
                   )}
-                </div>
-                <div className="text-xs text-muted-foreground">{original.productName} · {original.variantName}</div>
               </div>
-            );
-          }
+              <div className="text-xs text-muted-foreground">{original.productName} · {original.variantName}</div>
+              {original.transferReference && (
+                <div className="text-[11px] text-muted-foreground">
+                  {original.transferReference} · {original.originBranch ?? "Origen"}
+                </div>
+              )}
+            </div>
+          );
+        }
 
-          return (
+        return (
             <div className="flex items-center gap-3">
               {original.image  ? (
                 
@@ -269,12 +327,19 @@ export const PendingItemsList: React.FC<PendingItemsListProps> = ({
               <div className="space-y-1">
                 <p className="font-medium">{original.productName}</p>
                 <p className="text-xs text-muted-foreground font-mono">{original.variantName} - {original.variantCode}</p>
-                <Badge
-                  variant="secondary"
-                  className={cn("text-[10px] uppercase", original.itemType === "serialized" && "bg-blue-50 text-blue-700")}
-                >
-                  {original.itemType === "serialized" ? "Serializado" : "Stock"}
-                </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={cn("text-[10px] uppercase", original.itemType === "serialized" && "bg-blue-50 text-blue-700")}
+                  >
+                    {original.itemType === "serialized" ? "Serializado" : "Stock"}
+                  </Badge>
+                  {original.originBranch && (
+                    <span className="text-[11px] text-muted-foreground">
+                      Origen: {original.originBranch}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );

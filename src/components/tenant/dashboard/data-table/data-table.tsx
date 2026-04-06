@@ -43,6 +43,10 @@ import { TradingFastTable } from "./trading-fastly/trading-fast-table";
 
 import { useOperationStore } from "@/src/store/useOperationStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { useRentalStore } from "@/src/store/useRentalStore";
+import { useSaleStore } from "@/src/store/useSaleStore";
+import { useInventoryStore } from "@/src/store/useInventoryStore";
+
 import {
   getTopClientsMetrics,
   getMostPopularMetrics,
@@ -52,18 +56,22 @@ import {
 export function DataTable() {
   const operations = useOperationStore((s) => s.operations);
   const customers = useCustomerStore((s) => s.customers);
+  const rentalItems = useRentalStore((s) => s.rentalItems);
+  const saleItems = useSaleStore((s) => s.saleItems);
+  const sales = useSaleStore((s) => s.sales);
+  const products = useInventoryStore((s) => s.products);
 
   const dataClient = React.useMemo(
-    () => getTopClientsMetrics(operations, customers),
-    [operations, customers],
+    () => getTopClientsMetrics(operations, customers, sales),
+    [operations, customers, sales],
   );
   const dataPopular = React.useMemo(
-    () => getMostPopularMetrics(operations),
-    [operations],
+    () => getMostPopularMetrics(operations, rentalItems, saleItems, products, sales),
+    [operations, rentalItems, saleItems, products, sales],
   );
   const dataTrading = React.useMemo(
-    () => getTradingFastMetrics(operations),
-    [operations],
+    () => getTradingFastMetrics(operations, rentalItems, saleItems, products, sales),
+    [operations, rentalItems, saleItems, products, sales],
   );
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

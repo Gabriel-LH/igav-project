@@ -11,6 +11,7 @@ model User {
   id                    String                 @id
   name                  String
   email                 String                 @unique
+  dni                   String?                @unique
   emailVerified         Boolean                @default(false)
   image                 String?
   createdAt             DateTime               @default(now())
@@ -124,28 +125,28 @@ model UserBranchAccess {
 }
 
 model UserAttendance {
-  id           String       @id @default(uuid())
-  tenantId     String
-  branchId     String
-  userId       String
-  shiftId      String
-  checkIn      DateTime?
-  checkOut     DateTime?
-  notes        String?
-  createdBy    String
-  status       String       @default("present")
-  source       String
-  lateMinutes  Int          @default(0)
-  extraMinutes Int          @default(0)
-  workDate     DateTime
-  isManual     Boolean      @default(false)
+  id            String    @id @default(uuid())
+  tenantId      String
+  branchId      String
+  userId        String
+  shiftId       String
+  checkIn       DateTime?
+  checkOut      DateTime?
+  notes         String?
+  createdBy     String
+  status        String    @default("present")
+  source        String
+  lateMinutes   Int       @default(0)
+  extraMinutes  Int       @default(0)
+  workDate      DateTime
+  isManual      Boolean   @default(false)
   justification String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  shift        Shift        @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  branch        Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  shift         Shift     @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_attendance")
 }
@@ -1666,20 +1667,26 @@ model UserTenantMembership {
 }
 
 model Transfer {
-  id                  String         @id @default(uuid())
-  tenantId            String
-  originBranchId      String
-  destinationBranchId String
-  status              TransferStatus
-  sentAt              DateTime
-  receivedAt          DateTime
-  notes               String
-  createdAt           DateTime
-  createdBy           String
-  transferItems       TransferItem[]
-  branchDestination   Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
-  branchOrigin        Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
-  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    id                  String         @id @default(uuid())
+    tenantId            String
+    referenceNumber     String
+    originBranchId      String
+    destinationBranchId String
+    priority            TransferPriority @default(normal)
+    requiresApproval    Boolean        @default(false)
+    status              TransferStatus
+    sentAt              DateTime
+    receivedAt          DateTime
+    notes               String?
+    metadata            Json?
+    createdAt           DateTime
+    createdBy           String
+    approvedBy          String?
+    approvedAt          DateTime?
+    transferItems       TransferItem[]
+    branchDestination   Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
+    branchOrigin        Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
+    tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("transfer")
 }
@@ -2243,6 +2250,13 @@ enum TransferStatus {
   in_transit
   received
   canceled
+}
+
+enum TransferPriority {
+  baja
+  normal
+  alta
+  urgente
 }
 
 enum TransferRouteStatus {

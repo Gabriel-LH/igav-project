@@ -19,10 +19,30 @@ export async function getTenantUsersAction() {
                 id: true,
                 name: true,
                 email: true,
+                dni: true,
+                createdAt: true,
+                userTenantMemberships: {
+                    where: { tenantId: access.tenantId },
+                    select: { id: true },
+                    take: 1
+                }
             }
         });
-        return { success: true, data: users };
-    } catch (error: any) {
-        return { success: false, error: error.message };
+        
+        const mappedUsers = users.map(u => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            dni: u.dni,
+            createdAt: u.createdAt,
+            membershipId: u.userTenantMemberships[0]?.id
+        }));
+
+        return { success: true, data: mappedUsers };
+    } catch (error: unknown) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "No se pudieron cargar los usuarios",
+        };
     }
 }

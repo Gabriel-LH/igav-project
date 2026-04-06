@@ -8,6 +8,7 @@ import { MarkReceiveAvailableUseCase, MarkReceiveAvailableInput } from "@/src/ap
 import { ReceiveStockQuantityUseCase, ReceiveStockQuantityInput } from "@/src/application/tenant/use-cases/inventory/receiveStockQuantity.usecase";
 import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
 import { revalidatePath } from "next/cache";
+import { syncTransfersAfterReceiveAction } from "@/src/app/(tenant)/tenant/actions/transfer.actions";
 
 /**
  * Acciones para la gestión de stock e inventario.
@@ -141,6 +142,8 @@ export async function markReceiveAvailableAction(
       tenantId,
     });
 
+    await syncTransfersAfterReceiveAction(result.branchId);
+
     revalidatePath("/tenant/inventory/receive");
     revalidatePath("/tenant/inventory/stock");
     revalidatePath("/tenant/inventory/items");
@@ -173,6 +176,8 @@ export async function receiveStockQuantityAction(
       tenantId,
       changedBy: user.id!,
     });
+
+    await syncTransfersAfterReceiveAction(result.availableLot.branchId);
 
     revalidatePath("/tenant/inventory/receive");
     revalidatePath("/tenant/inventory/stock");

@@ -32,6 +32,7 @@ type SystemPermission = {
 interface RolesLayoutProps {
   initialRoles: RoleDTO[];
   systemPermissions: SystemPermission[];
+  isOwner?: boolean;
 }
 
 function mapToTableRole(dto: RoleDTO): Role {
@@ -41,25 +42,24 @@ function mapToTableRole(dto: RoleDTO): Role {
     description: dto.description ?? undefined,
     isSystem: dto.isSystem,
     isActive: true, // all roles from DB are active
-    userCount: dto._count?.userTenantMemberships ?? 0,
+    userCount: dto.users?.length ?? 0,
     permissionIds: dto.permissions.map((p) => p.key),
     createdAt: dto.createdAt,
     updatedAt: dto.updatedAt,
+    users: dto.users,
   };
 }
 
 export function RolesLayout({
   initialRoles,
   systemPermissions,
+  isOwner = false,
 }: RolesLayoutProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [roles, setRoles] = useState<Role[]>(initialRoles.map(mapToTableRole));
+  const [roles] = useState<Role[]>(initialRoles.map(mapToTableRole));
 
-
-
-  // isOwner would come from session, for now assume true (layout-level protection should handle it)
-  const isOwner = true;
+  // isOwner is now passed as a prop from the page (server-side checked)
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
@@ -149,7 +149,7 @@ export function RolesLayout({
     setIsDetailOpen(false);
   };
 
-  const handleToggleActive = (id: string, active: boolean) => {
+  const handleToggleActive = (_id: string, _active: boolean) => {
     // TODO: wire to a toggleRoleActive action
     toast.info("Función de activar/desactivar rol en desarrollo");
   };
@@ -158,23 +158,6 @@ export function RolesLayout({
     setDetailRole(role);
     setIsDetailOpen(true);
   };
-
-  if (roles.length === 0) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-center">
-            <div className="col-span-full py-10 flex flex-col items-center justify-center text-muted-foreground">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-b-violet-600 border-t-violet-300 mx-auto mb-4"></div>
-              <p className="text-sm animate-pulse font-semibold">
-                Cargando módulo de sucursales...
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -268,6 +251,7 @@ export function RolesLayout({
             </DialogTitle>
           </DialogHeader>
           <RoleForm
+            key={editingRole?.id || "new-role"}
             initialData={
               editingRole
                 ? {

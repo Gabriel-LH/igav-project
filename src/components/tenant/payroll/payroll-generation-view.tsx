@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  CalendarIcon,
   RefreshCw,
   AlertCircle,
   CheckCircle2,
@@ -10,19 +9,12 @@ import {
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/select";
+} from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/separator";
@@ -33,9 +25,11 @@ import type { PayrollItem } from "@/src/types/payroll/type.payrollItem";
 import type { PayrollLineItem } from "@/src/types/payroll/type.payrollLineItem";
 import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
 import type { GeneratedPayrollBatchDTO } from "@/src/application/interfaces/payroll/PayrollPresentation";
+import { getPayrollAttendanceSummaryAction } from "@/src/app/(tenant)/tenant/actions/payroll.actions";
 
 interface PayrollGenerationViewProps {
   configs: PayrollConfig[];
+  branches: { id: string; name: string }[];
   policy: PayrollPolicy;
   onPayrollGenerated: (payload: GeneratedPayrollBatchDTO) => void;
 }
@@ -53,6 +47,7 @@ function numberFromMembership(membershipId: string): number {
 
 export function PayrollGenerationView({
   configs,
+  branches,
   policy,
   onPayrollGenerated,
 }: PayrollGenerationViewProps) {
@@ -60,7 +55,7 @@ export function PayrollGenerationView({
   const currentMonth = new Date().getMonth() + 1;
   const [month, setMonth] = useState<string>(String(currentMonth));
   const [year, setYear] = useState<string>(String(currentYear));
-  const [branchId, setBranchId] = useState<string>("branch-main");
+  const [branchId, setBranchId] = useState<string>(branches[0]?.id ?? "");
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<{
@@ -68,6 +63,12 @@ export function PayrollGenerationView({
     generatedItems: number;
     errors: string[];
   } | null>(null);
+
+  useEffect(() => {
+    if (!branchId && branches.length > 0) {
+      setBranchId(branches[0]!.id);
+    }
+  }, [branchId, branches]);
 
   const months = [
     { value: "1", label: "Enero" },
@@ -90,12 +91,6 @@ export function PayrollGenerationView({
     String(currentYear + 1),
   ];
 
-  const branches = [
-    { value: "branch-main", label: "Sucursal Principal" },
-    { value: "branch-north", label: "Sucursal Norte" },
-    { value: "branch-south", label: "Sucursal Sur" },
-  ];
-
   const handleGenerate = async () => {
     setIsGenerating(true);
     setProgress(0);
@@ -104,6 +99,14 @@ export function PayrollGenerationView({
     const selectedMonth = Number(month);
     const selectedYear = Number(year);
     const { start, end } = getMonthRange(selectedMonth, selectedYear);
+    const attendanceSummary = await getPayrollAttendanceSummaryAction(
+      start,
+      end,
+      branchId || undefined,
+    );
+    const attendanceByMembershipId = new Map(
+      attendanceSummary.map((item) => [item.membershipId, item]),
+    );
 
     const run: PayrollRun = {
       id: `pr-${selectedYear}-${String(selectedMonth).padStart(2, "0")}-${branchId}-${crypto.randomUUID().slice(0, 8)}`,
@@ -123,6 +126,9 @@ export function PayrollGenerationView({
       const config = configs[i];
       try {
         const membershipSeed = numberFromMembership(config.membershipId);
+        const attendance = attendanceByMembershipId.get(config.membershipId);
+        const absentCount = attendance?.absentCount ?? 0;
+        const lateMinutes = attendance?.lateMinutes ?? 0;
         const overtimeHours = config.applyOvertime ? membershipSeed % 8 : 0;
         const regularHours = 160 + (membershipSeed % 17);
 
@@ -133,16 +139,30 @@ export function PayrollGenerationView({
 
         const overtimeRate =
           config.salaryType === "monthly"
-            ? (Number(config.baseSalary ?? 0) / 160) * policy.overtimeMultiplier
-            : Number(config.hourlyRate ?? 0) * policy.overtimeMultiplier;
+            ? (Number(config.baseSalary ?? 0) / 160) * (policy?.overtimeMultiplier ?? 1.5)
+            : Number(config.hourlyRate ?? 0) * (policy?.overtimeMultiplier ?? 1.5);
         const overtimeAmount = overtimeHours * overtimeRate;
         const grossTotal = baseAmount + overtimeAmount;
 
-        const health =
-          grossTotal * (policy.deductions.healthInsurancePercent / 100);
-        const pension = grossTotal * (policy.deductions.pensionPercent / 100);
-        const tax = grossTotal * (policy.deductions.taxPercent / 100);
-        const deductionTotal = health + pension + tax;
+        const healthPercent = policy?.deductions?.healthInsurancePercent ?? 0;
+        const pensionPercent = policy?.deductions?.pensionPercent ?? 0;
+        const taxPercent = policy?.deductions?.taxPercent ?? 0;
+
+        const health = grossTotal * (healthPercent / 100);
+        const pension = grossTotal * (pensionPercent / 100);
+        const tax = grossTotal * (taxPercent / 100);
+        const monthlyMinuteRate =
+          config.salaryType === "monthly"
+            ? Number(config.baseSalary ?? 0) / 30 / 8 / 60
+            : Number(config.hourlyRate ?? 0) / 60;
+        const hourlyRateValue =
+          config.salaryType === "hourly"
+            ? Number(config.hourlyRate ?? 0)
+            : Number(config.baseSalary ?? 0) / 30 / 8;
+        const absenceDeduction = absentCount * hourlyRateValue * 8;
+        const tardinessDeduction = lateMinutes * monthlyMinuteRate;
+        const deductionTotal =
+          health + pension + tax + absenceDeduction + tardinessDeduction;
         const netTotal = grossTotal - deductionTotal;
 
         const itemId = crypto.randomUUID();
@@ -215,6 +235,34 @@ export function PayrollGenerationView({
             createdAt: new Date(),
           },
         );
+
+        if (absenceDeduction > 0) {
+          generatedLineItems.push({
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "deduction",
+            category: "penalty",
+            name: `Descuento por faltas (${absentCount})`,
+            amount: absenceDeduction,
+            quantity: absentCount,
+            rate: hourlyRateValue * 8,
+            createdAt: new Date(),
+          });
+        }
+
+        if (tardinessDeduction > 0) {
+          generatedLineItems.push({
+            id: crypto.randomUUID(),
+            payrollItemId: itemId,
+            type: "deduction",
+            category: "penalty",
+            name: `Descuento por tardanzas (${lateMinutes} min)`,
+            amount: tardinessDeduction,
+            quantity: lateMinutes,
+            rate: monthlyMinuteRate,
+            createdAt: new Date(),
+          });
+        }
       } catch {
         errors.push(`No se pudo generar item para ${config.membershipId}`);
       }
@@ -258,7 +306,7 @@ export function PayrollGenerationView({
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Seleccionar mes" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portal={false}>
                 {months.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
                     {m.label}
@@ -274,7 +322,7 @@ export function PayrollGenerationView({
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Anio" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portal={false}>
                 {years.map((y) => (
                   <SelectItem key={y} value={y}>
                     {y}
@@ -290,10 +338,10 @@ export function PayrollGenerationView({
               <SelectTrigger className="w-[220px]">
                 <SelectValue placeholder="Sucursal" />
               </SelectTrigger>
-              <SelectContent>
-                {branches.map((b) => (
-                  <SelectItem key={b.value} value={b.value}>
-                    {b.label}
+              <SelectContent portal={false}>
+                {branches.map((branch) => (
+                  <SelectItem key={branch.id} value={branch.id}>
+                    {branch.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -302,7 +350,7 @@ export function PayrollGenerationView({
 
           <Button
             onClick={handleGenerate}
-            disabled={isGenerating}
+            disabled={isGenerating || !branchId}
             className="ml-auto"
           >
             <RefreshCw

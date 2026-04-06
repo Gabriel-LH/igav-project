@@ -9,16 +9,10 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/superadmin/auth/login")) {
-    if (hasSession) {
-      return NextResponse.redirect(new URL("/tenant/home", request.url));
-    }
     return NextResponse.next();
   }
 
   if (pathname.startsWith("/auth/login")) {
-    if (hasSession) {
-      return NextResponse.redirect(new URL("/tenant/home", request.url));
-    }
     return NextResponse.next();
   }
 

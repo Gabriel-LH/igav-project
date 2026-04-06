@@ -11,6 +11,7 @@ model User {
   id                    String                 @id
   name                  String
   email                 String                 @unique
+  dni                   String?                @unique
   emailVerified         Boolean                @default(false)
   image                 String?
   createdAt             DateTime               @default(now())
@@ -1666,20 +1667,26 @@ model UserTenantMembership {
 }
 
 model Transfer {
-  id                  String         @id @default(uuid())
+  id                  String           @id @default(uuid())
   tenantId            String
+  referenceNumber     String
   originBranchId      String
   destinationBranchId String
+  priority            TransferPriority @default(normal)
+  requiresApproval    Boolean          @default(false)
   status              TransferStatus
   sentAt              DateTime
   receivedAt          DateTime
-  notes               String
+  notes               String?
+  metadata            Json?
   createdAt           DateTime
   createdBy           String
+  approvedBy          String?
+  approvedAt          DateTime?
   transferItems       TransferItem[]
-  branchDestination   Branch         @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
-  branchOrigin        Branch         @relation("OriginTransfers", fields: [originBranchId], references: [id])
-  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branchDestination   Branch           @relation("DestinationTransfers", fields: [destinationBranchId], references: [id])
+  branchOrigin        Branch           @relation("OriginTransfers", fields: [originBranchId], references: [id])
+  tenant              Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("transfer")
 }
@@ -2243,6 +2250,13 @@ enum TransferStatus {
   in_transit
   received
   canceled
+}
+
+enum TransferPriority {
+  baja
+  normal
+  alta
+  urgente
 }
 
 enum TransferRouteStatus {

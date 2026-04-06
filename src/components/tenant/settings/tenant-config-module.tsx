@@ -19,6 +19,7 @@ import {
   Settings01Icon,
 } from "@hugeicons/core-free-icons";
 import { CashConfigForm } from "./cash-config-form";
+import { LogisticsConfigForm } from "./logistics-config-form";
 import {
   getTenantConfigAction,
   updateTenantConfigAction,
@@ -95,6 +96,13 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
     });
   };
 
+  const handleRootConfigChange = (values: Partial<TenantConfig>) => {
+    setConfig({
+      ...config,
+      ...values,
+    });
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -164,6 +172,10 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
               <HugeiconsIcon icon={CashierIcon} className="w-4 h-4 mr-2" />
               Caja
             </TabsTrigger>
+            <TabsTrigger value="logistics" className="py-2.5">
+              <HugeiconsIcon icon={DiscountTag01Icon} className="w-4 h-4 mr-2" />
+              Logistica
+            </TabsTrigger>
           </TabsList>
 
           <div>
@@ -201,6 +213,13 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
               <CashConfigForm
                 config={config}
                 onChange={(v) => handleConfigChange("cash", v)}
+              />
+            </TabsContent>
+
+            <TabsContent value="logistics" className="m-0 focus-visible:ring-0">
+              <LogisticsConfigForm
+                config={config}
+                onChange={handleRootConfigChange}
               />
             </TabsContent>
           </div>

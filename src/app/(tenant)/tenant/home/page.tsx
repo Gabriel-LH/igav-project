@@ -6,8 +6,21 @@ import {
   getAttributeValuesAction,
 } from "@/src/app/(tenant)/tenant/actions/attribute.actions";
 import { checkAndExpireReservationsAction } from "@/src/app/(tenant)/tenant/actions/reservation.actions";
+import { requireTenantMembership } from "@/src/infrastructure/tenant/auth.guard";
+import { redirect } from "next/navigation";
 
 export default async function HomePage() {
+  const access = await requireTenantMembership().catch(() => null);
+  if (!access) {
+    redirect("/auth/login");
+  }
+  if (access.user.globalRole === "SUPER_ADMIN") {
+    redirect("/superadmin/dashboard");
+  }
+  if (!access.membership) {
+    redirect("/auth/login?error=no_tenant_membership");
+  }
+
   const [categoriesResult, attributeTypesResult, attributeValuesResult, _expireResult] =
     await Promise.all([
       getCategoriesAction(),

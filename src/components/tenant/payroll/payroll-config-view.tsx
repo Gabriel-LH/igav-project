@@ -9,7 +9,7 @@ import {
   type ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
-import { Edit, Plus, MoreHorizontal, DollarSign } from "lucide-react";
+import { Edit, Plus, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,14 +39,12 @@ import { Badge } from "@/components/badge";
 
 import { PayrollConfigForm } from "./payroll-config-form";
 import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
-import {
-  getPayrollMemberName,
-  type PayrollConfigListItemDTO,
-} from "@/src/application/interfaces/payroll/PayrollPresentation";
+import type { PayrollConfigListItemDTO } from "@/src/application/interfaces/payroll/PayrollPresentation";
 
 interface PayrollConfigViewProps {
   configs: PayrollConfig[];
-  onConfigsChange: (configs: PayrollConfig[]) => void;
+  members: { membershipId: string; userId: string; displayName: string; email?: string }[];
+  onConfigSave: (data: any) => Promise<void>;
 }
 
 function formatCompensation(config: PayrollConfig): string {
@@ -66,7 +64,8 @@ function formatCompensation(config: PayrollConfig): string {
 
 export function PayrollConfigView({
   configs,
-  onConfigsChange,
+  members,
+  onConfigSave,
 }: PayrollConfigViewProps) {
   const [showForm, setShowForm] = useState(false);
   const [editingConfig, setEditingConfig] = useState<PayrollConfig | null>(
@@ -80,14 +79,14 @@ export function PayrollConfigView({
       configs.map((config) => ({
         id: config.id,
         membershipId: config.membershipId,
-        employeeName: getPayrollMemberName(config.membershipId),
+        employeeName: members.find(m => m.membershipId === config.membershipId)?.displayName || config.membershipId,
         salaryType: config.salaryType,
         paySchedule: config.paySchedule,
         compensationLabel: formatCompensation(config),
         applyOvertime: config.applyOvertime,
         updatedAt: config.updatedAt,
       })),
-    [configs],
+    [configs, members],
   );
 
   const filteredData = useMemo(() => {
@@ -203,7 +202,7 @@ export function PayrollConfigView({
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filtrar por tipo" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent portal={false}>
                   <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="monthly">Mensual</SelectItem>
                   <SelectItem value="hourly">Por hora</SelectItem>
@@ -287,20 +286,13 @@ export function PayrollConfigView({
       {(showForm || editingConfig) && (
         <PayrollConfigForm
           config={editingConfig}
+          members={members}
           onClose={() => {
             setShowForm(false);
             setEditingConfig(null);
           }}
-          onSubmit={(nextConfig) => {
-            if (editingConfig) {
-              onConfigsChange(
-                configs.map((current) =>
-                  current.id === nextConfig.id ? nextConfig : current,
-                ),
-              );
-            } else {
-              onConfigsChange([...configs, nextConfig]);
-            }
+          onSubmit={async (nextConfig) => {
+            await onConfigSave(nextConfig);
             setShowForm(false);
             setEditingConfig(null);
           }}

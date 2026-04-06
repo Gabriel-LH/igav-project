@@ -61,6 +61,7 @@ export const DEFAULT_TENANT_CONFIG: Omit<TenantConfig, "tenantId" | "createdAt">
     triggerCondition: "first_purchase",
   },
   defaultTransferTime: 2,
+  transferRoutes: [],
 };
 
 export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<

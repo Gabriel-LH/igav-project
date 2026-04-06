@@ -10,6 +10,7 @@ export interface RoleDTO {
   updatedAt: Date;
   permissions: { key: string; module: string; description: string | null }[];
   _count?: { userTenantMemberships: number };
+  users?: { id: string; name: string; email: string; image: string | null }[];
 }
 
 export interface CreateRoleDTO {

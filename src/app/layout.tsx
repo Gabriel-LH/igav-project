@@ -6,6 +6,9 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "I.G.A.V",
   description: "Inventario y gestion de alquileres y ventas",
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default function RootLayout({
@@ -15,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="es" suppressHydrationWarning>
         <head />
         <body>
           <ThemeProvider

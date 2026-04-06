@@ -1,5 +1,14 @@
 import { Operation } from "@/src/types/operation/type.operations";
-
+import { RentalItem } from "@/src/types/rentals/type.rentalsItem";
+import { SaleItem } from "@/src/types/sales/type.saleItem";
+import { Sale } from "@/src/types/sales/type.sale";
+import { Product } from "@/src/types/product/type.product";
+import { Reservation } from "@/src/types/reservation/type.reservation";
+import { parseLocalDate } from "./date-utils";
+import {
+  getCountableReservationOperationIds,
+  isCountableOperation,
+} from "../reservation/metrics-filters";
 
 export type CustomerData = {
   id: string;
@@ -9,7 +18,7 @@ export type CustomerData = {
   status: string;
   createdAt: Date;
   updatedAt: Date;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 /**
@@ -18,28 +27,34 @@ export type CustomerData = {
 export function getSectionCardMetrics(
   operations: Operation[],
   customers: CustomerData[],
+  reservations: Reservation[] = [],
 ) {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
+  const countableReservationOperationIds =
+    getCountableReservationOperationIds(reservations);
+
   // Income calculations
   const totalIncome = operations
-    .filter((op) => op.status !== "cancelado")
+    .filter((op) => isCountableOperation(op, countableReservationOperationIds))
     .reduce((sum, op) => sum + op.totalAmount, 0);
 
   const incomeThisMonth = operations
     .filter(
-      (op) => op.status !== "cancelado" && new Date(op.date) >= thirtyDaysAgo,
+      (op) =>
+        isCountableOperation(op, countableReservationOperationIds) &&
+        parseLocalDate(op.date) >= thirtyDaysAgo,
     )
     .reduce((sum, op) => sum + op.totalAmount, 0);
 
   const incomeLastMonth = operations
     .filter(
       (op) =>
-        op.status !== "cancelado" &&
-        new Date(op.date) >= sixtyDaysAgo &&
-        new Date(op.date) < thirtyDaysAgo,
+        isCountableOperation(op, countableReservationOperationIds) &&
+        parseLocalDate(op.date) >= sixtyDaysAgo &&
+        parseLocalDate(op.date) < thirtyDaysAgo,
     )
     .reduce((sum, op) => sum + op.totalAmount, 0);
 
@@ -51,70 +66,93 @@ export function getSectionCardMetrics(
       : ((incomeThisMonth - incomeLastMonth) / incomeLastMonth) * 100;
 
   // New customers calculations
-  const newCustomersCount = customers.filter(
-    (c) => new Date(c.createdAt) >= thirtyDaysAgo,
+  const newCustomersThisMonth = customers.filter(
+    (c) => parseLocalDate(c.createdAt) >= thirtyDaysAgo,
   ).length;
 
   const newCustomersLastMonth = customers.filter(
     (c) =>
-      new Date(c.createdAt) >= sixtyDaysAgo &&
-      new Date(c.createdAt) < thirtyDaysAgo,
+      parseLocalDate(c.createdAt) >= sixtyDaysAgo &&
+      parseLocalDate(c.createdAt) < thirtyDaysAgo,
   ).length;
 
   const customersGrowthRate =
     newCustomersLastMonth === 0
-      ? newCustomersCount > 0
+      ? newCustomersThisMonth > 0
         ? 100
         : 0
-      : ((newCustomersCount - newCustomersLastMonth) / newCustomersLastMonth) *
+      : ((newCustomersThisMonth - newCustomersLastMonth) / newCustomersLastMonth) *
         100;
 
-  // Active accounts
+  // Active accounts health
   const activeAccountsCount = customers.filter(
     (c) => c.status === "Activo" || c.status === "active",
   ).length;
 
-  // Growth rate of active accounts - simplified: comparing new active to old active
-  const activeGrowthRate =
-    (activeAccountsCount / Math.max(1, customers.length)) * 100; // Generic stat for showing retention
+  const totalPossible = Math.max(1, customers.length);
+  const activePercentage = (activeAccountsCount / totalPossible) * 100;
 
   return {
     totalIncome,
     incomeGrowthRate: incomeGrowthRate.toFixed(1),
-    newCustomersCount,
+    newCustomersCount: newCustomersThisMonth,
     customersGrowthRate: customersGrowthRate.toFixed(1),
     activeAccountsCount,
-    activeGrowthRate: activeGrowthRate.toFixed(1),
-    growthRate: `+${incomeGrowthRate.toFixed(1)}%`, // Keeping as a general string placeholder if requested, but sending numbers as well
+    activeGrowthRate: activePercentage.toFixed(1), // Show health % instead of growth for "Active Accounts"
+    growthRate: `${incomeGrowthRate >= 0 ? "+" : ""}${incomeGrowthRate.toFixed(1)}%`,
   };
 }
 
 /**
  * Prepares the area chart data grouped by day, separating ventas and alquileres.
  */
-export function getChartAreaMetrics(operations: Operation[]) {
+export function getChartAreaMetrics(
+  operations: Operation[],
+  reservations: Reservation[] = [],
+) {
   const chartDataMap = new Map<
     string,
     { date: string; alquiler: number; venta: number }
   >();
+  const countableReservationOperationIds =
+    getCountableReservationOperationIds(reservations);
+
+  const now = new Date();
+  
+  // Fill last 90 days with 0s to ensure a baseline (supporting 3-month view)
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    
+    // Consistent YYYY-MM-DD manual format for map keys
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const dateStr = `${year}-${month}-${day}`;
+    
+    chartDataMap.set(dateStr, { date: dateStr, alquiler: 0, venta: 0 });
+  }
 
   operations.forEach((op) => {
-    // Only count completed or in-progress ops, or all as needed
-    if (op.status === "cancelado") return;
+    if (!isCountableOperation(op, countableReservationOperationIds)) return;
 
-    // Use pure date string (YYYY-MM-DD)
-    const dateStr = new Date(op.date).toISOString().split("T")[0];
+    // Use parseLocalDate to get correct YYYY-MM-DD from operation date
+    const opDate = parseLocalDate(op.date);
+    
+    // Manual YYYY-MM-DD to avoid ISO shift (always matching baseline format)
+    const year = opDate.getFullYear();
+    const month = String(opDate.getMonth() + 1).padStart(2, "0");
+    const day = String(opDate.getDate()).padStart(2, "0");
+    const dateStr = `${year}-${month}-${day}`;
 
-    const current = chartDataMap.get(dateStr) || {
-      date: dateStr,
-      alquiler: 0,
-      venta: 0,
-    };
+    // Only update if it's within our map
+    const current = chartDataMap.get(dateStr);
+    if (!current) return; // Skip far-dated entries
 
     if (op.type === "alquiler") {
-      current.alquiler += 1; // Or op.totalAmount if evaluating revenue
+      current.alquiler += op.totalAmount; // Sum income (monetary value)
     } else if (op.type === "venta") {
-      current.venta += 1;
+      current.venta += op.totalAmount; // Sum income (monetary value)
     }
 
     chartDataMap.set(dateStr, current);
@@ -131,8 +169,21 @@ export function getChartAreaMetrics(operations: Operation[]) {
 export function getTopClientsMetrics(
   operations: Operation[],
   customers: CustomerData[],
+  sales: Sale[] = [],
 ) {
-  const clientMap = new Map<string, any>();
+  const clientMap = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      operationsRent: number;
+      operationsBuy: number;
+      totalRent: number;
+      totalBuy: number;
+      lastOperation: string;
+      status: string;
+    }
+  >();
 
   // Initialize from customers
   customers.forEach((c) => {
@@ -163,21 +214,30 @@ export function getTopClientsMetrics(
       clientStats.totalBuy += op.totalAmount;
     }
 
-    // Update last operation date format MM/DD/YYYY or similar
-    const opDate = new Date(op.date);
+    const opDate = parseLocalDate(op.date);
     const lastOpDate =
       clientStats.lastOperation !== "N/A"
-        ? new Date(clientStats.lastOperation)
+        ? parseLocalDate(clientStats.lastOperation)
         : new Date(0);
+        
     if (opDate > lastOpDate) {
       clientStats.lastOperation = opDate.toLocaleDateString("en-US");
     }
   });
 
-  return Array.from(clientMap.values()).filter(
-    (c) =>
-      (c.operationsRent > 0 || c.operationsBuy > 0) && c.status === "Activo",
-  );
+  // Map to the format expected by the UI schema (type.ts)
+  return Array.from(clientMap.values())
+    .filter(
+      (c) =>
+        (c.operationsRent > 0 || c.operationsBuy > 0) && c.status === "Activo",
+    )
+    .map((c, index) => ({
+      ...c,
+      id: index + 1, // Schema expects number
+      totalRent: `S/. ${c.totalRent.toLocaleString()}`, // Correct currency symbol logic
+      totalBuy: `S/. ${c.totalBuy.toLocaleString()}`, 
+      type: "Cliente", // Required by schema
+    }));
 }
 
 /**
@@ -185,9 +245,76 @@ export function getTopClientsMetrics(
  */
 export function getMostPopularMetrics(
   operations: Operation[],
-  inventoryItems?: any[],
+  rentalItems: RentalItem[] = [],
+  saleItems: SaleItem[] = [],
+  products: Product[] = [],
+  sales: Sale[] = [],
 ) {
-  return [];
+  const frequencyMap = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      type: string;
+      rentals: number;
+      sales: number;
+      price: number;
+    }
+  >();
+
+  const ingestItems = (
+    items: (RentalItem | SaleItem)[],
+    type: "Alquiler" | "Venta",
+  ) => {
+    items.forEach((item) => {
+      const opId = (item as any).operationId || (item as any).rentalId;
+      let op = operations.find((o) => String(o.id) === String(opId));
+
+      // Fallback for sales: seek operation through the Sale object
+      if (!op && type === "Venta") {
+        const sale = sales.find((s) => s.id === (item as any).saleId);
+        if (sale) {
+          op = operations.find((o) => String(o.id) === String(sale.operationId));
+        }
+      }
+
+      if (!op || op.status === "cancelado") return;
+
+      const prod = products.find((p) => p.id === item.productId);
+      if (!prod) return;
+
+      const key = `${prod.id}:${type}`;
+
+      const current = frequencyMap.get(key) || {
+        id: prod.id,
+        name: prod.name,
+        type: type,
+        rentals: 0,
+        sales: 0,
+        price: (item as any).priceAtMoment || 0,
+      };
+
+      const quantity = (item as any).quantity || 1;
+      if (type === "Alquiler") current.rentals += quantity;
+      else current.sales += quantity;
+
+      frequencyMap.set(key, current);
+    });
+  };
+
+  ingestItems(rentalItems, "Alquiler");
+  ingestItems(saleItems, "Venta");
+
+  return Array.from(frequencyMap.values())
+    .map((item) => ({
+      id: `${item.id}-${item.type}`,
+      name: item.name,
+      type: item.type,
+      count: item.rentals + item.sales,
+      income: (item.rentals + item.sales) * item.price,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 }
 
 /**
@@ -195,7 +322,94 @@ export function getMostPopularMetrics(
  */
 export function getTradingFastMetrics(
   operations: Operation[],
-  inventoryItems?: any[],
+  rentalItems: RentalItem[] = [],
+  saleItems: SaleItem[] = [],
+  products: Product[] = [],
+  sales: Sale[] = [],
 ) {
-  return [];
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+  const statsMap = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      lastweek: number;
+      thisweek: number;
+      lastDate: Date;
+    }
+  >();
+
+  const ingestRecent = (items: (RentalItem | SaleItem)[]) => {
+    items.forEach((item) => {
+      const opId = (item as any).operationId || (item as any).rentalId;
+      let op = operations.find((o) => String(o.id) === String(opId));
+
+      // Fallback for sales
+      if (!op && (item as any).saleId) {
+        const sale = sales.find((s) => s.id === (item as any).saleId);
+        if (sale) {
+          op = operations.find((o) => String(o.id) === String(sale.operationId));
+        }
+      }
+
+      if (!op || op.status === "cancelado") return;
+
+      const opDate = parseLocalDate(op.date);
+      if (opDate < fourteenDaysAgo) return;
+
+      const prod = products.find((p) => p.id === item.productId);
+      if (!prod) return;
+
+      const current = statsMap.get(prod.id) || {
+        id: prod.id,
+        name: prod.name,
+        lastweek: 0,
+        thisweek: 0,
+        lastDate: new Date(0),
+      };
+
+      const quantity = (item as any).quantity || 1;
+
+      if (opDate >= sevenDaysAgo) {
+        current.thisweek += quantity;
+      } else if (opDate >= fourteenDaysAgo) {
+        current.lastweek += quantity;
+      }
+
+      if (opDate > current.lastDate) {
+        current.lastDate = opDate;
+      }
+
+      statsMap.set(prod.id, current);
+    });
+  };
+
+  ingestRecent(rentalItems);
+  ingestRecent(saleItems);
+
+  return Array.from(statsMap.values())
+    .map((item) => ({
+      id: item.id,
+      item: item.name,
+      lastweek: item.lastweek,
+      thisweek: item.thisweek,
+      difference: item.thisweek - item.lastweek,
+      lastDate: item.lastDate,
+    }))
+    .sort((a, b) => {
+      // 1. Primary sort: Difference DESC (Growth)
+      if (b.difference !== a.difference) {
+        return b.difference - a.difference;
+      }
+      // 2. Secondary sort: lastDate DESC (Recency)
+      if (b.lastDate.getTime() !== a.lastDate.getTime()) {
+        return b.lastDate.getTime() - a.lastDate.getTime();
+      }
+      // 3. Tertiary sort: current volume DESC
+      return b.thisweek - a.thisweek;
+    })
+    .slice(0, 10);
 }

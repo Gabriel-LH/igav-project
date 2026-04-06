@@ -7,6 +7,7 @@ interface SaleStore {
   sales: Sale[];
   saleItems: SaleItem[];
 
+  setSaleData: (sales: Sale[], saleItems: SaleItem[]) => void;
   addSale: (sale: Sale, items: SaleItem[]) => void;
 
   getSaleById: (id: string) => Sale | undefined;
@@ -22,6 +23,8 @@ interface SaleStore {
 export const useSaleStore = create<SaleStore>((set, get) => ({
   sales: [],
   saleItems: [],
+
+  setSaleData: (sales, saleItems) => set({ sales, saleItems }),
 
   addSale: (sale, items) => {
     console.log("RECIBIENDO EN STORE:", sale);

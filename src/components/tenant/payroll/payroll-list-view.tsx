@@ -18,6 +18,7 @@ import {
   Calendar,
   HandCoins,
   FileText,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,13 +47,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/badge";
-
+import { toast } from "sonner";
 import { PayrollDetailModal } from "./ui/modal/PayrollDetailModal";
 import type { PayrollItem } from "@/src/types/payroll/type.payrollItem";
 import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
 import type { PayrollLineItem } from "@/src/types/payroll/type.payrollLineItem";
+import { 
+  deletePayrollItemAction,
+  updatePayrollItemStatusAction 
+} from "@/src/app/(tenant)/tenant/actions/payroll.actions";
 import {
-  getPayrollMemberName,
   type PayrollItemDetailDTO,
   type PayrollItemListItemDTO,
 } from "@/src/application/interfaces/payroll/PayrollPresentation";
@@ -61,6 +65,11 @@ interface PayrollListViewProps {
   payrolls: PayrollItem[];
   runs: PayrollRun[];
   lineItems: PayrollLineItem[];
+  members: { membershipId: string; userId: string; displayName: string; email?: string }[];
+  onPayrollDeleted: (payload: {
+    deletedItemId: string;
+    deletedRunId: string | null;
+  }) => void;
   onPayrollsChange: (payrolls: PayrollItem[]) => void;
 }
 
@@ -101,6 +110,8 @@ export function PayrollListView({
   payrolls,
   runs,
   lineItems,
+  members,
+  onPayrollDeleted,
   onPayrollsChange,
 }: PayrollListViewProps) {
   const [globalFilter, setGlobalFilter] = useState("");
@@ -130,7 +141,9 @@ export function PayrollListView({
             id: item.id,
             payrollRunId: item.payrollRunId,
             membershipId: item.membershipId,
-            employeeName: getPayrollMemberName(item.membershipId),
+            employeeName:
+              members.find((member) => member.membershipId === item.membershipId)
+                ?.displayName ?? item.membershipId,
             periodLabel,
             payDate: run.payDate,
             status: item.status,
@@ -143,7 +156,7 @@ export function PayrollListView({
           };
         })
         .filter((value): value is PayrollItemDetailDTO => value !== null),
-    [lineItems, payrolls, runById],
+    [lineItems, members, payrolls, runById],
   );
 
   const filteredData = useMemo<PayrollItemListItemDTO[]>(() => {
@@ -160,13 +173,29 @@ export function PayrollListView({
     });
   }, [detailRows, globalFilter, statusFilter]);
 
-  const markAsPaid = useCallback((itemId: string) => {
-    onPayrollsChange(
-      payrolls.map((payroll) =>
-        payroll.id === itemId ? { ...payroll, status: "paid" } : payroll,
-      ),
-    );
+  const markAsPaid = useCallback(async (itemId: string) => {
+    try {
+      await updatePayrollItemStatusAction(itemId, "paid");
+      onPayrollsChange(
+        payrolls.map((payroll) =>
+          payroll.id === itemId ? { ...payroll, status: "paid" } : payroll,
+        ),
+      );
+      toast.success("Pago registrado exitosamente");
+    } catch (error) {
+      toast.error("Error al registrar pago");
+    }
   }, [onPayrollsChange, payrolls]);
+
+  const deletePayroll = useCallback(async (itemId: string) => {
+    try {
+      const result = await deletePayrollItemAction(itemId);
+      onPayrollDeleted(result);
+      toast.success("Planilla eliminada exitosamente");
+    } catch (error) {
+      toast.error("Error al eliminar la planilla");
+    }
+  }, [onPayrollDeleted]);
 
   const columns = useMemo<ColumnDef<PayrollItemListItemDTO>[]>(
     () => [
@@ -240,18 +269,26 @@ export function PayrollListView({
                   Ver detalle
                 </DropdownMenuItem>
 
-                {payroll.status !== "paid" && (
-                  <DropdownMenuItem onClick={() => markAsPaid(payroll.id)}>
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Marcar como pagado
+                  {payroll.status !== "paid" && (
+                    <DropdownMenuItem onClick={() => markAsPaid(payroll.id)}>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Marcar como pagado
+                    </DropdownMenuItem>
+                  )}
+  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => deletePayroll(payroll.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Eliminar planilla
                   </DropdownMenuItem>
-                )}
-
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => console.log("Exportar PDF", payroll.id)}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Exportar PDF
-                </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => console.log("Exportar PDF", payroll.id)}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    Exportar PDF
+                  </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => console.log("Exportar Excel", payroll.id)}>
                   <Download className="mr-2 h-4 w-4" />
                   Exportar Excel
@@ -262,7 +299,7 @@ export function PayrollListView({
         },
       },
     ],
-    [detailRows, markAsPaid],
+    [deletePayroll, detailRows, markAsPaid],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -291,7 +328,7 @@ export function PayrollListView({
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filtrar por estado" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent portal={false}>
               <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="draft">Borrador</SelectItem>
               <SelectItem value="calculated">Calculado</SelectItem>

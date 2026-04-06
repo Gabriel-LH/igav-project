@@ -12,8 +12,23 @@ import {
 
 import { PayrollPolicyView } from "./payroll-policy-view";
 import { PayrollConfigView } from "./payroll-config-view";
-import { PayrollGenerationView } from "./payroll-geration-view";
+import { PayrollGenerationView } from "./payroll-generation-view";
 import { PayrollListView } from "./payroll-list-view";
+
+import { 
+  getPayrollDataAction, 
+  getPayrollMembersAction,
+  savePayrollPolicyAction,
+  generatePayrollRunAction,
+  savePayrollConfigAction,
+  updatePayrollConfigAction
+} from "@/src/app/(tenant)/tenant/actions/payroll.actions";
+import { getBranchesAction } from "@/src/app/(tenant)/tenant/actions/branch.actions";
+
+import { 
+  CreatePayrollConfigDTO,
+  UpdatePayrollConfigDTO 
+} from "@/src/domain/tenant/repositories/PayrollRepository";
 
 import type { PayrollPolicy } from "@/src/types/payroll/type.payrollPolicies";
 import type { PayrollConfig } from "@/src/types/payroll/type.payrollConfig";
@@ -21,6 +36,7 @@ import type { PayrollRun } from "@/src/types/payroll/type.payrollRun";
 import type { PayrollItem } from "@/src/types/payroll/type.payrollItem";
 import type { PayrollLineItem } from "@/src/types/payroll/type.payrollLineItem";
 import type { GeneratedPayrollBatchDTO } from "@/src/application/interfaces/payroll/PayrollPresentation";
+import { toast } from "sonner";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useScrollableTabs } from "./util/handleTabChange";
@@ -31,22 +47,125 @@ export function PayrollModule() {
   const [runs, setRuns] = useState<PayrollRun[]>([]);
   const [payrolls, setPayrolls] = useState<PayrollItem[]>([]);
   const [lineItems, setLineItems] = useState<PayrollLineItem[]>([]);
-  const [policy, setPolicy] = useState<PayrollPolicy | null>(null);
+  const [members, setMembers] = useState<{ membershipId: string; userId: string; displayName: string; email?: string }[]>([]);
+  const [branches, setBranches] = useState<{ id: string; name: string }[]>([]);
+  const [policy, setPolicy] = useState<PayrollPolicy>({
+    id: "default-policy",
+    tenantId: "current-tenant",
+    name: "Política General",
+    overtimeMultiplier: 1.5,
+    deductions: {
+      healthInsurancePercent: 0,
+      pensionPercent: 0,
+      taxPercent: 0,
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 350);
+    async function loadData() {
+      try {
+        const [payrollData, payrollMembers, branchesRes] = await Promise.all([
+          getPayrollDataAction() as Promise<{
+            policy: PayrollPolicy;
+            configs: PayrollConfig[];
+            runs: PayrollRun[];
+            payrolls: PayrollItem[];
+            lineItems: PayrollLineItem[];
+          }>,
+          getPayrollMembersAction(),
+          getBranchesAction(),
+        ]);
 
-    return () => clearTimeout(timer);
+        if (payrollData.policy) setPolicy(payrollData.policy);
+        setConfigs(payrollData.configs as unknown as PayrollConfig[]);
+        setRuns(payrollData.runs as unknown as PayrollRun[]);
+        setPayrolls(payrollData.payrolls as unknown as PayrollItem[]);
+        setLineItems(payrollData.lineItems as unknown as PayrollLineItem[]);
+        setMembers(payrollMembers);
+        setBranches(
+          branchesRes.success
+            ? (branchesRes.data ?? []).map((branch: any) => ({
+                id: branch.id,
+                name: branch.name,
+              }))
+            : [],
+        );
+      } catch (error) {
+        console.error("Error loading payroll data:", error);
+        toast.error("Error al cargar datos de nómina");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
   }, []);
 
-  const handleGenerated = (batch: GeneratedPayrollBatchDTO) => {
-    setRuns((prev) => [...prev, batch.run]);
-    setPayrolls((prev) => [...prev, ...batch.items]);
-    setLineItems((prev) => [...prev, ...batch.lineItems]);
-    setActiveTab("list");
+  const handlePolicySave = async (updatedPolicy: PayrollPolicy) => {
+    try {
+      await savePayrollPolicyAction({
+        healthInsurancePercent: updatedPolicy.deductions.healthInsurancePercent,
+        pensionPercent: updatedPolicy.deductions.pensionPercent,
+        taxPercent: updatedPolicy.deductions.taxPercent,
+        overtimeMultiplier: updatedPolicy.overtimeMultiplier,
+      });
+      setPolicy(updatedPolicy);
+      toast.success("Política guardada");
+    } catch {
+      toast.error("Error al guardar política");
+    }
+  };
+
+  const handleConfigSave = async (config: Omit<PayrollConfig, "id" | "tenantId"> & { id?: string }) => {
+    try {
+      if (config.id) {
+        const result = await updatePayrollConfigAction(config.id, config as unknown as UpdatePayrollConfigDTO);
+        setConfigs((prev) =>
+          prev.map((c) => (c.id === config.id ? (result as unknown as PayrollConfig) : c))
+        );
+      } else {
+        const result = await savePayrollConfigAction(config as unknown as CreatePayrollConfigDTO);
+        setConfigs((prev) => [...prev, result as unknown as PayrollConfig]);
+      }
+      toast.success("Configuración guardada");
+    } catch {
+      toast.error("Error al guardar configuración");
+    }
+  };
+
+  const handlePayrollGenerated = async (batch: GeneratedPayrollBatchDTO) => {
+    try {
+      await generatePayrollRunAction(batch);
+      const payrollData = await getPayrollDataAction();
+      if (payrollData.policy) setPolicy(payrollData.policy as PayrollPolicy);
+      setConfigs(payrollData.configs as unknown as PayrollConfig[]);
+      setRuns(payrollData.runs as unknown as PayrollRun[]);
+      setPayrolls(payrollData.payrolls as unknown as PayrollItem[]);
+      setLineItems(payrollData.lineItems as unknown as PayrollLineItem[]);
+      setActiveTab("list");
+      toast.success("Planilla generada y guardada");
+    } catch {
+      toast.error("Error al guardar planilla");
+    }
+  };
+
+  const handlePayrollDeleted = ({
+    deletedItemId,
+    deletedRunId,
+  }: {
+    deletedItemId: string;
+    deletedRunId: string | null;
+  }) => {
+    setPayrolls((prev) => prev.filter((item) => item.id !== deletedItemId));
+    setLineItems((prev) =>
+      prev.filter((lineItem) => lineItem.payrollItemId !== deletedItemId),
+    );
+
+    if (deletedRunId) {
+      setRuns((prev) => prev.filter((run) => run.id !== deletedRunId));
+    }
   };
 
   const { tabRefs, scrollToTab } = useScrollableTabs();
@@ -144,18 +263,23 @@ export function PayrollModule() {
         </div>
 
         <TabsContent value="policy" className="space-y-4">
-          {policy && <PayrollPolicyView policy={policy} onPolicyChange={setPolicy} />}
+          <PayrollPolicyView policy={policy} onPolicyChange={handlePolicySave} />
         </TabsContent>
 
         <TabsContent value="config" className="space-y-4">
-          <PayrollConfigView configs={configs} onConfigsChange={setConfigs} />
+          <PayrollConfigView 
+            configs={configs} 
+            members={members}
+            onConfigSave={handleConfigSave} 
+          />
         </TabsContent>
 
         <TabsContent value="generate" className="space-y-4">
           <PayrollGenerationView
             configs={configs}
-            policy={policy || ({} as any)}
-            onPayrollGenerated={handleGenerated}
+            branches={branches}
+            policy={policy}
+            onPayrollGenerated={handlePayrollGenerated}
           />
         </TabsContent>
 
@@ -164,6 +288,8 @@ export function PayrollModule() {
             payrolls={payrolls}
             runs={runs}
             lineItems={lineItems}
+            members={members}
+            onPayrollDeleted={handlePayrollDeleted}
             onPayrollsChange={setPayrolls}
           />
         </TabsContent>

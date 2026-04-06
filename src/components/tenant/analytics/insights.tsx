@@ -12,9 +12,9 @@ export function AnalyticsInsights() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Insights automáticos</CardTitle>
+        <CardTitle className="mt-3">Insights automáticos</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 mb-3">
         {insights.map((text) => {
           const isRentSpecific =
             text.toLowerCase().includes("alquiler") ||
