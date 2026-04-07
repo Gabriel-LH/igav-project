@@ -22,15 +22,11 @@ export class CreateOperationUseCase {
     },
   ): Promise<Operation> {
     const now = new Date();
-    const operations = await this.operationRepo.getOperations();
-
-    const todayString = now.toISOString().split("T")[0];
-    const todayOperationsByType = operations.filter(
-      (op) =>
-        op.type === dto.type &&
-        op.date.toISOString().split("T")[0] === todayString,
+    const lastSequence = await this.operationRepo.getLastSequence(
+      tenantId,
+      dto.type,
     );
-    const sequence = todayOperationsByType.length + 1;
+    const sequence = lastSequence + 1;
     const referenceCode = generateOperationReference(dto.type, now, sequence);
 
     const operationPaymentStatus = calculateOperationPaymentStatus(

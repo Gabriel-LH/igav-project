@@ -536,7 +536,7 @@ model ModuleFeature {
 model Operation {
   id                   String                @id @default(uuid())
   tenantId             String
-  referenceCode        String                @unique
+  referenceCode        String
   branchId             String
   sellerId             String
   type                 OperationType
@@ -574,6 +574,8 @@ model Operation {
   saleCharges          SaleCharge[]
   stockMovements       StockMovement[]
 
+
+  @@unique([tenantId, referenceCode])
   @@map("operation")
 }
 

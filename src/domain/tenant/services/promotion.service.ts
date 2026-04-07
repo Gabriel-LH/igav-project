@@ -1,3 +1,4 @@
+import { differenceInDays } from "date-fns";
 import { CartItem } from "../../../types/cart/type.cart";
 import { Promotion } from "../../../types/promotion/type.promotion";
 import { calculateBestPromotionForProduct } from "../../../utils/promotion/promotio.engine";
@@ -8,6 +9,8 @@ export interface PromotionContext {
   branchId: string;
   cartSubtotal: number;
   now: Date;
+  startDate?: Date;
+  endDate?: Date;
   operationType?: "venta" | "alquiler";
 }
 
@@ -47,6 +50,17 @@ export class PromotionService {
         promotion.isActive &&
         this.isPromotionActiveAtDate(promotion.startDate, promotion.endDate),
     );
+  }
+
+  private calculateRentalMultiplier(
+    item: CartItem,
+    startDate?: Date,
+    endDate?: Date
+  ): number {
+    if (item.operationType !== "alquiler" || !startDate || !endDate) return 1;
+    // Note: If we had access to productVariants here we could check rentUnit === 'evento'
+    // To be safe, we'll assume days if dates are present.
+    return Math.max(differenceInDays(endDate, startDate), 1);
   }
 
   applyPromotionsUseCase(
@@ -93,12 +107,19 @@ export class PromotionService {
         applicablePromotions,
       );
 
+      const multiplier = this.calculateRentalMultiplier(item, context.startDate, context.endDate);
+      const price = Number(result.finalPrice || 0);
+      const qty = Number(item.quantity || 0);
+      const rawSubtotal = price * qty * multiplier;
+      const subtotal = isNaN(rawSubtotal) ? 0 : rawSubtotal;
+
       return {
         ...item,
-        unitPrice: result.finalPrice,
-        discountAmount: result.discount,
+        unitPrice: price,
+        discountAmount: result.discount || 0,
         appliedPromotionId: result.promotionId,
         discountReason: result.reason ?? undefined,
+        subtotal: Math.round(subtotal * 100) / 100,
       };
     });
   }

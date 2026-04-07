@@ -106,4 +106,38 @@ export class PrismaOperationRepository implements OperationRepository {
       data: { status: status as Operation["status"] },
     });
   }
+
+  async getTodayCount(tenantId: string, type: string): Promise<number> {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    return await this.prisma.operation.count({
+      where: {
+        tenantId,
+        type: type as any,
+        date: { gte: startOfDay },
+      },
+    });
+  }
+
+  async getLastSequence(tenantId: string, type: string): Promise<number> {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const lastOp = await this.prisma.operation.findFirst({
+      where: {
+        tenantId,
+        type: type as any,
+        date: { gte: startOfDay },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (!lastOp) return 0;
+    const parts = lastOp.referenceCode.split("-");
+    const lastPart = parts[parts.length - 1];
+    return parseInt(lastPart, 10) || 0;
+  }
 }

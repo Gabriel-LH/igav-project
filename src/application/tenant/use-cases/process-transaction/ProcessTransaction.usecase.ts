@@ -3,6 +3,7 @@ import { TransactionFinancials } from "../../../../domain/tenant/logic/Transacti
 import { TenantRepository } from "../../../../domain/tenant/repositories/TenantRepository";
 import { CashSessionRepository } from "../../../../domain/tenant/repositories/CashSessionRepository";
 import { ITransactionStrategy } from "./ITransactionStrategy";
+import { calculateTaxTotals } from "../../../../utils/pricing/tax-calculation";
 
 // Sub-cases
 import { CreateOperationUseCase } from "../createOperation.usecase";
@@ -45,23 +46,47 @@ export class ProcessTransactionUseCase {
       }
       
       // Re-calculate promotions on server to ensure consistency and security
-      const recalculatedItems = await this.calculatePromotionsUC.execute({
+      const { items: recalculatedItems, subtotal: serverGrossSubtotal } = await this.calculatePromotionsUC.execute({
         items: dto.items,
         tenantId,
         branchId: dto.branchId,
-        config: dto.configSnapshot?.tenant || dto.configSnapshot, // Handle possible snapshot structure
-        startDate: dto.rentalDates?.from ? new Date(dto.rentalDates.from) : undefined,
-        endDate: dto.rentalDates?.to ? new Date(dto.rentalDates.to) : undefined,
+        config,
+        startDate: dto.rentalDates?.from ? new Date(dto.rentalDates.from) : (dto.startDate ? new Date(dto.startDate) : undefined),
+        endDate: dto.rentalDates?.to ? new Date(dto.rentalDates.to) : (dto.endDate ? new Date(dto.endDate) : undefined),
       });
 
-      // Update DTO with server-calculated items and total
-      const serverTotal = recalculatedItems.reduce((acc: number, item: CartItem) => acc + (item.subtotal || 0), 0);
+      // Calculate total after item-level promotions
+      const serverTotalAfterItemPromos = recalculatedItems.reduce((acc: number, item: CartItem) => acc + (item.subtotal || 0), 0);
+      
+      // Handle global discounts (points, coupons) sent from client
+      const extraDiscountTotal = Number(dto.financials?.extraDiscountTotal || 0);
+      const baseAmountForTax = Math.max(0, serverTotalAfterItemPromos - (isNaN(extraDiscountTotal) ? 0 : extraDiscountTotal));
+
+      // Recalculate Tax and Rounding
+      const taxTotals = calculateTaxTotals(
+        baseAmountForTax,
+        config.tax,
+        dto.paymentMethodType || "cash" 
+      );
+
+      const serverNetTotal = Math.max(0, taxTotals.total);
+      
+      const rawItemDiscount = serverGrossSubtotal - serverTotalAfterItemPromos;
+      const serverTotalDiscount = Math.round((rawItemDiscount + extraDiscountTotal) * 100) / 100;
+
       const dtoWithServerPrices = {
         ...dto,
         items: recalculatedItems,
         financials: {
           ...dto.financials,
-          totalAmount: serverTotal,
+          subtotal: isNaN(serverGrossSubtotal) ? 0 : Math.max(0, Math.round(serverGrossSubtotal * 100) / 100),
+          itemDiscountTotal: isNaN(rawItemDiscount) ? 0 : Math.max(0, Math.round(rawItemDiscount * 100) / 100),
+          extraDiscountTotal: isNaN(extraDiscountTotal) ? 0 : Math.max(0, extraDiscountTotal),
+          totalDiscount: isNaN(serverTotalDiscount) ? 0 : Math.max(0, serverTotalDiscount),
+          taxAmount: isNaN(taxTotals.taxAmount) ? 0 : Math.max(0, taxTotals.taxAmount),
+          totalAmount: isNaN(serverNetTotal) ? 0 : serverNetTotal,
+          totalBeforeRounding: isNaN(taxTotals.totalBeforeRounding) ? 0 : Math.max(0, taxTotals.totalBeforeRounding),
+          roundingDifference: isNaN(taxTotals.roundingDifference) ? 0 : taxTotals.roundingDifference,
         }
       };
 

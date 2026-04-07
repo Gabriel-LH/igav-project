@@ -1,3 +1,4 @@
+import { differenceInDays } from "date-fns";
 import { PromotionRepository } from "../../../../domain/tenant/repositories/PromotionRepository";
 import { InventoryRepository } from "../../../../domain/tenant/repositories/InventoryRepository";
 import { BundleDomainService } from "../../../../domain/tenant/services/bundle.service";
@@ -30,7 +31,10 @@ export class CalculateCartPromotionsUseCase {
     this.promotionService = new PromotionService();
   }
 
-  async execute(input: CalculateCartPromotionsInput): Promise<CartItem[]> {
+  async execute(input: CalculateCartPromotionsInput): Promise<{
+    items: CartItem[];
+    subtotal: number;
+  }> {
     const { 
       items, 
       tenantId, 
@@ -98,7 +102,18 @@ export class CalculateCartPromotionsUseCase {
     }
 
     // 4. Apply individual promotions to the remaining items
-    const cartSubtotal = finalItems.reduce((acc, item) => acc + (item.unitPrice * item.quantity), 0);
+    const cartSubtotal = finalItems.reduce((acc, item) => {
+      const variant = productVariants.find(v => v.id === item.variantId);
+      const isEvent = variant?.rentUnit === "evento";
+      const diff = (startDate && endDate) ? differenceInDays(endDate, startDate) : 0;
+      const multiplier = (item.operationType === "alquiler" && !isEvent && !isNaN(diff))
+        ? Math.max(diff, 1)
+        : 1;
+      const price = Number(item.listPrice ?? item.unitPrice ?? 0);
+      const qty = Number(item.quantity || 0);
+      const rawSubtotal = price * qty * multiplier;
+      return acc + (isNaN(rawSubtotal) ? 0 : rawSubtotal);
+    }, 0);
     
     const processedItems = this.promotionService.applyPromotionsUseCase(
       finalItems,
@@ -107,9 +122,14 @@ export class CalculateCartPromotionsUseCase {
         branchId,
         cartSubtotal,
         now: new Date(),
+        startDate,
+        endDate,
       }
     );
 
-    return processedItems;
+    return {
+      items: processedItems,
+      subtotal: cartSubtotal,
+    };
   }
 }
