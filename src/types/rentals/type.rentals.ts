@@ -17,6 +17,10 @@ export const rentalSchema = z.object({
   actualReturnDate: z.date().optional(), // Se llena al recibir la prenda
   cancelDate: z.date().optional(), // Se llena al cancelar la prenda
 
+  // Financieros
+  subTotal: z.number().optional(),
+  totalDiscount: z.number().default(0),
+
   // Estado del Alquiler
   status: z.enum([
     "alquilado", // El cliente tiene la ropa

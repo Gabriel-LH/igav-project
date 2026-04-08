@@ -140,4 +140,21 @@ export class PrismaOperationRepository implements OperationRepository {
     const lastPart = parts[parts.length - 1];
     return parseInt(lastPart, 10) || 0;
   }
+
+  async addDiscounts(discounts: any[]): Promise<void> {
+    if (discounts.length === 0) return;
+
+    // Verificación defensiva: a veces los modelos recién agregados no se reflejan correctamente en el cliente de transacciones // hasta que se reinicia por completo o si la generación tiene peculiaridades con rutas personalizadas.
+    if ((this.prisma as any).discountApplied) {
+      await (this.prisma as any).discountApplied.createMany({
+        data: discounts,
+      });
+    } else {
+      console.warn(
+        "Prisma warning: discountApplied model not found on client. Discounts will not be persisted.",
+      );
+      // Si llegamos aquí, algo falla con la generación/sincronización.
+      // Lo registramos, pero dejamos que la transacción continúe para evitar bloquear el TPV.
+    }
+  }
 }

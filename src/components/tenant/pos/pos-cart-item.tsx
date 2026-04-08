@@ -48,8 +48,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
     [item.variantId, productVariants],
   );
 
-  const { getCategoryById } =
-    useAttributeStore();
+  const { getCategoryById } = useAttributeStore();
 
   // 1. Obtener disponibilidad REAL de este producto/variante en el local
   const maxAvailable = useMemo(() => {
@@ -118,15 +117,18 @@ export function PosCartItem({ item }: PosCartItemProps) {
         </div>
       )}
       {/* 1. Header: Nombre y Variantes */}
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex flex-col">
+      <div className="flex justify-between">
+        <div className="flex items-center align-middle gap-2">
           <span className="font-bold text-xs line-clamp-2 leading-tight">
             {item.product.name}
           </span>
           <div className="flex flex-wrap gap-1 mt-1">
             <span className="text-[10px] text-muted-foreground mr-1">
-                {item.product.categoryId
-                ? getCategoryById(item.product.tenantId, item.product.categoryId)?.name
+              {item.product.categoryId
+                ? getCategoryById(
+                    item.product.tenantId,
+                    item.product.categoryId,
+                  )?.name
                 : "Gen"}
             </span>
             {variantParams?.attributes?.size && (
@@ -138,6 +140,24 @@ export function PosCartItem({ item }: PosCartItemProps) {
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 py-0">
                 Color: {variantParams.attributes.color}
               </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant={isRent ? "default" : "secondary"}
+              className={`text-[9px] px-1.5 h-4 w-fit uppercase font-bold ${
+                isRent
+                  ? "bg-blue-500 text-white"
+                  : "bg-emerald-100 text-emerald-700 font-black"
+              }`}
+            >
+              {isRent ? "ALQUILER" : "VENTA"}
+            </Badge>
+
+            {item.discountReason && (
+              <span className="text-[9px] text-green-300 font-bold mt-0.5 animate-pulse">
+                ({item.discountReason})
+              </span>
             )}
           </div>
         </div>
@@ -154,34 +174,6 @@ export function PosCartItem({ item }: PosCartItemProps) {
       {/* 2. Operación, Cantidad y Disponibilidad */}
       <div className="flex items-end justify-between mt-1">
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={isRent ? "default" : "secondary"}
-              className={`text-[9px] px-1.5 h-4 w-fit uppercase font-bold ${
-                isRent
-                  ? "bg-blue-500 text-white"
-                  : "bg-emerald-100 text-emerald-700 font-black"
-              }`}
-            >
-              {isRent ? "ALQUILER" : "VENTA"}
-            </Badge>
-
-            {!isSerial && (
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`text-[9px] font-bold ${item.quantity >= maxAvailable ? "text-amber-600" : "text-slate-400"}`}
-                >
-                  {maxAvailable} disp.
-                </span>
-                {item.quantity >= maxAvailable && (
-                  <Badge className="text-[8px] h-3.5 px-1 bg-amber-500/40 text-white border-0 hover:bg-amber-600">
-                    MÁXIMO
-                  </Badge>
-                )}
-              </div>
-            )}
-          </div>
-
           {isSerial ? (
             /* SERIALIZADO: Botón de Asignación */
             <Popover>
@@ -218,31 +210,48 @@ export function PosCartItem({ item }: PosCartItemProps) {
             </Popover>
           ) : (
             /* LOTE: Stepper con Límite */
-            <div className="flex items-center border rounded-md h-7 w-fit  overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-full w-6 rounded-none hover:bg-slate-100 border-r"
-                onClick={() => handleQuantityChange(item.quantity - 1)}
-              >
-                <Minus className="w-3 h-3" />
-              </Button>
-              <div className="w-8 text-center text-xs font-black tabular-nums">
-                {item.quantity}
+            <div className="flex gap-2">
+              <div className="flex items-center border rounded-md h-7 w-fit  overflow-hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-full w-6 rounded-none hover:bg-slate-100 border-r"
+                  onClick={() => handleQuantityChange(item.quantity - 1)}
+                >
+                  <Minus className="w-3 h-3" />
+                </Button>
+                <div className="w-8 text-center text-xs font-black tabular-nums">
+                  {item.quantity}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`h-full w-6 rounded-none border-l transition-opacity ${
+                    item.quantity >= maxAvailable
+                      ? "opacity-30 cursor-not-allowed"
+                      : "hover:bg-slate-100"
+                  }`}
+                  disabled={item.quantity >= maxAvailable}
+                  onClick={() => handleQuantityChange(item.quantity + 1)}
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-full w-6 rounded-none border-l transition-opacity ${
-                  item.quantity >= maxAvailable
-                    ? "opacity-30 cursor-not-allowed"
-                    : "hover:bg-slate-100"
-                }`}
-                disabled={item.quantity >= maxAvailable}
-                onClick={() => handleQuantityChange(item.quantity + 1)}
-              >
-                <Plus className="w-3 h-3" />
-              </Button>
+
+              {!isSerial && (
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`text-[9px] font-bold ${item.quantity >= maxAvailable ? "text-amber-600" : "text-slate-400"}`}
+                  >
+                    {maxAvailable} disp.
+                  </span>
+                  {item.quantity >= maxAvailable && (
+                    <Badge className="text-[8px] h-3.5 px-1 bg-amber-500/40 text-white border-0 hover:bg-amber-600">
+                      MÁXIMO
+                    </Badge>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -263,13 +272,19 @@ export function PosCartItem({ item }: PosCartItemProps) {
                     } ${!allowPriceEdit ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
                   >
                     <Tag className="w-3 h-3" />
-                    {item.manualDiscountAmount ? "Editar Descuento" : "Descuento"}
+                    {item.manualDiscountAmount
+                      ? "Editar Descuento"
+                      : "Descuento"}
                   </Button>
                 </div>
               </TooltipTrigger>
               {!allowPriceEdit && (
-                <TooltipContent side="bottom" className="text-[10px] bg-destructive text-destructive-foreground border-0">
-                  La política de tienda no permite cambios manuales de precio en el carrito.
+                <TooltipContent
+                  side="bottom"
+                  className="text-[10px] bg-destructive text-destructive-foreground border-0"
+                >
+                  La política de tienda no permite cambios manuales de precio en
+                  el carrito.
                 </TooltipContent>
               )}
             </Tooltip>
@@ -292,7 +307,7 @@ export function PosCartItem({ item }: PosCartItemProps) {
             ) : (
               <div className="flex flex-col">
                 {item.listPrice && item.listPrice > item.unitPrice && (
-                  <span className="line-through  text-[9px]">
+                  <span className="line-through text-slate-300 text-[10px]">
                     {formatCurrency(item.listPrice)}
                   </span>
                 )}
@@ -306,15 +321,10 @@ export function PosCartItem({ item }: PosCartItemProps) {
           {item.discountAmount && item.discountAmount > 0 ? (
             <div className="text-[9px] text-green-300 font-bold mt-0.5 animate-pulse">
               Ahorras {formatCurrency(item.discountAmount * item.quantity)}
-              {item.discountReason && (
-                <span className="block italic opacity-80 font-medium">
-                  ({item.discountReason})
-                </span>
-              )}
             </div>
           ) : null}
 
-          <div className="text-sm font-black text-slate-400 mt-1">
+          <div className="text-sm  text-slate-200 mt-1">
             {formatCurrency(item.subtotal)}
           </div>
         </div>

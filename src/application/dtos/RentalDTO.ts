@@ -45,6 +45,9 @@ export interface RentalDTO extends BaseOperation {
     keepAsCredit: boolean;
     receivedAmount: number;
     paymentMethodId: string;
+    pointsDiscount?: number;
+    couponDiscount?: number;
+    couponCode?: string;
   };
   guarantee?: {
     type?: GuaranteeType | "por_cobrar";

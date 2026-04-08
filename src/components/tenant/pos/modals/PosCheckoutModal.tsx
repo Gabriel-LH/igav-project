@@ -435,8 +435,13 @@ export function PosCheckoutModal({
 
         cartItems.forEach((cartItem) => {
           const unitPrice = cartItem.unitPrice;
-          const listPrice = cartItem.listPrice ?? unitPrice;
           const discountAmount = cartItem.discountAmount ?? 0;
+          // Si listPrice falta o es igual a unitPrice pero hay descuento, lo reconstruimos
+          let listPrice = cartItem.listPrice ?? unitPrice;
+          if (discountAmount > 0 && listPrice <= unitPrice) {
+            listPrice = unitPrice + discountAmount;
+          }
+          
           const discountReason = cartItem.discountReason;
           const promotionId = cartItem.appliedPromotionId;
           const bundleId = cartItem.bundleId;
@@ -576,6 +581,9 @@ export function PosCheckoutModal({
             keepAsCredit: false,
             receivedAmount: saleReceived,
             paymentMethodId: selectedPaymentMethod.id,
+            pointsDiscount: Math.round(pointsDiscount * saleShare * 100) / 100,
+            couponDiscount: Math.round(couponDiscount * saleShare * 100) / 100,
+            couponCode: appliedCoupon?.code,
           },
         };
 
@@ -608,6 +616,9 @@ export function PosCheckoutModal({
             keepAsCredit: false,
             receivedAmount: rentalReceived,
             paymentMethodId: selectedPaymentMethod.id,
+            pointsDiscount: Math.round(pointsDiscount * rentalShare * 100) / 100,
+            couponDiscount: Math.round(couponDiscount * rentalShare * 100) / 100,
+            couponCode: appliedCoupon?.code,
           },
 
           guarantee: {

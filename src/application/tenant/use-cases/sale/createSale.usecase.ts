@@ -79,6 +79,7 @@ export class CreateSaleUseCase {
       discountAmount?: number;
       promotionId?: string;
       bundleId?: string;
+      manualDiscountAmount?: number;
     }) => {
       const listPrice = item.listPrice ?? item.priceAtMoment ?? 0;
       const totalDiscount =
@@ -86,6 +87,7 @@ export class CreateSaleUseCase {
         Math.max(0, listPrice - (item.priceAtMoment ?? listPrice));
       
       const hasPromo = Boolean(item.promotionId || item.bundleId);
+      const manualDiscountAmount = Math.max(0, item.manualDiscountAmount ?? 0);
       const isManualOnly = totalDiscount > 0 && !hasPromo;
 
       // 1. Verificar si se permiten descuentos manuales
@@ -107,7 +109,7 @@ export class CreateSaleUseCase {
       }
 
       // 3. Verificar acumulación (Stacking) de item
-      if (hasPromo && (item.discountAmount ?? 0) > 0 && !tenantConfig.pricing.allowDiscountStacking) {
+      if (hasPromo && manualDiscountAmount > 0 && !tenantConfig.pricing.allowDiscountStacking) {
          throw new Error("La política actual no permite acumular promociones con descuentos manuales.");
       }
 
@@ -132,6 +134,8 @@ export class CreateSaleUseCase {
       sellerId: dto.sellerId,
       totalAmount: totalAmount,
       saleDate: now,
+      subTotal: dto.financials?.subtotal,
+      totalDiscount: dto.financials?.totalDiscount,
       status: resolvedStatus,
       // paymentMethod: paymentMethodId, // Removed as it is not in schema
       amountRefunded: 0,
@@ -139,6 +143,8 @@ export class CreateSaleUseCase {
       createdAt: now,
       updatedAt: now,
     });
+
+    const discountsApplied: any[] = [];
 
     let saleItems: any[] = [];
 
@@ -185,34 +191,93 @@ export class CreateSaleUseCase {
           };
 
           validateDiscountPolicy(saleItem);
+
+          if (saleItem.discountAmount > 0) {
+            discountsApplied.push({
+              id: crypto.randomUUID(),
+              tenantId,
+              operationId: String(operationId),
+              saleId: specificData.id,
+              saleItemId: saleItem.id,
+              amount: saleItem.discountAmount,
+              reason: saleItem.promotionId ? "PROMOTION" : "MANUAL",
+              promotionId: saleItem.promotionId || null,
+              description: saleItem.discountReason || "Descuento en producto",
+              createdAt: now,
+            });
+          }
+
           return saleItem;
         },
       );
     } else {
       saleItems = (dto as SaleDTO).items.map((item) => {
+        const listPrice = Math.max(
+          0,
+          Number(
+            item.listPrice ??
+              (item as any).listPrice ??
+              item.priceAtMoment ??
+              (item as any).unitPrice ??
+              0,
+          ),
+        );
+        const priceAtMoment = Math.max(
+          0,
+          Number(item.priceAtMoment ?? (item as any).unitPrice ?? listPrice),
+        );
+        const discountAmount = Math.max(
+          0,
+          Number(item.discountAmount ?? Math.max(0, listPrice - priceAtMoment)),
+        );
+        const promotionId =
+          (item as any).promotionId ?? (item as any).appliedPromotionId;
+        const manualDiscountAmount = Math.max(
+          0,
+          Number((item as any).manualDiscountAmount ?? 0),
+        );
+
         const saleItem = {
-        id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
-        saleId: specificData.id,
-        productId: item.productId,
-        variantId: item.variantId,
-        stockId: item.inventoryItemId ? undefined : (item as any).stockId,
-        inventoryItemId: item.inventoryItemId,
-        quantity: item.quantity ?? 1,
-        priceAtMoment: item.priceAtMoment,
-        listPrice: item.listPrice,
-        discountAmount: item.discountAmount ?? 0,
-        discountReason: item.discountReason,
-        bundleId: item.bundleId,
-        promotionId: item.promotionId,
-        isReturned: false,
+          id: `SITEM-${Math.random().toString(36).substring(2, 9)}`,
+          saleId: specificData.id,
+          productId: item.productId,
+          variantId: item.variantId,
+          stockId: (item as any).inventoryItemId ? undefined : (item as any).stockId,
+          inventoryItemId: (item as any).inventoryItemId,
+          quantity: item.quantity ?? 1,
+          priceAtMoment,
+          listPrice,
+          discountAmount: discountAmount,
+          discountReason: item.discountReason,
+          bundleId: item.bundleId,
+          promotionId: promotionId,
+          manualDiscountAmount,
+          isReturned: false,
         };
 
         validateDiscountPolicy(saleItem);
+
+        if (saleItem.discountAmount > 0) {
+          discountsApplied.push({
+            id: crypto.randomUUID(),
+            tenantId,
+            operationId: String(operationId),
+            saleId: specificData.id,
+            saleItemId: saleItem.id,
+            amount: saleItem.discountAmount,
+            reason: saleItem.promotionId ? "PROMOTION" : "MANUAL",
+            promotionId: saleItem.promotionId || null,
+            description: saleItem.discountReason || "Descuento en producto",
+            createdAt: now,
+          });
+        }
+
         return saleItem;
       });
     }
 
-    await this.saleRepo.addSale(specificData, saleItems);
+
+    await this.saleRepo.addSale(specificData, saleItems, discountsApplied);
 
     // Stock management
     for (const item of saleItems) {

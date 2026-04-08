@@ -105,12 +105,16 @@ export class CreateRentalUseCase {
       branchId: dto.branchId,
       outDate: dto.startDate,
       expectedReturnDate: dto.endDate,
+      subTotal: dto.financials?.subtotal,
+      totalDiscount: dto.financials?.totalDiscount,
       status: dto.status,
       guaranteeId: guaranteeData ? guaranteeData.id : undefined,
       createdAt: now,
       updatedAt: now,
       notes: !fromReservation ? ((dto as RentalDTO).notes ?? "") : "",
     });
+
+    const discountsApplied: any[] = [];
 
     const tenantConfig = (dto as any).configSnapshot || {};
     const allowStacking = tenantConfig.pricing?.allowDiscountStacking ?? true;
@@ -162,12 +166,33 @@ export class CreateRentalUseCase {
             notes: "",
           };
           validateDiscountPolicy(rItem);
+
+          if (rItem.discountAmount > 0) {
+            discountsApplied.push({
+              id: crypto.randomUUID(),
+              tenantId,
+              operationId: String(operationId),
+              rentalId: rental.id,
+              rentalItemId: rItem.id,
+              amount: rItem.discountAmount,
+              reason: rItem.promotionId ? "PROMOTION" : "MANUAL",
+              promotionId: rItem.promotionId || null,
+              description: rItem.discountReason || "Descuento en producto",
+              createdAt: now,
+            });
+          }
+
           return rItem;
         }),
       );
     } else {
       rentalItems = rentalItemSchema.array().parse(
         (dto as RentalDTO).items.map((item) => {
+          // Correct mapping: CartItem (item) uses unitPrice, listPrice, discountAmount, etc.
+          const unitPrice = item.unitPrice ?? (item as any).priceAtMoment ?? 0;
+          const discountAmount = item.discountAmount ?? 0;
+          const promotionId = item.appliedPromotionId ?? (item as any).promotionId;
+
           const rItem = {
             id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
             tenantId,
@@ -178,23 +203,42 @@ export class CreateRentalUseCase {
             inventoryItemId: item.inventoryItemId,
             quantity: item.quantity ?? 1,
             variantId: item.variantId,
-            priceAtMoment: item.priceAtMoment ?? 0,
-            listPrice: item.listPrice ?? item.priceAtMoment ?? 0,
-            discountAmount: item.discountAmount ?? 0,
+            priceAtMoment: unitPrice,
+            listPrice: (item.listPrice && item.listPrice > unitPrice)
+              ? item.listPrice
+              : (unitPrice + discountAmount),
+            discountAmount: discountAmount,
             discountReason: item.discountReason,
             bundleId: item.bundleId,
-            promotionId: item.promotionId,
+            promotionId: promotionId,
             conditionOut: "Excelente",
             itemStatus: "alquilado",
             notes: (dto as any).notes ?? "",
           };
           validateDiscountPolicy(rItem);
+
+          if (rItem.discountAmount > 0) {
+            discountsApplied.push({
+              id: crypto.randomUUID(),
+              tenantId,
+              operationId: String(operationId),
+              rentalId: rental.id,
+              rentalItemId: rItem.id,
+              amount: rItem.discountAmount,
+              reason: rItem.promotionId ? "PROMOTION" : "MANUAL",
+              promotionId: rItem.promotionId || null,
+              description: rItem.discountReason || "Descuento en producto",
+              createdAt: now,
+            });
+          }
+
           return rItem;
         }),
       );
     }
 
-    await this.rentalRepo.addRental(rental, rentalItems);
+
+    await this.rentalRepo.addRental(rental, rentalItems, discountsApplied);
 
     const finalRentalStockStatus: InventoryItemStatus =
       dto.status === "reservado_fisico" ||

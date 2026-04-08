@@ -45,19 +45,59 @@ export class ProcessTransactionUseCase {
         }
       }
       
-      // Re-calculate promotions on server to ensure consistency and security
-      const { items: recalculatedItems, subtotal: serverGrossSubtotal } = await this.calculatePromotionsUC.execute({
-        items: dto.items,
-        tenantId,
-        branchId: dto.branchId,
-        config,
-        startDate: dto.rentalDates?.from ? new Date(dto.rentalDates.from) : (dto.startDate ? new Date(dto.startDate) : undefined),
-        endDate: dto.rentalDates?.to ? new Date(dto.rentalDates.to) : (dto.endDate ? new Date(dto.endDate) : undefined),
-      });
+      const looksLikeCartItem =
+        Array.isArray(dto.items) &&
+        dto.items.every(
+          (item: any) =>
+            item &&
+            typeof item === "object" &&
+            "product" in item &&
+            "operationType" in item,
+        );
 
-      // Calculate total after item-level promotions
-      const serverTotalAfterItemPromos = recalculatedItems.reduce((acc: number, item: CartItem) => acc + (item.subtotal || 0), 0);
-      
+      let recalculatedItems: any[] = dto.items;
+      let serverGrossSubtotal = 0;
+      let serverTotalAfterItemPromos = 0;
+
+      if (looksLikeCartItem) {
+        const result = await this.calculatePromotionsUC.execute({
+          items: dto.items,
+          tenantId,
+          branchId: dto.branchId,
+          config,
+          startDate: dto.rentalDates?.from
+            ? new Date(dto.rentalDates.from)
+            : dto.startDate
+              ? new Date(dto.startDate)
+              : undefined,
+          endDate: dto.rentalDates?.to
+            ? new Date(dto.rentalDates.to)
+            : dto.endDate
+              ? new Date(dto.endDate)
+              : undefined,
+        });
+
+        recalculatedItems = result.items;
+        serverGrossSubtotal = result.subtotal;
+        serverTotalAfterItemPromos = recalculatedItems.reduce(
+          (acc: number, item: CartItem) => acc + (item.subtotal || 0),
+          0,
+        );
+      } else {
+        const normalizedItems = Array.isArray(dto.items) ? dto.items : [];
+        serverGrossSubtotal = normalizedItems.reduce((acc: number, item: any) => {
+          const quantity = Math.max(0, Number(item?.quantity ?? 0));
+          const listPrice = Number(item?.listPrice ?? item?.priceAtMoment ?? 0);
+          return acc + Math.max(0, listPrice) * quantity;
+        }, 0);
+
+        serverTotalAfterItemPromos = normalizedItems.reduce((acc: number, item: any) => {
+          const quantity = Math.max(0, Number(item?.quantity ?? 0));
+          const priceAtMoment = Number(item?.priceAtMoment ?? item?.listPrice ?? 0);
+          return acc + Math.max(0, priceAtMoment) * quantity;
+        }, 0);
+      }
+
       // Handle global discounts (points, coupons) sent from client
       const extraDiscountTotal = Number(dto.financials?.extraDiscountTotal || 0);
       const baseAmountForTax = Math.max(0, serverTotalAfterItemPromos - (isNaN(extraDiscountTotal) ? 0 : extraDiscountTotal));

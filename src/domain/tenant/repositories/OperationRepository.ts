@@ -7,4 +7,5 @@ export interface OperationRepository {
   updateOperationStatus(id: string, status: string): Promise<void>;
   getTodayCount(tenantId: string, type: string): Promise<number>;
   getLastSequence(tenantId: string, type: string): Promise<number>;
+  addDiscounts(discounts: any[]): Promise<void>;
 }

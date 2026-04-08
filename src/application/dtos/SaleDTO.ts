@@ -40,6 +40,9 @@ export interface SaleDTO extends BaseOperation {
     receivedAmount: number;
     keepAsCredit: boolean;
     paymentMethodId: string;
+    pointsDiscount?: number;
+    couponDiscount?: number;
+    couponCode?: string;
   };
   notes?: string;
 }

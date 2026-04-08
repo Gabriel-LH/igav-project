@@ -159,9 +159,11 @@ export const useCartStore = create<CartState>()(
         );
 
         if (res.success && res.data) {
+          const itemsFromData = (res.data as any).items as CartItem[];
+          
           // Check if a bundle was applied that wasn't before
           const hadBundles = items.some(i => !!i.bundleId);
-          const hasBundles = (res.data as CartItem[]).some(i => !!i.bundleId);
+          const hasBundles = itemsFromData.some(i => !!i.bundleId);
           
           if (!hadBundles && hasBundles) {
             toast.success("¡Combo detectado!", {
@@ -170,7 +172,7 @@ export const useCartStore = create<CartState>()(
           }
 
           const currentItems = items;
-          const nextItems = (res.data as CartItem[]).map((nextItem) => {
+          const nextItems = itemsFromData.map((nextItem) => {
             const previousItem =
               currentItems.find((item) => item.cartId === nextItem.cartId) ??
               currentItems.find((item) =>

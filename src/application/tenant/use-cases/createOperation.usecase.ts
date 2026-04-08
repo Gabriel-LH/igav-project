@@ -62,6 +62,38 @@ export class CreateOperationUseCase {
 
     await this.operationRepo.addOperation(operationData);
 
+    // NEW: Save Global Discounts (Points / Coupons)
+    const discountsApplied: any[] = [];
+    const financials = dto.financials;
+
+    if (financials?.pointsDiscount > 0) {
+      discountsApplied.push({
+        id: crypto.randomUUID(),
+        tenantId,
+        operationId: operationData.id,
+        amount: financials.pointsDiscount,
+        reason: "POINTS",
+        description: "Canje de puntos de fidelidad",
+        createdAt: now,
+      });
+    }
+
+    if (financials?.couponDiscount > 0) {
+      discountsApplied.push({
+        id: crypto.randomUUID(),
+        tenantId,
+        operationId: operationData.id,
+        amount: financials.couponDiscount,
+        reason: "COUPON",
+        description: `Cupón aplicado: ${financials.couponCode || "Desconocido"}`,
+        createdAt: now,
+      });
+    }
+
+    if (discountsApplied.length > 0) {
+      await this.operationRepo.addDiscounts(discountsApplied);
+    }
+
     return operationData;
   }
 }

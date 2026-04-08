@@ -68,13 +68,14 @@ export function UseCouponComponent({
           </span>
 
           {!appliedCoupon ? (
-            <div className="flex w-full justify-between gap-2 mt-2">
+            <div className="flex w-fit gap-15 mt-1">
               <Input
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 placeholder="CÓDIGO"
                 className="h-7 text-xs uppercase"
               />
+
               <Button
                 onClick={handleApply}
                 size="sm"

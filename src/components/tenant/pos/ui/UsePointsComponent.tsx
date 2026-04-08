@@ -14,7 +14,7 @@ export const UsePointsComponent = ({
   return (
     <div>
       <div
-        className={`p-3 rounded-md border flex items-center justify-between mt-2  transition-colors ${
+        className={`px-2 py-1 rounded-md border flex items-center justify-between mt-2  transition-colors ${
           usePoints ? " border-amber-300" : "border-border"
         }`}
       >

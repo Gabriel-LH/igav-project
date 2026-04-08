@@ -82,3 +82,20 @@ export const operationWithDetailsSchema = operationSchema.and(
 );
 
 export type OperationWithDetails = z.infer<typeof operationWithDetailsSchema>;
+
+export const discountAppliedSchema = z.object({
+  id: z.string(),
+  tenantId: z.string(),
+  operationId: z.string(),
+  saleId: z.string().optional().nullable(),
+  rentalId: z.string().optional().nullable(),
+  saleItemId: z.string().optional().nullable(),
+  rentalItemId: z.string().optional().nullable(),
+  amount: z.number(),
+  reason: z.string(),
+  promotionId: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  createdAt: z.date(),
+});
+
+export type DiscountApplied = z.infer<typeof discountAppliedSchema>;

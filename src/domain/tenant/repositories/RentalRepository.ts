@@ -2,7 +2,7 @@ import { Rental } from "../../../types/rentals/type.rentals";
 import { RentalItem } from "../../../types/rentals/type.rentalsItem";
 
 export interface RentalRepository {
-  addRental(rental: Rental, rentalItems: RentalItem[]): Promise<void>;
+  addRental(rental: Rental, rentalItems: RentalItem[], discountsApplied?: any[]): Promise<void>;
   getRentals(): Promise<Rental[]>;
   getRentalItems(): Promise<RentalItem[]>;
   getRentalById(id: string): Promise<Rental | undefined>;

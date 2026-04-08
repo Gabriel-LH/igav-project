@@ -8,34 +8,36 @@ export class PrismaSaleRepository implements SaleRepository {
     private readonly prisma: PrismaClient | Prisma.TransactionClient,
   ) {}
 
-  async addSale(sale: Sale, saleItems: SaleItem[]): Promise<void> {
-    const itemsData = saleItems.map((item) => {
-      const data: any = {
-        id: item.id,
-        tenant: { connect: { id: sale.tenantId } },
-        product: { connect: { id: item.productId } },
-        variant: { connect: { id: item.variantId } },
-        quantity: item.quantity,
-        priceAtMoment: item.priceAtMoment,
-        listPrice: item.listPrice ?? null,
-        discountAmount: item.discountAmount ?? 0,
-        discountReason: item.discountReason ?? null,
-        bundleId: item.bundleId ?? null,
-        isReturned: item.isReturned ?? false,
-      };
+  async addSale(sale: Sale, saleItems: SaleItem[], discountsApplied?: any[]): Promise<void> {
+    const saleItemData = await Promise.all(
+      saleItems.map(async (item) => {
+        const resolvedIds = await this.resolveSaleItemIds(item);
 
-      if (item.stockId) {
-        data.stock = { connect: { id: item.stockId } };
-      }
-      if (item.inventoryItemId) {
-        data.inventoryItem = { connect: { id: item.inventoryItemId } };
-      }
-      if (item.promotionId) {
-        data.promotion = { connect: { id: item.promotionId } };
-      }
-
-      return data;
-    });
+        return {
+          id: item.id,
+          tenantId: sale.tenantId,
+          saleId: sale.id,
+          productId: item.productId,
+          variantId: item.variantId,
+          stockId: resolvedIds.stockId,
+          inventoryItemId: resolvedIds.inventoryItemId,
+          quantity: Math.max(1, Number(item.quantity ?? 1)),
+          priceAtMoment: Number(item.priceAtMoment ?? 0),
+          listPrice: item.listPrice ?? null,
+          discountAmount: Number(item.discountAmount ?? 0),
+          discountReason: item.discountReason ?? null,
+          bundleId: item.bundleId ?? null,
+          promotionId: item.promotionId ?? null,
+          productName: item.productName ?? null,
+          variantCode: item.variantCode ?? null,
+          serialCode: item.serialCode ?? null,
+          isSerial: item.isSerial ?? Boolean(resolvedIds.inventoryItemId),
+          isReturned: item.isReturned ?? false,
+          returnedAt: item.returnedAt ?? null,
+          returnCondition: item.returnCondition ?? null,
+        };
+      }),
+    );
 
     await this.prisma.sale.create({
       data: {
@@ -47,17 +49,56 @@ export class PrismaSaleRepository implements SaleRepository {
         customerId: sale.customerId || null,
         reservationId: sale.reservationId || null,
         totalAmount: sale.totalAmount,
+        subTotal: sale.subTotal || 0,
+        totalDiscount: sale.totalDiscount || 0,
         saleDate: sale.saleDate,
         status: sale.status as SaleStatus,
         amountRefunded: sale.amountRefunded || 0,
         notes: sale.notes || "",
         createdAt: sale.createdAt,
         updatedAt: sale.updatedAt,
-        items: {
-          create: itemsData,
-        },
       },
     });
+
+    if ((this.prisma as any).discountApplied) {
+      await (this.prisma as any).discountApplied.updateMany({
+        where: {
+          operationId: sale.operationId,
+          saleId: null,
+          rentalId: null,
+        },
+        data: {
+          saleId: sale.id,
+        },
+      });
+    }
+
+    if (saleItemData.length > 0) {
+      await this.prisma.saleItem.createMany({
+        data: saleItemData,
+      });
+    }
+
+    if (discountsApplied && discountsApplied.length > 0) {
+      if ((this.prisma as any).discountApplied) {
+        await (this.prisma as any).discountApplied.createMany({
+          data: discountsApplied.map((d) => ({
+            id: d.id,
+            tenantId: sale.tenantId,
+            operationId: sale.operationId,
+            saleId: sale.id,
+            saleItemId: d.saleItemId || null,
+            amount: d.amount,
+            reason: d.reason,
+            promotionId: d.promotionId || null,
+            description: d.description || null,
+            createdAt: d.createdAt || new Date(),
+          })),
+        });
+      } else {
+        console.warn("Prisma warning: discountApplied model not found on client in PrismaSaleRepository.");
+      }
+    }
   }
 
   async getSaleById(id: string): Promise<Sale | undefined> {
@@ -127,5 +168,22 @@ export class PrismaSaleRepository implements SaleRepository {
   // legacy helper if needed
   async updateStatus(id: string, status: SaleStatus): Promise<void> {
     await this.updateSale(id, { status: status as any });
+  }
+
+  private async resolveSaleItemIds(item: SaleItem): Promise<{
+    inventoryItemId: string | null;
+    stockId: string | null;
+  }> {
+    if (item.inventoryItemId || item.stockId) {
+      return {
+        inventoryItemId: item.inventoryItemId ?? null,
+        stockId: item.stockId ?? null,
+      };
+    }
+
+    return {
+      inventoryItemId: null,
+      stockId: null,
+    };
   }
 }

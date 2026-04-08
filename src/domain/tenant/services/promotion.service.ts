@@ -116,6 +116,7 @@ export class PromotionService {
       return {
         ...item,
         unitPrice: price,
+        listPrice: basePrice,
         discountAmount: result.discount || 0,
         appliedPromotionId: result.promotionId,
         discountReason: result.reason ?? undefined,

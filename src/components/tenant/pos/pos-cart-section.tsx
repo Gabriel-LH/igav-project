@@ -62,7 +62,6 @@ export function PosCartSection() {
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
-  
   const [pickupTime, setPickupTime] = React.useState("09:00");
   const [returnTime, setReturnTime] = React.useState("20:00");
 
@@ -132,7 +131,10 @@ export function PosCartSection() {
   const subtotalConPromos = items.reduce((acc, curr) => acc + curr.subtotal, 0);
 
   const pointsConsumed = usePoints
-    ? Math.min(availablePoints, Math.ceil(subtotalConPromos / pointValueInMoney))
+    ? Math.min(
+        availablePoints,
+        Math.ceil(subtotalConPromos / pointValueInMoney),
+      )
     : 0;
   const pointsDiscount = pointsConsumed * pointValueInMoney;
 
@@ -158,7 +160,7 @@ export function PosCartSection() {
   );
 
   const allowStacking = tenantConfig.pricing?.allowDiscountStacking ?? true;
-  const hasItemLevelDiscounts = items.some(i => (i.discountAmount || 0) > 0);
+  const hasItemLevelDiscounts = items.some((i) => (i.discountAmount || 0) > 0);
   const prohibitStacking = !allowStacking && hasItemLevelDiscounts;
 
   // Si no se permite acumular, y ya hay descuentos en items, reseteamos cupon/puntos si estuvieran
@@ -172,7 +174,7 @@ export function PosCartSection() {
   return (
     <div className="flex flex-col h-full bg-background relative">
       {/* 1. HEADER CLIENTE */}
-      <div className="p-3 border-b  flex justify-between items-center">
+      <div className="px-2 py-1 border-b  flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full border bg-amber-50 flex items-center justify-center text-blue-700">
             <ListChecks className="w-5 h-5" />
@@ -195,7 +197,7 @@ export function PosCartSection() {
 
       {/* 2. FECHAS GLOBALES (Solo si hay alquileres) */}
       {hasRentals && (
-        <div className="p-3  border-b space-y-2">
+        <div className="px-2 py-1  border-b space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <div className="relative opacity-60 pointer-events-none grayscale">
               {/* Le ponemos pointer-events-none para que no se pueda clickear */}
@@ -284,7 +286,11 @@ export function PosCartSection() {
               onSelect={setSelectedCustomer}
             />
             {selectedCustomer && availablePoints > 0 && (
-              <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
+              <div
+                className={
+                  prohibitStacking ? "opacity-50 pointer-events-none" : ""
+                }
+              >
                 <UsePointsComponent
                   usePoints={usePoints}
                   setUsePoints={setUsePoints}
@@ -293,7 +299,11 @@ export function PosCartSection() {
                 />
               </div>
             )}
-            <div className={prohibitStacking ? "opacity-50 pointer-events-none" : ""}>
+            <div
+              className={
+                prohibitStacking ? "opacity-50 pointer-events-none" : ""
+              }
+            >
               <UseCouponComponent
                 tenantId={items[0]?.product?.tenantId ?? null}
                 selectedClientId={selectedCustomer?.id}
@@ -305,7 +315,8 @@ export function PosCartSection() {
               <div className="px-2 py-1.5 rounded border border-amber-500/20 bg-amber-500/5 flex items-center gap-2">
                 <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
                 <span className="text-[10px] text-amber-200/70 leading-tight">
-                  No se pueden usar cupones/puntos porque ya hay productos con descuento aplicado.
+                  No se pueden usar cupones/puntos porque ya hay productos con
+                  descuento aplicado.
                 </span>
               </div>
             )}
@@ -360,7 +371,7 @@ export function PosCartSection() {
             </div>
           )}
           {items.some((i) => (i.discountAmount || 0) > 0) && (
-            <div className="flex justify-between text-sm text-emerald-600 font-bold">
+            <div className="flex px-2 justify-between text-sm text-emerald-600 font-bold">
               <span>Descuentos</span>
               <span>
                 -
@@ -383,27 +394,32 @@ export function PosCartSection() {
             </div>
           )}
           {totalDescuentoExtra > 0 && (
-            <div className="flex justify-between text-xs text-emerald-600 font-bold">
+            <div className="flex px-2 justify-between text-xs text-emerald-400">
               <span>Descuento (Puntos/Cupón)</span>
               <span>-{formatCurrency(totalDescuentoExtra)}</span>
             </div>
           )}
-          {tenantConfig.tax?.rate > 0 && (
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>
-                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
-                  ? "Incluye IGV"
-                  : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%)`}
+
+          <div className="flex px-2 -mb-2 justify-between items-end">
+            <span>
+              <span className="text-lg flex flex-col font-semibold">
+                Total a Pagar
               </span>
-              <span>
-                {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
-                  ? formatCurrency(taxTotals.taxAmount)
-                  : formatCurrency(taxTotals.taxAmount)}
-              </span>
-            </div>
-          )}
-          <div className="flex justify-between items-end">
-            <span className="text-lg font-semibold">Total a Pagar</span>
+              {tenantConfig.tax?.rate > 0 && (
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>
+                    {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                      ? "Incluye IGV"
+                      : `IGV (${Math.round(tenantConfig.tax.rate * 100)}%)`}
+                  </span>
+                  <span>
+                    {tenantConfig.tax.calculationMode === "TAX_INCLUDED"
+                      ? formatCurrency(taxTotals.taxAmount)
+                      : formatCurrency(taxTotals.taxAmount)}
+                  </span>
+                </div>
+              )}
+            </span>
             <span className="text-2xl font-semibold text-green-600 tracking-tight">
               {formatCurrency(taxTotals.total)}
             </span>
@@ -416,7 +432,7 @@ export function PosCartSection() {
         </div>
 
         {/* --- BOTONES DE ACCIÓN --- */}
-        <div className="grid grid-cols-4 gap-2 h-12">
+        <div className="grid px-2 grid-cols-2 gap-2 h-10">
           <FeatureGuard feature="reservations">
             <Button
               className="col-span-1 h-10 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
@@ -431,7 +447,7 @@ export function PosCartSection() {
           {hasRentals ? (
             <FeatureGuard feature="rentals">
               <Button
-                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg bg-blue-600 hover:bg-blue-700"
+                className="col-span-3 h-8 text-lg text-white font-bold shadow-lg bg-blue-600 hover:bg-blue-700"
                 onClick={() => setCheckoutOpen(true)}
                 disabled={items.length === 0 || text.length > 0}
               >
@@ -441,7 +457,7 @@ export function PosCartSection() {
           ) : (
             <FeatureGuard feature="sales">
               <Button
-                className="col-span-3 h-10 text-lg text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
+                className="col-span-3 h-8 text-lg text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
                 onClick={() => setCheckoutOpen(true)}
                 disabled={items.length === 0}
               >

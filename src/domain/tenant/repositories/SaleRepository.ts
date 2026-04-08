@@ -2,7 +2,7 @@ import { Sale } from "../../../types/sales/type.sale";
 import { SaleItem } from "../../../types/sales/type.saleItem";
 
 export interface SaleRepository {
-  addSale(sale: Sale, saleItems: SaleItem[]): Promise<void>;
+  addSale(sale: Sale, saleItems: SaleItem[], discountsApplied?: any[]): Promise<void>;
   getSaleById(id: string): Promise<Sale | undefined>;
   getSaleWithItems(id: string): Promise<{ items: SaleItem[] } & Sale>;
   getSaleByOperationId(operationId: string): Promise<Sale | undefined>;

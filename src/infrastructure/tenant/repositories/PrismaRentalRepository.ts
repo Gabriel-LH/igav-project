@@ -8,7 +8,7 @@ export class PrismaRentalRepository implements RentalRepository {
     private readonly prisma: PrismaClient | Prisma.TransactionClient,
   ) {}
 
-  async addRental(rental: Rental, rentalItems: RentalItem[]): Promise<void> {
+  async addRental(rental: Rental, rentalItems: RentalItem[], discountsApplied?: any[]): Promise<void> {
     const rentalItemData = await Promise.all(
       rentalItems.map(async (item) => {
         const resolvedIds = await this.resolveRentalItemIds(item);
@@ -50,12 +50,49 @@ export class PrismaRentalRepository implements RentalRepository {
         outDate: rental.outDate,
         expectedReturnDate: rental.expectedReturnDate,
         actualReturnDate: rental.actualReturnDate,
+        subTotal: (rental as any).subTotal || 0,
+        totalDiscount: (rental as any).totalDiscount || 0,
         status: rental.status as RentalStatus,
         notes: rental.notes || "",
         createdAt: rental.createdAt,
         updatedAt: rental.updatedAt,
       },
     });
+
+    if ((this.prisma as any).discountApplied) {
+      await (this.prisma as any).discountApplied.updateMany({
+        where: {
+          operationId: rental.operationId,
+          rentalId: null,
+          saleId: null,
+        },
+        data: {
+          rentalId: rental.id,
+        },
+      });
+    }
+
+    if (discountsApplied && discountsApplied.length > 0) {
+      if ((this.prisma as any).discountApplied) {
+        await (this.prisma as any).discountApplied.createMany({
+          data: discountsApplied.map(d => ({
+            id: d.id,
+            tenantId: rental.tenantId,
+            operationId: rental.operationId,
+            rentalId: rental.id,
+            amount: d.amount,
+            reason: d.reason,
+            promotionId: d.promotionId || null,
+            description: d.description || null,
+            rentalItemId: d.rentalItemId || null,
+            createdAt: d.createdAt || new Date(),
+          })),
+        });
+      } else {
+        console.warn("Prisma warning: discountApplied model not found on client in PrismaRentalRepository.");
+      }
+    }
+
 
     if (rentalItemData.length > 0) {
       await this.prisma.rentalItem.createMany({

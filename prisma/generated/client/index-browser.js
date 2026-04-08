@@ -871,6 +871,8 @@ exports.Prisma.RentalScalarFieldEnum = {
   cancelDate: 'cancelDate',
   status: 'status',
   guaranteeId: 'guaranteeId',
+  subTotal: 'subTotal',
+  totalDiscount: 'totalDiscount',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -1096,6 +1098,21 @@ exports.Prisma.SaleItemStatusHistoryScalarFieldEnum = {
   changedBy: 'changedBy',
   createdAt: 'createdAt',
   createdBy: 'createdBy'
+};
+
+exports.Prisma.DiscountAppliedScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  operationId: 'operationId',
+  saleId: 'saleId',
+  rentalId: 'rentalId',
+  saleItemId: 'saleItemId',
+  rentalItemId: 'rentalItemId',
+  amount: 'amount',
+  reason: 'reason',
+  promotionId: 'promotionId',
+  description: 'description',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ShiftScalarFieldEnum = {
@@ -1899,6 +1916,7 @@ exports.Prisma.ModelName = {
   SaleReversal: 'SaleReversal',
   ReversalItem: 'ReversalItem',
   SaleItemStatusHistory: 'SaleItemStatusHistory',
+  DiscountApplied: 'DiscountApplied',
   Shift: 'Shift',
   Tenant: 'Tenant',
   TenantConfig: 'TenantConfig',
