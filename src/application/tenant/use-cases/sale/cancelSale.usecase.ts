@@ -104,6 +104,23 @@ export class CancelSaleUseCase {
       updatedBy: userId,
     });
 
+    await this.saleRepo.addSaleItemStatusHistory(
+      saleWithItems.items.map((item) => ({
+        tenantId: sale.tenantId,
+        saleItemId: item.id,
+        fromStatus:
+          sale.status === "vendido_pendiente_entrega"
+            ? "vendido_pendiente_entrega"
+            : item.isReturned
+              ? "devuelto"
+              : "vendido",
+        toStatus: "cancelado",
+        reason: reason || "SALE_CANCELLED",
+        changedBy: userId,
+        createdAt: new Date(),
+      })),
+    );
+
     const payments = await this.paymentRepo.getPaymentsByOperationId(
       sale.operationId,
     );

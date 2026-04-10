@@ -385,7 +385,7 @@ export function PosProductCard({
                     <span>Vender</span>
                     <Badge
                       variant="outline"
-                      className="text-[9px] h-4 px-1 bg-white/50 text-emerald-700"
+                      className="text-[9px] h-4 px-1 bg-white/80 text-emerald-900"
                     >
                       {remainingForSale} disp.
                     </Badge>
@@ -421,7 +421,7 @@ export function PosProductCard({
                     <span>Alquilar</span>
                     <Badge
                       variant="outline"
-                      className="text-[9px] h-4 px-1 bg-white/50 text-blue-700"
+                      className="text-[9px] h-4 px-1 bg-white/80 text-blue-700"
                     >
                       {remainingForRent} disp.
                     </Badge>

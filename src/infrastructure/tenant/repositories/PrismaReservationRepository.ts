@@ -26,7 +26,7 @@ export class PrismaReservationRepository implements ReservationRepository {
         endDate: reservation.endDate,
         hour: reservation.hour,
         status: reservation.status as any,
-        // notes: reservation.notes || "", // Doesn't exist in Reservation model
+        notes: reservation.notes || "",
         createdAt: reservation.createdAt,
         updatedAt: reservation.updatedAt,
         items: {
@@ -39,14 +39,41 @@ export class PrismaReservationRepository implements ReservationRepository {
             stockId: item.stockId || null,
             quantity: item.quantity || 1,
             priceAtMoment: item.priceAtMoment,
-            discountAmount: item.discountAmount,
-            discountReason: item.discountReason,
+            listPrice: item.listPrice ?? null,
+            discountAmount: item.discountAmount ?? 0,
+            discountReason: item.discountReason ?? null,
+            promotionId: item.promotionId ?? null,
+            bundleId: item.bundleId ?? null,
             itemStatus: item.itemStatus as any,
             notes: item.notes || "",
+            isSerial: item.isSerial ?? false,
+            inventoryItemId: item.inventoryItemId || null,
           })),
         },
       },
     });
+
+    await this.addReservationStatusHistory({
+      tenantId: reservation.tenantId,
+      reservationId: reservation.id,
+      fromStatus: reservation.status,
+      toStatus: reservation.status,
+      reason: "CREATED",
+      createdAt: reservation.createdAt,
+    });
+
+    if (reservationItems.length > 0) {
+      await this.addReservationItemStatusHistory(
+        reservationItems.map((item) => ({
+          tenantId: item.tenantId || reservation.tenantId,
+          reservationItemId: item.id,
+          fromStatus: item.itemStatus,
+          toStatus: item.itemStatus,
+          reason: "CREATED",
+          createdAt: item.createdAt || reservation.createdAt,
+        })),
+      );
+    }
   }
 
   async getReservations(): Promise<Reservation[]> {
@@ -127,5 +154,53 @@ export class PrismaReservationRepository implements ReservationRepository {
 
   async cancelReservation(id: string): Promise<void> {
     await this.updateStatus(id, "cancelada", "cancelada");
+  }
+
+  private async addReservationStatusHistory(entry: {
+    tenantId: string;
+    reservationId: string;
+    fromStatus: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: Date;
+  }): Promise<void> {
+    await (this.prisma as any).reservationStatusHistory.create({
+      data: {
+        id: crypto.randomUUID(),
+        tenantId: entry.tenantId,
+        reservationId: entry.reservationId,
+        fromStatus: entry.fromStatus,
+        toStatus: entry.toStatus,
+        reason: entry.reason ?? null,
+        changedBy: entry.changedBy ?? null,
+        createdAt: entry.createdAt ?? new Date(),
+      },
+    });
+  }
+
+  private async addReservationItemStatusHistory(entries: Array<{
+    tenantId: string;
+    reservationItemId: string;
+    fromStatus: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: Date;
+  }>): Promise<void> {
+    if (!entries.length) return;
+
+    await (this.prisma as any).reservationItemStatusHistory.createMany({
+      data: entries.map((entry) => ({
+        id: crypto.randomUUID(),
+        tenantId: entry.tenantId,
+        reservationItemId: entry.reservationItemId,
+        fromStatus: entry.fromStatus,
+        toStatus: entry.toStatus,
+        reason: entry.reason ?? null,
+        changedBy: entry.changedBy ?? null,
+        createdAt: entry.createdAt ?? new Date(),
+      })),
+    });
   }
 }

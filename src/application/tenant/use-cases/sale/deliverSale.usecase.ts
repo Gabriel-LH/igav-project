@@ -55,6 +55,18 @@ export class DeliverSaleUseCase {
       updatedBy: userId,
     });
 
+    await this.saleRepo.addSaleItemStatusHistory(
+      saleItems.map((item) => ({
+        tenantId: sale.tenantId,
+        saleItemId: item.id,
+        fromStatus: "vendido_pendiente_entrega",
+        toStatus: "vendido",
+        reason: "DELIVERED",
+        changedBy: userId,
+        createdAt: now,
+      })),
+    );
+
     if (sale.reservationId) {
       await this.reservationRepo.updateStatus(
         sale.reservationId,

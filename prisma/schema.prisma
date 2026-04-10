@@ -1238,6 +1238,7 @@ model Reservation {
   createdBy     String?
   updatedAt     DateTime          @updatedAt
   updatedBy     String?
+  notes         String?           @db.Text
   deletedAt     DateTime?
   status        ReservationStatus
   operationType OperationType

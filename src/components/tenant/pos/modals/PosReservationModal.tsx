@@ -9,34 +9,29 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { ShoppingBag, Calendar, BookmarkPlus, Info } from "lucide-react";
+import { Calendar02Icon, ShoppingBag01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useScrollIndicator } from "@/src/utils/scroll/useScrollIndicator";
+import { processTransactionAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
+import { getAvailablePaymentMethodsAction } from "@/src/app/(tenant)/tenant/actions/payment-method.actions";
+import { authClient } from "@/src/lib/auth-client";
 
-import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
-import { processTransactionAction, reserveBundlesAction } from "@/src/app/(tenant)/tenant/actions/transaction.actions";
-import { useSessionStore } from "@/src/store/useSessionStore";
+import { useCartStore } from "@/src/store/useCartStore";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ReservationDTO } from "@/src/application/dtos/ReservationDTO";
-import { DirectTransactionCalendar } from "@/src/components/tenant/home/ui/direct-transaction/DirectTransactionCalendar";
+import { addDays, startOfDay, endOfDay } from "date-fns";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarDays, ShoppingBag } from "lucide-react";
+import { PriceSummary } from "@/src/components/tenant/home/ui/reservation/PriceSummary";
+import { DateRangePickerContainer } from "@/src/components/tenant/home/ui/reservation/DateRangePickerContainer";
+import { DateTimeContainer } from "@/src/components/tenant/home/ui/direct-transaction/DataTimeContainer";
+import { ReservationCalendar } from "@/src/components/tenant/home/ui/reservation/ReservationCalendar";
 import { TimePicker } from "@/src/components/tenant/home/ui/direct-transaction/TimePicker";
-import { addDays } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/select";
-import { Banknote, CreditCard, Smartphone } from "lucide-react";
-import { Client } from "@/src/types/clients/type.client";
-import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvailability";
-import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 
 interface PosReservationModalProps {
   open: boolean;
@@ -47,421 +42,360 @@ export function PosReservationModal({
   open,
   onOpenChange,
 }: PosReservationModalProps) {
-  const { items, clearCart, activeTenantId } = useCartStore();
+  const { items, clearCart } = useCartStore();
   const { productVariants } = useInventoryStore();
-  const { policy } = useTenantConfigStore();
 
-  const user = useSessionStore((state) => state.user);
   const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
+  const scrollRef = useScrollIndicator();
 
-  const sellerId = user?.id || "";
+  const { data: session } = authClient.useSession();
+  const sellerId = session?.user?.id || "";
   const currentBranchId = selectedBranchId || "";
 
-  // ─── ESTADOS ───
-  const [selectedCustomer, setSelectedCustomer] = React.useState<Client | null>(
-    null,
-  );
+  // ─── ESTADOS (Iguales al Home) ───
+  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [notes, setNotes] = React.useState("");
+  const [operationType, setOperationType] = React.useState<"alquiler" | "venta">("alquiler");
 
-  // Fechas
-  const [pickupDate, setPickupDate] = React.useState<Date | undefined>(new Date());
-  const [returnDate, setReturnDate] = React.useState<Date | undefined>(addDays(new Date(), 3));
-  
-  const [pickupTime, setPickupTime] = React.useState("08:00");
-  const [returnTime, setReturnTime] = React.useState("18:00");
+  // Fechas y Tiempos
+  const [dateRange, setDateRange] = React.useState<any>({
+    from: new Date(),
+    to: addDays(new Date(), 3),
+  });
+  const [pickupTime, setPickupTime] = React.useState("09:00");
+  const [returnTime, setReturnTime] = React.useState("19:00");
 
-  // Financieros
+  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
+  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
+  const returnTimeRef = React.useRef<HTMLButtonElement>(null);
+
+  // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
-  const [paymentMethod, setPaymentMethod] = React.useState<
-    "cash" | "card" | "transfer" | "yape" | "plin"
-  >("cash");
+  const [amountPaid, setAmountPaid] = React.useState("");
+  const [keepAsCredit, setKeepAsCredit] = React.useState(false);
+  const [paymentMethods, setPaymentMethods] = React.useState<any[]>([]);
+  const [paymentMethodId, setPaymentMethodId] = React.useState("");
 
-  // ─── CALCULOS GLOBALES ───
-  const ventaItems = useMemo(
-    () => items.filter((i) => i.operationType === "venta"),
-    [items],
-  );
-  const alquilerItems = useMemo(
-    () => items.filter((i) => i.operationType === "alquiler"),
-    [items],
-  );
-
-  const hasSales = ventaItems.length > 0;
+  const alquilerItems = useMemo(() => items.filter(i => i.operationType === "alquiler"), [items]);
+  const ventaItems = useMemo(() => items.filter(i => i.operationType === "venta"), [items]);
   const hasRentals = alquilerItems.length > 0;
+  const hasSales = ventaItems.length > 0;
 
-  const totalVentas = useMemo(
-    () => ventaItems.reduce((acc, i) => acc + i.subtotal, 0),
-    [ventaItems],
-  );
-  const totalAlquileres = useMemo(
-    () => alquilerItems.reduce((acc, i) => acc + i.subtotal, 0),
-    [alquilerItems],
-  );
-  const totalOperacion = useMemo(
-    () => items.reduce((acc, i) => acc + i.subtotal, 0),
-    [items],
-  );
+  const totalOperacion = useMemo(() => items.reduce((acc, i) => acc + i.subtotal, 0), [items]);
+  const totalAlquileres = useMemo(() => alquilerItems.reduce((acc, i) => acc + i.subtotal, 0), [alquilerItems]);
+  const totalVentas = useMemo(() => ventaItems.reduce((acc, i) => acc + i.subtotal, 0), [ventaItems]);
 
-  // ─── CALCULOS DE POLITICA ───
-  const minRequiredDP = useMemo(() => {
-    if (!policy?.reservations.requireDownPayment) return 0;
-    const percentage = policy.reservations.minDownPaymentPercentage || 0;
-    return (totalOperacion * percentage) / 100;
-  }, [policy, totalOperacion]);
+  React.useEffect(() => {
+    if (hasRentals && !hasSales && operationType !== "alquiler") {
+      setOperationType("alquiler");
+    } else if (hasSales && !hasRentals && operationType !== "venta") {
+      setOperationType("venta");
+    }
+  }, [hasRentals, hasSales, operationType]);
 
-  const isDPValid = useMemo(() => {
-    if (!policy?.reservations.requireDownPayment) return true;
-    const amount = parseFloat(downPayment) || 0;
-    return amount >= minRequiredDP;
-  }, [downPayment, minRequiredDP, policy]);
-
-  // ─── VALIDACIONES ───
-  const buildReservationItems = (type: "venta" | "alquiler") => {
-    const list = type === "venta" ? ventaItems : alquilerItems;
-    if (list.length === 0) return null;
-
-    return list.map((item) => {
-      const variant = productVariants.find((v) => v.id === item.variantId);
-
-      // Disponibilidad para alquiler
-      if (type === "alquiler" && pickupDate && returnDate) {
-        const check = getAvailabilityByAttributes(
-          item.product.id,
-          item.variantId || "",
-          pickupDate,
-          returnDate,
-          "alquiler",
-        );
-        if (check.availableCount < item.quantity) {
-          toast.error(
-            `No hay disponibilidad para ${item.product.name} (${variant?.variantSignature || "N/A"}). Requerido: ${item.quantity}, Disponible: ${check.availableCount}`,
-          );
-          throw new Error("Disponibilidad insuficiente");
-        }
+  React.useEffect(() => {
+    const loadPaymentMethods = async () => {
+      const result = await getAvailablePaymentMethodsAction();
+      if (result.success && result.data) {
+        setPaymentMethods(result.data);
+        if (!paymentMethodId) setPaymentMethodId(result.data[0]?.id || "");
       }
+    };
+    if (open) loadPaymentMethods();
+  }, [open, paymentMethodId]);
 
-      return {
-        productId: item.product.id,
-        productName: item.product.name,
-        stockId: item.variantId || "", // Usamos variantId como fallback de stockId en la fase de reserva
-        quantity: item.quantity,
-        variantId: item.variantId || "",
-        priceAtMoment: item.unitPrice,
-        listPrice: item.listPrice,
-        discountAmount: item.discountAmount,
-        discountReason: item.discountReason,
-        promotionId: item.appliedPromotionId,
-        bundleId: item.bundleId,
-      };
-    });
-  };
+  const handleConfirm = async () => {
+    if (!selectedCustomer || !dateRange?.from) return toast.error("Faltan datos obligatorios");
 
-  const handleCreateReservation = async () => {
-    if (!selectedCustomer) {
-      toast.error("Seleccione un cliente");
-      return;
-    }
-
-    if (hasRentals && (!pickupDate || !returnDate)) {
-      toast.error("Seleccione las fechas de alquiler");
-      return;
-    }
-
-    const totalDP = parseFloat(downPayment) || 0;
-
-    // Validación de política de adelanto
-    if (policy?.reservations.requireDownPayment && totalDP < minRequiredDP) {
-      toast.error(
-        `El adelanto mínimo es ${formatCurrency(minRequiredDP)} (${policy.reservations.minDownPaymentPercentage}%)`,
-      );
-      return;
-    }
-
-    // ─── BUNDLES LOCKER ───
-    if (items.some((item) => item.bundleId)) {
-      const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
-      if (!tenantId) throw new Error("Tenant no resuelto para bundle");
-
-      const res = await reserveBundlesAction(
-        items,
-        tenantId,
-        currentBranchId,
-        pickupDate || new Date(),
-        returnDate || addDays(new Date(), 3),
-      );
-
-      if (!res.success) throw new Error(res.error);
-    }
-
-    const tenantId = activeTenantId ?? items[0]?.product?.tenantId;
-    if (!tenantId) throw new Error("Tenant no resuelto");
-
-    if (hasSales && hasRentals) {
-      const saleShare = totalVentas / totalOperacion;
+    try {
+      const totalDP = parseFloat(downPayment) || 0;
+      const saleShare = totalOperacion > 0 ? totalVentas / totalOperacion : 0;
       const saleDP = Math.round(totalDP * saleShare * 100) / 100;
       const rentalDP = Math.round((totalDP - saleDP) * 100) / 100;
 
-      const saleItems = buildReservationItems("venta");
-      if (!saleItems) return;
-      const saleDTO: any = {
-        id: crypto.randomUUID(),
-        operationId: crypto.randomUUID(),
-        tenantId,
-        branchId: currentBranchId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        type: "reserva",
-        operationType: "venta",
-        customerId: selectedCustomer.id,
-        status: "confirmada",
-        notes: notes + " (Parte de operacion mixta)",
-        items: saleItems,
-        reservationDateRange: {
-          from: new Date(),
-          to: new Date(),
-          hourFrom: "00:00",
-        },
-        financials: {
-          subtotal: totalVentas,
-          totalDiscount: 0,
-          totalAmount: totalVentas,
-          receivedAmount: saleDP,
-          paymentMethod,
-        },
-        sellerId,
-      };
-
-      const rentalItems = buildReservationItems("alquiler");
-      if (!rentalItems) return;
-      const rentalDTO: any = {
-        id: crypto.randomUUID(),
-        operationId: crypto.randomUUID(),
-        tenantId,
-        branchId: currentBranchId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        type: "reserva",
-        operationType: "alquiler",
-        customerId: selectedCustomer.id,
-        status: "confirmada",
-        notes: notes + " (Parte de operacion mixta)",
-        items: rentalItems,
-        reservationDateRange: {
-          from: pickupDate,
-          to: returnDate,
-          hourFrom: pickupTime,
-        },
-        financials: {
-          subtotal: totalAlquileres,
-          totalDiscount: 0,
-          totalAmount: totalAlquileres,
-          receivedAmount: rentalDP,
-          paymentMethod,
-        },
-        sellerId,
-      };
-
-      try {
-        const resSell = await processTransactionAction(saleDTO);
-        if (!resSell.success) throw new Error(resSell.error);
-        const resRent = await processTransactionAction(rentalDTO);
-        if (!resRent.success) throw new Error(resRent.error);
-        toast.success(`Dos reservas creadas (Venta + Alquiler)`);
-      } catch (err: any) {
-        toast.error("Error: " + err.message);
+      if (hasSales) {
+        const saleDTO: any = {
+          branchId: currentBranchId,
+          type: "reserva",
+          operationType: "venta",
+          customerId: selectedCustomer.id,
+          sellerId,
+          notes: notes + (hasRentals ? " (Parte de operación mixta)" : ""),
+          financials: {
+            totalAmount: totalVentas,
+            downPayment: saleDP,
+            receivedAmount: saleDP,
+            paymentMethod: paymentMethodId,
+          },
+          reservationDateRange: {
+            from: startOfDay(dateRange.from),
+            to: endOfDay(dateRange.from),
+            hourFrom: pickupTime,
+          },
+          items: ventaItems.map(i => ({
+            productId: i.product.id,
+            productName: i.product.name,
+            variantId: i.variantId,
+            quantity: i.quantity,
+            priceAtMoment: i.unitPrice,
+            subtotal: i.subtotal,
+          })),
+        };
+        const res = await processTransactionAction(saleDTO);
+        if (!res.success) throw new Error(res.error);
       }
-    } else {
-      const opType = hasSales ? "venta" : "alquiler";
-      const resItems = buildReservationItems(opType);
-      if (!resItems) return;
 
-      const newReservation: any = {
-        id: crypto.randomUUID(),
-        operationId: crypto.randomUUID(),
-        tenantId,
-        branchId: currentBranchId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        type: "reserva",
-        operationType: opType,
-        customerId: selectedCustomer.id,
-        status: "confirmada",
-        notes,
-        items: resItems,
-        reservationDateRange: {
-          from: opType === "alquiler" ? pickupDate : new Date(),
-          to: opType === "alquiler" ? returnDate : new Date(),
-          hourFrom: opType === "alquiler" ? pickupTime : "00:00",
-        },
-        financials: {
-          subtotal: totalOperacion,
-          totalDiscount: 0,
-          totalAmount: totalOperacion,
-          receivedAmount: totalDP,
-          paymentMethod,
-        },
-        sellerId,
-      };
-
-      try {
-        const result = await processTransactionAction(newReservation);
-        if (!result.success) throw new Error(result.error);
-        toast.success(
-          `Reserva de ${opType} creada. Adelanto: ${formatCurrency(totalDP)}`,
-        );
-      } catch (err: any) {
-        toast.error("Error: " + err.message);
+      if (hasRentals) {
+        const rentalDTO: any = {
+          branchId: currentBranchId,
+          type: "reserva",
+          operationType: "alquiler",
+          customerId: selectedCustomer.id,
+          sellerId,
+          notes: notes + (hasSales ? " (Parte de operación mixta)" : ""),
+          financials: {
+            totalAmount: totalAlquileres,
+            downPayment: rentalDP,
+            receivedAmount: rentalDP,
+            paymentMethod: paymentMethodId,
+          },
+          reservationDateRange: {
+            from: startOfDay(dateRange.from),
+            to: endOfDay(dateRange.to || dateRange.from),
+            hourFrom: pickupTime,
+          },
+          items: alquilerItems.map(i => ({
+            productId: i.product.id,
+            productName: i.product.name,
+            variantId: i.variantId,
+            quantity: i.quantity,
+            priceAtMoment: i.unitPrice,
+            subtotal: i.subtotal,
+          })),
+        };
+        const res = await processTransactionAction(rentalDTO);
+        if (!res.success) throw new Error(res.error);
       }
+
+      toast.success("Reserva creada con éxito");
+      clearCart();
+      onOpenChange(false);
+    } catch (err: any) {
+      toast.error(err.message || "Error al crear la reserva");
     }
-
-    clearCart();
-    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BookmarkPlus className="w-5 h-5 text-primary" /> Reserva Profesional
+      <DialogContent className="max-w-lg max-h-dvh sm:max-h-[90vh] flex flex-col p-4 sm:p-6 overflow-hidden">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="uppercase text-sm font-black flex items-center gap-2">
+            {operationType === "alquiler" ? (
+              <span className="flex items-center gap-2 text-blue-500">
+                <HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
+                Reserva de Alquiler
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 text-orange-500">
+                <HugeiconsIcon icon={ShoppingBag01Icon} strokeWidth={2} />
+                Reserva de Venta
+              </span>
+            )}
           </DialogTitle>
-          <DialogDescription>
-            Configure fechas y adelanto para la reserva del cliente.
+          <DialogDescription className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
+            Gestión de Reserva POS • Bolsa ({items.length} ítems)
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-          <div className="space-y-4">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-1 custom-scrollbar space-y-6 pb-6"
+        >
+          {/* SELECTOR DE MODO (Solo si es mixto) */}
+          {hasSales && hasRentals && (
+            <Tabs
+              value={operationType}
+              onValueChange={(val: any) => setOperationType(val)}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2 bg-muted/30 border rounded-2xl p-1 h-11">
+                <TabsTrigger
+                  value="alquiler"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-xl flex gap-1 items-center font-bold text-xs"
+                >
+                  <CalendarDays className="w-3.5 h-3.5" /> Alquiler
+                </TabsTrigger>
+                <TabsTrigger
+                  value="venta"
+                  className="data-[state=active]:bg-orange-600 data-[state=active]:text-white rounded-xl flex gap-1 items-center font-bold text-xs"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" /> Venta
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+
+          {/* LISTA DE ITEMS (Adaptación del bloque de info original) */}
+          <div className="space-y-3">
+            <Label className="text-[10px] uppercase font-black opacity-50 ml-1">Bolsa de Productos</Label>
             <div className="space-y-2">
-              <Label>Cliente</Label>
-              <CustomerSelector
-                selected={selectedCustomer}
-                onSelect={(c: any) => setSelectedCustomer(c)}
-              />
-            </div>
-
-            {hasRentals && (
-              <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
-                <h4 className="flex items-center gap-2 text-sm font-semibold">
-                  <Calendar className="w-4 h-4" /> Fechas de Alquiler
-                </h4>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs">Fecha Recojo</Label>
-                    <DirectTransactionCalendar
-                      selectedDate={pickupDate}
-                      onSelect={(d) => setPickupDate(d)}
-                      mode="pickup"
-                    />
+              {items.map((item, idx) => {
+                const variant = productVariants.find(v => v.id === item.variantId);
+                return (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl border border-muted/50 transition-colors hover:bg-muted/50">
+                    <div className="w-10 h-10 rounded-lg border bg-white flex items-center justify-center font-bold text-[10px] uppercase text-primary shrink-0 shadow-sm">
+                      {variant?.attributes?.size || "S/T"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-bold uppercase truncate">{item.product.name}</h4>
+                      <p className="text-[9px] text-muted-foreground font-medium opacity-70">
+                        {item.operationType === "alquiler" ? "Alquiler" : "Venta"} | Cant: {item.quantity}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-black tabular-nums">{formatCurrency(item.subtotal)}</span>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Hora Recojo</Label>
-                    <TimePicker value={pickupTime} onChange={setPickupTime} />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CALENDARIO Y TIEMPO (Diseño idéntico al Home) */}
+          <div className="relative">
+            {operationType === "alquiler" ? (
+              <div className="relative">
+                <DateRangePickerContainer
+                  label="Periodo de Alquiler y Horas"
+                  fromDate={dateRange?.from}
+                  toDate={dateRange?.to}
+                  fromTime={pickupTime}
+                  toTime={returnTime}
+                  onDateClick={() => pickupDateRef.current?.click()}
+                  onFromTimeClick={() => pickupTimeRef.current?.click()}
+                  onToTimeClick={() => returnTimeRef.current?.click()}
+                />
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                  <ReservationCalendar
+                    triggerRef={pickupDateRef}
+                    mode="range"
+                    originBranchId={currentBranchId}
+                    currentBranchId={currentBranchId}
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    rules={null}
+                    productId={items[0]?.product.id}
+                    variantId={items[0]?.variantId}
+                    quantity={1}
+                    type="alquiler"
+                  />
+                  <div className="absolute left-0 bottom-0 w-1/2 h-1/2">
+                    <TimePicker triggerRef={pickupTimeRef} value={pickupTime} onChange={setPickupTime} />
+                  </div>
+                  <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
+                    <TimePicker triggerRef={returnTimeRef} value={returnTime} onChange={setReturnTime} />
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs">Fecha Devolución</Label>
-                    <DirectTransactionCalendar
-                      selectedDate={returnDate}
-                      onSelect={setReturnDate}
-                      mode="return"
-                      minDate={pickupDate}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Hora Devolución</Label>
-                    <TimePicker value={returnTime} onChange={setReturnTime} />
+              </div>
+            ) : (
+              <div className="relative">
+                <DateTimeContainer
+                  label="Fecha de Entrega"
+                  date={dateRange?.from}
+                  time={pickupTime}
+                  onDateClick={() => pickupDateRef.current?.click()}
+                  onTimeClick={() => pickupTimeRef.current?.click()}
+                  placeholderDate="Seleccionar fecha"
+                  placeholderTime="Seleccionar hora"
+                />
+                <div className="absolute inset-0 pointer-events-none">
+                  <ReservationCalendar
+                    triggerRef={pickupDateRef}
+                    mode="single"
+                    originBranchId={currentBranchId}
+                    currentBranchId={currentBranchId}
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    rules={null}
+                    productId={items[0]?.product.id}
+                    variantId={items[0]?.variantId}
+                    type="venta"
+                  />
+                  <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
+                    <TimePicker triggerRef={pickupTimeRef} value={pickupTime} onChange={setPickupTime} />
                   </div>
                 </div>
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label>Notas</Label>
-              <Input
-                placeholder="Ej: Pendiente confirmar talla..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4 bg-primary/5">
-              <h4 className="flex items-center gap-2 text-sm font-semibold mb-3">
-                <ShoppingBag className="w-4 h-4" /> Resumen
-              </h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total Operación:</span>
-                  <span>{formatCurrency(totalOperacion)}</span>
-                </div>
-                <Separator className="my-2" />
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  {hasSales && <p>Ventas: {formatCurrency(totalVentas)}</p>}
-                  {hasRentals && (
-                    <p>Alquileres: {formatCurrency(totalAlquileres)}</p>
-                  )}
-                </div>
-              </div>
-            </div>
+          {/* CLIENTE */}
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase font-black opacity-50 ml-1 tracking-wider">Cliente Responsable</Label>
+            <CustomerSelector
+              selected={selectedCustomer}
+              onSelect={setSelectedCustomer}
+            />
+          </div>
 
-            <div className="space-y-4 border rounded-lg p-4">
-              <div className="flex justify-between items-center">
-                <h4 className="text-sm font-semibold">Adelanto</h4>
-                {policy?.reservations.requireDownPayment && (
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full ${isDPValid ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700 font-medium"}`}
-                  >
-                    Mínimo: {formatCurrency(minRequiredDP)} (
-                    {policy.reservations.minDownPaymentPercentage}%)
-                  </span>
-                )}
-              </div>
-              <Input
-                type="number"
-                placeholder="0.00"
-                className={
-                  !isDPValid && policy?.reservations.requireDownPayment
-                    ? "border-orange-500 focus-visible:ring-orange-500"
-                    : ""
-                }
-                value={downPayment}
-                onChange={(e) => setDownPayment(e.target.value)}
-              />
+          {/* NOTAS */}
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase font-black opacity-50 ml-1 tracking-wider">Notas de Reserva</Label>
+            <Textarea
+              placeholder="Ej: El cliente solicita ajuste especial..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="rounded-xl min-h-[80px]"
+            />
+          </div>
 
-              <Label className="text-xs">Método</Label>
-              <Select
-                value={paymentMethod}
-                onValueChange={(v: any) => setPaymentMethod(v)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Efectivo</SelectItem>
-                  <SelectItem value="card">Tarjeta</SelectItem>
-                  <SelectItem value="transfer">Transferencia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* RESUMEN FINANCIERO (Premium PriceSummary) */}
+          <div className="pt-2">
+            {(() => {
+              const currentItems = operationType === "alquiler" ? alquilerItems : ventaItems;
+              const totalQty = currentItems.reduce((acc, i) => acc + i.quantity, 0);
+              const totalAmount = currentItems.reduce((acc, i) => acc + i.subtotal, 0);
+              const effectivePrice = totalQty > 0 ? totalAmount / totalQty : 0;
 
-            <Button
-              className="w-full h-12"
-              disabled={
-                !selectedCustomer ||
-                (policy?.reservations.requireDownPayment && !isDPValid)
-              }
-              onClick={handleCreateReservation}
-            >
-              Procesar Reserva
-            </Button>
+              return (
+                <PriceSummary
+                  item={items[0]?.product} 
+                  operationType={operationType}
+                  startDate={dateRange?.from || new Date()}
+                  endDate={dateRange?.to || dateRange?.from || new Date()}
+                  priceSell={operationType === "venta" ? effectivePrice : 0}
+                  priceRent={operationType === "alquiler" ? effectivePrice : 0}
+                  quantity={totalQty}
+                  downPayment={downPayment}
+                  setDownPayment={setDownPayment}
+                  amountPaid={amountPaid}
+                  setAmountPaid={setAmountPaid}
+                  keepAsCredit={keepAsCredit}
+                  setKeepAsCredit={setKeepAsCredit}
+                  paymentMethodId={paymentMethodId}
+                  setPaymentMethodId={setPaymentMethodId}
+                  paymentMethods={paymentMethods}
+                  isCashPayment={paymentMethods.find(m => m.id === paymentMethodId)?.type === "cash"}
+                />
+              );
+            })()}
           </div>
         </div>
 
+        {/* ACCIÓN (Estilo Home) */}
+        <div className="pt-4 border-t">
+          <Button
+            onClick={handleConfirm}
+            className={`w-full h-12 font-black uppercase tracking-[0.2em] rounded-xl shadow-lg transition-all active:scale-95 ${
+              operationType === "alquiler"
+                ? "bg-linear-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white"
+                : "bg-linear-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white"
+            }`}
+            disabled={!selectedCustomer || items.length === 0}
+          >
+            CONFIRMAR RESERVA
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

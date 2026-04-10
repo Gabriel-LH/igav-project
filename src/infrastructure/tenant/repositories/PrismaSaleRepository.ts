@@ -77,6 +77,18 @@ export class PrismaSaleRepository implements SaleRepository {
       await this.prisma.saleItem.createMany({
         data: saleItemData,
       });
+
+      await this.addSaleItemStatusHistory(
+        saleItems.map((item) => ({
+          tenantId: sale.tenantId,
+          saleItemId: item.id,
+          fromStatus: this.resolveInitialSaleItemStatus(sale.status),
+          toStatus: this.resolveInitialSaleItemStatus(sale.status),
+          reason: "CREATED",
+          changedBy: sale.updatedBy ?? sale.createdBy ?? sale.sellerId,
+          createdAt: sale.createdAt,
+        })),
+      );
     }
 
     if (discountsApplied && discountsApplied.length > 0) {
@@ -170,6 +182,31 @@ export class PrismaSaleRepository implements SaleRepository {
     await this.updateSale(id, { status: status as any });
   }
 
+  async addSaleItemStatusHistory(entries: Array<{
+    tenantId: string;
+    saleItemId: string;
+    fromStatus: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: Date;
+  }>): Promise<void> {
+    if (!entries.length) return;
+
+    await (this.prisma as any).saleItemStatusHistory.createMany({
+      data: entries.map((entry) => ({
+        id: crypto.randomUUID(),
+        tenantId: entry.tenantId,
+        saleItemId: entry.saleItemId,
+        fromStatus: entry.fromStatus,
+        toStatus: entry.toStatus,
+        reason: entry.reason ?? null,
+        changedBy: entry.changedBy ?? null,
+        createdAt: entry.createdAt ?? new Date(),
+      })),
+    });
+  }
+
   private async resolveSaleItemIds(item: SaleItem): Promise<{
     inventoryItemId: string | null;
     stockId: string | null;
@@ -185,5 +222,15 @@ export class PrismaSaleRepository implements SaleRepository {
       inventoryItemId: null,
       stockId: null,
     };
+  }
+
+  private resolveInitialSaleItemStatus(status: Sale["status"]): string {
+    if (status === "pendiente_pago") return "pendiente_pago";
+    if (status === "reservado") return "reservado";
+    if (status === "vendido_pendiente_entrega") return "vendido_pendiente_entrega";
+    if (status === "cancelado") return "cancelado";
+    if (status === "baja") return "baja";
+    if (status === "devuelto") return "devuelto";
+    return "vendido";
   }
 }

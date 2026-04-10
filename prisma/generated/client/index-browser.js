@@ -964,6 +964,7 @@ exports.Prisma.ReservationScalarFieldEnum = {
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
   updatedBy: 'updatedBy',
+  notes: 'notes',
   deletedAt: 'deletedAt',
   status: 'status',
   operationType: 'operationType'

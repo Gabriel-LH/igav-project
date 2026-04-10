@@ -83,6 +83,7 @@ export class ProcessReturnUseCase {
       status: input.rentalStatus,
       actualReturnDate: now,
       notes: input.notes,
+      updatedBy: input.adminId,
     });
 
     await Promise.all(

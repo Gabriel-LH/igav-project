@@ -130,6 +130,21 @@ export class ReturnSaleItemsUseCase {
     }
 
     // 2️⃣ LEER ESTADO NUEVO (clave)
+    await this.saleRepo.addSaleItemStatusHistory(
+      reversalItems.map((ri) => ({
+        tenantId: sale.tenantId,
+        saleItemId: ri.saleItemId,
+        fromStatus:
+          sale.status === "vendido_pendiente_entrega"
+            ? "vendido_pendiente_entrega"
+            : "vendido",
+        toStatus: "devuelto",
+        reason: reason || "RETURN_PROCESSED",
+        changedBy: userId,
+        createdAt: new Date(),
+      })),
+    );
+
     const updatedSaleWithItems = await this.saleRepo.getSaleWithItems(saleId);
     const updatedItems = updatedSaleWithItems.items;
     const allReturned = updatedItems.every((i) => i.isReturned === true);

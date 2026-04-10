@@ -74,7 +74,7 @@ export function PosCartSection() {
   }, []);
 
   React.useEffect(() => {
-    let cancelled = false;
+    const cancelled = false;
 
     const loadTenantConfig = async () => {
       const res = await getTenantConfigAction();
@@ -399,7 +399,6 @@ export function PosCartSection() {
               <span>-{formatCurrency(totalDescuentoExtra)}</span>
             </div>
           )}
-
           <div className="flex px-2 -mb-2 justify-between items-end">
             <span>
               <span className="text-lg flex flex-col font-semibold">
@@ -424,18 +423,13 @@ export function PosCartSection() {
               {formatCurrency(taxTotals.total)}
             </span>
           </div>
-          {hasRentals && (
-            <div className="text-xs text-muted-foreground">
-              La garantía se cobra en caja.
-            </div>
-          )}
         </div>
 
         {/* --- BOTONES DE ACCIÓN --- */}
         <div className="grid px-2 grid-cols-2 gap-2 h-10">
-          <FeatureGuard feature="reservations">
+          <FeatureGuard feature={["reservations", "sales", "rentals"]}>
             <Button
-              className="col-span-1 h-10 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
+              className="col-span-1 h-8 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
               onClick={() => setReservationOpen(true)}
               disabled={items.length === 0}
             >
@@ -447,17 +441,22 @@ export function PosCartSection() {
           {hasRentals ? (
             <FeatureGuard feature="rentals">
               <Button
-                className="col-span-3 h-8 text-lg text-white font-bold shadow-lg bg-blue-600 hover:bg-blue-700"
+                className="col-span-1 h-8 text-sm text-white  shadow-lg flex flex-col gap-0.1 bg-blue-600 hover:bg-blue-700"
                 onClick={() => setCheckoutOpen(true)}
                 disabled={items.length === 0 || text.length > 0}
               >
                 {text.length > 0 ? text : "COBRAR"}
+                {hasRentals && (
+                  <span className="text-[9px] opacity-80">
+                    La garantía se cobra en caja.
+                  </span>
+                )}
               </Button>
             </FeatureGuard>
           ) : (
             <FeatureGuard feature="sales">
               <Button
-                className="col-span-3 h-8 text-lg text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
+                className="col-span-1 h-8 text-sm text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
                 onClick={() => setCheckoutOpen(true)}
                 disabled={items.length === 0}
               >

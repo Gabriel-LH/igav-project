@@ -28,8 +28,6 @@ export class CreateReservationUseCase {
       operationId,
       branchId: dto.branchId,
       customerId: dto.customerId,
-      productId: dto.items[0].productId,
-      stockId: dto.items[0].stockId,
       operationType: dto.operationType,
       startDate: dto.reservationDateRange.from,
       endDate: dto.reservationDateRange.to,
@@ -41,24 +39,30 @@ export class CreateReservationUseCase {
     });
 
     const reservationItems = reservationItemSchema.array().parse(
-      dto.items.map((item) => ({
-        id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
-        operationId: String(operationId),
-        reservationId: reservation.id,
-        productId: item.productId,
-        stockId: item.stockId,
-        quantity: item.quantity ?? 1,
-        variantId: item.variantId,
-        priceAtMoment:
-          item.priceAtMoment || (totalUnits > 0 ? totalAmount / totalUnits : 0),
-        listPrice: item.listPrice,
-        discountAmount: item.discountAmount ?? 0,
-        discountReason: item.discountReason,
-        bundleId: item.bundleId,
-        promotionId: item.promotionId,
-        itemStatus: "confirmada",
-        notes: dto.notes ?? "",
-      })),
+      dto.items.map((item) => {
+        const isSerial = !!item.inventoryItemId || !!(item as any).serialCode;
+        
+        return {
+          id: `RITEM-${Math.random().toString(36).substring(2, 9)}`,
+          operationId: String(operationId),
+          reservationId: reservation.id,
+          productId: item.productId,
+          stockId: item.stockId || null,
+          quantity: item.quantity ?? 1,
+          variantId: item.variantId,
+          priceAtMoment:
+            item.priceAtMoment || (totalUnits > 0 ? totalAmount / totalUnits : 0),
+          listPrice: item.listPrice,
+          discountAmount: item.discountAmount ?? 0,
+          discountReason: item.discountReason,
+          bundleId: item.bundleId,
+          promotionId: item.promotionId,
+          itemStatus: "confirmada",
+          notes: item.notes || "",
+          isSerial: isSerial,
+          inventoryItemId: item.inventoryItemId || null,
+        };
+      }),
     );
 
     await this.reservationRepo.addReservation(reservation, reservationItems);

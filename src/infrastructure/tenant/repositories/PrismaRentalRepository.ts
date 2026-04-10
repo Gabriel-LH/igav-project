@@ -59,6 +59,16 @@ export class PrismaRentalRepository implements RentalRepository {
       },
     });
 
+    await this.addRentalStatusHistory({
+      tenantId: rental.tenantId,
+      rentalId: rental.id,
+      fromStatus: rental.status,
+      toStatus: rental.status,
+      reason: "CREATED",
+      changedBy: rental.updatedBy ?? undefined,
+      createdAt: rental.createdAt,
+    });
+
     if ((this.prisma as any).discountApplied) {
       await (this.prisma as any).discountApplied.updateMany({
         where: {
@@ -98,6 +108,17 @@ export class PrismaRentalRepository implements RentalRepository {
       await this.prisma.rentalItem.createMany({
         data: rentalItemData,
       });
+
+      await this.addRentalItemStatusHistory(
+        rentalItemData.map((item) => ({
+          tenantId: rental.tenantId,
+          rentalItemId: item.id,
+          fromStatus: item.itemStatus,
+          toStatus: item.itemStatus,
+          reason: "CREATED",
+          createdAt: rental.createdAt,
+        })),
+      );
     }
   }
 
@@ -140,17 +161,45 @@ export class PrismaRentalRepository implements RentalRepository {
   }
 
   async updateStatus(id: string, newStatus: string): Promise<void> {
+    const current = await this.prisma.rental.findUnique({
+      where: { id },
+      select: { tenantId: true, status: true },
+    });
+
     await this.prisma.rental.update({
       where: { id },
       data: { status: newStatus as any },
     });
+
+    if (current && current.status !== newStatus) {
+      await this.addRentalStatusHistory({
+        tenantId: current.tenantId,
+        rentalId: id,
+        fromStatus: current.status,
+        toStatus: newStatus,
+      });
+    }
   }
 
   async finishRental(id: string): Promise<void> {
+    const current = await this.prisma.rental.findUnique({
+      where: { id },
+      select: { tenantId: true, status: true },
+    });
+
     await this.prisma.rental.update({
       where: { id },
       data: { status: "devuelto", actualReturnDate: new Date() },
     });
+
+    if (current) {
+      await this.addRentalStatusHistory({
+        tenantId: current.tenantId,
+        rentalId: id,
+        fromStatus: current.status,
+        toStatus: "devuelto",
+      });
+    }
   }
 
   async updateItemStatusAndCondition(
@@ -158,6 +207,11 @@ export class PrismaRentalRepository implements RentalRepository {
     newStatus: string,
     conditionIn: string,
   ): Promise<void> {
+    const current = await this.prisma.rentalItem.findUnique({
+      where: { id: itemId },
+      select: { tenantId: true, itemStatus: true },
+    });
+
     await this.prisma.rentalItem.update({
       where: { id: itemId },
       data: {
@@ -165,6 +219,17 @@ export class PrismaRentalRepository implements RentalRepository {
         conditionIn: conditionIn as any,
       },
     });
+
+    if (current && current.itemStatus !== newStatus) {
+      await this.addRentalItemStatusHistory([
+        {
+          tenantId: current.tenantId,
+          rentalItemId: itemId,
+          fromStatus: current.itemStatus,
+          toStatus: newStatus,
+        },
+      ]);
+    }
   }
 
   async getRentalById(id: string): Promise<Rental | undefined> {
@@ -265,13 +330,37 @@ export class PrismaRentalRepository implements RentalRepository {
   }
 
   async processReturnItem(itemId: string, status: string): Promise<void> {
+    const current = await this.prisma.rentalItem.findUnique({
+      where: { id: itemId },
+      select: { tenantId: true, itemStatus: true },
+    });
+
     await this.prisma.rentalItem.update({
       where: { id: itemId },
       data: { itemStatus: status as any },
     });
+
+    if (current && current.itemStatus !== status) {
+      await this.addRentalItemStatusHistory([
+        {
+          tenantId: current.tenantId,
+          rentalItemId: itemId,
+          fromStatus: current.itemStatus,
+          toStatus: status,
+          reason: "RETURN_PROCESSED",
+        },
+      ]);
+    }
   }
 
   async updateRental(id: string, data: Partial<Rental>): Promise<void> {
+    const current = data.status
+      ? await this.prisma.rental.findUnique({
+          where: { id },
+          select: { tenantId: true, status: true },
+        })
+      : null;
+
     await this.prisma.rental.update({
       where: { id },
       data: {
@@ -279,9 +368,24 @@ export class PrismaRentalRepository implements RentalRepository {
         status: data.status ? (data.status as any) : undefined,
       },
     });
+
+    if (current && data.status && current.status !== data.status) {
+      await this.addRentalStatusHistory({
+        tenantId: current.tenantId,
+        rentalId: id,
+        fromStatus: current.status,
+        toStatus: data.status,
+        changedBy: data.updatedBy,
+      });
+    }
   }
 
   async cancelRental(id: string, reason?: string): Promise<void> {
+    const current = await this.prisma.rental.findUnique({
+      where: { id },
+      select: { tenantId: true, status: true },
+    });
+
     await this.prisma.rental.update({
       where: { id },
       data: {
@@ -289,6 +393,16 @@ export class PrismaRentalRepository implements RentalRepository {
         notes: reason ? `${reason}` : undefined,
       },
     });
+
+    if (current) {
+      await this.addRentalStatusHistory({
+        tenantId: current.tenantId,
+        rentalId: id,
+        fromStatus: current.status,
+        toStatus: "anulado",
+        reason,
+      });
+    }
   }
 
   async getRentalsByOperation(operationId: string): Promise<Rental[]> {
@@ -296,5 +410,53 @@ export class PrismaRentalRepository implements RentalRepository {
       where: { operationId },
     });
     return rentals as unknown as Rental[];
+  }
+
+  private async addRentalStatusHistory(entry: {
+    tenantId: string;
+    rentalId: string;
+    fromStatus: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: Date;
+  }): Promise<void> {
+    await (this.prisma as any).rentalStatusHistory.create({
+      data: {
+        id: crypto.randomUUID(),
+        tenantId: entry.tenantId,
+        rentalId: entry.rentalId,
+        fromStatus: entry.fromStatus,
+        toStatus: entry.toStatus,
+        reason: entry.reason ?? null,
+        changedBy: entry.changedBy ?? null,
+        createdAt: entry.createdAt ?? new Date(),
+      },
+    });
+  }
+
+  private async addRentalItemStatusHistory(entries: Array<{
+    tenantId: string;
+    rentalItemId: string;
+    fromStatus: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: Date;
+  }>): Promise<void> {
+    if (!entries.length) return;
+
+    await (this.prisma as any).rentalItemStatusHistory.createMany({
+      data: entries.map((entry) => ({
+        id: crypto.randomUUID(),
+        tenantId: entry.tenantId,
+        rentalItemId: entry.rentalItemId,
+        fromStatus: entry.fromStatus,
+        toStatus: entry.toStatus,
+        reason: entry.reason ?? null,
+        changedBy: entry.changedBy ?? null,
+        createdAt: entry.createdAt ?? new Date(),
+      })),
+    });
   }
 }

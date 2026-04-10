@@ -18,6 +18,7 @@ export const reservationSchema = z.object({
   createdBy: z.string().optional(),
   updatedAt: z.date(), // Cuándo fue la última vez que se editó (opcional pero recomendado)
   updatedBy: z.string().optional(),
+  notes: z.string().optional(),
   deletedAt: z.date().optional(),
 
   //podemos usar expirada para cuando el cliente no llega por su reserva hasta la fecha limite el sistema lo expire
