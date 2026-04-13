@@ -27,6 +27,7 @@ import { cancelSaleAction, returnSaleItemsAction } from "@/src/app/(tenant)/tena
 import { toast } from "sonner";
 import { canAnnulSale, canReturnSale } from "@/src/utils/times/saleTimeRules";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import { useSessionStore } from "@/src/store/useSessionStore";
 
 export const columnsSalesHistory: ColumnDef<
   z.infer<typeof salesHistorySchema>
@@ -130,9 +131,7 @@ function ActionCell({
 
   const { sales, saleItems } = useSaleStore(); // Asumiendo que tienes un store de ventas
   const { policy } = useTenantConfigStore();
-
-
-  const userId = "user_1";
+  const userId = useSessionStore((state) => state.user?.id);
 
   // 1. Buscamos la venta base
   const baseSale = sales.find((s) => s.id === item.id);
@@ -146,6 +145,11 @@ function ActionCell({
     : undefined;
 
   const handleCancelConfirm = async (id: string, reason: string) => {
+    if (!userId) {
+      toast.error("No se pudo identificar al usuario actual");
+      return;
+    }
+
     try {
       await cancelSaleAction(id, reason, userId);
 
@@ -166,10 +170,16 @@ function ActionCell({
     reason: string,
     items: {
       saleItemId: string;
+      quantity: number;
       condition?: "perfecto" | "dañado" | "manchado";
       restockingFee: number;
     }[],
   ) => {
+    if (!userId) {
+      toast.error("No se pudo identificar al usuario actual");
+      return;
+    }
+
     try {
       await returnSaleItemsAction(saleId, reason, items, userId);
 

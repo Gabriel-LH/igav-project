@@ -9,7 +9,6 @@ const saleBaseObject = z.object({
   tenantId: z.string(),
   operationId: z.string(), // Conecta con la transaccion financiera
   customerMode: z.enum(["registered", "general"]).default("registered"),
-  // "" representa venta con cliente general (sin cliente registrado)
   customerId: z.string().default(""),
   branchId: z.string(),
   sellerId: z.string(),
@@ -56,7 +55,7 @@ export const saleSchema = saleBaseObject.superRefine((data, ctx) => {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["customerId"],
-      message: "En ventas con cliente registrado, customerId es obligatorio.",
+      message: `En ventas con cliente registrado, customerId es obligatorio. (Venta - Mode: ${data.customerMode}, ID: "${data.customerId}")`,
     });
   }
 
@@ -64,7 +63,7 @@ export const saleSchema = saleBaseObject.superRefine((data, ctx) => {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["customerId"],
-      message: "En cliente general, customerId debe venir vacio.",
+      message: `En cliente general, customerId debe venir vacio. (Venta - Mode: ${data.customerMode}, ID: "${data.customerId}")`,
     });
   }
 

@@ -44,6 +44,7 @@ export class PrismaSaleRepository implements SaleRepository {
         id: sale.id,
         tenantId: sale.tenantId,
         operationId: sale.operationId,
+        customerMode: sale.customerMode,
         branchId: sale.branchId,
         sellerId: sale.sellerId,
         customerId: sale.customerId || null,
@@ -113,6 +114,36 @@ export class PrismaSaleRepository implements SaleRepository {
     }
   }
 
+  async createSaleItem(item: SaleItem, tenantId: string): Promise<void> {
+    const resolvedIds = await this.resolveSaleItemIds(item);
+
+    await this.prisma.saleItem.create({
+      data: {
+        id: item.id,
+        tenantId,
+        saleId: item.saleId,
+        productId: item.productId,
+        variantId: item.variantId,
+        stockId: resolvedIds.stockId,
+        inventoryItemId: resolvedIds.inventoryItemId,
+        quantity: Math.max(1, Number(item.quantity ?? 1)),
+        priceAtMoment: Number(item.priceAtMoment ?? 0),
+        listPrice: item.listPrice ?? null,
+        discountAmount: Number(item.discountAmount ?? 0),
+        discountReason: item.discountReason ?? null,
+        bundleId: item.bundleId ?? null,
+        promotionId: item.promotionId ?? null,
+        productName: item.productName ?? null,
+        variantCode: item.variantCode ?? null,
+        serialCode: item.serialCode ?? null,
+        isSerial: item.isSerial ?? Boolean(resolvedIds.inventoryItemId),
+        isReturned: item.isReturned ?? false,
+        returnedAt: item.returnedAt ?? null,
+        returnCondition: item.returnCondition ?? null,
+      },
+    });
+  }
+
   async getSaleById(id: string): Promise<Sale | undefined> {
     const sale = await this.prisma.sale.findUnique({
       where: { id },
@@ -141,6 +172,16 @@ export class PrismaSaleRepository implements SaleRepository {
 
   async getSales(): Promise<Sale[]> {
     const sales = await this.prisma.sale.findMany({
+      include: {
+        saleReversals: {
+          include: {
+            items: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
       orderBy: { saleDate: "desc" },
     });
     return sales as unknown as Sale[];

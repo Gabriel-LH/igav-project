@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const salesHistorySchema = z.object({
+  rowId: z.string().optional(),
   id: z.string(),
   branchName: z.string(),
   sellerName: z.string(),

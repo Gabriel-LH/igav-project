@@ -12,6 +12,7 @@ import {
   BundleDefinition,
 } from "@/src/domain/tenant/services/bundle.service";
 import { PromotionService } from "../domain/tenant/services/promotion.service";
+import { calculateChargeableDays } from "../utils/date/calculateRentalDays";
 import { resolveCouponPromotion } from "../utils/promotion/resolveCuponPromotion";
 import { usePromotionStore } from "./usePromotionStore";
 import { Promotion } from "../types/promotion/type.promotion";
@@ -41,7 +42,8 @@ const calculateSubtotal = (
     .productVariants.find((v) => v.id === item.variantId);
   const isEvent = variant?.rentUnit === "evento";
 
-  const days = dates ? Math.max(differenceInDays(dates.to, dates.from), 1) : 1;
+  const policy = useTenantConfigStore.getState().policy;
+  const days = calculateChargeableDays(dates?.from, dates?.to, policy?.rentals);
 
   const multiplier = isEvent ? 1 : days;
   const rawSubtotal = item.unitPrice * item.quantity * multiplier;
@@ -205,6 +207,18 @@ export const useCartStore = create<CartState>()(
       ) => {
         set((state) => {
           const incomingTenantId = product.tenantId;
+          
+          // 🛑 RESTRICCIÓN: No mezclar Ventas y Alquileres
+          if (state.items.length > 0) {
+            const currentType = state.items[0].operationType;
+            if (currentType !== type) {
+              toast.error("Tipo de operación incompatible", {
+                description: `No puedes mezclar ${currentType === "venta" ? "ventas" : "alquileres"} con ${type === "venta" ? "ventas" : "alquileres"} en la misma orden.`,
+              });
+              return state;
+            }
+          }
+
           if (
             state.activeTenantId &&
             state.activeTenantId !== incomingTenantId

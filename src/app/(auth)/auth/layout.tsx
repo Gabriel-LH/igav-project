@@ -27,18 +27,10 @@ export default async function TenantAuthLayout({
 
   if (session?.user) {
     if (session.user.globalRole === "SUPER_ADMIN") {
-      redirect("/superadmin/dashboard");
-    } else {
-      const membership = await prisma.userTenantMembership.findFirst({
-        where: { userId: session.user.id, status: "active" },
-        select: { id: true },
-      });
-      if (membership) {
-        redirect("/tenant/home");
-      }
-      // Si no tiene membership (ej. la creación falló), lo dejamos en la página de Auth
-      // para que pueda ver el error o iniciar con otra cuenta.
+      return redirect("/superadmin/dashboard");
     }
+    // Tenant users with memberships will be redirected by the Middleware (proxy.ts)
+    // ONLY if there is no 'error' parameter. This breaks the 200-level loop.
   }
 
   return (

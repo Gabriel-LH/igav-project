@@ -7,6 +7,7 @@ export interface SaleFromReservationDTO {
   status: "vendido" | "reservado" | "cancelado" | "pendiente_entrega" | "pendiente_pago" | "devuelto";
   reservationId: string;
   customerId: string;
+  customerMode?: "registered" | "general";
 
   reservationItems: {
     reservationItemId: string;

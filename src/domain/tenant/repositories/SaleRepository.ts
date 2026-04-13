@@ -3,6 +3,7 @@ import { SaleItem } from "../../../types/sales/type.saleItem";
 
 export interface SaleRepository {
   addSale(sale: Sale, saleItems: SaleItem[], discountsApplied?: any[]): Promise<void>;
+  createSaleItem(item: SaleItem, tenantId: string): Promise<void>;
   addSaleItemStatusHistory(entries: Array<{
     tenantId: string;
     saleItemId: string;

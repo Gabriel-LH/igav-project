@@ -86,6 +86,8 @@ export const DEFAULT_TENANT_POLICY_SECTIONS: Omit<
     minRentalDurationDays: 1,
     requireGuarantee: true,
     inclusiveDayCalculation: true,
+    chargePickupDay: true,
+    chargeReturnDay: true,
   },
   reservations: {
     autoExpireReservations: true,

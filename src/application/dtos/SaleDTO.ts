@@ -8,6 +8,7 @@ export interface SaleDTO extends BaseOperation {
     | "pendiente_entrega"
     | "devuelto"
     | "vendido_pendiente_entrega";
+  customerMode?: "registered" | "general";
   customerId: string;
   customerName: string;
   sellerId: string;
@@ -26,6 +27,8 @@ export interface SaleDTO extends BaseOperation {
     discountReason?: string;
     bundleId?: string;
     promotionId?: string;
+    serialCode?: string;
+    isSerial?: boolean;
   }[];
 
   financials: {

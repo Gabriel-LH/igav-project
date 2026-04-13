@@ -27,6 +27,7 @@ export function calculateBestPromotionForProduct(
     finalPrice: bestPrice,
     discount: basePrice - bestPrice,
     promotionId: bestPromotion?.id,
+    promotionType: bestPromotion?.type,
     reason: bestPromotion?.name ?? null,
   };
 }

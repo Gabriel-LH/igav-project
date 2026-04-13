@@ -3,6 +3,7 @@ import { z } from "zod";
 //Las devoluciones estan sujetas a la politica del negocio
 
 export const salesReturnSchema = z.object({
+  rowId: z.string().optional(),
   id: z.string(),
   branchName: z.string(), // Sucursal
   sellerName: z.string(), // Vendedor
@@ -24,6 +25,9 @@ export const salesReturnSchema = z.object({
     .optional(), // Motivo de la devolucion
   action: z.string().optional(), // Accion a tomar
   returnValue: z.number().optional(), // Valor de la devolucion de dinero al devolver, dependiendo de si se devolvio sin detalles o no
+  amountRefunded: z.number().optional(),
+  returnedQuantity: z.number().optional(),
+  restockingFee: z.number().optional(),
   product: z.string(), // Producto
   count: z.number(), // Cantidad
   income: z.number(), // Ingreso

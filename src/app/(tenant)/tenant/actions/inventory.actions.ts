@@ -31,3 +31,34 @@ export async function getBranchInventoryAction(branchId: string) {
     };
   }
 }
+export async function updateStockStatusAction(input: {
+  id: string;
+  type: "serial" | "lot";
+  status: string;
+}) {
+  try {
+    const membership = await requireTenantMembership();
+    const { tenantId } = membership;
+
+    if (!tenantId) throw new Error("Tenant ID es obligatorio");
+
+    const stockRepo = new PrismaStockAdapter();
+
+    if (input.type === "serial") {
+      await stockRepo.updateInventoryItemStatus(input.id, input.status as any);
+    } else {
+      await stockRepo.updateStockLotStatus(input.id, input.status as any);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error al actualizar estado de stock:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al actualizar estado",
+    };
+  }
+}

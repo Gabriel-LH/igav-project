@@ -106,9 +106,15 @@ export const calculateTaxTotals = (
     }
 
     if (isCash && applyOn === "TOTAL") {
-      subtotal = roundValue(subtotal, roundTo, strategy);
-      taxAmount = roundValue(taxAmount, roundTo, strategy);
       total = roundValue(total, roundTo, strategy);
+      // Recalcular subtotal y tax basado en el total ya redondeado
+      if (taxConfig.calculationMode === "TAX_INCLUDED") {
+        subtotal = total / (1 + rate);
+        taxAmount = total - subtotal;
+      } else {
+        subtotal = roundValue(subtotal, roundTo, strategy);
+        taxAmount = total - subtotal;
+      }
     }
   }
 

@@ -38,7 +38,7 @@ export const operationSchema = z
         code: z.ZodIssueCode.custom,
         path: ["customerId"],
         message:
-          "En alquiler/reserva, customerId es obligatorio y no puede ser cliente general.",
+          `En alquiler/reserva, customerId es obligatorio. (Operacion - Mode: ${data.customerMode}, ID: "${data.customerId}")`,
       });
     }
 
@@ -47,7 +47,7 @@ export const operationSchema = z
         code: z.ZodIssueCode.custom,
         path: ["customerMode"],
         message:
-          "customerMode=general solo aplica para ventas rapidas, no para alquiler/reserva.",
+          `customerMode=general no aplica para alquiler/reserva. (Operacion - Mode: ${data.customerMode})`,
       });
     }
 
@@ -56,7 +56,7 @@ export const operationSchema = z
         code: z.ZodIssueCode.custom,
         path: ["customerId"],
         message:
-          "En ventas con cliente registrado, customerId es obligatorio.",
+          `En ventas con cliente registrado, customerId es obligatorio. (Operacion - Mode: ${data.customerMode}, ID: "${data.customerId}")`,
       });
     }
 
@@ -64,7 +64,7 @@ export const operationSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["customerId"],
-        message: "En venta de cliente general, customerId debe venir vacio.",
+        message: `En venta de cliente general, customerId debe venir vacio. (Operacion - Mode: ${data.customerMode}, ID: "${data.customerId}")`,
       });
     }
   });

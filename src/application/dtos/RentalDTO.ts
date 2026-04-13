@@ -32,6 +32,8 @@ export interface RentalDTO extends BaseOperation {
     discountReason?: string;
     bundleId?: string;
     promotionId?: string;
+    serialCode?: string;
+    isSerial?: boolean;
   }[];
   financials: {
     subtotal: number;

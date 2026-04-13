@@ -40,17 +40,39 @@ import { usePaymentStore } from "@/src/store/usePaymentStore";
 import { useOperationStore } from "@/src/store/useOperationStore";
 import { getPromotionsAction } from "@/src/app/(tenant)/tenant/actions/promotion.actions";
 import { usePromotionStore } from "@/src/store/usePromotionStore";
+import type { Reservation } from "@/src/types/reservation/type.reservation";
+import type { ReservationItem } from "@/src/types/reservation/type.reservationItem";
+import type { Rental } from "@/src/types/rentals/type.rentals";
+import type { RentalItem } from "@/src/types/rentals/type.rentalsItem";
+import type { Operation } from "@/src/types/operation/type.operations";
+import type { Payment } from "@/src/types/payments/type.payments";
 
 interface ProductGridProps {
   categories: Category[];
   attributeTypes: AttributeType[];
   attributeValues: AttributeValue[];
+  initialInventory: {
+    products: Product[];
+    variants: ProductVariant[];
+    inventoryItems: InventoryItem[];
+    stockLots: StockLot[];
+  } | null;
+  initialAvailability: {
+    reservations: Reservation[];
+    reservationItems: ReservationItem[];
+    rentals: Rental[];
+    rentalItems: RentalItem[];
+    operations: Operation[];
+    payments: Payment[];
+  } | null;
 }
 
 export function ProductGrid({
   categories,
   attributeTypes,
   attributeValues,
+  initialInventory,
+  initialAvailability,
 }: ProductGridProps) {
   const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
   const router = useRouter();
@@ -68,96 +90,76 @@ export function ProductGrid({
   const setPromotions = usePromotionStore((s) => s.setPromotions);
   const customers = useCustomerStore((s) => s.customers);
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [stockLots, setStockLots] = useState<StockLot[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(
+    initialInventory?.products ?? [],
+  );
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>(
+    initialInventory?.variants ?? [],
+  );
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(
+    initialInventory?.inventoryItems ?? [],
+  );
+  const [stockLots, setStockLots] = useState<StockLot[]>(
+    initialInventory?.stockLots ?? [],
+  );
+  const [isLoading, setIsLoading] = useState(!initialInventory);
 
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("catalog");
+
+  // Track the last loaded branch to avoid redundant fetches
+  const [lastLoadedBranchId, setLastLoadedBranchId] = useState<string | null>(
+    initialInventory ? selectedBranchId : null,
+  );
+
   const query = searchQuery.toLowerCase();
   const stockLotsWithExtendedStatus = stockLots as Array<
     StockLot & { status: string }
   >;
 
-  const loadInventory = useCallback(async () => {
-    if (!selectedBranchId) {
-      setProducts([]);
-      setProductVariants([]);
-      setInventoryItems([]);
-      setStockLots([]);
-      setProductsInStore([]);
-      setVariantsInStore([]);
-      setInventoryItemsInStore([]);
-      setStockLotsInStore([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
+  const loadSecondaryData = useCallback(async () => {
     try {
-      const [
-        inventoryResult,
-        availabilityResult,
-        clientsResult,
-        promotionsResult,
-      ] = await Promise.all([
-        getBranchInventoryAction(selectedBranchId),
-        getAvailabilityCalendarDataAction(),
+      const [clientsResult, promotionsResult] = await Promise.all([
         getClientsAction(),
         getPromotionsAction(),
       ]);
 
-      if (!inventoryResult.success || !inventoryResult.data) {
-        toast.error(inventoryResult.error || "No se pudo cargar el inventario");
-        return;
-      }
-
-      setProducts(inventoryResult.data.products as Product[]);
-      setProductVariants(inventoryResult.data.variants as ProductVariant[]);
-      setInventoryItems(inventoryResult.data.inventoryItems as InventoryItem[]);
-      setStockLots(inventoryResult.data.stockLots as StockLot[]);
-      setProductsInStore(inventoryResult.data.products as Product[]);
-      setVariantsInStore(inventoryResult.data.variants as ProductVariant[]);
-      setInventoryItemsInStore(
-        inventoryResult.data.inventoryItems as InventoryItem[],
-      );
-      setStockLotsInStore(inventoryResult.data.stockLots as StockLot[]);
-
-      if (!availabilityResult.success || !availabilityResult.data) {
-        toast.error(
-          availabilityResult.error || "No se pudo cargar la disponibilidad",
-        );
-        return;
-      }
-
-      setReservationData(
-        availabilityResult.data.reservations,
-        availabilityResult.data.reservationItems,
-      );
-      setRentalData(
-        availabilityResult.data.rentals,
-        availabilityResult.data.rentalItems,
-      );
-      setOperations(availabilityResult.data.operations);
-      setPayments(availabilityResult.data.payments);
-
       if (clientsResult.success && clientsResult.data) {
         setCustomers(clientsResult.data);
       }
-
       if (promotionsResult.success && promotionsResult.data) {
         setPromotions(promotionsResult.data);
       }
-    } catch {
-      toast.error("Error de red");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Error loading secondary data:", error);
     }
+  }, [setCustomers, setPromotions]);
+
+  useEffect(() => {
+    if (initialInventory) {
+      setProductsInStore(initialInventory.products);
+      setVariantsInStore(initialInventory.variants);
+      setInventoryItemsInStore(initialInventory.inventoryItems);
+      setStockLotsInStore(initialInventory.stockLots);
+    }
+    if (initialAvailability) {
+      setReservationData(
+        initialAvailability.reservations,
+        initialAvailability.reservationItems,
+      );
+      setRentalData(
+        initialAvailability.rentals,
+        initialAvailability.rentalItems,
+      );
+      setOperations(initialAvailability.operations);
+      setPayments(initialAvailability.payments);
+    }
+    // Carga de datos secundarios (Promos/Clientes) de forma diferida
+    loadSecondaryData();
   }, [
-    selectedBranchId,
+    initialInventory,
+    initialAvailability,
     setProductsInStore,
     setVariantsInStore,
     setInventoryItemsInStore,
@@ -166,13 +168,73 @@ export function ProductGrid({
     setRentalData,
     setOperations,
     setPayments,
-    setCustomers,
-    setPromotions,
-  ]);
+    loadSecondaryData,
+  ]); // Solo una vez al montar (o si cambian las deps iniciales)
+
+  const loadInventory = useCallback(
+    async (branchId: string) => {
+      if (!branchId || branchId === lastLoadedBranchId) return;
+
+      setIsLoading(true);
+      try {
+        const [inventoryResult, availabilityResult] = await Promise.all([
+          getBranchInventoryAction(branchId),
+          getAvailabilityCalendarDataAction(),
+        ]);
+
+        if (inventoryResult.success && inventoryResult.data) {
+          const { products, variants, inventoryItems, stockLots } =
+            inventoryResult.data;
+          setProducts(products as Product[]);
+          setProductVariants(variants as ProductVariant[]);
+          setInventoryItems(inventoryItems as InventoryItem[]);
+          setStockLots(stockLots as StockLot[]);
+
+          setProductsInStore(products as Product[]);
+          setVariantsInStore(variants as ProductVariant[]);
+          setInventoryItemsInStore(inventoryItems as InventoryItem[]);
+          setStockLotsInStore(stockLots as StockLot[]);
+        }
+
+        if (availabilityResult.success && availabilityResult.data) {
+          setReservationData(
+            availabilityResult.data.reservations,
+            availabilityResult.data.reservationItems,
+          );
+          setRentalData(
+            availabilityResult.data.rentals,
+            availabilityResult.data.rentalItems,
+          );
+          setOperations(availabilityResult.data.operations);
+          setPayments(availabilityResult.data.payments);
+        }
+
+        setLastLoadedBranchId(branchId);
+      } catch {
+        toast.error("Error de red al actualizar inventario");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      lastLoadedBranchId,
+      setProductsInStore,
+      setVariantsInStore,
+      setInventoryItemsInStore,
+      setStockLotsInStore,
+      setReservationData,
+      setRentalData,
+      setOperations,
+      setPayments,
+    ],
+  );
 
   useEffect(() => {
-    loadInventory();
-  }, [loadInventory]);
+    // Solo cargamos si el branchId ha cambiado realmente con respecto al inicial o anterior
+    if (selectedBranchId && selectedBranchId !== lastLoadedBranchId) {
+      loadInventory(selectedBranchId);
+    }
+  }, [selectedBranchId, lastLoadedBranchId, loadInventory]);
 
   useBarcodeScanner({
     onScan: (code) => {
@@ -319,7 +381,7 @@ export function ProductGrid({
               reservation={res}
               attributeTypes={attributeTypes}
               attributeValues={attributeValues}
-              onRefresh={loadInventory}
+              onRefresh={() => loadInventory(selectedBranchId)}
             />
           ))}
 
@@ -352,6 +414,9 @@ export function ProductGrid({
             <LaundryActionCard
               key={item.id}
               item={item as unknown as InventoryItem}
+              attributeTypes={attributeTypes}
+              attributeValues={attributeValues}
+              onRefresh={() => loadInventory(selectedBranchId)}
             />
           ))}
 
@@ -360,6 +425,9 @@ export function ProductGrid({
             <MaintenanceActionCard
               key={item.id}
               item={item as unknown as InventoryItem}
+              attributeTypes={attributeTypes}
+              attributeValues={attributeValues}
+              onRefresh={() => loadInventory(selectedBranchId)}
             />
           ))}
       </div>

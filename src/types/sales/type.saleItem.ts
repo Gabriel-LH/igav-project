@@ -3,6 +3,7 @@ import z from "zod";
 export const saleItemSchema = z.object({
   id: z.string(),
   saleId: z.string(),
+  tenantId: z.string(),
   productId: z.string(),
   variantId: z.string(),
   stockId: z.string().optional(),

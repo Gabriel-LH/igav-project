@@ -1,21 +1,30 @@
 import { auth } from "@/src/lib/auth";
-import prisma from "@/src/lib/prisma";
 import { headers } from "next/headers";
+import prisma from "@/src/lib/prisma";
 
 export async function requireTenantMembership() {
+  const requestHeaders = await headers();
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: requestHeaders,
   });
 
   if (!session) {
-    throw new Error("Unauthorized: Login required");
+    console.log("[AUTH_GUARD] No session found");
+    throw new Error("AUTH_SESSION_MISSING");
   }
 
+  // Handle Super Admin
   if (session.user.globalRole === "SUPER_ADMIN") {
+    console.log("[AUTH_GUARD] Super Admin detected:", session.user.email);
     return {
+      id: "super-admin-id",
+      userId: session.user.id,
+      tenantId: null as any,
+      roleId: "super-admin-role",
+      defaultBranchId: "super-admin-branch",
+      status: "active",
       user: session.user,
       membership: null,
-      tenantId: null,
     };
   }
 
@@ -34,8 +43,6 @@ export async function requireTenantMembership() {
       invitedBy: true,
       createdAt: true,
       updatedAt: true,
-      pinHash: true,
-      pinSetAt: true,
       tenant: {
         select: {
           id: true,
@@ -49,6 +56,15 @@ export async function requireTenantMembership() {
         select: {
           id: true,
           name: true,
+          permissions: {
+            select: {
+              permission: {
+                select: {
+                  key: true,
+                },
+              },
+            },
+          },
         },
       },
       branch: {
@@ -61,16 +77,14 @@ export async function requireTenantMembership() {
   });
 
   if (!membership) {
-    return {
-      user: session.user,
-      membership: null,
-      tenantId: null,
-    };
+    console.log("[AUTH_GUARD] No active membership for user:", session.user.email);
+    throw new Error("AUTH_NO_MEMBERSHIP");
   }
 
   return {
+    ...(membership as any),
     user: session.user,
-    membership,
+    membership: membership as any, // Cast to any to expose nested relations to callers
     tenantId: membership.tenantId,
   };
 }

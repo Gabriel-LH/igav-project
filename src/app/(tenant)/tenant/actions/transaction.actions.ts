@@ -79,6 +79,7 @@ export async function processTransactionAction(dto: any) {
     revalidatePath("/tenant/sales");
     revalidatePath("/tenant/reservations");
     revalidatePath("/tenant/home"); // Home grid often shows inventory changes
+    revalidatePath("/tenant/pos");
 
     return {
       success: true,

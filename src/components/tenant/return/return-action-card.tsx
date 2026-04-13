@@ -16,9 +16,17 @@ import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 
 interface Props {
   rental: RentalDTO;
+  forceOpen?: boolean;
+  initialScanCode?: string;
+  onClose?: () => void;
 }
 
-export function ReturnActionCard({ rental }: Props) {
+export function ReturnActionCard({
+  rental,
+  forceOpen,
+  initialScanCode,
+  onClose,
+}: Props) {
   const { customers } = useCustomerStore();
   // 1. HIDRATACIÓN: Buscamos al cliente
   const client = customers.find((c) => c.id === rental.customerId);
@@ -177,6 +185,9 @@ export function ReturnActionCard({ rental }: Props) {
             rental={rental}
             client={client || null}
             isOverdue={isOverdue}
+            forceOpen={forceOpen}
+            initialScanCode={initialScanCode}
+            onClose={onClose}
           />
         </div>
       </div>

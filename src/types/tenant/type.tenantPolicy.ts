@@ -19,6 +19,8 @@ export const rentalsPolicySchema = z.object({
   minRentalDurationDays: z.number().default(1),
   requireGuarantee: z.boolean().default(true),
   inclusiveDayCalculation: z.boolean().default(true),
+  chargePickupDay: z.boolean().default(true),
+  chargeReturnDay: z.boolean().default(true),
 });
 
 export const reservationsPolicySchema = z.object({

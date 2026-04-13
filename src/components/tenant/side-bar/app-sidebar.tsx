@@ -26,7 +26,6 @@ import {
 import {
   CalendarUserIcon,
   Cashier02Icon,
-  CatalogueIcon,
   Chart02Icon,
   Clock01Icon,
   ComputerIcon,
@@ -342,7 +341,7 @@ export function AppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5! hover:cursor-pointer"
             >
-              <Link href="/tenant/home">
+              <Link href="/tenant/home" prefetch={false}>
                 {logoUrl ? (
                   <img
                     src={logoUrl}

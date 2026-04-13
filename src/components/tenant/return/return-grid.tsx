@@ -7,6 +7,21 @@ import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
+import { useState, useCallback } from "react";
+import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
+import { Input } from "@/components/input";
+import { Barcode, Scan } from "lucide-react";
+import { toast } from "sonner";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { BarcodeScanner } from "../inventory/inventory/barcode/Scanner";
+import { Button } from "@/components/button";
 
 interface Props {
   attributeTypes?: any[];
@@ -15,7 +30,27 @@ interface Props {
 
 export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props) => {
   const { rentals, rentalItems } = useRentalStore();
-  const { guarantees } = useGuaranteeStore(); // Added missing semicolon
+  const { guarantees } = useGuaranteeStore();
+  const [openRentalId, setOpenRentalId] = useState<string | null>(null);
+  const [activeScanCode, setActiveScanCode] = useState<string | undefined>();
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const handleGlobalScan = useCallback((code: string) => {
+    // 1. Buscar el item en toda la data de alquileres activos
+    const item = rentalItems.find(
+      (i) => i.serialCode === code || i.stockId === code || String(i.id) === code
+    );
+
+    if (item) {
+      setOpenRentalId(item.rentalId);
+      setActiveScanCode(code);
+      toast.success(`Alquiler detectado para: ${code}`);
+    } else {
+      toast.error(`No se encontró ningún alquiler activo con el código: ${code}`);
+    }
+  }, [rentalItems]);
+
+  useBarcodeScanner({ onScan: handleGlobalScan });
 
   const { products, productVariants } = useInventoryStore();
 
@@ -59,7 +94,65 @@ export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props)
 
   return (
     <div className="w-full space-y-4">
-      {/* Estadísticas (una sola vez) */}
+      {/* BARRA DE ESCANEO GLOBAL */}
+      <div className=" px-2 py-1 rounded-2xl shadow-xl border">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex-1">
+            <h2 className="text-white font-black text-sm uppercase tracking-[0.2em] mb-1">
+              Escanear Producto
+            </h2>
+            <p className="text-slate-400 text-[10px] font-medium uppercase truncate">
+              Escanea una prenda para procesar su devolución al instante
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-1 md:w-[400px]">
+              <Input
+                placeholder="Escanea o escribe código de prenda..."
+                className="text-white pl-10 h-12 rounded-xl  text-xs font-bold w-full"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleGlobalScan((e.target as HTMLInputElement).value);
+                    (e.target as HTMLInputElement).value = "";
+                  }
+                }}
+              />
+              <Barcode className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            </div>
+
+            <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="secondary" 
+                  className="h-12 w-12 rounded-xl bg-slate-800 border-slate-700 hover:bg-slate-700 text-white shadow-lg"
+                  title="Escanear con cámara"
+                >
+                  <Scan size={20} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Escáner de Cámara</DialogTitle>
+                  <DialogDescription>
+                    Enfoca el código de barras o QR de la prenda para abrir el alquiler.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <BarcodeScanner 
+                    onScan={(code) => {
+                      handleGlobalScan(code);
+                      setIsCameraOpen(false);
+                    }}
+                    autoStopOnScan={true}
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+
+      {/* Estadísticas */}
       <ReturnStats dueToday={dueToday} overdue={overdue} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -134,6 +227,8 @@ export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props)
               quantity: gItem.quantity, // Should be 1 per item usually
               priceAtMoment: gItem.priceAtMoment,
               productName: productInfo?.name || "Vestido",
+              serialCode: gItem.serialCode,
+              isSerial: gItem.isSerial,
             })),
             type: "alquiler",
 
@@ -158,7 +253,15 @@ export const ReturnGrid = ({ attributeTypes = [], attributeValues = [] }: Props)
 
           return (
             <div key={`grid-group-${item.rentalId}-${item.productId}`}>
-              <ReturnActionCard rental={rentalUnified} />
+              <ReturnActionCard 
+                rental={rentalUnified} 
+                forceOpen={openRentalId === rentalUnified.id}
+                initialScanCode={openRentalId === rentalUnified.id ? activeScanCode : undefined}
+                onClose={() => {
+                  setOpenRentalId(null);
+                  setActiveScanCode(undefined);
+                }}
+              />
             </div>
           );
         })}

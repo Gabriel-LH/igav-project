@@ -3,6 +3,7 @@ import { z } from "zod";
 //Las cancelaciones estan sujetas a la politica del negocio
 
 export const salesCanceledSchema = z.object({
+  rowId: z.string().optional(),
   id: z.string(),
   branchName: z.string(), // Sucursal
   sellerName: z.string(), // Vendedor

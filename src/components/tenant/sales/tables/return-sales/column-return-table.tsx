@@ -102,6 +102,11 @@ export const columnsSalesReturn: ColumnDef<
     ),
   },
   {
+    accessorKey: "returnedQuantity",
+    header: "Cantidad devuelta",
+    cell: ({ getValue }) => <div className="w-32">{getValue<number>()}</div>,
+  },
+  {
     accessorKey: "restockingFee",
     header: "Cargo por devolucion",
     cell: ({ getValue }) => (

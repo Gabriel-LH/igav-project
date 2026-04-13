@@ -1,14 +1,28 @@
 export const printTicket = (htmlContent: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     try {
-      const printWindow = window.open('', '_blank');
+      // 1. Crear el iframe oculto
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'absolute';
+      iframe.style.width = '0px';
+      iframe.style.height = '0px';
+      iframe.style.border = 'none';
+      iframe.style.visibility = 'hidden';
+      iframe.title = 'Printer Iframe';
       
-      if (!printWindow) {
-        reject(new Error('No se pudo abrir ventana de impresión. Verifica bloqueadores de popups.'));
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentWindow?.document || iframe.contentDocument;
+      if (!doc) {
+        document.body.removeChild(iframe);
+        reject(new Error('No se pudo acceder al documento del iframe.'));
         return;
       }
 
-      printWindow.document.write(`
+      // 2. Inyectar contenido
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
         <html>
           <head>
             <title>Imprimir Ticket</title>
@@ -21,52 +35,56 @@ export const printTicket = (htmlContent: string): Promise<void> => {
           <body>${htmlContent}</body>
         </html>
       `);
-      
-      printWindow.document.close();
+      doc.close();
 
-      // Esperar a que Tailwind cargue
-      printWindow.onload = () => {
-        setTimeout(() => {
-          try {
-            printWindow.print();
-            
-            // Esperar a que termine la impresión antes de cerrar
-            printWindow.onafterprint = () => {
-              setTimeout(() => {
-                printWindow.close();
-                resolve();
-              }, 100);
-            };
-            
-            // Fallback en caso de que onafterprint no se dispare
-            setTimeout(() => {
-              printWindow.close();
-              resolve();
-            }, 2000);
-            
-          } catch (error) {
-            printWindow.close();
-            reject(error);
-          }
-        }, 500);
-      };
-
-      // Fallback para navegadores que no disparan onload
-      setTimeout(() => {
+      // 3. Lógica de Impresión
+      const triggerPrint = () => {
         try {
-          printWindow.print();
+          // Pequeño delay adicional para asegurar renderizado de Tailwind
           setTimeout(() => {
-            printWindow.close();
-            resolve();
-          }, 1000);
+            if (iframe.contentWindow) {
+              iframe.contentWindow.focus();
+              iframe.contentWindow.print();
+              
+              // Limpieza después de imprimir
+              iframe.contentWindow.onafterprint = () => {
+                document.body.removeChild(iframe);
+                resolve();
+              };
+
+              // Fallback para navegadores que no soportan onafterprint
+              setTimeout(() => {
+                if (document.body.contains(iframe)) {
+                  document.body.removeChild(iframe);
+                }
+                resolve();
+              }, 1000);
+            }
+          }, 500);
         } catch (error) {
-          printWindow.close();
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
           reject(error);
         }
-      }, 1000);
+      };
+
+      // Esperar a que el contenido cargue (incluyendo scripts externos como Tailwind)
+      if (iframe.contentWindow) {
+        iframe.contentWindow.onload = triggerPrint;
+        
+        // Fallback para navegadores que no disparan onload en iframes manuales
+        setTimeout(() => {
+          if (doc.readyState === 'complete') {
+            triggerPrint();
+          }
+        }, 2000);
+      } else {
+        triggerPrint();
+      }
 
     } catch (error) {
       reject(error);
     }
   });
-};
+};

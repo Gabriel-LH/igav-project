@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const salesPendingSchema = z.object({
+  rowId: z.string().optional(),
   id: z.string(),
   branchName: z.string(), // Sucursal
   sellerName: z.string(), // Vendedor

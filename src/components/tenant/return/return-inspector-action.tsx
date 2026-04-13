@@ -1,5 +1,4 @@
-"use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/button";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -24,7 +23,16 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/input";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Badge } from "@/components/badge";
-import { BadgeCheck, Icon, Trash2, WashingMachine } from "lucide-react";
+import { BadgeCheck, Icon, Trash2, WashingMachine, Barcode, Camera, Scan } from "lucide-react";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { BarcodeScanner } from "../inventory/inventory/barcode/Scanner";
 import { buildReturnTicketHtml } from "../ticket/buil-return-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { RentalDTO } from "@/src/application/dtos/RentalDTO";
@@ -33,6 +41,8 @@ import { authClient } from "@/src/lib/auth-client";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { calculateLateFee } from "@/src/utils/rentals/late-fee";
+import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
+import { toast } from "sonner";
 
 type StockTarget =
   | "disponible"
@@ -44,10 +54,16 @@ export function ReturnInspectionDrawer({
   rental,
   client,
   isOverdue,
+  forceOpen,
+  initialScanCode,
+  onClose,
 }: {
   rental: RentalDTO;
   client: { firstName: string; lastName: string; dni?: string; phone?: string } | null | undefined;
   isOverdue: boolean;
+  forceOpen?: boolean;
+  initialScanCode?: string;
+  onClose?: () => void;
 }) {
   const { data: session } = authClient.useSession();
   const isMobile = useIsMobile();
@@ -56,6 +72,7 @@ export function ReturnInspectionDrawer({
   const [damageNotes, setDamageNotes] = useState("");
   const [waivePenalty, setWaivePenalty] = useState(false);
   const [penaltyCharge, setPenaltyCharge] = useState("");
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const [itemsStatus, setItemsStatus] = useState({
     allPartsPresent: true, // Cambiado a true por defecto para UX
@@ -69,15 +86,6 @@ export function ReturnInspectionDrawer({
   console.log("Informacion completa del rental activo", rentalItems);
   console.log("Informacion completa del producto", products);
 
-  const itemsToInspect = useMemo(() => {
-    return rental.items.map((item) => ({
-      id: item.id || rental.id, // Fallback if needed, but item.id should be present from Grid
-      productId: item.productId,
-      name: item.productName,
-      sizeId: (item as any).sizeId || (item as any).size,
-    }));
-  }, [rental.items, rental.id]);
-
   // 1. Group items from rental.items (passed from Grid)
   const itemsToInspects = useMemo(() => {
     // Use rental.items directly as it contains the grouped items (or all items for the group due to my ReturnGrid change)
@@ -86,7 +94,6 @@ export function ReturnInspectionDrawer({
 
   // Group by Product for UI
   const groupedItems = useMemo(() => {
-    const { products } = useInventoryStore.getState();
     return itemsToInspects.reduce(
       (acc, item) => {
         const product = products.find((p) => p.id === item.productId);
@@ -103,7 +110,7 @@ export function ReturnInspectionDrawer({
       },
       {} as Record<string, { product: any; items: any[]; isSerial: boolean }>,
     );
-  }, [itemsToInspects]);
+  }, [itemsToInspects, products]);
 
   // State maps itemId -> targetStatus ("en_lavanderia", "mantenimiento", etc.)
   // If not in map, it is NOT being returned (or ignored).
@@ -112,27 +119,17 @@ export function ReturnInspectionDrawer({
   >({});
 
   // Initialize all as "en_lavanderia" by default?
-  // Probably better to let user select. Or default ALL to "en_lavanderia".
-  // Requirement: "user marks via checkboxes which are processing physically".
-  // So default is EMPTY (nothing returned).
-  // Or default is ALL returned?
-  // Existing code defaulted to "en_lavanderia".
-  // Let's default to ALL returned for convenience?
-  // User says "allow item breakdown and user selection".
-  // Defaulting to all selected is usually better UX.
-
-  // Re-initialize state when rental changes
   const [initialized, setInitialized] = useState(false);
   if (!initialized && itemsToInspects.length > 0) {
     const initial = Object.fromEntries(
       itemsToInspects.map((i) => [String(i.id), "en_lavanderia"]),
     );
-    // @ts-ignore
+
     setItemsInspection(initial);
     setInitialized(true);
   }
 
-  const handleToggleItem = (itemId: string, checked: boolean) => {
+  const handleToggleItem = useCallback((itemId: string, checked: boolean) => {
     setItemsInspection((prev) => {
       const next = { ...prev };
       if (checked) {
@@ -142,7 +139,7 @@ export function ReturnInspectionDrawer({
       }
       return next;
     });
-  };
+  }, []);
 
   const handleChangeStatus = (itemId: string, status: StockTarget) => {
     setItemsInspection((prev) => ({
@@ -166,6 +163,45 @@ export function ReturnInspectionDrawer({
       return next;
     });
   };
+
+  const handleScan = useCallback((code: string) => {
+    // Buscar el item por serialCode o stockId
+    const item = itemsToInspects.find(
+      (i) => i.serialCode === code || i.stockId === code || String(i.id) === code
+    );
+
+    if (item) {
+      const itemId = String(item.id);
+      if (itemsInspection[itemId]) {
+        toast.info(`El item ${code} ya está marcado`);
+      } else {
+        handleToggleItem(itemId, true);
+        toast.success(`Item ${code} recibido`);
+      }
+    } else {
+      toast.error(`No se encontró el item con código: ${code}`);
+    }
+  }, [itemsToInspects, itemsInspection, handleToggleItem]);
+
+  useBarcodeScanner({ onScan: handleScan });
+
+  // Soporte para apertura forzada desde el grid
+  useEffect(() => {
+    if (forceOpen) {
+      setDrawerOpen(true);
+    }
+  }, [forceOpen]);
+
+  // Manejo de código de escaneo inicial
+  useEffect(() => {
+    if (drawerOpen && initialScanCode) {
+      // Pequeño delay para asegurar que el estado interno esté listo
+      const timer = setTimeout(() => {
+        handleScan(initialScanCode);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [drawerOpen, initialScanCode, handleScan]);
 
   const summary = useMemo(() => {
     const lateFeeInfo = calculateLateFee({
@@ -236,7 +272,7 @@ export function ReturnInspectionDrawer({
     const ticketHtml = buildReturnTicketHtml(
       rental,
       client!,
-      itemsToInspect, // This was original summary usage, might need update?
+      itemsToInspects, // This was original summary usage, might need update?
       rental.guarantee,
       { itemsInspection, damageNotes: damageNotes || undefined },
       {
@@ -260,8 +296,8 @@ export function ReturnInspectionDrawer({
 
   const counts = useMemo(() => {
     const stats = {
-      lavanderia: 0,
-      mantenimiento: 0,
+      en_lavanderia: 0,
+      en_mantenimiento: 0,
       retirado: 0,
       disponible: 0,
     };
@@ -277,7 +313,10 @@ export function ReturnInspectionDrawer({
         modal={false}
         direction={isMobile ? "bottom" : "right"}
         open={drawerOpen}
-        onOpenChange={setDrawerOpen}
+        onOpenChange={(open) => {
+          setDrawerOpen(open);
+          if (!open && onClose) onClose();
+        }}
       >
         <DrawerTrigger asChild>
           <Button
@@ -305,11 +344,65 @@ export function ReturnInspectionDrawer({
             <DrawerDescription>ID Reserva: {rental.id}</DrawerDescription>
           </DrawerHeader>
           <div className="h-px bg-accent" />
-          <div className="p-4 overflow-y-auto ">
-            <section className="space-y-3">
+          <div className="p-2 overflow-y-auto ">
+            <section className="space-y-2">
               <h3 className="text-[12px] font-semibold uppercase tracking-widest">
                 Inspección por prenda
               </h3>
+
+              {/* SCANNER INPUT UI */}
+              <div className="relative group">
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 group">
+                    <Input
+                      placeholder="Escanear prenda..."
+                      className="pl-10 h-10 bg-background/50 border-primary/20 focus:border-primary rounded-xl text-xs font-bold font-mono transition-all"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleScan((e.target as HTMLInputElement).value);
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }}
+                    />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-primary transition-colors">
+                      <Barcode size={18} />
+                    </div>
+                  </div>
+
+                  <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="secondary" 
+                        size="icon"
+                        className="h-11 w-11 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 shadow-sm transition-all"
+                        title="Escanear con cámara"
+                      >
+                        <Scan size={18} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Escáner de Cámara</DialogTitle>
+                        <DialogDescription>
+                          Enfoca la prenda para marcarla como recibida.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <BarcodeScanner 
+                          onScan={(code) => {
+                            handleScan(code);
+                            setIsCameraOpen(false);
+                          }}
+                          autoStopOnScan={true}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                <p className="text-[9px] text-muted-foreground mt-1 ml-1 opacity-70">
+                  Tip: Puedes escanear directamente con hardware sin hacer clic aquí.
+                </p>
+              </div>
 
               {Object.values(groupedItems).map((group) => {
                 const { product, items, isSerial } = group;
@@ -320,12 +413,12 @@ export function ReturnInspectionDrawer({
 
                 return (
                   <div
-                    key={product?.id || Math.random()}
+                    key={group.product?.id || `group-${group.items[0]?.id}`}
                     className="p-3 border rounded-xl bg-accent/50 space-y-3 mb-3"
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold">
-                        {productName} ({items[0]?.size})
+                        {productName} {items[0]?.variantAttributes?.size ? `(${items[0].variantAttributes.size})` : items[0]?.size ? `(${items[0].size})` : ""}
                       </span>
                       {isSerial && (
                         <Badge variant="outline" className="text-[9px]">
@@ -353,9 +446,14 @@ export function ReturnInspectionDrawer({
                                 />
                                 <label
                                   htmlFor={`chk-insp-${item.id}`}
-                                  className="text-xs flex-1 cursor-pointer"
+                                  className="text-[11px] flex-1 cursor-pointer font-medium"
                                 >
-                                  ID: {item.stockId}
+                                  Cod: <span className="font-bold text-primary">{item.serialCode || item.stockId?.slice(-8) || "N/A"}</span>
+                                  {item.variantAttributes && Object.keys(item.variantAttributes).length > 0 && (
+                                    <span className="ml-2 text-muted-foreground opacity-70">
+                                      • {Object.values(item.variantAttributes).join(" / ")}
+                                    </span>
+                                  )}
                                 </label>
                               </div>
                               {isChecked && (
@@ -442,39 +540,43 @@ export function ReturnInspectionDrawer({
                 Resumen Operativo
               </h4>
               <div className="grid grid-cols-2 gap-2">
-                {counts.lavanderia > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] bg-blue-100/10 border border-blue-100/10 font-bold text-blue-600 px-2 py-1 rounded-lg">
-                    <span className="flex items-center gap-1">
-                      <WashingMachine size={16} className="text-blue-600" />
-                      {counts.lavanderia} a Lavandería
+                {counts.en_lavanderia > 0 && (
+                  <div className="flex w-fit items-center gap-2 text-[10px] bg-blue-50 border border-blue-200 font-black text-blue-700 px-2 py-1 rounded-xl shadow-sm">
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-blue-500 flex items-center justify-center text-white shrink-0">
+                        <WashingMachine size={14} />
+                      </div>
+                      <span className="uppercase tracking-tighter">{counts.en_lavanderia} Lavandería</span>
                     </span>
                   </div>
                 )}
-                {counts.mantenimiento > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] bg-amber-100/10 border border-amber-100/10 font-bold text-amber-600 px-2 py-1 rounded-lg">
-                    <span className="flex items-center gap-1">
-                      <Icon
-                        iconNode={iron}
-                        size={16}
-                        className="text-amber-600"
-                      />{" "}
-                      {counts.mantenimiento} a Reparación
+                {counts.en_mantenimiento > 0 && (
+                  <div className="flex w-fit items-center gap-2 text-[10px] bg-amber-50 border border-amber-200 font-black text-amber-700 px-2 py-1 rounded-xl shadow-sm">
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-amber-500 flex items-center justify-center text-white shrink-0">
+                        <Icon iconNode={iron} size={14} />
+                      </div>
+                      <span className="uppercase tracking-tighter">{counts.en_mantenimiento} Reparación</span>
                     </span>
                   </div>
                 )}
                 {counts.retirado > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] bg-red-100/10 border border-red-100/10 font-bold text-red-600 px-2 py-1 rounded-lg">
-                    <span className="flex items-center gap-1">
-                      <Trash2 size={16} className="text-red-600" />{" "}
-                      {counts.retirado} de Baja
+                  <div className="flex w-fit items-center gap-2 text-[10px] bg-red-50 border border-red-200 font-black text-red-700 px-2 py-1 rounded-xl shadow-sm">
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-red-500 flex items-center justify-center text-white shrink-0">
+                        <Trash2 size={14} />
+                      </div>
+                      <span className="uppercase tracking-tighter">{counts.retirado} de Baja</span>
                     </span>
                   </div>
                 )}
                 {counts.disponible > 0 && (
-                  <div className="flex items-center gap-2 text-[11px] bg-emerald-100/10 border border-emerald-100/10 font-bold text-emerald-600 px-2 py-1 rounded-lg">
-                    <span className="flex items-center gap-1">
-                      <BadgeCheck size={16} className="text-emerald-600" />{" "}
-                      {counts.disponible} a Catálogo
+                  <div className="flex items-center gap-2 text-[10px] bg-emerald-50 border border-emerald-200 font-black text-emerald-700 px-2 py-2 rounded-xl shadow-sm">
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center text-white shrink-0">
+                        <BadgeCheck size={14} />
+                      </div>
+                      <span className="uppercase tracking-tighter">{counts.disponible} Catálogo</span>
                     </span>
                   </div>
                 )}

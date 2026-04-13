@@ -11,8 +11,17 @@ interface SalesGridProps {
 export const SalesGrid = ({ initialData }: SalesGridProps) => {
   const pending = useMemo(() => initialData.filter((i) => i.status === "vendido_pendiente_entrega"), [initialData]);
   const canceled = useMemo(() => initialData.filter((i) => i.status === "cancelado"), [initialData]);
-  const returned = useMemo(() => initialData.filter((i) => i.status === "devuelto"), [initialData]);
-  const history = useMemo(() => initialData.filter((i) => i.status === "vendido"), [initialData]);
+  const returned = useMemo(
+    () =>
+      initialData.filter(
+        (i) => i.status === "devuelto" || i.status === "devuelto_parcial",
+      ),
+    [initialData],
+  );
+  const history = useMemo(
+    () => initialData.filter((i) => i.status === "vendido"),
+    [initialData],
+  );
 
   return (
     <div className="flex flex-1 flex-col">

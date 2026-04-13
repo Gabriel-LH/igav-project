@@ -4,6 +4,8 @@ import { Promotion } from "../../../types/promotion/type.promotion";
 import { calculateBestPromotionForProduct } from "../../../utils/promotion/promotio.engine";
 import { PromotionRepository } from "../repositories/PromotionRepository";
 import { PromotionLoaderService } from "./promotionLoader.service";
+import { calculateChargeableDays } from "../../../utils/date/calculateRentalDays";
+import { RentalsPolicy } from "../../../types/tenant/type.tenantPolicy";
 
 export interface PromotionContext {
   branchId: string;
@@ -12,6 +14,7 @@ export interface PromotionContext {
   startDate?: Date;
   endDate?: Date;
   operationType?: "venta" | "alquiler";
+  rentalsPolicy?: RentalsPolicy | null;
 }
 
 export class PromotionService {
@@ -54,13 +57,15 @@ export class PromotionService {
 
   private calculateRentalMultiplier(
     item: CartItem,
-    startDate?: Date,
-    endDate?: Date
+    context: PromotionContext
   ): number {
-    if (item.operationType !== "alquiler" || !startDate || !endDate) return 1;
-    // Note: If we had access to productVariants here we could check rentUnit === 'evento'
-    // To be safe, we'll assume days if dates are present.
-    return Math.max(differenceInDays(endDate, startDate), 1);
+    if (item.operationType !== "alquiler" || !context.startDate || !context.endDate) return 1;
+    
+    return calculateChargeableDays(
+      context.startDate,
+      context.endDate,
+      context.rentalsPolicy
+    );
   }
 
   applyPromotionsUseCase(
@@ -101,17 +106,44 @@ export class PromotionService {
       );
 
       const basePrice = Math.max(0, item.listPrice ?? item.unitPrice);
+      
+      // 💡 Mejorar cálculo de descuentos fijos globales:
+      // Si la promo es global y es monto fijo, prorrateamos el valor según el subtotal.
+      const adjustedPromotions = applicablePromotions.map(promo => {
+        if (promo.scope === "global" && promo.type === "fixed_amount" && context.cartSubtotal > 0) {
+          const itemSubtotal = basePrice * item.quantity; // Subtotal base del item
+          const weight = itemSubtotal / context.cartSubtotal;
+          return {
+            ...promo,
+            value: (promo.value ?? 0) * weight,
+          };
+        }
+        return promo;
+      });
+
       const result = calculateBestPromotionForProduct(
         item.product,
         basePrice,
-        applicablePromotions,
+        adjustedPromotions,
       );
 
-      const multiplier = this.calculateRentalMultiplier(item, context.startDate, context.endDate);
+      const multiplier = this.calculateRentalMultiplier(item, context);
+      const isFixedAmount = result.promotionType === "fixed_amount";
+      
       const price = Number(result.finalPrice || 0);
       const qty = Number(item.quantity || 0);
-      const rawSubtotal = price * qty * multiplier;
-      const subtotal = isNaN(rawSubtotal) ? 0 : rawSubtotal;
+      
+      // 🔄 LÓGICA DE ALQUILER: 
+      // Si el descuento es PORCENTAJE, se aplica al precio unitario (que se multiplica por días).
+      // Si el descuento es MONTO FIJO, restamos el descuento AL FINAL del subtotal de ese ítem (no por día).
+      let subtotal = 0;
+      if (item.operationType === "alquiler" && isFixedAmount) {
+        const baseSubtotal = (item.listPrice ?? item.unitPrice) * qty * multiplier;
+        subtotal = Math.max(0, baseSubtotal - (result.discount || 0) * qty);
+      } else {
+        const rawSubtotal = price * qty * multiplier;
+        subtotal = isNaN(rawSubtotal) ? 0 : rawSubtotal;
+      }
 
       return {
         ...item,

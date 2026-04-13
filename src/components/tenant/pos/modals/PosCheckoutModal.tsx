@@ -11,12 +11,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { addDays, setHours, setMinutes, differenceInDays } from "date-fns";
-import { ShoppingBag, AlertTriangle, Banknote, Calendar, Tag, AlertCircle } from "lucide-react";
+import { addDays, setHours, setMinutes } from "date-fns";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
+import { ShoppingBag, AlertTriangle, Banknote, Calendar, AlertCircle } from "lucide-react";
 
 // --- IMPORTS ---
 import { useCartStore } from "@/src/store/useCartStore";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { CustomerSelector } from "@/src/components/tenant/home/ui/reservation/CustomerSelector";
 import { CashPaymentSummary } from "@/src/components/tenant/home/ui/direct-transaction/CashPaymentSummary";
 import {
@@ -42,7 +44,6 @@ import { getAvailabilityByAttributes } from "@/src/utils/reservation/checkAvaila
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckmarkBadge03Icon } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/badge";
-import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { UsePointsComponent } from "../ui/UsePointsComponent";
 import { CartItem } from "@/src/types/cart/type.cart";
@@ -118,7 +119,7 @@ export function PosCheckoutModal({
   }, [open]);
 
   // ─── ESTADOS ───
-  const [localSelectedCustomer, setLocalSelectedCustomer] = useState<any>(null);
+  const [localSelectedCustomer, setLocalSelectedCustomer] = useState<any>(undefined);
   const selectedCustomer = selectedCustomerProp ?? localSelectedCustomer;
   const setSelectedCustomer =
     onSelectedCustomerChange ?? setLocalSelectedCustomer;
@@ -145,6 +146,9 @@ export function PosCheckoutModal({
     () => paymentMethods.find((m) => m.id === paymentMethodId),
     [paymentMethods, paymentMethodId],
   );
+
+  const isGeneral = selectedCustomer === null;
+  const noSelection = selectedCustomer === undefined;
 
   const isCashPayment = selectedPaymentMethod?.type === "cash";
 
@@ -241,8 +245,9 @@ export function PosCheckoutModal({
   const hasRentals = alquilerItems.length > 0;
   const getMultiplier = (item: CartItem) => {
     const variant = productVariants.find((v) => v.id === item.variantId);
+    const policy = useTenantConfigStore.getState().policy;
     return item.operationType === "alquiler" && variant?.rentUnit !== "evento"
-      ? Math.max(differenceInDays(dateRange.to, dateRange.from), 1)
+      ? calculateChargeableDays(dateRange.from, dateRange.to, policy?.rentals)
       : 1;
   };
 
@@ -291,8 +296,8 @@ export function PosCheckoutModal({
   );
 
   const itemAmounts = useMemo(() => items.map(item => ({
-    amount: (item.listPrice ?? item.unitPrice) * item.quantity * getMultiplier(item)
-  })), [items, getMultiplier]);
+    amount: item.subtotal
+  })), [items]);
 
   const taxTotals = calculateTaxTotals(
     baseAmount, 
@@ -301,7 +306,7 @@ export function PosCheckoutModal({
     itemAmounts
   );
   const totalBrutoConIGV = taxTotals.total;
-  const subtotalSinIGV = taxTotals.subtotal;
+
   const taxAmount = taxTotals.taxAmount;
 
   // Total final (ya incluye IGV)
@@ -380,12 +385,7 @@ export function PosCheckoutModal({
          description: "Debes abrir la caja antes de procesar cobros (Configuración obligatoria)."
        });
     }
-    const isGeneral = !selectedCustomer;
-    if (isGeneral && hasRentals) {
-      return toast.error("Seleccione un cliente", {
-        description: "Los alquileres requieren un cliente registrado por seguridad y seguimiento."
-      });
-    }
+
     if (conflicts.length > 0)
       return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
@@ -399,6 +399,7 @@ export function PosCheckoutModal({
 
     const baseData = {
       tenantId: activeTenantId ?? items[0]?.product?.tenantId,
+      customerMode: (selectedCustomer ? "registered" : "general") as "registered" | "general",
       customerId: selectedCustomer?.id || "",
       customerName: selectedCustomer 
         ? `${selectedCustomer.firstName ?? ""} ${selectedCustomer.lastName ?? ""}`.trim()
@@ -461,6 +462,8 @@ export function PosCheckoutModal({
                 discountReason,
                 promotionId,
                 bundleId,
+                serialCode: code,
+                isSerial: true,
               });
             });
 
@@ -747,9 +750,11 @@ export function PosCheckoutModal({
                     </Badge>
                   </div>
                   {alquilerItems.map((item) => {
-                    const days = Math.max(
-                      differenceInDays(dateRange.to, dateRange.from),
-                      1,
+                    const policy = useTenantConfigStore.getState().policy;
+                    const days = calculateChargeableDays(
+                      dateRange.from,
+                      dateRange.to,
+                      policy?.rentals
                     );
                     const variant = productVariants.find(
                       (v) => v.id === item.variantId,
@@ -951,8 +956,7 @@ export function PosCheckoutModal({
                 ) ||
                 (isCashPayment && Number(receivedAmount) < totalACobrarHoy && !hasRentals) ||
                 (hasRentals && Number(receivedAmount) < totalACobrarHoy) ||
-                (hasRentals && guarantee.length === 0) ||
-                !selectedCustomer
+                (hasRentals && guarantee.length === 0)
               }
               className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
             >

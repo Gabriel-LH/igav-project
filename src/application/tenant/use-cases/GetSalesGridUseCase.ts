@@ -29,7 +29,7 @@ export class GetSalesGridUseCase {
       this.saleRepo.getSales(),
       this.saleRepo.getSaleItems(),
       this.clientRepo.getAllClients(),
-      this.branchRepo.getBranches(),
+      this.branchRepo.getBranchesByTenant(tenantId),
       this.inventoryRepo.getProducts(),
       this.userRepo.getUsers(),
       this.operationRepo.getOperationsByTenant(tenantId),

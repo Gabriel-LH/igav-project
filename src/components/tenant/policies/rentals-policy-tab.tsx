@@ -21,9 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import type { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 
 export function RentalsPoliciesTab() {
-  const { control, watch } = useFormContext<TenantPolicy>();
-  const requireGuarantee = watch("rentals.requireGuarantee");
-  const lateToleranceHours = watch("rentals.lateToleranceHours");
+  const { control } = useFormContext<TenantPolicy>();
 
   return (
     <div className="space-y-4">
@@ -31,9 +29,7 @@ export function RentalsPoliciesTab() {
       <Card>
         <CardHeader>
           <div className="flex items-center mt-1 justify-between">
-            <CardTitle className="flex items-center gap-2">
-              Retrasos
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2">Retrasos</CardTitle>
           </div>
           <CardDescription>
             Configura cómo el sistema maneja los retrasos en devoluciones
@@ -82,13 +78,12 @@ export function RentalsPoliciesTab() {
                     </span>
                   </div>
                 </FormControl>
-                <FormDescription >
+                <FormDescription>
                   Tiempo de gracia antes de considerar atrasado
                 </FormDescription>
               </FormItem>
             )}
           />
-
         </CardContent>
       </Card>
 
@@ -125,10 +120,63 @@ export function RentalsPoliciesTab() {
               </FormItem>
             )}
           />
-
         </CardContent>
       </Card>
 
+      {/* Cobros y Días */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base mt-2">
+            Cálculo de Días y Cobros
+          </CardTitle>
+          <CardDescription>
+            Define qué días adicionales se facturan en el alquiler
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FormField
+            control={control}
+            name="rentals.chargePickupDay"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel>Cobrar día de entrega (Pickup)</FormLabel>
+                  <FormDescription>
+                    Si se desactiva, el primer día no se contará si es parcial
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="rentals.chargeReturnDay"
+            render={({ field }) => (
+              <FormItem className="flex flex-row mb-3 items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel>Cobrar día de devolución (Return)</FormLabel>
+                  <FormDescription>
+                    Si se desactiva, el día de entrega de vuelta no se factura
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { StockAssignmentWidget } from "../home/ui/widget/StockAssignmentWidget";
-import { differenceInDays } from "date-fns";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
 import { useBranchStore } from "@/src/store/useBranchStore";
 
 interface PosCartItemProps {
@@ -98,12 +98,12 @@ export function PosCartItem({ item }: PosCartItemProps) {
   );
 
   const days = useMemo(() => {
-    if (!globalRentalDates) return 1;
-    return Math.max(
-      differenceInDays(globalRentalDates.to, globalRentalDates.from),
-      1,
+    return calculateChargeableDays(
+      globalRentalDates?.from,
+      globalRentalDates?.to,
+      policy?.rentals
     );
-  }, [globalRentalDates]);
+  }, [globalRentalDates, policy]);
 
   return (
     <div

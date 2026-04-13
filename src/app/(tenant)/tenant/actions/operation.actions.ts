@@ -71,6 +71,40 @@ export async function getSalesGridAction(tenantId: string) {
   return await useCase.execute(tenantId);
 }
 
+export async function getSalesStoreDataAction(tenantId: string) {
+  const saleRepo = new PrismaSaleRepository(prisma);
+  const inventoryRepo = new PrismaInventoryRepository(prisma);
+
+  const [sales, saleItems, products, inventoryItems, stockLots] =
+    await Promise.all([
+      saleRepo.getSales(),
+      saleRepo.getSaleItems(),
+      inventoryRepo.getProducts(),
+      inventoryRepo.getInventoryItems(),
+      inventoryRepo.getStockLots(),
+    ]);
+
+  return {
+    sales: JSON.parse(
+      JSON.stringify(sales.filter((sale) => sale.tenantId === tenantId)),
+    ),
+    saleItems: JSON.parse(
+      JSON.stringify(saleItems.filter((item) => item.tenantId === tenantId)),
+    ),
+    products: JSON.parse(
+      JSON.stringify(products.filter((product) => product.tenantId === tenantId)),
+    ),
+    inventoryItems: JSON.parse(
+      JSON.stringify(
+        inventoryItems.filter((item) => item.tenantId === tenantId),
+      ),
+    ),
+    stockLots: JSON.parse(
+      JSON.stringify(stockLots.filter((lot) => lot.tenantId === tenantId)),
+    ),
+  };
+}
+
 export async function cancelRentalAction(rentalId: string, reason: string, userId: string) {
   const rentalRepo = new PrismaRentalRepository(prisma);
   const guaranteeRepo = new PrismaGuaranteeRepository(prisma);
@@ -93,9 +127,7 @@ export async function cancelRentalAction(rentalId: string, reason: string, userI
 export async function deliverRentalAction(
   rentalId: string, 
   guaranteeData: { value: string; type: GuaranteeType }, 
-  userId: string,
-  selectedIds?: string[]
-) {
+  userId: string) {
   const rentalRepo = new PrismaRentalRepository(prisma);
   const inventoryRepo = new PrismaInventoryRepository(prisma);
   const reservationRepo = new PrismaReservationRepository(prisma);
@@ -138,6 +170,7 @@ export async function returnSaleItemsAction(
   reason: string,
   items: {
     saleItemId: string;
+    quantity: number;
     condition?: "perfecto" | "dañado" | "manchado";
     restockingFee: number;
   }[],

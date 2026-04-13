@@ -1,4 +1,4 @@
-import { differenceInDays } from "date-fns";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
 import { PromotionRepository } from "../../../../domain/tenant/repositories/PromotionRepository";
 import { InventoryRepository } from "../../../../domain/tenant/repositories/InventoryRepository";
 import { BundleDomainService } from "../../../../domain/tenant/services/bundle.service";
@@ -105,9 +105,11 @@ export class CalculateCartPromotionsUseCase {
     const cartSubtotal = finalItems.reduce((acc, item) => {
       const variant = productVariants.find(v => v.id === item.variantId);
       const isEvent = variant?.rentUnit === "evento";
-      const diff = (startDate && endDate) ? differenceInDays(endDate, startDate) : 0;
-      const multiplier = (item.operationType === "alquiler" && !isEvent && !isNaN(diff))
-        ? Math.max(diff, 1)
+      
+      const days = calculateChargeableDays(startDate, endDate, policy?.rentals);
+      
+      const multiplier = (item.operationType === "alquiler" && !isEvent)
+        ? days
         : 1;
       const price = Number(item.listPrice ?? item.unitPrice ?? 0);
       const qty = Number(item.quantity || 0);
@@ -124,6 +126,7 @@ export class CalculateCartPromotionsUseCase {
         now: new Date(),
         startDate,
         endDate,
+        rentalsPolicy: policy?.rentals
       }
     );
 

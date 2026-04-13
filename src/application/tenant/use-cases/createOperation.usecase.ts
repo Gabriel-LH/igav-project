@@ -34,13 +34,20 @@ export class CreateOperationUseCase {
       initialNetPaid,
     );
 
+    const rawCustomerId = dto.customerId || "";
+    const hasCustomer = rawCustomerId.trim().length > 0;
+    const customerMode = hasCustomer 
+      ? (dto.customerMode || "registered") 
+      : "general";
+
     const operationData = operationSchema.parse({
       id: crypto.randomUUID(),
       tenantId,
       referenceCode,
       branchId: dto.branchId,
       sellerId: dto.sellerId,
-      customerId: dto.customerId,
+      customerId: rawCustomerId,
+      customerMode,
       type: dto.type,
       status: "en_progreso",
       paymentStatus: operationPaymentStatus,

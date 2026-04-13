@@ -7,6 +7,7 @@ import { OperationRepository } from "../../../domain/tenant/repositories/Operati
 import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
 import { differenceInHours } from "date-fns";
+import { SaleItem } from "@/src/types/sales/type.saleItem";
 
 export interface ReturnSaleItemsInput {
   saleId: string;
@@ -14,9 +15,47 @@ export interface ReturnSaleItemsInput {
   userId: string;
   items: {
     saleItemId: string;
+    quantity: number;
     condition?: "perfecto" | "dañado" | "manchado";
     restockingFee: number;
   }[];
+}
+
+type PreparedReversalItem = {
+  sourceSaleItemId: string;
+  saleItemId: string;
+  tenantId: string;
+  quantity: number;
+  originalQuantity: number;
+  itemSnapshot: SaleItem;
+  condition?: "perfecto" | "dañado" | "manchado";
+  restockingFee: number;
+  refundedAmount: number;
+};
+
+function roundMoney(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function getProratedUnitPaid(
+  saleTotalAmount: number,
+  allItems: SaleItem[],
+  targetItem: SaleItem,
+): number {
+  const grossTotal = allItems.reduce(
+    (sum, item) => sum + Number(item.priceAtMoment || 0) * Number(item.quantity || 0),
+    0,
+  );
+
+  if (grossTotal <= 0 || targetItem.quantity <= 0) {
+    return Number(targetItem.priceAtMoment || 0);
+  }
+
+  const lineGross =
+    Number(targetItem.priceAtMoment || 0) * Number(targetItem.quantity || 0);
+  const lineNetPaid = (Number(saleTotalAmount || 0) * lineGross) / grossTotal;
+
+  return roundMoney(lineNetPaid / Number(targetItem.quantity || 1));
 }
 
 export class ReturnSaleItemsUseCase {
@@ -28,7 +67,12 @@ export class ReturnSaleItemsUseCase {
     private operationRepo: OperationRepository,
   ) {}
 
-  async execute({ saleId, items, reason, userId }: ReturnSaleItemsInput): Promise<void> {
+  async execute({
+    saleId,
+    items,
+    reason,
+    userId,
+  }: ReturnSaleItemsInput): Promise<void> {
     const sale = await this.saleRepo.getSaleById(saleId);
 
     if (!sale) throw new Error("Venta no encontrada");
@@ -62,7 +106,9 @@ export class ReturnSaleItemsUseCase {
       const baseDate = sale.saleDate ?? sale.createdAt;
       const hours = differenceInHours(new Date(), baseDate);
       if (hours > maxReturnHours) {
-        throw new Error(`La venta excede el plazo máximo de ${maxReturnHours} horas para devolución.`);
+        throw new Error(
+          `La venta excede el plazo máximo de ${maxReturnHours} horas para devolución.`,
+        );
       }
     }
 
@@ -88,25 +134,75 @@ export class ReturnSaleItemsUseCase {
     }
 
     let totalRefunded = 0;
+    const originalItems = saleWithItems.items;
 
-    const reversalItems = items.map((i) => {
-      const item = saleWithItems.items.find((si) => si.id === i.saleItemId);
+    const reversalItems: PreparedReversalItem[] = items.map((input) => {
+      const item = saleWithItems.items.find((si) => si.id === input.saleItemId);
       if (!item) throw new Error("Item no encontrado");
       if (item.isReturned) {
         throw new Error("El item ya fue devuelto");
       }
+      if (!input.quantity || input.quantity <= 0) {
+        throw new Error("La cantidad a devolver debe ser mayor a cero");
+      }
+      if (input.quantity > item.quantity) {
+        throw new Error(
+          "La cantidad a devolver no puede superar la cantidad vendida",
+        );
+      }
 
-      const refunded = item.priceAtMoment - (i.restockingFee || 0);
+      const unitPaid = getProratedUnitPaid(
+        sale.totalAmount,
+        originalItems,
+        item,
+      );
+      const refunded = roundMoney(
+        unitPaid * input.quantity -
+          Number(input.restockingFee || 0) * input.quantity,
+      );
       totalRefunded += refunded;
 
       return {
+        sourceSaleItemId: item.id,
         saleItemId: item.id,
         tenantId: sale.tenantId,
-        condition: i.condition,
-        restockingFee: i.restockingFee,
+        quantity: input.quantity,
+        originalQuantity: item.quantity,
+        itemSnapshot: item,
+        condition: input.condition,
+        restockingFee: input.restockingFee,
         refundedAmount: refunded,
       };
     });
+
+    for (const reversalItem of reversalItems) {
+      if (reversalItem.quantity < reversalItem.originalQuantity) {
+        await this.saleRepo.updateSaleItem(reversalItem.sourceSaleItemId, {
+          quantity: reversalItem.originalQuantity - reversalItem.quantity,
+        });
+
+        const splitItemId = `SRET-${crypto.randomUUID()}`;
+        await this.saleRepo.createSaleItem(
+          {
+            ...reversalItem.itemSnapshot,
+            id: splitItemId,
+            quantity: reversalItem.quantity,
+            isReturned: true,
+            returnedAt: new Date(),
+            returnCondition: reversalItem.condition,
+          },
+          sale.tenantId,
+        );
+
+        reversalItem.saleItemId = splitItemId;
+      } else {
+        await this.saleRepo.updateSaleItem(reversalItem.saleItemId, {
+          isReturned: true,
+          returnedAt: new Date(),
+          returnCondition: reversalItem.condition,
+        });
+      }
+    }
 
     await this.reversalRepo.addReversal({
       id: `REV-${crypto.randomUUID()}`,
@@ -114,26 +210,22 @@ export class ReturnSaleItemsUseCase {
       tenantId: sale.tenantId,
       type: "return",
       reason,
-      items: reversalItems,
+      items: reversalItems.map((item) => ({
+        saleItemId: item.saleItemId,
+        tenantId: item.tenantId,
+        condition: item.condition,
+        restockingFee: item.restockingFee,
+        refundedAmount: item.refundedAmount,
+      })),
       totalRefunded,
       createdAt: new Date(),
       createdBy: userId,
     });
 
-    // 1️⃣ actualizar items
-    for (const ri of reversalItems) {
-      await this.saleRepo.updateSaleItem(ri.saleItemId, {
-        isReturned: true,
-        returnedAt: new Date(),
-        returnCondition: ri.condition,
-      });
-    }
-
-    // 2️⃣ LEER ESTADO NUEVO (clave)
     await this.saleRepo.addSaleItemStatusHistory(
-      reversalItems.map((ri) => ({
+      reversalItems.map((item) => ({
         tenantId: sale.tenantId,
-        saleItemId: ri.saleItemId,
+        saleItemId: item.saleItemId,
         fromStatus:
           sale.status === "vendido_pendiente_entrega"
             ? "vendido_pendiente_entrega"
@@ -147,9 +239,8 @@ export class ReturnSaleItemsUseCase {
 
     const updatedSaleWithItems = await this.saleRepo.getSaleWithItems(saleId);
     const updatedItems = updatedSaleWithItems.items;
-    const allReturned = updatedItems.every((i) => i.isReturned === true);
+    const allReturned = updatedItems.every((item) => item.isReturned === true);
 
-    // 3️⃣ actualizar venta
     await this.saleRepo.updateSale(saleId, {
       amountRefunded: sale.amountRefunded + totalRefunded,
       status: allReturned ? "devuelto" : sale.status,
@@ -158,10 +249,10 @@ export class ReturnSaleItemsUseCase {
       updatedBy: userId,
     });
 
-    for (const ri of reversalItems) {
-      const saleItem = saleWithItems.items.find((i) => i.id === ri.saleItemId)!;
+    for (const reversalItem of reversalItems) {
+      const saleItem = reversalItem.itemSnapshot;
 
-      if (ri.condition !== "perfecto") {
+      if (reversalItem.condition !== "perfecto") {
         throw new Error("No se aceptan devoluciones en este estado");
       }
 
@@ -178,7 +269,7 @@ export class ReturnSaleItemsUseCase {
       if (saleItem.stockId && sale.status === "vendido") {
         await this.inventoryRepo.increaseLotQuantity(
           saleItem.stockId,
-          saleItem.quantity,
+          reversalItem.quantity,
         );
       }
     }

@@ -58,7 +58,6 @@ export class CreateSaleUseCase {
     operationId: string,
     tenantId: string,
     totalAmount: number,
-    paymentMethodId: string,
   ): Promise<any> {
     const now = new Date();
     const fromReservation =
@@ -122,11 +121,18 @@ export class CreateSaleUseCase {
       }
     };
 
+    const rawCustomerId = dto.customerId || "";
+    const hasCustomer = rawCustomerId.trim().length > 0;
+    const customerMode = hasCustomer 
+      ? (dto.customerMode || "registered") 
+      : "general";
+
     const specificData = saleSchema.parse({
       id: crypto.randomUUID(),
       tenantId,
       operationId: String(operationId),
-      customerId: dto.customerId,
+      customerMode,
+      customerId: rawCustomerId,
       reservationId: fromReservation
         ? (dto as SaleFromReservationDTO).reservationId
         : undefined,
@@ -137,7 +143,6 @@ export class CreateSaleUseCase {
       subTotal: dto.financials?.subtotal,
       totalDiscount: dto.financials?.totalDiscount,
       status: resolvedStatus,
-      // paymentMethod: paymentMethodId, // Removed as it is not in schema
       amountRefunded: 0,
       notes: (dto as any).notes || "",
       createdAt: now,

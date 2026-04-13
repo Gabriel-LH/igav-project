@@ -4,7 +4,6 @@ import { useCartStore } from "@/src/store/useCartStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/badge";
 import { formatCurrency } from "@/src/utils/currency-format";
-import { ShoppingBag, Eye } from "lucide-react";
 import Image from "next/image";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
@@ -24,6 +23,10 @@ import { useRouter } from "next/navigation";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { z } from "zod";
 import { productSchema } from "@/src/types/product/type.product";
+import { usePromotionStore } from "@/src/store/usePromotionStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
+import { applyPricingEngine } from "@/src/utils/pricing/applyPricingEngine";
+import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 
 interface PosProductCardProps {
   product: z.infer<typeof productSchema>;
@@ -180,7 +183,14 @@ export function PosProductCard({
     stockForRent,
     hasVariants,
     productVariants,
+    maxDiscountPercent,
+    relatedBundles,
   } = useMemo(() => {
+    const promos = usePromotionStore.getState().promotions;
+    const config =
+      useTenantConfigStore.getState().config || (DEFAULT_TENANT_CONFIG as any);
+    const policy = useTenantConfigStore.getState().policy;
+
     let itemsForBranch: any[] = [];
     if (product.is_serial) {
       itemsForBranch = inventoryItems.filter(
@@ -230,15 +240,53 @@ export function PosProductCard({
       hasVariants: variants,
       itemsForBranch,
       productVariants: v,
+      maxDiscountPercent: (() => {
+        let maxPct = 0;
+        v.forEach((variant) => {
+          // Check Sale discount
+          if (product.can_sell && variant.priceSell) {
+            const result = applyPricingEngine({
+              product,
+              operationType: "venta",
+              listPrice: variant.priceSell,
+              promotions: promos,
+              config,
+              policy,
+            });
+            if (result.discountAmount > 0) {
+              const pct = (result.discountAmount / result.listPrice) * 100;
+              if (pct > maxPct) maxPct = pct;
+            }
+          }
+          // Check Rent discount
+          if (product.can_rent && variant.priceRent) {
+            const result = applyPricingEngine({
+              product,
+              operationType: "alquiler",
+              listPrice: variant.priceRent,
+              promotions: promos,
+              config,
+              policy,
+            });
+            if (result.discountAmount > 0) {
+              const pct = (result.discountAmount / result.listPrice) * 100;
+              if (pct > maxPct) maxPct = pct;
+            }
+          }
+        });
+        return Math.round(maxPct);
+      })(),
+      relatedBundles: promos
+        .filter(
+          (p) =>
+            p.isActive &&
+            !p.isDeleted &&
+            p.type === "bundle" &&
+            p.bundleConfig?.requiredProductIds.includes(product.id),
+        )
+        .map((p) => p.name),
     };
-  }, [
-    product.id,
-    product.is_serial,
-    inventoryItems,
-    stockLots,
-    currentBranchId,
-    allVariants,
-  ]);
+  }, [product, allVariants, inventoryItems, currentBranchId, stockLots]);
 
   const inCartSale = items
     .filter((i) => i.product.id === product.id && i.operationType === "venta")
@@ -270,7 +318,14 @@ export function PosProductCard({
   return (
     <>
       <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border shadow-lg hover:shadow-2xl transition-all duration-300 h-full">
-        <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl" onClick={() => router.push(`/tenant/product-details/${encodeURIComponent(product.id)}`)}>
+        <div
+          className="relative aspect-square w-full overflow-hidden rounded-t-2xl"
+          onClick={() =>
+            router.push(
+              `/tenant/product-details/${encodeURIComponent(product.id)}`,
+            )
+          }
+        >
           {product.image ? (
             <Image
               src={product.image[0]}
@@ -315,9 +370,25 @@ export function PosProductCard({
                 {productVariants[0]?.rentUnit === "evento" && " /evento"}
               </Badge>
             )}
+
+            {maxDiscountPercent > 0 && (
+              <Badge className="bg-rose-600 text-white text-[10px] shadow-lg backdrop-blur-md font-black border-none animate-pulse">
+                -{maxDiscountPercent}%
+              </Badge>
+            )}
           </div>
 
           <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+            {relatedBundles.length > 0 && (
+              <Badge
+                className="bg-amber-100/95 text-amber-800 border-amber-200 text-[10px] font-bold shadow-sm backdrop-blur-sm"
+                title={relatedBundles.join(", ")}
+              >
+                {relatedBundles.length === 1
+                  ? "COMBO"
+                  : `${relatedBundles.length} COMBOS`}
+              </Badge>
+            )}
             <Badge
               variant={product.is_serial ? "secondary" : "outline"}
               className={cn(
@@ -345,7 +416,7 @@ export function PosProductCard({
           </div>
         </div>
 
-        <div className="p-4 flex flex-col flex-1 gap-2">
+        <div className="px-2 pb-1 flex flex-col flex-1 gap-2">
           <div className="flex flex-col gap-1">
             <h3
               className="font-bold text-sm line-clamp-2 leading-snug"
@@ -361,7 +432,7 @@ export function PosProductCard({
               </p>
             </div>
           </div>
-          <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid -mt-3 gap-3">
             <FeatureGuard feature="sales">
               {product.can_sell ? (
                 <Button

@@ -8,8 +8,6 @@ import { PosProductCard } from "./ui/POSProductCard";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { getBranchInventoryAction } from "@/src/app/(tenant)/tenant/actions/inventory.actions";
 import { toast } from "sonner";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ToolsIcon } from "@hugeicons/core-free-icons";
 import type { Product } from "@/src/types/product/type.product";
 import type { ProductVariant } from "@/src/types/product/type.productVariant";
 import type { InventoryItem } from "@/src/types/product/type.inventoryItem";
@@ -83,7 +81,7 @@ export function PosProductSection() {
   return (
     <div className="flex flex-col h-full">
       {/* Barra de Búsqueda */}
-      <div className="py-2">
+      <div className="pb-2">
         <div className="relative">
           <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input

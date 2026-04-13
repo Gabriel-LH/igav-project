@@ -97,7 +97,7 @@ export class PrismaPromotionRepository implements PromotionRepository {
     promotionId: string,
   ): Promise<DomainPromotion | null> {
     const promo = await this.prisma.promotion.findFirst({
-      where: { id: promotionId, tenantId },
+      where: { id: promotionId, tenantId, isDeleted: false },
     });
     return promo ? mapPrismaPromotion(promo) : null;
   }
@@ -109,11 +109,22 @@ export class PrismaPromotionRepository implements PromotionRepository {
     const promos = await this.prisma.promotion.findMany({
       where: {
         tenantId,
+        isDeleted: false,
         ...(opts?.includeInactive ? {} : { isActive: true }),
       },
       orderBy: { createdAt: "desc" },
     });
     return promos.map(mapPrismaPromotion);
+  }
+
+  async deletePromotion(promotionId: string): Promise<void> {
+    await this.prisma.promotion.update({
+      where: { id: promotionId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
   }
 
   async togglePromotion(promotionId: string, isActive: boolean): Promise<void> {

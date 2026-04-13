@@ -86,6 +86,7 @@ export function SalesDataTable({
     expectedReturnDate: "Fecha de devolución",
     saleDate: "Fecha de venta",
     returnDate: "Fecha de retorno",
+    returnedQuantity: "Cantidad devuelta",
     cancelDate: "Fecha de cancelación",
     branchName: "Sucursal",
     sellerName: "Vendedor",
@@ -133,7 +134,7 @@ export function SalesDataTable({
     {
       data: dataSalesCanceled,
       columns: columnsSalesCanceled,
-      getRowId: (row) => row.id.toString(),
+      getRowId: (row) => row.rowId?.toString() || row.id.toString(),
       ...getCommonTableProps<z.infer<typeof salesCanceledSchema>>(),
     },
   );
@@ -141,14 +142,14 @@ export function SalesDataTable({
   const tableSalesReturn = useReactTable<z.infer<typeof salesReturnSchema>>({
     data: dataSalesReturn,
     columns: columnsSalesReturn,
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => row.rowId?.toString() || row.id.toString(),
     ...getCommonTableProps<z.infer<typeof salesReturnSchema>>(),
   });
 
   const tableSalesHistory = useReactTable<z.infer<typeof salesHistorySchema>>({
     data: dataSalesHistory,
     columns: columnsSalesHistory,
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => row.rowId?.toString() || row.id.toString(),
     ...getCommonTableProps<z.infer<typeof salesHistorySchema>>(),
   });
 

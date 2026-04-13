@@ -32,6 +32,7 @@ import { useBranchStore } from "@/src/store/useBranchStore";
 import { toast } from "sonner";
 import { buildDeliveryTicketHtml } from "../ticket/build-delivered-ticket";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { usePaymentStore } from "@/src/store/usePaymentStore";
@@ -160,17 +161,12 @@ export function DetailsReservedViewer({
 
   const durationInDays = useMemo(() => {
     if (!activeRes || activeRes.operationType !== "alquiler") return 1;
-    const start = new Date(activeRes.startDate);
-    const end = new Date(activeRes.endDate);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
     
-    // El cálculo depende de la política (por defecto inclusivo)
-    const isInclusive = policy?.rentals?.inclusiveDayCalculation ?? true;
-    const baseDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    return isInclusive ? baseDays + 1 : baseDays || 1; 
+    return calculateChargeableDays(
+      activeRes.startDate,
+      activeRes.endDate,
+      policy?.rentals
+    );
   }, [activeRes, policy]);
 
   const totalCalculated = useMemo(() => {

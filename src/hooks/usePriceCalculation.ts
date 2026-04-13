@@ -1,4 +1,5 @@
-import { differenceInDays } from "date-fns";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
+import { useTenantConfigStore } from "../store/useTenantConfigStore";
 
 interface UsePriceCalculationParams {
   operationType: "venta" | "alquiler";
@@ -30,10 +31,8 @@ export function usePriceCalculation({
   const isVenta = operationType === "venta";
   const isEvent = rentUnit === "evento";
 
-  const days =
-    startDate && endDate
-      ? Math.max(differenceInDays(endDate, startDate) + 1, 1)
-      : 1;
+  const policy = useTenantConfigStore.getState().policy;
+  const days = calculateChargeableDays(startDate, endDate, policy?.rentals);
 
   // SUBTOTAL DE LA OPERACIÓN
   const subtotal = isVenta

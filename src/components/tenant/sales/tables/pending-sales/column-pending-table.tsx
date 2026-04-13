@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { DeliverSaleModal } from "../../ui/modals/DeliverSaleModal";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { canAnnulSale } from "@/src/utils/times/saleTimeRules";
+import { useSessionStore } from "@/src/store/useSessionStore";
 
 export const columnsSalesPending: ColumnDef<
   z.infer<typeof salesPendingSchema>
@@ -117,8 +118,7 @@ function ActionCell({
 }) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDeliverModal, setShowDeliverModal] = useState(false);
-
-  const userId = "user_1";
+  const userId = useSessionStore((state) => state.user?.id);
 
   const item = row.original;
 
@@ -127,6 +127,11 @@ function ActionCell({
   const fullSaleData = sales.find((s) => s.id === item.id);
 
   const handleCancelConfirm = async (id: string, reason: string) => {
+    if (!userId) {
+      toast.error("No se pudo identificar al usuario actual");
+      return;
+    }
+
     try {
       await cancelSaleAction(id, reason, userId);
 
@@ -147,6 +152,11 @@ function ActionCell({
   }
 
   const handleDeliverSale = async (id: string) => {
+    if (!userId) {
+      toast.error("No se pudo identificar al usuario actual");
+      return;
+    }
+
     try {
       await deliverSaleAction(id, userId);
 

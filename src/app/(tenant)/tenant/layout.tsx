@@ -25,15 +25,22 @@ export default async function TenantLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const access = await requireTenantMembership().catch(() => null);
-  if (!access) {
-    redirect("/auth/login");
+  let access;
+  try {
+    access = await requireTenantMembership();
+  } catch (error: any) {
+    console.log("[TENANT_LAYOUT] Guard failed:", error.message);
+    if (error.message === "AUTH_SESSION_MISSING") {
+      return redirect("/auth/login?error=login_required");
+    }
+    if (error.message === "AUTH_NO_MEMBERSHIP") {
+      return redirect("/auth/login?error=no_membership");
+    }
+    return redirect("/auth/login?error=unauthorized");
   }
+
   if (access.user.globalRole === "SUPER_ADMIN") {
-    redirect("/superadmin/dashboard");
-  }
-  if (!access.membership) {
-    redirect("/auth/login?error=no_tenant_membership");
+    return redirect("/superadmin/dashboard");
   }
 
   // Parallel fetching
@@ -47,17 +54,24 @@ export default async function TenantLayout({
     getTenantConfigAction(),
   ]);
 
-  const branches = branchesRes.success ? branchesRes.data : [];
+  if (!access.membership) {
+    return redirect("/auth/login?error=no_membership");
+  }
+
+  // At this point access.membership is guaranteed to be non-null
+  const membership = access.membership;
+
+  const branches = branchesRes.success ? (branchesRes.data as any[]) : [];
   const promotions = promotionsRes.success ? promotionsRes.data : [];
   const users = usersRes.success ? usersRes.data : [];
   const categories = categoriesRes.success ? categoriesRes.data : [];
   const cashSessions = cashSessionsRes.success ? cashSessionsRes.data : [];
   const tenantConfig = tenantConfigRes.success ? tenantConfigRes.data : null;
-  const tenant = access.membership.tenant;
-  
+
+  const tenant = membership.tenant;
   const logoUrl =
     tenant?.metadata && typeof (tenant.metadata as any).logoUrl === "string"
-      ? ((tenant.metadata as any).logoUrl as string)
+      ? (tenant.metadata as any).logoUrl
       : "";
 
   return (
@@ -71,8 +85,8 @@ export default async function TenantLayout({
           },
           membership: {
             tenantId: access.tenantId!,
-            role: access.membership.role as any,
-            branch: access.membership.branch as any,
+            role: membership.role as any,
+            branch: membership.branch as any,
           },
         }}
       />

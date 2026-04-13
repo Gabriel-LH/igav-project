@@ -40,7 +40,7 @@ export class GetRentalsGridUseCase {
       this.rentalRepo.getRentals(),
       this.rentalRepo.getRentalItems(),
       this.clientRepo.getAllClients(),
-      this.branchRepo.getBranches(),
+      this.branchRepo.getBranchesByTenant(tenantId),
       this.guaranteeRepo.getGuarantees(tenantId),
       this.inventoryRepo.getProducts(),
       this.operationRepo.getOperationsByTenant(tenantId),
@@ -131,6 +131,8 @@ export class GetRentalsGridUseCase {
           ...itemsWithNames.map((i) => i.productName),
         ].filter(Boolean).join(" ").toLowerCase();
 
+        const op = operations.find(o => o.id === rental.operationId);
+
         return {
           id: rental.id,
           branchName: branch?.name || "Principal",
@@ -150,6 +152,9 @@ export class GetRentalsGridUseCase {
           gurantee_type: guarantee ? guarantee.type.toString() : "---",
           gurantee_value: guarantee ? guarantee.value.toString() : "---",
           guarantee_status: guarantee?.status || "---",
+          taxAmount: op?.taxAmount || 0,
+          roundingAmount: op?.roundingAmount || 0,
+          totalBeforeRounding: op?.totalBeforeRounding || 0,
           status: rental.status,
           damage: "---",
           searchContent,

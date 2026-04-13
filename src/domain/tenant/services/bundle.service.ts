@@ -1,4 +1,4 @@
-import { differenceInDays } from "date-fns";
+import { calculateChargeableDays } from "../../../utils/date/calculateRentalDays";
 import { Promotion } from "../../../types/promotion/type.promotion";
 import { CartItem } from "../../../types/cart/type.cart";
 import { applyPricingEngine } from "../../../utils/pricing/applyPricingEngine";
@@ -164,11 +164,13 @@ export class BundleDomainService {
     startDate: Date,
     endDate: Date,
     productVariants: ProductVariant[],
+    policy?: TenantPolicy | null,
   ) {
     if (item.operationType !== "alquiler") return 1;
     const variant = productVariants.find((v: any) => v.id === item.variantId);
     if (variant?.rentUnit === "evento") return 1;
-    return Math.max(differenceInDays(endDate, startDate), 1);
+    
+    return calculateChargeableDays(startDate, endDate, policy?.rentals);
   }
 
   private cloneWithoutBundle(
@@ -193,7 +195,7 @@ export class BundleDomainService {
       const subtotal =
         unitPrice *
         item.quantity *
-        this.rentalMultiplier(item, startDate, endDate, productVariants);
+        this.rentalMultiplier(item, startDate, endDate, productVariants, policy);
 
       return {
         ...item,
@@ -473,6 +475,7 @@ export class BundleDomainService {
         startDate,
         endDate,
         productVariants,
+        policy,
       );
       const lineTotal = entry.listPrice * entry.consumedQty * multiplier;
 
@@ -528,7 +531,7 @@ export class BundleDomainService {
 
       if (line.quantity > consumedQty) {
         const remainingQty = line.quantity - consumedQty;
-        const multiplier = this.rentalMultiplier(line, startDate, endDate, productVariants);
+        const multiplier = this.rentalMultiplier(line, startDate, endDate, productVariants, policy);
         const rawSubtotal = line.unitPrice * remainingQty * multiplier;
         result.push({
           ...line,
@@ -544,6 +547,7 @@ export class BundleDomainService {
         startDate,
         endDate,
         productVariants,
+        policy,
       );
       const baseLineTotal = listPrice * multiplier;
       const adjustedLineTotal = baseLineTotal * factor;
@@ -564,7 +568,7 @@ export class BundleDomainService {
         manualDiscountReason: bundleDefinition.name,
       });
 
-      const itemMultiplier = this.rentalMultiplier(line, startDate, endDate, productVariants);
+      const itemMultiplier = this.rentalMultiplier(line, startDate, endDate, productVariants, policy);
       const rawLineSubtotal = pricing.priceAtMoment * consumedQty * itemMultiplier;
 
       result.push({

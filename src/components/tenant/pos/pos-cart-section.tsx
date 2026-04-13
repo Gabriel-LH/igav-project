@@ -10,7 +10,9 @@ import { PosCheckoutModal } from "./modals/PosCheckoutModal";
 import { PosReservationModal } from "./modals/PosReservationModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ShoppingCart02Icon } from "@hugeicons/core-free-icons";
-import { addDays, differenceInDays } from "date-fns";
+import { addDays } from "date-fns";
+import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { DateTimeContainer } from "../home/ui/direct-transaction/DataTimeContainer";
 import { DirectTransactionCalendar } from "../home/ui/direct-transaction/DirectTransactionCalendar";
 import { TimePicker } from "../home/ui/direct-transaction/TimePicker";
@@ -47,7 +49,7 @@ export function PosCartSection() {
   const [reservationOpen, setReservationOpen] = React.useState(false);
 
   const [tenantConfig, setTenantConfig] = React.useState(DEFAULT_TENANT_CONFIG);
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(undefined);
   const [usePoints, setUsePoints] = React.useState(false);
   const [appliedCoupon, setAppliedCoupon] = React.useState<Coupon | null>(null);
 
@@ -114,17 +116,16 @@ export function PosCartSection() {
     text = "Seleccione fecha de retorno";
   }
 
-  const days =
-    dateRange.from && dateRange.to
-      ? differenceInDays(dateRange.to, dateRange.from)
-      : 0;
+  const policy = useTenantConfigStore.getState().policy;
+  const days = calculateChargeableDays(dateRange.from, dateRange.to, policy?.rentals);
+
   const getMultiplier = (
     operationType: "venta" | "alquiler",
     rentUnit?: string,
   ) => {
     if (operationType !== "alquiler") return 1;
     if (rentUnit === "evento") return 1;
-    return Math.max(days, 1);
+    return days;
   };
 
   const hasAppliedBundles = items.some((i) => i.bundleId);
@@ -431,7 +432,7 @@ export function PosCartSection() {
             <Button
               className="col-span-1 h-8 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
               onClick={() => setReservationOpen(true)}
-              disabled={items.length === 0}
+              disabled={items.length === 0 || !selectedCustomer}
             >
               <span className="text-[10px] font-bold uppercase">Reservar</span>
               <span className="text-[9px] opacity-80">(Adelanto)</span>
@@ -443,7 +444,7 @@ export function PosCartSection() {
               <Button
                 className="col-span-1 h-8 text-sm text-white  shadow-lg flex flex-col gap-0.1 bg-blue-600 hover:bg-blue-700"
                 onClick={() => setCheckoutOpen(true)}
-                disabled={items.length === 0 || text.length > 0}
+                disabled={items.length === 0 || text.length > 0 || !selectedCustomer}
               >
                 {text.length > 0 ? text : "COBRAR"}
                 {hasRentals && (
@@ -458,7 +459,7 @@ export function PosCartSection() {
               <Button
                 className="col-span-1 h-8 text-sm text-white font-bold shadow-lg bg-green-600 hover:bg-green-700"
                 onClick={() => setCheckoutOpen(true)}
-                disabled={items.length === 0}
+                disabled={items.length === 0 || selectedCustomer === undefined}
               >
                 COBRAR
               </Button>

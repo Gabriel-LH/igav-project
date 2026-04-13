@@ -49,7 +49,11 @@ export function NavMain({
             const isActive = pathname === item.url; // ✅ ahora sí
 
             return (
-              <Link key={item.title} href={item.url}>
+              <Link
+                key={item.title}
+                href={item.url}
+                prefetch={item.url === "/tenant/home" ? false : undefined}
+              >
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     className={cn(

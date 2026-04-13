@@ -24,6 +24,10 @@ import { Button } from "@/components/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 
+function roundMoney(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
 export function ReturnProductModal({
   open,
   onOpenChange,
@@ -38,7 +42,7 @@ export function ReturnProductModal({
     reason: string,
     items: {
       saleItemId: string;
-      quantity: number; // Added quantity
+      quantity: number;
       condition?: "perfecto" | "dañado" | "manchado";
       restockingFee: number;
     }[],
@@ -80,6 +84,27 @@ export function ReturnProductModal({
   });
 
   const [reason, setReason] = useState("");
+  const grossSaleItemsTotal = useMemo(
+    () =>
+      sale.items.reduce(
+        (sum, item) =>
+          sum + Number(item.priceAtMoment || 0) * Number(item.quantity || 0),
+        0,
+      ),
+    [sale.items],
+  );
+
+  const getProratedUnitPaid = (item: SaleItem) => {
+    if (grossSaleItemsTotal <= 0 || item.quantity <= 0) {
+      return Number(item.priceAtMoment || 0);
+    }
+
+    const lineGross =
+      Number(item.priceAtMoment || 0) * Number(item.quantity || 0);
+    const lineNetPaid = (Number(sale.totalAmount || 0) * lineGross) / grossSaleItemsTotal;
+
+    return roundMoney(lineNetPaid / Number(item.quantity || 1));
+  };
 
   const handleToggleItem = (id: string, maxQty: number) => {
     setReturnItems((prev) => {
@@ -148,14 +173,12 @@ export function ReturnProductModal({
     const config = returnItems[id];
     if (!config.isReturned || !config.quantityToReturn) return acc;
     const item = sale.items.find((i) => i.id === id);
-    // Refund = (Price * Qty) - Fee
-    // Fee is usually per unit or flat? Assuming flat fee per ROW in existing UI, but logically per unit?
-    // User UI shows "Cargo (S/.)" input per row.
-    // Let's assume the fee entered is TOTAL for that return line.
+    if (!item) return acc;
+    const unitPaid = getProratedUnitPaid(item);
     return (
       acc +
-      (item?.priceAtMoment || 0) * config.quantityToReturn -
-      (config.restockingFee || 0)
+      (unitPaid - (config.restockingFee || 0)) *
+        config.quantityToReturn
     );
   }, 0);
 
@@ -393,7 +416,7 @@ export function ReturnProductModal({
                           value={returnedCount}
                           onChange={(e) =>
                             handleChangeQuantity(
-                              product.id,
+                              product?.id || items[0]?.productId || "",
                               Number(e.target.value),
                               items,
                             )
