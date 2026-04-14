@@ -98,10 +98,9 @@ export function DirectTransactionCalendar({
   const isDisabled = (date: Date) => {
     const day = startOfDay(date);
 
-    // A. Reglas Temporales (Pick-up inmediato o fechas mínimas)
+    // A. Reglas Temporales
     if (mode === "pickup") {
-      const maxPickupDate = addDays(today, maxDays || 2);
-      if (day < startOfDay(today) || day > endOfDay(maxPickupDate)) return true;
+      if (day < startOfDay(today)) return true; // Solo prevenir fechas pasadas
     } else {
       const referenceDate = minDate ? startOfDay(minDate) : startOfDay(today);
       if (day < referenceDate) return true;

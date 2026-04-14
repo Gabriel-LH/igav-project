@@ -9,6 +9,8 @@ import { PrismaGuaranteeRepository } from "@/src/infrastructure/tenant/repositor
 import { PrismaRentalRepository } from "@/src/infrastructure/tenant/repositories/PrismaRentalRepository";
 import { PrismaPaymentRepository } from "@/src/infrastructure/tenant/repositories/PrismaPaymentRepository";
 import { PrismaOperationRepository } from "@/src/infrastructure/tenant/repositories/PrismaOperationRepository";
+import { PrismaClientCreditRepository } from "@/src/infrastructure/tenant/repositories/PrismaClientCreditRepository";
+import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
 import {
   ConvertReservationUseCase,
   ConvertReservationInput,
@@ -77,7 +79,7 @@ export async function convertReservationAction(input: ConvertReservationInput) {
   }
 }
 
-export async function cancelReservationAction(reservationId: string, reason: string) {
+export async function cancelReservationAction(reservationId: string, reason: string, refundMethod: "refund" | "credit" = "refund") {
   try {
     const membership = await requireTenantMembership();
     const { tenantId, user } = membership;
@@ -90,16 +92,19 @@ export async function cancelReservationAction(reservationId: string, reason: str
       const paymentRepo = new PrismaPaymentRepository(tx);
       const operationRepo = new PrismaOperationRepository(tx);
       const inventoryRepo = new PrismaInventoryRepository(tx);
+      const clientCreditRepo = new PrismaClientCreditRepository(tx);
+      const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
 
       const cancelUseCase = new CancelReservationUseCase(
         reservationRepo,
         paymentRepo,
         operationRepo,
         inventoryRepo,
+        addClientCreditUC
       );
 
     const userId = user.id as string;
-    return await cancelUseCase.execute(reservationId, reason, userId);
+    return await cancelUseCase.execute(reservationId, reason, userId, refundMethod);
   });
 
   revalidatePath("/tenant/home");

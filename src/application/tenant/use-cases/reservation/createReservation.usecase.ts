@@ -47,7 +47,7 @@ export class CreateReservationUseCase {
           operationId: String(operationId),
           reservationId: reservation.id,
           productId: item.productId,
-          stockId: item.stockId || null,
+          stockId: item.stockId || undefined,
           quantity: item.quantity ?? 1,
           variantId: item.variantId,
           priceAtMoment:
@@ -60,7 +60,7 @@ export class CreateReservationUseCase {
           itemStatus: "confirmada",
           notes: item.notes || "",
           isSerial: isSerial,
-          inventoryItemId: item.inventoryItemId || null,
+          inventoryItemId: item.inventoryItemId || undefined,
         };
       }),
     );

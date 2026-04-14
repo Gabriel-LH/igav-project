@@ -1247,6 +1247,7 @@ model Reservation {
   operation     Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
   tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   items         ReservationItem[]
+  statusHistories ReservationStatusHistory[]
 
   @@map("reservation")
 }
@@ -1295,6 +1296,21 @@ model ReservationItemStatusHistory {
   tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("reservation_item_status_history")
+}
+
+model ReservationStatusHistory {
+  id            String            @id @default(uuid())
+  tenantId      String
+  reservationId String
+  fromStatus    ReservationStatus
+  toStatus      ReservationStatus
+  reason        String?
+  changedBy     String?
+  createdAt     DateTime          @default(now())
+  reservation   Reservation       @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("reservation_status_history")
 }
 
 model Sale {
@@ -1496,6 +1512,7 @@ model Tenant {
   createdAt                      DateTime                       @default(now())
   updatedAt                      DateTime                       @updatedAt
   guaranteeStatusHistories       GuaranteeStatusHistory[]
+  reservationStatusHistories     ReservationStatusHistory[]
   tenantModules                  TenantModule[]
   attributeTypes                 AttributeType[]
   attributeValues                AttributeValue[]
@@ -1919,6 +1936,7 @@ enum ClientCreditLedgerReason {
   used_in_operation
   manual_adjustment
   refund
+  cancellation_credit
 }
 
 enum ClientLoyaltyLedgerDirection {
@@ -1980,6 +1998,7 @@ enum PaymentMethodType {
   digital
   card
   transfer
+  credit
 }
 
 enum PaymentDirection {

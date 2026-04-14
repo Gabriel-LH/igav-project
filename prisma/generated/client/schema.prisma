@@ -1225,27 +1225,28 @@ model RentalItemStatusHistory {
 }
 
 model Reservation {
-  id            String            @id @default(uuid())
-  tenantId      String
-  operationId   String
-  customerId    String
-  branchId      String
-  startDate     DateTime
-  endDate       DateTime
-  hour          String
-  createdAt     DateTime          @default(now())
-  createdBy     String?
-  updatedAt     DateTime          @updatedAt
-  updatedBy     String?
-  notes         String?           @db.Text
-  deletedAt     DateTime?
-  status        ReservationStatus
-  operationType OperationType
-  branch        Branch            @relation(fields: [branchId], references: [id])
-  customer      Client            @relation(fields: [customerId], references: [id])
-  operation     Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  items         ReservationItem[]
+  id              String                     @id @default(uuid())
+  tenantId        String
+  operationId     String
+  customerId      String
+  branchId        String
+  startDate       DateTime
+  endDate         DateTime
+  hour            String
+  createdAt       DateTime                   @default(now())
+  createdBy       String?
+  updatedAt       DateTime                   @updatedAt
+  updatedBy       String?
+  notes           String?                    @db.Text
+  deletedAt       DateTime?
+  status          ReservationStatus
+  operationType   OperationType
+  branch          Branch                     @relation(fields: [branchId], references: [id])
+  customer        Client                     @relation(fields: [customerId], references: [id])
+  operation       Operation                  @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  tenant          Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items           ReservationItem[]
+  statusHistories ReservationStatusHistory[]
 
   @@map("reservation")
 }
@@ -1294,6 +1295,21 @@ model ReservationItemStatusHistory {
   tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("reservation_item_status_history")
+}
+
+model ReservationStatusHistory {
+  id            String            @id @default(uuid())
+  tenantId      String
+  reservationId String
+  fromStatus    ReservationStatus
+  toStatus      ReservationStatus
+  reason        String?
+  changedBy     String?
+  createdAt     DateTime          @default(now())
+  reservation   Reservation       @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("reservation_status_history")
 }
 
 model Sale {
@@ -1495,6 +1511,7 @@ model Tenant {
   createdAt                      DateTime                       @default(now())
   updatedAt                      DateTime                       @updatedAt
   guaranteeStatusHistories       GuaranteeStatusHistory[]
+  reservationStatusHistories     ReservationStatusHistory[]
   tenantModules                  TenantModule[]
   attributeTypes                 AttributeType[]
   attributeValues                AttributeValue[]
@@ -1918,6 +1935,7 @@ enum ClientCreditLedgerReason {
   used_in_operation
   manual_adjustment
   refund
+  cancellation_credit
 }
 
 enum ClientLoyaltyLedgerDirection {
@@ -1979,6 +1997,7 @@ enum PaymentMethodType {
   digital
   card
   transfer
+  credit
 }
 
 enum PaymentDirection {

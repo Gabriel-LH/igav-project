@@ -32,17 +32,22 @@ import { DateRangePickerContainer } from "@/src/components/tenant/home/ui/reserv
 import { DateTimeContainer } from "@/src/components/tenant/home/ui/direct-transaction/DataTimeContainer";
 import { ReservationCalendar } from "@/src/components/tenant/home/ui/reservation/ReservationCalendar";
 import { TimePicker } from "@/src/components/tenant/home/ui/direct-transaction/TimePicker";
+import { DirectTransactionCalendar } from "@/src/components/tenant/home/ui/direct-transaction/DirectTransactionCalendar";
 
 interface PosReservationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  cartCustomer?: any;
+  onCartCustomerChange?: (customer: any) => void;
 }
 
 export function PosReservationModal({
   open,
   onOpenChange,
+  cartCustomer,
+  onCartCustomerChange,
 }: PosReservationModalProps) {
-  const { items, clearCart } = useCartStore();
+  const { items, clearCart, globalRentalDates, globalRentalTimes } = useCartStore();
   const { productVariants } = useInventoryStore();
 
   const selectedBranchId = useBranchStore((state) => state.selectedBranchId);
@@ -53,21 +58,23 @@ export function PosReservationModal({
   const currentBranchId = selectedBranchId || "";
 
   // ─── ESTADOS (Iguales al Home) ───
-  const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
+  const [localSelectedCustomer, setLocalSelectedCustomer] = React.useState<any>(null);
+  const selectedCustomer = cartCustomer !== undefined ? cartCustomer : localSelectedCustomer;
+  const setSelectedCustomer = onCartCustomerChange || setLocalSelectedCustomer;
+
   const [notes, setNotes] = React.useState("");
   const [operationType, setOperationType] = React.useState<"alquiler" | "venta">("alquiler");
 
-  // Fechas y Tiempos
-  const [dateRange, setDateRange] = React.useState<any>({
-    from: new Date(),
-    to: addDays(new Date(), 3),
-  });
-  const [pickupTime, setPickupTime] = React.useState("09:00");
-  const [returnTime, setReturnTime] = React.useState("19:00");
+  // Fechas y Tiempos heredados del Global Cart (Para Alquileres)
+  const dateRange = globalRentalDates || { from: new Date(), to: new Date() };
+  const pickupTime = globalRentalTimes?.pickup || "09:00";
+  const returnTime = globalRentalTimes?.return || "19:00";
 
-  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
-  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
-  const returnTimeRef = React.useRef<HTMLButtonElement>(null);
+  // Fechas locales exclusivas para Reservas de Venta
+  const [salesDate, setSalesDate] = React.useState<Date | undefined>(new Date());
+  const [salesTime, setSalesTime] = React.useState("09:00");
+  const salesDateRef = React.useRef<HTMLButtonElement>(null);
+  const salesTimeRef = React.useRef<HTMLButtonElement>(null);
 
   // Finanzas
   const [downPayment, setDownPayment] = React.useState("");
@@ -128,9 +135,9 @@ export function PosReservationModal({
             paymentMethod: paymentMethodId,
           },
           reservationDateRange: {
-            from: startOfDay(dateRange.from),
-            to: endOfDay(dateRange.from),
-            hourFrom: pickupTime,
+            from: startOfDay(salesDate || new Date()),
+            to: endOfDay(salesDate || new Date()),
+            hourFrom: salesTime,
           },
           items: ventaItems.map(i => ({
             productId: i.product.id,
@@ -261,81 +268,46 @@ export function PosReservationModal({
             </div>
           </div>
 
-          {/* CALENDARIO Y TIEMPO (Diseño idéntico al Home) */}
+          {/* CALENDARIO Y TIEMPO */}
           <div className="relative">
             {operationType === "alquiler" ? (
-              <div className="relative">
+              <div className="relative opacity-80 pointer-events-none grayscale">
                 <DateRangePickerContainer
-                  label="Periodo de Alquiler y Horas"
+                  label="Periodo de Alquiler y Horas (Configurado en el Carrito)"
                   fromDate={dateRange?.from}
                   toDate={dateRange?.to}
                   fromTime={pickupTime}
                   toTime={returnTime}
-                  onDateClick={() => pickupDateRef.current?.click()}
-                  onFromTimeClick={() => pickupTimeRef.current?.click()}
-                  onToTimeClick={() => returnTimeRef.current?.click()}
+                  onDateClick={() => {}}
+                  onFromTimeClick={() => {}}
+                  onToTimeClick={() => {}}
                 />
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  <ReservationCalendar
-                    triggerRef={pickupDateRef}
-                    mode="range"
-                    originBranchId={currentBranchId}
-                    currentBranchId={currentBranchId}
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                    rules={null}
-                    productId={items[0]?.product.id}
-                    variantId={items[0]?.variantId}
-                    quantity={1}
-                    type="alquiler"
-                  />
-                  <div className="absolute left-0 bottom-0 w-1/2 h-1/2">
-                    <TimePicker triggerRef={pickupTimeRef} value={pickupTime} onChange={setPickupTime} />
-                  </div>
-                  <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
-                    <TimePicker triggerRef={returnTimeRef} value={returnTime} onChange={setReturnTime} />
-                  </div>
-                </div>
               </div>
             ) : (
               <div className="relative">
                 <DateTimeContainer
-                  label="Fecha de Entrega"
-                  date={dateRange?.from}
-                  time={pickupTime}
-                  onDateClick={() => pickupDateRef.current?.click()}
-                  onTimeClick={() => pickupTimeRef.current?.click()}
+                  label="Fecha de Entrega (Venta)"
+                  date={salesDate || new Date()}
+                  time={salesTime}
+                  onDateClick={() => salesDateRef.current?.click()}
+                  onTimeClick={() => salesTimeRef.current?.click()}
                   placeholderDate="Seleccionar fecha"
                   placeholderTime="Seleccionar hora"
                 />
-                <div className="absolute inset-0 pointer-events-none">
-                  <ReservationCalendar
-                    triggerRef={pickupDateRef}
-                    mode="single"
-                    originBranchId={currentBranchId}
-                    currentBranchId={currentBranchId}
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                    rules={null}
-                    productId={items[0]?.product.id}
-                    variantId={items[0]?.variantId}
+                <div className="absolute opacity-0 pointer-events-none">
+                  <DirectTransactionCalendar
+                    triggerRef={salesDateRef}
+                    selectedDate={salesDate}
+                    mode="pickup"
                     type="venta"
+                    onSelect={setSalesDate}
                   />
                   <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
-                    <TimePicker triggerRef={pickupTimeRef} value={pickupTime} onChange={setPickupTime} />
+                    <TimePicker triggerRef={salesTimeRef} value={salesTime} onChange={setSalesTime} />
                   </div>
                 </div>
               </div>
             )}
-          </div>
-
-          {/* CLIENTE */}
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase font-black opacity-50 ml-1 tracking-wider">Cliente Responsable</Label>
-            <CustomerSelector
-              selected={selectedCustomer}
-              onSelect={setSelectedCustomer}
-            />
           </div>
 
           {/* NOTAS */}

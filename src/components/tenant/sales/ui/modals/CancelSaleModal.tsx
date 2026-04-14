@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { AlertTriangle } from "lucide-react";
 import { Sale } from "@/src/types/sales/type.sale";
 import { useSaleStore } from "@/src/store/useSaleStore";
@@ -22,7 +23,7 @@ interface CancelSaleModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sale: Sale;
-  onConfirm: (saleId: string, reason: string) => void;
+  onConfirm: (saleId: string, reason: string, refundMethod: "refund" | "credit") => void;
 }
 
 export function CancelSaleModal({
@@ -32,6 +33,7 @@ export function CancelSaleModal({
   onConfirm,
 }: CancelSaleModalProps) {
   const [reason, setReason] = useState("");
+  const [refundMethod, setRefundMethod] = useState<"refund" | "credit">("refund");
   const [showPinAuth, setShowPinAuth] = useState(false);
   const { saleItems } = useSaleStore();
   const { products } = useInventoryStore();
@@ -102,6 +104,34 @@ export function CancelSaleModal({
               onChange={(e) => setReason(e.target.value)}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label>Destino del monto a revertir</Label>
+            <RadioGroup
+              value={refundMethod}
+              onValueChange={(val: "refund" | "credit") => setRefundMethod(val)}
+              className="flex flex-col gap-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="refund" id="r1" />
+                <Label htmlFor="r1" className="font-normal">Devolver dinero (Efectivo/Transferencia)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem 
+                  value="credit" 
+                  id="r2" 
+                  disabled={sale.customerMode === "general"} 
+                />
+                <Label 
+                  htmlFor="r2" 
+                  className={`font-normal ${sale.customerMode === "general" ? "opacity-50" : ""}`}
+                >
+                  Mantener como Crédito a favor del Cliente
+                  {sale.customerMode === "general" && <span className="ml-1 text-xs text-muted-foreground">(Requiere cliente registrado)</span>}
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
         </div>
 
         <DialogFooter>
@@ -115,7 +145,7 @@ export function CancelSaleModal({
               if (requirePin) {
                 setShowPinAuth(true);
               } else {
-                onConfirm(sale.id, reason);
+                onConfirm(sale.id, reason, refundMethod);
               }
             }}
           >
@@ -128,7 +158,7 @@ export function CancelSaleModal({
         open={showPinAuth}
         onOpenChange={setShowPinAuth}
         onSuccess={() => {
-          onConfirm(sale.id, reason);
+          onConfirm(sale.id, reason, refundMethod);
           onOpenChange(false);
         }}
         title="Autorización Requerida"

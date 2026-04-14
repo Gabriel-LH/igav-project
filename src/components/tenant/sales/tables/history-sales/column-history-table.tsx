@@ -144,14 +144,14 @@ function ActionCell({
     ? { ...baseSale, items: itemsOfSale, charges: [] }
     : undefined;
 
-  const handleCancelConfirm = async (id: string, reason: string) => {
+  const handleCancelConfirm = async (id: string, reason: string, refundMethod: "refund" | "credit") => {
     if (!userId) {
       toast.error("No se pudo identificar al usuario actual");
       return;
     }
 
     try {
-      await cancelSaleAction(id, reason, userId);
+      await cancelSaleAction(id, reason, userId, refundMethod);
 
       toast.success("Venta anulada", {
         description: "La venta fue anulada correctamente",
@@ -214,7 +214,9 @@ function ActionCell({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
           {canReturnSale(fullSaleData, policy?.sales?.maxReturnHours) && (
-            <DropdownMenuItem onClick={() => setShowReturnModal(true)}>
+            <DropdownMenuItem onSelect={(e) => {
+              setTimeout(() => setShowReturnModal(true), 150);
+            }}>
               <Undo2 className="animate-pulse" />
               Realizar Retorno
             </DropdownMenuItem>
@@ -226,7 +228,9 @@ function ActionCell({
           {canAnnulSale(fullSaleData, policy?.sales?.maxCancelHours) && (
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => setShowCancelModal(true)}
+              onSelect={(e) => {
+                setTimeout(() => setShowCancelModal(true), 150);
+              }}
             >
               <BadgeX className="animate-pulse" />
               Anular Venta

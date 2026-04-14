@@ -3,6 +3,7 @@ import { PaymentRepository } from "@/src/domain/tenant/repositories/PaymentRepos
 import { OperationRepository } from "@/src/domain/tenant/repositories/OperationRepository";
 import { InventoryRepository } from "@/src/domain/tenant/repositories/InventoryRepository";
 import { Payment } from "@/src/types/payments/type.payments";
+import { AddClientCreditUseCase } from "../client/addClientCredit.usecase";
 
 export class CancelReservationUseCase {
   constructor(
@@ -10,12 +11,14 @@ export class CancelReservationUseCase {
     private paymentRepo: PaymentRepository,
     private operationRepo: OperationRepository,
     private inventoryRepo: InventoryRepository,
+    private addClientCreditUC: AddClientCreditUseCase,
   ) {}
 
   async execute(
     reservationId: string,
     reason: string,
     userId: string,
+    refundMethod: "refund" | "credit" = "refund"
   ): Promise<void> {
     const reservation =
       await this.reservationRepo.getReservationWithItemsById(reservationId);
@@ -51,24 +54,35 @@ export class CancelReservationUseCase {
     );
 
     if (totalRefund > 0) {
-      const firstPaymentMethod =
-        payments.find((p) => p.direction === "in")?.paymentMethodId || "cash";
+      if (refundMethod === "credit" && reservation.customerId) {
+        // El crédito queda registrado en el wallet del cliente vía addClientCreditUseCase.
+        // No se crea un payment record aquí para evitar FK inválida con "wallet".
+        await this.addClientCreditUC.execute(
+          reservation.customerId,
+          totalRefund,
+          "refund",
+          reservation.operationId
+        );
+      } else {
+        const firstPaymentMethod =
+          payments.find((p) => p.direction === "in")?.paymentMethodId || "cash";
 
-      await this.paymentRepo.addPayment({
-        id: `PAY-${crypto.randomUUID()}`,
-        tenantId: reservation.tenantId,
-        operationId: reservation.operationId,
-        amount: totalRefund,
-        paymentMethodId: firstPaymentMethod,
-        direction: "out",
-        status: "posted",
-        category: "refund",
-        date: new Date(),
-        createdAt: new Date(),
-        notes: `Reembolso por anulación de reserva. Razón: ${reason || "N/A"}`,
-        receivedById: userId,
-        branchId: reservation.branchId,
-      } as Payment);
+        await this.paymentRepo.addPayment({
+          id: `PAY-${crypto.randomUUID()}`,
+          tenantId: reservation.tenantId,
+          operationId: reservation.operationId,
+          amount: totalRefund,
+          paymentMethodId: firstPaymentMethod,
+          direction: "out",
+          status: "posted",
+          category: "refund",
+          date: new Date(),
+          createdAt: new Date(),
+          notes: `Reembolso por anulación de reserva. Razón: ${reason || "N/A"}`,
+          receivedById: userId,
+          branchId: reservation.branchId,
+        } as Payment);
+      }
     }
   }
 }

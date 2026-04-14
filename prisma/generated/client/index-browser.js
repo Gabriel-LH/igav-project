@@ -1002,6 +1002,17 @@ exports.Prisma.ReservationItemStatusHistoryScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ReservationStatusHistoryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  reservationId: 'reservationId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  reason: 'reason',
+  changedBy: 'changedBy',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SaleScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -1374,7 +1385,8 @@ exports.ClientCreditLedgerReason = exports.$Enums.ClientCreditLedgerReason = {
   overpayment: 'overpayment',
   used_in_operation: 'used_in_operation',
   manual_adjustment: 'manual_adjustment',
-  refund: 'refund'
+  refund: 'refund',
+  cancellation_credit: 'cancellation_credit'
 };
 
 exports.ClientLoyaltyLedgerDirection = exports.$Enums.ClientLoyaltyLedgerDirection = {
@@ -1459,7 +1471,8 @@ exports.PaymentMethodType = exports.$Enums.PaymentMethodType = {
   cash: 'cash',
   digital: 'digital',
   card: 'card',
-  transfer: 'transfer'
+  transfer: 'transfer',
+  credit: 'credit'
 };
 
 exports.PaymentDirection = exports.$Enums.PaymentDirection = {
@@ -1911,6 +1924,7 @@ exports.Prisma.ModelName = {
   Reservation: 'Reservation',
   ReservationItem: 'ReservationItem',
   ReservationItemStatusHistory: 'ReservationItemStatusHistory',
+  ReservationStatusHistory: 'ReservationStatusHistory',
   Sale: 'Sale',
   SaleItem: 'SaleItem',
   SaleCharge: 'SaleCharge',

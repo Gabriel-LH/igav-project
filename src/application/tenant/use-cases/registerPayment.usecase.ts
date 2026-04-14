@@ -4,6 +4,9 @@ import { SaleRepository } from "../../../domain/tenant/repositories/SaleReposito
 import { RentalRepository } from "../../../domain/tenant/repositories/RentalRepository";
 import { AddClientCreditUseCase } from "./client/addClientCredit.usecase";
 import { RewardLoyaltyUseCase } from "./rewardLoyalty.usecase";
+import { PaymentMethodCatalogRepository } from "../../../domain/tenant/repositories/PaymentMethodCatalogRepository";
+import { ClientRepository } from "../../../domain/tenant/repositories/ClientRepository";
+import { ClientCreditRepository } from "../../../domain/tenant/repositories/ClientCreditRepository";
 
 import { paymentSchema, Payment } from "../../../types/payments/type.payments";
 import {
@@ -28,6 +31,9 @@ export class RegisterPaymentUseCase {
     private rentalRepo: RentalRepository,
     private addClientCreditUseCase: AddClientCreditUseCase,
     private rewardLoyaltyUseCase: RewardLoyaltyUseCase,
+    private paymentMethodRepo: PaymentMethodCatalogRepository,
+    private clientRepo: ClientRepository,
+    private clientCreditRepo: ClientCreditRepository,
   ) {}
 
   async execute({
@@ -56,13 +62,54 @@ export class RegisterPaymentUseCase {
       },
     };
 
+    // 1. Obtener detalles del método de pago
+    const paymentMethod = await this.paymentMethodRepo.getById(method);
+    if (!paymentMethod) throw new Error("Metodo de pago no encontrado");
+
+    // 2. Calcular saldos actuales antes de registrar el nuevo pago
+    const existingPayments = await this.paymentRepo.getPaymentsByOperationId(operationId);
+    const { balance: remainingAmount } = getOperationBalances(
+      operationId,
+      existingPayments,
+      operation.totalAmount,
+    );
+
+    // 3. Ajustar monto si es mayor a lo necesario (Capping logic requested by user)
+    let finalAmount = amount;
+    if (finalAmount > remainingAmount) {
+      finalAmount = remainingAmount;
+    }
+
+    if (finalAmount <= 0) {
+      throw new Error("La operacion ya esta pagada o el monto es invalido");
+    }
+
+    // 4. Lógica específica para CRÉDITO
+    if (paymentMethod.type === "credit") {
+      const client = await this.clientRepo.getClientById(operation.customerId);
+      if (!client) throw new Error("Cliente no encontrado para validar crédito");
+
+      const currentBalance = client.walletBalance || 0;
+      if (currentBalance < finalAmount) {
+        throw new Error(`Saldo insuficiente. Crédito disponible: S/. ${currentBalance.toFixed(2)}`);
+      }
+
+      // Deducción del crédito
+      await this.clientCreditRepo.useCredit(
+        operation.customerId,
+        finalAmount,
+        "used_in_operation",
+        operationId,
+      );
+    }
+
     const payment = paymentSchema.parse({
       id: `PAY-${crypto.randomUUID().slice(0, 8)}`,
       tenantId: operation.tenantId,
       operationId,
       branchId: operation.branchId,
       receivedById: userId,
-      amount,
+      amount: finalAmount,
       direction: "in",
       paymentMethodId: method,
       status: "posted",

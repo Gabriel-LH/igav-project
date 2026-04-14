@@ -22,6 +22,8 @@ import { GuaranteeType } from "@/src/utils/status-type/GuaranteeType";
 import { CancelSaleUseCase } from "@/src/application/tenant/use-cases/sale/cancelSale.usecase";
 import { ReturnSaleItemsUseCase } from "@/src/application/tenant/use-cases/returnSaleItems.usecase";
 import { PrismaSaleReversalRepository } from "@/src/infrastructure/tenant/repositories/PrismaSaleReversalRepository";
+import { PrismaClientCreditRepository } from "@/src/infrastructure/tenant/repositories/PrismaClientCreditRepository";
+import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
 import { revalidatePath } from "next/cache";
 import { ProcessReturnUseCase, ProcessReturnInput } from "@/src/application/tenant/use-cases/processReturn.usecase";
 import { ListAttributeTypesUseCase } from "@/src/application/tenant/use-cases/attribute/crudAttributeType.usecase";
@@ -145,22 +147,25 @@ export async function deliverRentalAction(
   return { success: true };
 }
 
-export async function cancelSaleAction(saleId: string, reason: string, userId: string) {
+export async function cancelSaleAction(saleId: string, reason: string, userId: string, refundMethod: "refund" | "credit" = "refund") {
   const saleRepo = new PrismaSaleRepository(prisma);
   const reversalRepo = new PrismaSaleReversalRepository(prisma);
   const inventoryRepo = new PrismaInventoryRepository(prisma);
   const paymentRepo = new PrismaPaymentRepository(prisma);
   const operationRepo = new PrismaOperationRepository(prisma);
+  const clientCreditRepo = new PrismaClientCreditRepository(prisma);
+  const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
 
   const useCase = new CancelSaleUseCase(
     saleRepo,
     reversalRepo,
     inventoryRepo,
     paymentRepo,
-    operationRepo
+    operationRepo,
+    addClientCreditUC
   );
 
-  await useCase.execute({ saleId, reason, userId });
+  await useCase.execute({ saleId, reason, userId, refundMethod });
   revalidatePath("/tenant/sales");
   return { success: true };
 }

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { Banknote, CreditCard, Smartphone, Wallet } from "lucide-react";
+import { Banknote, Coins, CreditCard, Smartphone, Wallet } from "lucide-react";
 import { Input } from "@/components/input";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Checkbox } from "@/components/checkbox";
@@ -17,12 +17,14 @@ import { PaymentMethodType } from "@/src/utils/status-type/PaymentMethodType";
 
 interface AddPaymentFormProps {
   remainingBalance: number;
+  clientBalance: number;
   onSave: (paymentData: any) => void;
   onCancel: () => void;
 }
 
 export function AddPaymentForm({
   remainingBalance,
+  clientBalance,
   onSave,
   onCancel,
 }: AddPaymentFormProps) {
@@ -40,6 +42,19 @@ export function AddPaymentForm({
       setChange(0);
     }
   }, [received, amount, method]);
+
+  const handleMethodChange = (val: string) => {
+    const newMethod = val as PaymentMethodType;
+    setMethod(newMethod);
+
+    if (newMethod === "credit") {
+      const parsedRemaining = Number(remainingBalance) || 0;
+      const parsedClient = Number(clientBalance) || 0;
+      const suggestedAmount = Math.min(parsedRemaining, parsedClient);
+      setAmount(suggestedAmount);
+      setIsCredit(false);
+    }
+  };
 
   const handleSubmit = () => {
     onSave({
@@ -94,12 +109,12 @@ export function AddPaymentForm({
           </Label>
           <Select
             value={method}
-            onValueChange={(val) => setMethod(val as PaymentMethodType)}
+            onValueChange={handleMethodChange}
           >
             <SelectTrigger className="h-9 text-[11px] font-bold">
               <SelectValue placeholder="Seleccionar..." />
             </SelectTrigger>
-            <SelectContent className="text-[11px]">
+            <SelectContent className="text-[11px]" portal={false} position="popper">
               <SelectItem value="cash">
                 <Wallet className="w-3 h-3 mr-1 inline" /> Efectivo
               </SelectItem>
@@ -114,6 +129,9 @@ export function AddPaymentForm({
               </SelectItem>
               <SelectItem value="transfer">
                 <Banknote className="w-3 h-3 mr-1 inline" /> Transferencia
+              </SelectItem>
+              <SelectItem value="credit">
+                <Coins className="w-3 h-3 mr-1 inline" /> Crédito
               </SelectItem>
             </SelectContent>
           </Select>
@@ -145,6 +163,24 @@ export function AddPaymentForm({
               {formatCurrency(change)}
             </p>
           </div>
+        </div>
+      )}
+
+      {method === "credit" && (
+        <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold uppercase text-blue-400">
+              Crédito Disponible
+            </span>
+            <span className="text-sm font-black text-blue-500">
+              {formatCurrency(clientBalance)}
+            </span>
+          </div>
+          {amount > clientBalance && (
+            <p className="text-[10px] text-red-500 font-bold mt-1">
+              ⚠️ El monto supera el crédito disponible
+            </p>
+          )}
         </div>
       )}
 

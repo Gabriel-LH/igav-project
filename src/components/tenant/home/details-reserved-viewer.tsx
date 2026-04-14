@@ -297,10 +297,10 @@ export function DetailsReservedViewer({
     }
   };
 
-  const handleConfirmCancel = async () => {
+  const handleConfirmCancel = async (refundMethod: "refund" | "credit") => {
     if (!activeRes) return;
     try {
-      const result = await cancelReservationAction(activeRes.id, "Cancelado por el usuario");
+      const result = await cancelReservationAction(activeRes.id, "Cancelado por el usuario", refundMethod);
       if (!result.success) throw new Error(result.error);
       
       toast.success("Reserva anulada");
@@ -326,6 +326,7 @@ export function DetailsReservedViewer({
         direction={isMobile ? "bottom" : "right"}
         open={isDrawerOpen}
         onOpenChange={handleDrawerOpenChange}
+        dismissible={!isCancelOpen && !isRescheduleOpen && !isHistoryOpen}
       >
         <DrawerTrigger asChild>
           <Button variant="secondary" className="w-full shadow-sm">
@@ -775,6 +776,7 @@ export function DetailsReservedViewer({
         onOpenChange={setIsCancelOpen}
         onConfirm={handleConfirmCancel}
         balance={totalPaid}
+        customerMode={operation?.customerMode || "general"}
       />
 
       <PaymentHistoryModal
@@ -785,6 +787,7 @@ export function DetailsReservedViewer({
         totalOperation={totalCalculated}
         calculatedBalance={balance}
         calculatedIsCredit={isCredit}
+        clientBalance={cliente?.walletBalance ?? 0}
         onAddPayment={handleAddPayment}
         customerName={cliente?.firstName + " " + cliente?.lastName}
       />

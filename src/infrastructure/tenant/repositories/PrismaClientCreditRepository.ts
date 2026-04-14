@@ -42,4 +42,41 @@ export class PrismaClientCreditRepository implements ClientCreditRepository {
       },
     });
   }
+
+  async useCredit(
+    customerId: string,
+    amount: number,
+    reason: string,
+    referenceId?: string,
+  ): Promise<void> {
+    const customer = await this.prisma.client.findUnique({
+      where: { id: customerId },
+      select: { tenantId: true },
+    });
+
+    if (!customer) throw new Error("Client not found for credit deduction");
+
+    // Crear entrada en el ledger con dirección "debit"
+    await this.prisma.clientCreditLedger.create({
+      data: {
+        amount,
+        direction: "debit",
+        status: "confirmed",
+        reason: reason as any,
+        operationId: referenceId || null,
+        clientId: customerId,
+        tenantId: customer.tenantId,
+      },
+    });
+
+    // Descontar del balance del cliente
+    await this.prisma.client.update({
+      where: { id: customerId },
+      data: {
+        walletBalance: {
+          decrement: amount,
+        },
+      },
+    });
+  }
 }

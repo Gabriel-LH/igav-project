@@ -33,6 +33,7 @@ interface PaymentHistoryModalProps {
   calculatedBalance: number;
   calculatedIsCredit: boolean;
   customerName: string;
+  clientBalance: number;
   onAddPayment: (paymentData: any) => Promise<Payment>;
 }
 
@@ -50,6 +51,7 @@ export function PaymentHistoryModal({
   calculatedBalance,
   calculatedIsCredit,
   customerName,
+  clientBalance,
   onAddPayment,
 }: PaymentHistoryModalProps) {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -101,6 +103,7 @@ export function PaymentHistoryModal({
             {showAddForm ? (
               <AddPaymentForm
                 remainingBalance={calculatedBalance}
+                clientBalance={clientBalance}
                 onCancel={() => setShowAddForm(false)}
                 onSave={async (data) => {
                   const createdPayment = await onAddPayment(data);

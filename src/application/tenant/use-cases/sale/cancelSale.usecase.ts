@@ -8,11 +8,13 @@ import { SaleReversal } from "@/src/types/sales/type.saleReversal";
 import { Payment } from "@/src/types/payments/type.payments";
 import { DEFAULT_TENANT_POLICY_SECTIONS } from "@/src/lib/tenant-defaults";
 import { TenantPolicy } from "@/src/types/tenant/type.tenantPolicy";
+import { AddClientCreditUseCase } from "../client/addClientCredit.usecase";
 
 export interface CancelSaleInput {
   saleId: string;
   reason: string;
   userId: string;
+  refundMethod?: "refund" | "credit";
 }
 
 export class CancelSaleUseCase {
@@ -22,9 +24,10 @@ export class CancelSaleUseCase {
     private inventoryRepo: InventoryRepository,
     private paymentRepo: PaymentRepository,
     private operationRepo: OperationRepository,
+    private addClientCreditUC: AddClientCreditUseCase,
   ) {}
 
-  async execute({ saleId, reason, userId }: CancelSaleInput): Promise<void> {
+  async execute({ saleId, reason, userId, refundMethod = "refund" }: CancelSaleInput): Promise<void> {
     const sale = await this.saleRepo.getSaleById(saleId);
     if (!sale) throw new Error("Venta no encontrada");
 
@@ -125,22 +128,48 @@ export class CancelSaleUseCase {
       sale.operationId,
     );
 
-    for (const payment of payments) {
-      await this.paymentRepo.addPayment({
-        id: `PAY-${crypto.randomUUID()}`,
-        tenantId: sale.tenantId,
-        operationId: sale.operationId,
-        amount: payment.amount,
-        paymentMethodId: payment.paymentMethodId,
-        direction: "out",
-        status: "posted",
-        category: "correction",
-        date: new Date(),
-        createdAt: new Date(),
-        notes: `Anulación de venta: ${reason}`,
-        receivedById: userId,
-        branchId: sale.branchId,
-      } as Payment);
+    if (refundMethod === "credit" && sale.customerId) {
+        await this.addClientCreditUC.execute(
+          sale.customerId,
+          sale.totalAmount,
+          "refund",
+          sale.operationId
+        );
+
+        // Add a single informational payment log showing it was sent to ledger
+        await this.paymentRepo.addPayment({
+          id: `PAY-${crypto.randomUUID()}`,
+          tenantId: sale.tenantId,
+          operationId: sale.operationId,
+          amount: sale.totalAmount,
+          paymentMethodId: "wallet",
+          direction: "out",
+          status: "posted",
+          category: "correction",
+          date: new Date(),
+          createdAt: new Date(),
+          notes: `Anulación de venta - Transferido como crédito a favor: ${reason}`,
+          receivedById: userId,
+          branchId: sale.branchId,
+        } as Payment);
+    } else {
+        for (const payment of payments) {
+          await this.paymentRepo.addPayment({
+            id: `PAY-${crypto.randomUUID()}`,
+            tenantId: sale.tenantId,
+            operationId: sale.operationId,
+            amount: payment.amount,
+            paymentMethodId: payment.paymentMethodId,
+            direction: "out",
+            status: "posted",
+            category: "correction",
+            date: new Date(),
+            createdAt: new Date(),
+            notes: `Anulación de venta: ${reason}`,
+            receivedById: userId,
+            branchId: sale.branchId,
+          } as Payment);
+        }
     }
 
     await this.operationRepo.updateOperationStatus(sale.operationId, "cancelado");

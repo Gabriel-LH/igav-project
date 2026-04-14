@@ -48,6 +48,14 @@ const DEFAULT_PAYMENT_METHODS: Array<Omit<PaymentMethod, "id">> = [
     requiresPin: false,
     icon: "plin",
   },
+  {
+    name: "Crédito",
+    type: "credit",
+    active: true,
+    allowsChange: false,
+    requiresPin: false,
+    icon: "credit",
+  },
 ];
 
 const normalizeText = (value: string) => value.trim().toLowerCase();

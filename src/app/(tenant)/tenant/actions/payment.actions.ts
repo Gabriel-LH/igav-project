@@ -9,6 +9,8 @@ import { PrismaSaleRepository } from "@/src/infrastructure/tenant/repositories/P
 import { PrismaRentalRepository } from "@/src/infrastructure/tenant/repositories/PrismaRentalRepository";
 import { PrismaClientCreditRepository } from "@/src/infrastructure/tenant/repositories/PrismaClientCreditRepository";
 import { PrismaLoyaltyRepository } from "@/src/infrastructure/tenant/repositories/PrismaLoyaltyRepository";
+import { PrismaPaymentMethodCatalogRepository } from "@/src/infrastructure/tenant/repositories/PrismaPaymentMethodCatalogRepository";
+import { PrismaClientRepository } from "@/src/infrastructure/tenant/repositories/PrismaClientRepository";
 import { RegisterPaymentUseCase, RegisterPaymentInput } from "@/src/application/tenant/use-cases/registerPayment.usecase";
 import { AddClientCreditUseCase } from "@/src/application/tenant/use-cases/client/addClientCredit.usecase";
 import { RewardLoyaltyUseCase } from "@/src/application/tenant/use-cases/rewardLoyalty.usecase";
@@ -35,6 +37,8 @@ export async function registerPaymentAction(input: RegisterPaymentInput) {
       const rentalRepo = new PrismaRentalRepository(tx);
       const clientCreditRepo = new PrismaClientCreditRepository(tx);
       const loyaltyRepo = new PrismaLoyaltyRepository(tx);
+      const paymentMethodRepo = new PrismaPaymentMethodCatalogRepository(tx);
+      const clientRepo = new PrismaClientRepository(tx, tenantId);
 
       const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
       const rewardLoyaltyUC = new RewardLoyaltyUseCase(loyaltyRepo);
@@ -46,6 +50,9 @@ export async function registerPaymentAction(input: RegisterPaymentInput) {
         rentalRepo,
         addClientCreditUC,
         rewardLoyaltyUC,
+        paymentMethodRepo,
+        clientRepo,
+        clientCreditRepo,
       );
 
       return await registerPaymentUC.execute({

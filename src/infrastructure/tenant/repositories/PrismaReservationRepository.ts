@@ -165,7 +165,7 @@ export class PrismaReservationRepository implements ReservationRepository {
     changedBy?: string;
     createdAt?: Date;
   }): Promise<void> {
-    await (this.prisma as any).reservationStatusHistory.create({
+    await this.prisma.reservationStatusHistory.create({
       data: {
         id: crypto.randomUUID(),
         tenantId: entry.tenantId,

@@ -61,6 +61,8 @@ export function PosCartSection() {
   const availablePoints = selectedClient?.loyaltyPoints || 0;
   const pointValueInMoney = tenantConfig.loyalty?.redemptionValue || 0.01;
 
+  const pickupDateRef = React.useRef<HTMLButtonElement>(null);
+  const pickupTimeRef = React.useRef<HTMLButtonElement>(null);
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
   const returnTimeRef = React.useRef<HTMLButtonElement>(null);
 
@@ -200,19 +202,42 @@ export function PosCartSection() {
       {hasRentals && (
         <div className="px-2 py-1  border-b space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <div className="relative opacity-60 pointer-events-none grayscale">
-              {/* Le ponemos pointer-events-none para que no se pueda clickear */}
+            <div className="relative">
               <DateTimeContainer
-                label="Entrega (Hoy)"
+                label="Entrega"
                 date={dateRange.from}
-                time={globalRentalTimes?.pickup || "Ahora"}
-                // Quitamos los onClick para que no abra nada
-                onDateClick={() => {}}
-                onTimeClick={() => {}}
+                time={globalRentalTimes?.pickup || pickupTime}
+                onDateClick={() => pickupDateRef.current?.click()}
+                onTimeClick={() => pickupTimeRef.current?.click()}
                 placeholderDate="Hoy"
                 placeholderTime="Ahora"
               />
-              {/* No renderizamos el calendario ni el timepicker ocultos aquí */}
+              <div className="absolute opacity-0 pointer-events-none">
+                <DirectTransactionCalendar
+                  triggerRef={pickupDateRef}
+                  selectedDate={dateRange.from}
+                  mode="pickup"
+                  type="alquiler"
+                  quantity={1}
+                  cartItems={alquilerItems}
+                  onSelect={(d) => {
+                    if (d) {
+                      setGlobalDates({
+                        from: d,
+                        to: dateRange.to || addDays(d, 1),
+                      });
+                    }
+                  }}
+                />
+                <TimePicker
+                  triggerRef={pickupTimeRef}
+                  value={pickupTime}
+                  onChange={(t) => {
+                    setPickupTime(t);
+                    setGlobalTimes({ pickup: t, return: returnTime });
+                  }}
+                />
+              </div>
             </div>
 
             <div className="relative">
@@ -484,6 +509,8 @@ export function PosCartSection() {
       <PosReservationModal
         open={reservationOpen}
         onOpenChange={setReservationOpen}
+        cartCustomer={selectedCustomer}
+        onCartCustomerChange={setSelectedCustomer}
       />
     </div>
   );
