@@ -18,7 +18,7 @@ import { Button } from "@/components/button";
 import { AddPaymentForm } from "../forms/AddPaymentForm";
 import { printTicket } from "@/src/utils/ticket/print-ticket";
 import { ConfirmPrintModal } from "./ConfirmPrintModal";
-import { DialogDescription } from "@radix-ui/react-dialog";
+import { DialogDescription } from "@/components/ui/dialog"; 
 import { getOperationBalances } from "@/src/utils/payment-helpers";
 import { useGuaranteeStore } from "@/src/store/useGuaranteeStore";
 import { buildPaymentTicketHtml } from "@/src/components/tenant/ticket/build-payment-ticket";

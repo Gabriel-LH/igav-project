@@ -36,8 +36,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
-import { DirectTransactionModal } from "./ui/direct-transaction/DirectTransactionModal";
-import { ReservationModal } from "./ui/reservation/ReservationModal";
+import { useCartStore } from "@/src/store/useCartStore"; 
 import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { cn } from "@/lib/utils";
@@ -104,6 +103,7 @@ export function ProductDetailsPage({
   const setRentalData = useRentalStore((s) => s.setRentalData);
   const { getModelById } = useAttributeStore();
   const { promotions, setPromotions } = usePromotionStore();
+  const addItem = useCartStore((s) => s.addItem); 
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
@@ -456,6 +456,26 @@ export function ProductDetailsPage({
   );
 
   const selectedImage = selectedVariantRaw?.image || product?.image;
+
+  const handleAddToCart = (type: "venta" | "alquiler") => {
+    if (!product) return;
+
+    addItem(
+      product,
+      type,
+      undefined, // specificStockId (the user can select it in the POS)
+      type === "venta" ? availability.sale : availability.rent,
+      selectedVariantId,
+    );
+
+    toast.success(`Producto añadido al carrito (${type.toUpperCase()})`, {
+      description: `${product.name} listo para procesar en caja.`,
+      action: {
+        label: "Ir a Caja",
+        onClick: () => router.push("/tenant/pos"),
+      },
+    });
+  };
 
   if (!product || !resolution) {
     if (isLoading) {
@@ -1036,89 +1056,63 @@ export function ProductDetailsPage({
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <FeatureGuard feature="rentals">
-                    <DirectTransactionModal
-                      item={product}
-                      variantId={selectedVariantId}
-                      selectedVariant={selectedVariantRaw}
-                      displayAttributes={selectedVariant?.allAttributes}
-                      type="alquiler"
-                      currentBranchId={currentBranchId}
+                    <Button
+                      size="lg"
+                      className="flex-1 gap-2 h-14 text-lg"
+                      disabled={availability.rent <= 0}
+                      onClick={() => handleAddToCart("alquiler")}
                     >
-                      <Button
-                        size="lg"
-                        className="flex-1 gap-2 h-14 text-lg"
-                        disabled={availability.rent <= 0}
-                      >
-                        <CalendarClock className="w-5 h-5" />
-                        <div className="text-left">
-                          <p className="text-sm font-medium leading-none">
-                            Alquilar
-                          </p>
-                          <p className="text-xs opacity-80 mt-1">
-                            {availability.rent} disponibles
-                          </p>
-                        </div>
-                      </Button>
-                    </DirectTransactionModal>
+                      <CalendarClock className="w-5 h-5" />
+                      <div className="text-left">
+                        <p className="text-sm font-medium leading-none">
+                          Alquilar
+                        </p>
+                        <p className="text-xs opacity-80 mt-1">
+                          {availability.rent} disponibles
+                        </p>
+                      </div>
+                    </Button>
                   </FeatureGuard>
 
                   <FeatureGuard feature="sales">
-                    <DirectTransactionModal
-                      item={product}
-                      variantId={selectedVariantId}
-                      selectedVariant={selectedVariantRaw}
-                      displayAttributes={selectedVariant?.allAttributes}
-                      type="venta"
-                      currentBranchId={currentBranchId}
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                      className="flex-1 gap-2 h-14 text-lg"
+                      disabled={availability.sale <= 0}
+                      onClick={() => handleAddToCart("venta")}
                     >
-                      <Button
-                        size="lg"
-                        variant="secondary"
-                        className="flex-1 gap-2 h-14 text-lg"
-                        disabled={availability.sale <= 0}
-                      >
-                        <ShoppingCart className="w-5 h-5" />
-                        <div className="text-left">
-                          <p className="text-sm font-medium leading-none">
-                            Vender
-                          </p>
-                          <p className="text-xs opacity-80 mt-1">
-                            {availability.sale} disponibles
-                          </p>
-                        </div>
-                      </Button>
-                    </DirectTransactionModal>
+                      <ShoppingCart className="w-5 h-5" />
+                      <div className="text-left">
+                        <p className="text-sm font-medium leading-none">
+                          Vender
+                        </p>
+                        <p className="text-xs opacity-80 mt-1">
+                          {availability.sale} disponibles
+                        </p>
+                      </div>
+                    </Button>
                   </FeatureGuard>
 
-                  <>
-                    <ReservationModal
-                      item={product}
-                      variantId={selectedVariantId}
-                      selectedVariant={selectedVariantRaw}
-                      displayAttributes={selectedVariant?.allAttributes}
-                      currentBranchId={currentBranchId}
-                      originBranchId={
-                        remoteWithStock?.branchId || currentBranchId
-                      }
+                  <FeatureGuard feature="rentals">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="flex-1 gap-2 h-14 text-lg"
+                      disabled={!canReserve}
+                      onClick={() => handleAddToCart("alquiler")}
                     >
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="flex-1 gap-2 h-14 text-lg"
-                        disabled={!canReserve}
-                      >
-                        <Package2 className="w-5 h-5" />
-                        <div className="text-left">
-                          <p className="text-sm font-medium leading-none">
-                            Reservar
-                          </p>
-                          <p className="text-xs opacity-80 mt-1">
-                            Para fecha futura
-                          </p>
-                        </div>
-                      </Button>
-                    </ReservationModal>
-                  </>
+                      <Package2 className="w-5 h-5" />
+                      <div className="text-left">
+                        <p className="text-sm font-medium leading-none">
+                          Reservar
+                        </p>
+                        <p className="text-xs opacity-80 mt-1">
+                          En caja (con adelanto)
+                        </p>
+                      </div>
+                    </Button>
+                  </FeatureGuard>
                 </div>
               </CardContent>
             </Card>
