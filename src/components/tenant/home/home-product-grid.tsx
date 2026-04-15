@@ -251,12 +251,16 @@ export function ProductGrid({
         return;
       }
 
+      // Si es una serie o lote específico, pasamos el parámetro 'preselect'
+      const isSpecificItem = ["serialCode", "inventoryItemId", "stockLotId", "stockLotBarcode"].includes(resolution.matchType);
+      const preselectParam = isSpecificItem ? `&preselect=${encodeURIComponent(code)}` : "";
+
       const variantQuery = resolution.variantId
         ? `?variantId=${encodeURIComponent(resolution.variantId)}`
-        : "";
+        : "?v=1"; // fallback query
 
       router.push(
-        `/product-details/${encodeURIComponent(code)}${variantQuery}`,
+        `/product-details/${encodeURIComponent(code)}${variantQuery}${preselectParam}`,
       );
     },
   });

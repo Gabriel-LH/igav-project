@@ -6,6 +6,7 @@ import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
 import { useCartStore } from "@/src/store/useCartStore";
 import { toast } from "sonner";
+import { findPresaleByCodeAction } from "@/src/app/(tenant)/tenant/actions/presale.actions";
 import { PosProductSection } from "./pos-product-section";
 import { PosCartSection } from "./pos-cart-section";
 import { BarcodeScanner } from "../inventory/inventory/barcode/Scanner";
@@ -54,12 +55,26 @@ export function PosLayout() {
   // The promotion calculation is now handled internally by the store actions
   // (addItem, removeItem, updateQuantity, etc.), so we remove the reactive effect.
 
-  const handleScannedCode = useState(() => (code: string) => {
+  const handleScannedCode = useState(() => async (code: string) => {
     if (!selectedBranchId || selectedBranchId === GLOBAL_BRANCH_ID) {
       toast.error("Selecciona una sucursal para usar el POS.");
       return;
     }
     console.log("Escaneado:", code);
+
+    // 0. ¿ES UNA PRE-VENTA? (Detector de prefijo PV)
+    if (code.startsWith("PV-")) {
+      toast.loading("Cargando pre-venta...", { id: "presale-loading" });
+      const res = await findPresaleByCodeAction(code);
+      if (res.success && res.data) {
+        useCartStore.getState().hydrateFromPresale(res.data);
+        toast.success("Pre-venta cargada", { id: "presale-loading" });
+        return;
+      } else {
+        toast.error(res.error || "Error al buscar pre-venta", { id: "presale-loading" });
+        return;
+      }
+    }
 
     // 1. BUSCAR EN INVENTARIO (Seriales o Lotes)
     const serialItem = inventoryItems.find((i) => i.serialCode === code);
@@ -251,6 +266,17 @@ export function PosLayout() {
             >
               {preferredMode} (AUTO)
             </Badge>
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 text-[10px] bg-white/5 hover:bg-white/10 text-white/70"
+                onClick={() => {
+                   const code = prompt("Ingrese código de Pre-venta (PV-...):");
+                   if (code) handleScannedCode(code);
+                }}
+            >
+                Importar Orden
+            </Button>
           </div>
 
           <div className="flex items-center gap-2">

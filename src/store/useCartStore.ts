@@ -121,6 +121,7 @@ interface CartState {
   setCustomer: (id: string | null) => void;
   clearCart: () => void;
   getTotal: () => number;
+  hydrateFromPresale: (operation: any) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -761,6 +762,53 @@ export const useCartStore = create<CartState>()(
           globalRentalTimes: null,
         }),
       getTotal: () => get().items.reduce((acc, item) => acc + item.subtotal, 0),
+      hydrateFromPresale: (operation: any) => {
+        const items: CartItem[] = [];
+
+        if (operation.saleItems) {
+          operation.saleItems.forEach((si: any) => {
+            items.push({
+              cartId: crypto.randomUUID(),
+              product: si.product,
+              operationType: "venta",
+              quantity: si.quantity,
+              unitPrice: si.unitPrice,
+              subtotal: si.subtotal,
+              variantId: si.variantId,
+              selectedCodes: si.inventoryItemId
+                ? [si.inventoryItemId]
+                : si.stockId
+                  ? [si.stockId]
+                  : [],
+            });
+          });
+        }
+
+        if (operation.rentalItems) {
+          operation.rentalItems.forEach((ri: any) => {
+            items.push({
+              cartId: crypto.randomUUID(),
+              product: ri.product,
+              operationType: "alquiler",
+              quantity: ri.quantity,
+              unitPrice: ri.unitPrice,
+              subtotal: ri.subtotal,
+              variantId: ri.variantId,
+              selectedCodes: ri.inventoryItemId ? [ri.inventoryItemId] : [],
+            });
+          });
+        }
+
+        set({
+          items,
+          customerId: operation.customerId || null,
+          activeTenantId: operation.tenantId,
+        });
+
+        const bid = useBranchStore.getState().selectedBranchId;
+        if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
+        get().syncCartWithServer();
+      },
       applyPromotions: (branchId: string) => {
         const state = get();
         const rentalDates = state.globalRentalDates;

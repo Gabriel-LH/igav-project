@@ -1,4 +1,4 @@
-import { ProductDetailsPage } from "@/src/components/tenant/home/product-details-page";
+import { ProductDetailsViewer } from "@/src/components/tenant/home/product-details-viewer";
 import { getCategoriesAction } from "@/src/app/(tenant)/tenant/actions/category.actions";
 import {
   getAttributeTypesAction,
@@ -40,7 +40,7 @@ export default async function ProductDetailsRoute({
   const promotions = promotionsResult.success ? (promotionsResult.data ?? []) : [];
 
   return (
-    <ProductDetailsPage
+    <ProductDetailsViewer
       lookup={decodeURIComponent(resolvedParams.lookup)}
       initialVariantId={resolvedSearchParams?.variantId}
       categories={categories}

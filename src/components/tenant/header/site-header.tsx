@@ -2,6 +2,8 @@ import { Button } from "@/components/button";
 import { Separator } from "@/components/separator";
 import { SidebarTrigger } from "@/components/sidebar";
 import { ModeToggle } from "./mode-toggle";
+import { FullscreenToggle } from "./fullscreen-toggle";
+import { CatalogCartTrigger } from "../home/ui/cart/CatalogCartTrigger";
 
 interface SiteHeaderProps {
   tenantName: string;
@@ -50,6 +52,8 @@ export function SiteHeader({ tenantName, logoUrl = "" }: SiteHeaderProps) {
               GitHub
             </a>
           </Button>
+          <CatalogCartTrigger />
+          <FullscreenToggle />
           <ModeToggle />
         </div>
       </div>
