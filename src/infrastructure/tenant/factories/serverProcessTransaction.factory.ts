@@ -8,7 +8,9 @@ import { PrismaInventoryRepository } from "../repositories/PrismaInventoryReposi
 import { PrismaTenantRepository } from "../repositories/PrismaTenantRepository";
 import { PrismaGuaranteeRepository } from "../repositories/PrismaGuaranteeRepository";
 import { PrismaLoyaltyRepository } from "../repositories/PrismaLoyaltyRepository";
+import { PrismaClientRepository } from "../repositories/PrismaClientRepository";
 import { PrismaClientCreditRepository } from "../repositories/PrismaClientCreditRepository";
+import { PrismaPaymentMethodCatalogRepository } from "../repositories/PrismaPaymentMethodCatalogRepository";
 import { PrismaReferralRepository } from "../repositories/PrismaReferralRepository";
 import { PrismaCouponRepository } from "../repositories/PrismaCouponRepository";
 import { PrismaPromotionAdapter } from "../stores-adapters/prisma-promotion.adapter";
@@ -45,7 +47,9 @@ export function makeServerProcessTransaction(
   const inventoryRepo = new PrismaInventoryRepository(tx);
   const guaranteeRepo = new PrismaGuaranteeRepository(tx);
   const loyaltyRepo = new PrismaLoyaltyRepository(tx);
+  const clientRepo = new PrismaClientRepository(tx);
   const clientCreditRepo = new PrismaClientCreditRepository(tx);
+  const paymentMethodRepo = new PrismaPaymentMethodCatalogRepository(tx);
   const referralRepo = new PrismaReferralRepository(tx);
   const couponRepo = new PrismaCouponRepository(tx);
   const promoRepo = new PrismaPromotionAdapter();
@@ -71,7 +75,12 @@ export function makeServerProcessTransaction(
 
   // 3. Sub-cases
   const createOperationUC = new CreateOperationUseCase(operationRepo);
-  const processInitialPaymentUC = new ProcessInitialPaymentUseCase(paymentRepo);
+  const processInitialPaymentUC = new ProcessInitialPaymentUseCase(
+    paymentRepo,
+    paymentMethodRepo,
+    clientRepo,
+    clientCreditRepo,
+  );
   const addClientCreditUC = new AddClientCreditUseCase(clientCreditRepo);
   const rewardLoyaltyUC = new RewardLoyaltyUseCase(loyaltyRepo);
   const processReferralUC = new ProcessReferralUseCase(

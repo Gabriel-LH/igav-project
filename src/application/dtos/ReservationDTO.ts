@@ -28,7 +28,10 @@ export interface ReservationDTO extends BaseOperation {
     taxAmount?: number;
     totalAmount: number;
     receivedAmount: number;
-    paymentMethod: string;
+    creditAppliedAmount?: number;
+    paymentMethod?: string;
+    paymentMethodId?: string;
+    creditPaymentMethodId?: string;
     keepAsCredit?: boolean;
   };
 }

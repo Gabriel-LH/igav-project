@@ -169,6 +169,7 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             <TabsTrigger value="general" className="px-6">Negocio</TabsTrigger>
             <TabsTrigger value="fiscal" className="px-6">Fiscal</TabsTrigger>
             <TabsTrigger value="pricing" className="px-6">Precios</TabsTrigger>
+            <TabsTrigger value="cash" className="px-6">Caja</TabsTrigger>
             <TabsTrigger value="programs" className="px-6">Programas</TabsTrigger>
             <TabsTrigger value="logistics" className="px-6">Logística</TabsTrigger>
           </TabsList>
@@ -180,6 +181,9 @@ export function TenantConfigModule({ tenantProfile }: TenantConfigModuleProps) {
             </TabsContent>
             <TabsContent value="pricing" className="mt-0">
               <PricingConfigForm config={config} onChange={(v) => handleConfigChange("pricing", v)} />
+            </TabsContent>
+            <TabsContent value="cash" className="mt-0">
+              <CashConfigForm config={config} onChange={(v) => handleConfigChange("cash", v)} />
             </TabsContent>
             <TabsContent value="programs" className="mt-0">
               <div className="space-y-4">

@@ -46,7 +46,9 @@ export interface RentalDTO extends BaseOperation {
     roundingDifference?: number;
     keepAsCredit: boolean;
     receivedAmount: number;
-    paymentMethodId: string;
+    creditAppliedAmount?: number;
+    paymentMethodId?: string;
+    creditPaymentMethodId?: string;
     pointsDiscount?: number;
     couponDiscount?: number;
     couponCode?: string;

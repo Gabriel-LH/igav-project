@@ -41,8 +41,10 @@ export interface SaleDTO extends BaseOperation {
     totalBeforeRounding?: number;
     roundingDifference?: number;
     receivedAmount: number;
+    creditAppliedAmount?: number;
     keepAsCredit: boolean;
-    paymentMethodId: string;
+    paymentMethodId?: string;
+    creditPaymentMethodId?: string;
     pointsDiscount?: number;
     couponDiscount?: number;
     couponCode?: string;

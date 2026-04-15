@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { addDays, setHours, setMinutes } from "date-fns";
 import { calculateChargeableDays } from "@/src/utils/date/calculateRentalDays";
-import { ShoppingBag, AlertTriangle, Banknote, Calendar, AlertCircle } from "lucide-react";
+import { ShoppingBag, AlertTriangle, Banknote, Calendar, AlertCircle, Coins } from "lucide-react";
 
 // --- IMPORTS ---
 import { useCartStore } from "@/src/store/useCartStore";
@@ -126,14 +127,18 @@ export function PosCheckoutModal({
   const [notes, setNotes] = useState("");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodId, setPaymentMethodId] = useState<string>("");
+  const [useAvailableCredit, setUseAvailableCredit] = useState(false);
 
   useEffect(() => {
     async function loadPaymentMethods() {
       const res = await getAvailablePaymentMethodsAction();
       if (res.success && res.data) {
         setPaymentMethods(res.data);
-        if (res.data.length > 0) {
-          setPaymentMethodId(res.data[0].id);
+        const firstNonCreditMethod = res.data.find(
+          (method) => method.type !== "credit",
+        );
+        if (firstNonCreditMethod) {
+          setPaymentMethodId(firstNonCreditMethod.id);
         }
       }
     }
@@ -142,9 +147,17 @@ export function PosCheckoutModal({
     }
   }, [open]);
 
+  const creditPaymentMethod = useMemo(
+    () => paymentMethods.find((method) => method.type === "credit"),
+    [paymentMethods],
+  );
+  const payableMethods = useMemo(
+    () => paymentMethods.filter((method) => method.type !== "credit"),
+    [paymentMethods],
+  );
   const selectedPaymentMethod = useMemo(
-    () => paymentMethods.find((m) => m.id === paymentMethodId),
-    [paymentMethods, paymentMethodId],
+    () => payableMethods.find((m) => m.id === paymentMethodId),
+    [payableMethods, paymentMethodId],
   );
 
   const isGeneral = selectedCustomer === null;
@@ -173,6 +186,9 @@ export function PosCheckoutModal({
 
   // Configuraciones (Idealmente vienen de tus businessRules)
   const availablePoints = selectedClient?.loyaltyPoints || 0;
+  const availableCredit = Number(
+    selectedClient?.walletBalance ?? selectedCustomer?.walletBalance ?? 0,
+  );
   const pointValueInMoney = tenantConfig.loyalty?.redemptionValue || 0.01;
 
   const returnDateRef = React.useRef<HTMLButtonElement>(null);
@@ -318,16 +334,38 @@ export function PosCheckoutModal({
     return totalBrutoConIGV + (hasRentals ? guaranteeValue : 0);
   }, [totalBrutoConIGV, guarantee, guaranteeType, hasRentals]);
 
+  const creditAppliedAmount = useMemo(() => {
+    if (!useAvailableCredit || !selectedCustomer) return 0;
+    return Math.min(availableCredit, totalACobrarHoy);
+  }, [useAvailableCredit, selectedCustomer, availableCredit, totalACobrarHoy]);
+
+  const remainingAfterCredit = useMemo(
+    () => Math.max(totalACobrarHoy - creditAppliedAmount, 0),
+    [totalACobrarHoy, creditAppliedAmount],
+  );
+
   const changeAmount = useMemo(() => {
     if (!isCashPayment) return 0;
     const received = Number(receivedAmount);
-    if (received <= 0 || received < totalACobrarHoy) return 0;
-    return received - totalACobrarHoy;
-  }, [receivedAmount, totalACobrarHoy, isCashPayment]);
+    if (received <= 0 || received < remainingAfterCredit) return 0;
+    return received - remainingAfterCredit;
+  }, [receivedAmount, remainingAfterCredit, isCashPayment]);
+
+  const parseReceivedAmount = React.useCallback((val: string) => {
+    if (!val || val.trim() === "") return 0;
+    const cleaned = val.replace(/[^0-9.,]/g, "").replace(",", ".");
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }, []);
+
+  const enteredAmount = useMemo(
+    () => parseReceivedAmount(receivedAmount),
+    [parseReceivedAmount, receivedAmount],
+  );
 
   // EFECTO: Autocompletar monto recibido con el total exacto de forma inteligente
   useEffect(() => {
-    const currentTotalStr = totalACobrarHoy.toFixed(2);
+    const currentTotalStr = remainingAfterCredit.toFixed(2);
     const isEffectivelyEmpty = !receivedAmount || receivedAmount === "" || receivedAmount === "0" || receivedAmount === "0.00";
     
     // CASO 1: El modal se abre por primera vez o el monto está vacío/en cero
@@ -342,7 +380,24 @@ export function PosCheckoutModal({
       setReceivedAmount(currentTotalStr);
       lastSuggestedTotal.current = currentTotalStr;
     }
-  }, [open, totalACobrarHoy, receivedAmount]);
+  }, [open, remainingAfterCredit, receivedAmount]);
+
+  useEffect(() => {
+    if (!selectedCustomer || availableCredit <= 0) {
+      setUseAvailableCredit(false);
+    }
+  }, [selectedCustomer, availableCredit]);
+
+  useEffect(() => {
+    if (remainingAfterCredit <= 0) {
+      setReceivedAmount("0.00");
+      return;
+    }
+
+    if (!paymentMethodId || !payableMethods.some((method) => method.id === paymentMethodId)) {
+      setPaymentMethodId(payableMethods[0]?.id || "");
+    }
+  }, [remainingAfterCredit, payableMethods, paymentMethodId]);
 
   const withTime = (date: Date, time: string) => {
     const [h, m] = time.split(":").map(Number);
@@ -386,10 +441,22 @@ export function PosCheckoutModal({
        });
     }
 
-    if (conflicts.length > 0)
-      return toast.error("Conflictos de stock en fechas seleccionadas");
     if (missingSerials) return toast.error("Faltan asignar series");
-    if (!selectedPaymentMethod) return toast.error("Seleccione un método de pago");
+    if (useAvailableCredit && !selectedCustomer) {
+      return toast.error("Debes seleccionar un cliente para usar crédito");
+    }
+    if (useAvailableCredit && !creditPaymentMethod) {
+      return toast.error("No existe un método de crédito disponible");
+    }
+    if (remainingAfterCredit > 0 && !selectedPaymentMethod) {
+      return toast.error("Seleccione un método de pago para el saldo restante");
+    }
+    if (remainingAfterCredit > 0 && enteredAmount <= 0) {
+      return toast.error("Ingresa un monto válido para el saldo restante");
+    }
+    if (remainingAfterCredit > 0 && enteredAmount < remainingAfterCredit) {
+      return toast.error("El monto recibido no cubre el saldo restante");
+    }
 
     // Validar Autorización de PIN si es necesario
     if (requiresAuth && !isAuthorized) {
@@ -531,14 +598,13 @@ export function PosCheckoutModal({
         Math.round(totalBrutoConIGV * rentalShare * 100) / 100 +
         guaranteeAmount;
 
-      // Función para limpiar y parsear el monto ingresado (maneja comas y símbolos)
-      const parseReceivedAmount = (val: string) => {
-        if (!val || val.trim() === "") return 0;
-        // Eliminar todo lo que no sea número, coma o punto
-        const cleaned = val.replace(/[^0-9.,]/g, "").replace(",", ".");
-        const num = parseFloat(cleaned);
-        return isNaN(num) ? 0 : num;
-      };
+      // Crédito split por proporción sale/rental
+      const saleCreditApplied = useAvailableCredit
+        ? Math.round(creditAppliedAmount * saleShare * 100) / 100
+        : 0;
+      const rentalCreditApplied = useAvailableCredit
+        ? Math.round(creditAppliedAmount * rentalShare * 100) / 100
+        : 0;
 
       let amountToProcess = parseReceivedAmount(receivedAmount);
       
@@ -583,7 +649,9 @@ export function PosCheckoutModal({
             roundingDifference: Math.round(taxTotals.roundingDifference * saleShare * 100) / 100,
             keepAsCredit: false,
             receivedAmount: saleReceived,
-            paymentMethodId: selectedPaymentMethod.id,
+            creditAppliedAmount: saleCreditApplied,
+            paymentMethodId: remainingAfterCredit > 0 ? selectedPaymentMethod?.id : undefined,
+            creditPaymentMethodId: useAvailableCredit ? creditPaymentMethod?.id : undefined,
             pointsDiscount: Math.round(pointsDiscount * saleShare * 100) / 100,
             couponDiscount: Math.round(couponDiscount * saleShare * 100) / 100,
             couponCode: appliedCoupon?.code,
@@ -618,7 +686,9 @@ export function PosCheckoutModal({
             roundingDifference: Math.round(taxTotals.roundingDifference * rentalShare * 100) / 100,
             keepAsCredit: false,
             receivedAmount: rentalReceived,
-            paymentMethodId: selectedPaymentMethod.id,
+            creditAppliedAmount: rentalCreditApplied,
+            paymentMethodId: remainingAfterCredit > 0 ? selectedPaymentMethod?.id : undefined,
+            creditPaymentMethodId: useAvailableCredit ? creditPaymentMethod?.id : undefined,
             pointsDiscount: Math.round(pointsDiscount * rentalShare * 100) / 100,
             couponDiscount: Math.round(couponDiscount * rentalShare * 100) / 100,
             couponCode: appliedCoupon?.code,
@@ -928,21 +998,72 @@ export function PosCheckoutModal({
               </div>
             )}
 
-            <CashPaymentSummary
-              type={hasRentals ? "alquiler" : "venta"}
-              totalToPay={totalACobrarHoy}
-              paymentMethodId={paymentMethodId}
-              paymentMethods={paymentMethods}
-              isCashPayment={isCashPayment}
-              receivedAmount={receivedAmount}
-              setReceivedAmount={setReceivedAmount}
-              changeAmount={changeAmount}
-              setPaymentMethodId={setPaymentMethodId}
-              guarantee={guarantee}
-              setGuarantee={setGuarantee}
-              guaranteeType={guaranteeType}
-              setGuaranteeType={setGuaranteeType}
-            />
+            {selectedCustomer && availableCredit > 0 && creditPaymentMethod && (
+              <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3 dark:border-blue-900/40 dark:bg-blue-950/20">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Coins className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs font-bold text-blue-800 dark:text-blue-300">
+                        Saldo a favor disponible
+                      </p>
+                      <p className="text-sm font-black text-blue-900 dark:text-blue-100">
+                        {formatCurrency(availableCredit)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="use-available-credit" className="text-xs font-bold text-blue-800 dark:text-blue-200">
+                      Usar crédito
+                    </Label>
+                    <Switch
+                      id="use-available-credit"
+                      checked={useAvailableCredit}
+                      onCheckedChange={setUseAvailableCredit}
+                    />
+                  </div>
+                </div>
+                {useAvailableCredit && (
+                  <div className="mt-3 space-y-1 rounded-lg border border-blue-200/70 bg-white/60 p-3 text-[11px] dark:border-blue-800/40 dark:bg-slate-950/30">
+                    <div className="flex justify-between">
+                      <span className="text-blue-700 dark:text-blue-300">Crédito aplicado</span>
+                      <span className="font-bold text-blue-900 dark:text-blue-100">{formatCurrency(creditAppliedAmount)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-700 dark:text-blue-300">Restante por pagar</span>
+                      <span className="font-bold text-blue-900 dark:text-blue-100">{formatCurrency(remainingAfterCredit)}</span>
+                    </div>
+                    {remainingAfterCredit <= 0 ? (
+                      <p className="pt-1 text-blue-700 dark:text-blue-300">
+                        El crédito cubre toda la operación. Puedes confirmar sin ingresar otro pago.
+                      </p>
+                    ) : (
+                      <p className="pt-1 text-blue-700 dark:text-blue-300">
+                        Elige cómo pagar el restante. El crédito y el otro método se guardarán por separado.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(remainingAfterCredit > 0 || !useAvailableCredit) && (
+              <CashPaymentSummary
+                type={hasRentals ? "alquiler" : "venta"}
+                totalToPay={remainingAfterCredit > 0 ? remainingAfterCredit : totalACobrarHoy}
+                paymentMethodId={paymentMethodId}
+                paymentMethods={payableMethods}
+                isCashPayment={isCashPayment}
+                receivedAmount={receivedAmount}
+                setReceivedAmount={setReceivedAmount}
+                changeAmount={changeAmount}
+                setPaymentMethodId={setPaymentMethodId}
+                guarantee={guarantee}
+                setGuarantee={setGuarantee}
+                guaranteeType={guaranteeType}
+                setGuaranteeType={setGuaranteeType}
+              />
+            )}
           </div>
 
           <div className="pt-4 border-t">
@@ -954,8 +1075,10 @@ export function PosCheckoutModal({
                   (i) =>
                     i.product.is_serial && i.selectedCodes.length < i.quantity,
                 ) ||
-                (isCashPayment && Number(receivedAmount) < totalACobrarHoy && !hasRentals) ||
-                (hasRentals && Number(receivedAmount) < totalACobrarHoy) ||
+                (useAvailableCredit && !selectedCustomer) ||
+                (remainingAfterCredit > 0 && !selectedPaymentMethod) ||
+                (remainingAfterCredit > 0 && enteredAmount <= 0) ||
+                (remainingAfterCredit > 0 && enteredAmount < remainingAfterCredit) ||
                 (hasRentals && guarantee.length === 0)
               }
               className="w-full h-12 font-black text-white bg-linear-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg"
@@ -988,3 +1111,4 @@ export function PosCheckoutModal({
     </>
   );
 }
+

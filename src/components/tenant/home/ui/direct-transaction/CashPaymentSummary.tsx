@@ -17,6 +17,7 @@ import {
   Smartphone,
   Banknote,
   HandCoins,
+  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuaranteeSection } from "../reservation/GuaranteeSection";
@@ -48,6 +49,7 @@ const getPaymentMethodIcon = (method: PaymentMethod) => {
 
   if (method.type === "cash") return Wallet;
   if (method.type === "card") return CreditCard;
+  if (method.type === "credit") return Coins;
   if (normalizedName.includes("yape") || normalizedName.includes("plin")) {
     return Smartphone;
   }

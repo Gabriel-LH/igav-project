@@ -56,7 +56,7 @@ import {
   BankIcon,
   Money02Icon,
   MoreOrLessIcon,
-  CashierIcon,
+  CoinsDollarIcon,
 } from "@hugeicons/core-free-icons";
 import {
   Tooltip,
@@ -121,6 +121,13 @@ const PAYMENT_METHOD_INFO = {
     description: "Pagos con cheque bancario",
     color: "text-cyan-600 dark:text-cyan-400",
     bg: "bg-cyan-100 dark:bg-cyan-900/30",
+  },
+  credit: {
+    label: "Crédito",
+    icon: CoinsDollarIcon,
+    description: "Pago contra crédito o saldo disponible",
+    color: "text-orange-600 dark:text-orange-400",
+    bg: "bg-orange-100 dark:bg-orange-900/30",
   },
   other: {
     label: "Otro",

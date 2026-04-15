@@ -18,7 +18,6 @@ import { ResolveTenantSettingsUseCase } from "@/src/application/tenant/use-cases
  */
 export async function processTransactionAction(dto: any) {
   try {
-    // 0. Auth check and tenant isolation
     const membership = await requireTenantMembership();
     const tenantId = membership.tenantId;
     const userId = membership.user?.id;
@@ -31,16 +30,30 @@ export async function processTransactionAction(dto: any) {
     }
 
     const rawPaymentMethod =
-      (dto as { financials?: { paymentMethod?: unknown; paymentMethodId?: unknown } })?.financials
-        ?.paymentMethodId ??
+      (dto as {
+        financials?: { paymentMethod?: unknown; paymentMethodId?: unknown };
+      })?.financials?.paymentMethodId ??
       (dto as { financials?: { paymentMethod?: unknown } })?.financials
         ?.paymentMethod ??
       null;
-    const resolvedPaymentMethodId =
-      await resolvePaymentMethodId(rawPaymentMethod);
+    const rawCreditPaymentMethod =
+      (dto as { financials?: { creditPaymentMethodId?: unknown } })?.financials
+        ?.creditPaymentMethodId ?? null;
+    const rawCreditAppliedAmount = Number(
+      (dto as { financials?: { creditAppliedAmount?: unknown } })?.financials
+        ?.creditAppliedAmount ?? 0,
+    );
 
-    if (!resolvedPaymentMethodId) {
-      throw new Error("Método de pago inválido");
+    const resolvedPaymentMethodId = rawPaymentMethod
+      ? await resolvePaymentMethodId(rawPaymentMethod)
+      : null;
+    const resolvedCreditPaymentMethodId =
+      rawCreditAppliedAmount > 0 && rawCreditPaymentMethod
+        ? await resolvePaymentMethodId(rawCreditPaymentMethod)
+        : null;
+
+    if (!resolvedPaymentMethodId && !resolvedCreditPaymentMethodId) {
+      throw new Error("Metodo de pago invalido");
     }
 
     const configRepo = new PrismaConfigAdapter();
@@ -55,8 +68,9 @@ export async function processTransactionAction(dto: any) {
       sellerId: userId,
       financials: {
         ...(dto as { financials?: Record<string, unknown> }).financials,
-        paymentMethodId: resolvedPaymentMethodId,
-        paymentMethod: resolvedPaymentMethodId,
+        paymentMethodId: resolvedPaymentMethodId ?? undefined,
+        paymentMethod: resolvedPaymentMethodId ?? undefined,
+        creditPaymentMethodId: resolvedCreditPaymentMethodId ?? undefined,
       },
       configSnapshot: {
         tenant: config,
@@ -67,18 +81,15 @@ export async function processTransactionAction(dto: any) {
       policyVersion,
     };
 
-    // 1. Execute the use case within a database transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Instantiate the Use Case via factory with the transaction client
       const useCase = makeServerProcessTransaction(tx);
       return await useCase.execute(dtoWithTenant);
     });
 
-    // 2. Revalidate relevant paths to ensure UI updates
     revalidatePath("/tenant/rentals");
     revalidatePath("/tenant/sales");
     revalidatePath("/tenant/reservations");
-    revalidatePath("/tenant/home"); // Home grid often shows inventory changes
+    revalidatePath("/tenant/home");
     revalidatePath("/tenant/pos");
 
     return {
@@ -90,7 +101,7 @@ export async function processTransactionAction(dto: any) {
     return {
       success: false,
       error:
-        (error as Error).message || "Error interno al procesar la transacción",
+        (error as Error).message || "Error interno al procesar la transaccion",
     };
   }
 }
@@ -130,8 +141,7 @@ export async function reserveBundlesAction(
     console.error("[reserveBundlesAction] Error:", error);
     return {
       success: false,
-      error:
-        (error as Error).message || "Error al reservar los bultos",
+      error: (error as Error).message || "Error al reservar los bultos",
     };
   }
 }

@@ -34,6 +34,7 @@ export function makeProcessTransaction(): ProcessTransactionUseCase {
   return new ProcessTransactionUseCase(
     new ZustandUnitOfWork(),
     new ZustandTenantRepository(),
+    undefined as any,
     [
       new SaleTransactionStrategy(
         new CreateSaleUseCase(
@@ -55,7 +56,12 @@ export function makeProcessTransaction(): ProcessTransactionUseCase {
       ),
     ],
     new CreateOperationUseCase(new ZustandOperationRepository()),
-    new ProcessInitialPaymentUseCase(new ZustandPaymentRepository()),
+    new ProcessInitialPaymentUseCase(
+      new ZustandPaymentRepository(),
+      undefined as any,
+      undefined as any,
+      new ZustandClientCreditRepository(),
+    ),
     new AddClientCreditUseCase(new ZustandClientCreditRepository()),
     new RewardLoyaltyUseCase(loyaltyRepo),
     new ProcessReferralUseCase(
@@ -63,5 +69,6 @@ export function makeProcessTransaction(): ProcessTransactionUseCase {
       couponRepo,
       loyaltyRepo,
     ),
+    undefined as any,
   );
 }

@@ -156,12 +156,15 @@ export class ProcessTransactionUseCase {
       }
 
       await this.processPaymentUC.execute({
-        downPayment: financials.downPayment,
-        paymentMethodId: financials.paymentMethodId,
+        directPaymentAmount: financials.receivedAmount,
+        paymentMethodId: financials.paymentMethodId || undefined,
+        creditAppliedAmount: financials.creditAppliedAmount,
+        creditPaymentMethodId: financials.creditPaymentMethodId || undefined,
         operationId,
         branchId: dto.branchId,
         sellerId: dto.sellerId,
         tenantId,
+        customerId: dto.customerId,
       });
 
       const strategy = this.transactionStrategies.find((s) =>
