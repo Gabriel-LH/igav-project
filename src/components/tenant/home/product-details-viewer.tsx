@@ -19,28 +19,26 @@ import React from "react";
 import type { Category } from "@/src/types/category/type.category";
 import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
   CalendarClock,
-  Package2,
   ShoppingCart,
   MapPin,
   Truck,
   Box,
   Tag,
-  Layers,
-  Clock,
   CheckCircle2,
-  Loader,
   Barcode,
+  ListChecks,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
-import { useCartStore } from "@/src/store/useCartStore"; 
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
+// Force refresh triggered to clear lucide-react module evaluation cache.
+import { useCartStore } from "@/src/store/useCartStore";
 import { resolveProductLookup } from "@/src/utils/product/resolveProductLookup";
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { cn } from "@/lib/utils";
@@ -82,6 +80,7 @@ interface VariantChoice {
   priceSell?: number;
   rentUnit?: string;
   image?: string[];
+  sku: string;
   allAttributes: DisplayAttributeValue[];
 }
 
@@ -102,19 +101,23 @@ export function ProductDetailsViewer({
     (s) => s.setInventoryItems,
   );
   const pd_setStockLotsInStore = useInventoryStore((s) => s.setStockLots);
-  const pd_setReservationData = useReservationStore((s) => s.setReservationData);
+  const pd_setReservationData = useReservationStore(
+    (s) => s.setReservationData,
+  );
   const pd_setRentalData = useRentalStore((s) => s.setRentalData);
   const { getModelById } = useAttributeStore();
   const { promotions, setPromotions } = usePromotionStore();
-  const addItem = useCartStore((s) => s.addItem); 
+  const addItem = useCartStore((s) => s.addItem);
 
   const [pd_products, pd_setProducts] = useState<Product[]>([]);
   const [pd_variants, pd_setVariants] = useState<ProductVariant[]>([]);
-  const [pd_inventoryItems, pd_setInventoryItems] = useState<InventoryItem[]>([]);
+  const [pd_inventoryItems, pd_setInventoryItems] = useState<InventoryItem[]>(
+    [],
+  );
   const [pd_stockLots, pd_setStockLots] = useState<StockLot[]>([]);
   const [pd_isLoading, pd_setIsLoading] = useState(true);
   const [pd_selectedStockIds, pd_setSelectedStockIds] = useState<string[]>([]);
-  
+
   const searchParams = useSearchParams();
   const preselectCode = searchParams.get("preselect");
 
@@ -122,7 +125,7 @@ export function ProductDetailsViewer({
     Autoplay({ delay: 3000, stopOnInteraction: true }),
   );
 
-  // --- 1. MEMOS (Dependency Chain) --- 
+  // --- 1. MEMOS (Dependency Chain) ---
   const resolution = useMemo(
     () =>
       resolveProductLookup({
@@ -204,6 +207,7 @@ export function ProductDetailsViewer({
         priceSell: variant.priceSell,
         rentUnit: variant.rentUnit,
         image: variant.image,
+        sku: variant.variantCode,
         allAttributes: resolvedAttributes,
       };
     });
@@ -212,7 +216,6 @@ export function ProductDetailsViewer({
   const [variantOverrideId, setVariantOverrideId] = useState<string | null>(
     null,
   );
-
   const selectedVariantId = useMemo(() => {
     if (
       variantOverrideId &&
@@ -237,9 +240,79 @@ export function ProductDetailsViewer({
     variantOverrideId,
   ]);
 
-  const selectedVariant = variantChoices.find(
-    (variant) => variant.id === selectedVariantId,
-  );
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    Record<string, string>
+  >({});
+  const [purchaseQuantity, setPurchaseQuantity] = useState(1);
+
+  // Memo for all possible attribute options grouped by their type
+  const allAttributeOptions = useMemo(() => {
+    const groups: Record<string, DisplayAttributeValue[]> = {};
+    variantChoices.forEach((vc) => {
+      vc.allAttributes.forEach((attr) => {
+        if (!groups[attr.keyName]) groups[attr.keyName] = [];
+        if (!groups[attr.keyName].find((v) => v.name === attr.name)) {
+          groups[attr.keyName].push(attr);
+        }
+      });
+    });
+    return groups;
+  }, [variantChoices]);
+
+  // Sync local selected attributes with the actual selected variant
+  useEffect(() => {
+    const currentVariant = variantChoices.find(
+      (v) => v.id === selectedVariantId,
+    );
+    if (currentVariant) {
+      const newAttrs: Record<string, string> = {};
+      currentVariant.allAttributes.forEach((a) => {
+        newAttrs[a.keyName] = a.name;
+      });
+      setSelectedAttributes(newAttrs);
+    }
+  }, [selectedVariantId, variantChoices]);
+
+  // Helper to check if a specific attribute value exists for ANY variant
+  // (Can be improved to check if it exists for CURRENT selection)
+  const isOptionAvailable = (key: string, value: string) => {
+    return availableVariants.some((v) => {
+      const match =
+        v.attributes &&
+        (v.attributes[key] === value ||
+          Object.values(v.attributes).includes(value));
+      return match;
+    });
+  };
+
+  const handleAttributeSelect = (key: string, value: string) => {
+    const nextAttrs = { ...selectedAttributes, [key]: value };
+    setSelectedAttributes(nextAttrs);
+
+    // Find a variant that matches the new selection
+    const match = variantChoices.find((vc) => {
+      return Object.entries(nextAttrs).every(([k, v]) => {
+        const attr = vc.allAttributes.find((a) => a.keyName === k);
+        return attr?.name === v;
+      });
+    });
+
+    if (match) {
+      setVariantOverrideId(match.id);
+    } else {
+      // Find a variant that matches at least the clicked attribute
+      const bestMatch =
+        variantChoices.find((vc) => {
+          const attr = vc.allAttributes.find((a) => a.keyName === key);
+          return attr?.name === value;
+        }) || variantChoices[0];
+      if (bestMatch) setVariantOverrideId(bestMatch.id);
+    }
+  };
+
+  const selectedVariant = useMemo(() => {
+    return variantChoices.find((variant) => variant.id === selectedVariantId);
+  }, [variantChoices, selectedVariantId]);
   const selectedVariantRaw = availableVariants.find(
     (variant) => variant.id === selectedVariantId,
   );
@@ -317,11 +390,7 @@ export function ProductDetailsViewer({
       const branch = branches.find((branchItem) => branchItem.id === branchId);
       const isLocal = branchId === currentBranchId;
       const transferHours = !isLocal
-        ? getEstimatedTransferTime(
-            branchId,
-            currentBranchId,
-            null,
-          )
+        ? getEstimatedTransferTime(branchId, currentBranchId, null)
         : 0;
 
       return {
@@ -387,10 +456,6 @@ export function ProductDetailsViewer({
     };
   }, [activePromos, product, selectedVariant]);
 
-  const remoteWithStock = branchRows.find((row) => !row.isLocal && row.qty > 0);
-  const canReserve = pd_allCalculatedEntries.some(
-    (entry) => entry.isForRent || entry.isForSale,
-  );
   const selectedImage = selectedVariantRaw?.image || product?.image;
 
   // --- 2. EFECTOS & HOOKS ---
@@ -419,9 +484,11 @@ export function ProductDetailsViewer({
             inventoryResult.data.inventoryItems as InventoryItem[],
           );
           pd_setStockLots(inventoryResult.data.stockLots as StockLot[]);
-          
+
           pd_setProductsInStore(inventoryResult.data.products as Product[]);
-          pd_setVariantsInStore(inventoryResult.data.variants as ProductVariant[]);
+          pd_setVariantsInStore(
+            inventoryResult.data.variants as ProductVariant[],
+          );
           pd_setInventoryItemsInStore(
             inventoryResult.data.inventoryItems as InventoryItem[],
           );
@@ -468,8 +535,11 @@ export function ProductDetailsViewer({
 
   useEffect(() => {
     if (preselectCode && pd_allCalculatedEntries.length > 0) {
-      const found = pd_allCalculatedEntries.find(s => 
-        (s as any).serialCode === preselectCode || s.id === preselectCode || (s as any).barcode === preselectCode
+      const found = pd_allCalculatedEntries.find(
+        (s) =>
+          (s as any).serialCode === preselectCode ||
+          s.id === preselectCode ||
+          (s as any).barcode === preselectCode,
       );
       if (found && !pd_selectedStockIds.includes(found.id)) {
         pd_setSelectedStockIds([found.id]);
@@ -480,13 +550,16 @@ export function ProductDetailsViewer({
 
   useBarcodeScanner({
     onScan: (code) => {
-      const localFound = pd_allCalculatedEntries.find(s => 
-        (s as any).serialCode === code || s.id === code || (s as any).barcode === code
+      const localFound = pd_allCalculatedEntries.find(
+        (s) =>
+          (s as any).serialCode === code ||
+          s.id === code ||
+          (s as any).barcode === code,
       );
 
       if (localFound) {
         if (!pd_selectedStockIds.includes(localFound.id)) {
-          pd_setSelectedStockIds(prev => [...prev, localFound.id]);
+          pd_setSelectedStockIds((prev) => [...prev, localFound.id]);
           toast.success(`Prenda añadida: ${code}`);
         } else {
           toast.info("Esta prenda ya está seleccionada");
@@ -495,22 +568,33 @@ export function ProductDetailsViewer({
       }
 
       const res = resolveProductLookup({
-        products: pd_products, 
-        productVariants: pd_variants, 
-        inventoryItems: pd_inventoryItems, 
-        stockLots: pd_stockLots, 
-        lookup: code
+        products: pd_products,
+        productVariants: pd_variants,
+        inventoryItems: pd_inventoryItems,
+        stockLots: pd_stockLots,
+        lookup: code,
       });
 
       if (res) {
-          const isSpecific = ["serialCode", "inventoryItemId", "stockLotId", "stockLotBarcode"].includes(res.matchType);
-          const preParam = isSpecific ? `&preselect=${encodeURIComponent(code)}` : "";
-          const vQuery = res.variantId ? `?variantId=${encodeURIComponent(res.variantId)}` : "?v=1";
-          router.push(`/product-details/${encodeURIComponent(code)}${vQuery}${preParam}`);
+        const isSpecific = [
+          "serialCode",
+          "inventoryItemId",
+          "stockLotId",
+          "stockLotBarcode",
+        ].includes(res.matchType);
+        const preParam = isSpecific
+          ? `&preselect=${encodeURIComponent(code)}`
+          : "";
+        const vQuery = res.variantId
+          ? `?variantId=${encodeURIComponent(res.variantId)}`
+          : "?v=1";
+        router.push(
+          `/product-details/${encodeURIComponent(code)}${vQuery}${preParam}`,
+        );
       } else {
-          toast.error(`Código no reconocido: ${code}`);
+        toast.error(`Código no reconocido: ${code}`);
       }
-    }
+    },
   });
 
   // --- 3. HANDLERS ---
@@ -519,22 +603,20 @@ export function ProductDetailsViewer({
 
     if (pd_selectedStockIds.length > 0) {
       pd_selectedStockIds.forEach((id) => {
-        addItem(
-          product,
-          type,
-          id,
-          1,
-          selectedVariantId,
-        );
+        addItem(product, type, id, 1, selectedVariantId);
       });
       pd_setSelectedStockIds([]);
     } else {
+      const qtyToAdd = product.is_serial ? 1 : purchaseQuantity;
       addItem(
         product,
         type,
         undefined,
-        type === "venta" ? availability.sale : availability.rent,
+        undefined,
         selectedVariantId,
+        {
+          quantityOverride: qtyToAdd,
+        } as any
       );
     }
 
@@ -580,7 +662,9 @@ export function ProductDetailsViewer({
   const categoryName =
     categories.find((c) => c.id === product?.categoryId)?.name || "General";
 
-  const pd_modelName = product.modelId ? getModelById(product.modelId)?.name : "";
+  const pd_modelName = product.modelId
+    ? getModelById(product.modelId)?.name
+    : "";
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -721,147 +805,367 @@ export function ProductDetailsViewer({
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Layers className="w-4 h-4 text-muted-foreground" />
-                    <h3 className="font-semibold">Variantes disponibles</h3>
-                  </div>
+              <div className="grid gap-6">
+                <Card className="shadow-sm border-muted/40">
+                  <CardContent className="p-6 space-y-8">
+                    {Object.entries(allAttributeOptions).map(
+                      ([key, options]) => (
+                        <div key={key} className="space-y-4">
+                          <div className="flex items-center justify-between border-b border-muted pb-2">
+                            <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                              <Tag className="w-3 h-3" />
+                              {key}
+                            </h3>
+                            <span className="text-xs font-semibold text-primary px-3 py-1 bg-primary/5 rounded-full ring-1 ring-primary/10">
+                              {selectedAttributes[key] || "Selecciona..."}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-3">
+                            {options.map((opt) => {
+                              const active =
+                                selectedAttributes[key] === opt.name;
+                              const available = isOptionAvailable(
+                                key,
+                                opt.name,
+                              );
 
-                  <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex gap-2 pb-2">
-                      {variantChoices.map((v) => {
-                        const active = v.id === selectedVariantId;
-                        return (
-                          <button
-                            key={v.id}
-                            type="button"
-                            onClick={() => setVariantOverrideId(v.id)}
-                            className={cn(
-                              "shrink-0 rounded-lg border px-4 py-3 text-left transition-all",
-                              active
-                                ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                                : "hover:border-primary/40 bg-background",
-                            )}
-                          >
-                            <div className="flex flex-col items-start gap-1">
-                              <div className="flex items-center gap-2">
-                                {v.allAttributes[0]?.isColor && (
-                                  <span
-                                    className="h-3 w-3 shrink-0 rounded-full border border-black/10 shadow-sm"
-                                    style={{
-                                      backgroundColor:
-                                        v.allAttributes[0].hex ||
-                                        "#CCCCCC",
-                                    }}
-                                  />
-                                )}
-                                <span className="font-medium text-sm line-clamp-1">
-                                  {v.allAttributes[0]?.name || v.label}
-                                </span>
-                              </div>
+                              return (
+                                <button
+                                  key={opt.name}
+                                  onClick={() =>
+                                    handleAttributeSelect(key, opt.name)
+                                  }
+                                  disabled={!available}
+                                  className={cn(
+                                    "relative flex items-center justify-center transition-all duration-300 transform active:scale-95",
+                                    opt.isColor
+                                      ? "h-11 w-11 rounded-full border-2 p-0.5 shadow-sm"
+                                      : "px-5 py-2.5 border rounded-xl text-sm font-semibold shadow-sm min-w-12",
+                                    active
+                                      ? "border-primary ring-4 ring-primary/10 bg-primary/5 shadow-md"
+                                      : "border-muted/60 hover:border-primary/40 bg-background text-muted-foreground hover:text-foreground",
+                                    !available &&
+                                      "opacity-30 cursor-not-allowed grayscale",
+                                  )}
+                                >
+                                  {opt.isColor ? (
+                                    <span
+                                      className="w-full h-full rounded-full shadow-inner border border-black/5"
+                                      style={{
+                                        backgroundColor: opt.hex || "#CCCCCC",
+                                      }}
+                                    />
+                                  ) : (
+                                    <span>{opt.name}</span>
+                                  )}
+
+                                  {active && (
+                                    <div
+                                      className={cn(
+                                        "absolute bg-primary text-primary-foreground rounded-full flex items-center justify-center border-2 border-background shadow-sm",
+                                        opt.isColor
+                                          ? "-top-1 -right-1 p-0.5"
+                                          : "-top-2 -right-2 p-1",
+                                      )}
+                                    >
+                                      <CheckCircle2
+                                        className={
+                                          opt.isColor
+                                            ? "w-2.5 h-2.5"
+                                            : "w-3 h-3"
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ),
+                    )}
+
+                    {Object.keys(allAttributeOptions).length === 0 && (
+                      <div className="py-10 text-center text-muted-foreground flex flex-col items-center gap-3 bg-muted/20 rounded-2xl border-2 border-dashed border-muted/40">
+                        <Box className="w-10 h-10 opacity-20" />
+                        <p className="text-sm font-semibold tracking-tight">
+                          Este producto base no tiene variaciones adicionales.
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                {/* TARJETA DE ESPECIFICACIONES TÉCNICAS */}
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center gap-3 px-1">
+                    <div className="h-8 w-1.5 bg-primary/80 rounded-full" />
+                    <h3 className="text-sm font-black uppercase tracking-widest text-foreground/80">
+                      Ficha Técnica Detallada
+                    </h3>
+                  </div>
+                  <Card className="overflow-hidden border-border/50 shadow-sm transition-all duration-500 hover:shadow-md bg-linear-to-b from-background to-muted/20">
+                    <CardContent className="p-0">
+                      <div className="divide-y divide-border/40">
+                        {/* SKU BASE */}
+                        <div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/30">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-950/30">
+                              <Barcode className="w-4 h-4 text-orange-600" />
                             </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                            <span className="text-xs font-bold text-muted-foreground uppercase">
+                              SKU Base
+                            </span>
+                          </div>
+                          <span className="text-xs font-black font-mono bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded text-orange-700 dark:text-orange-400 border border-orange-200/50">
+                            {product.baseSku}
+                          </span>
+                        </div>
+
+                        {/* SKU VARIANTE (Si aplica y es distinto al base) */}
+                        {selectedVariant && selectedVariant.sku !== product.baseSku && (
+                          <div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/30">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/30">
+                                <ListChecks className="w-4 h-4 text-blue-600" />
+                              </div>
+                              <span className="text-xs font-bold text-muted-foreground uppercase">
+                                SKU Variante
+                              </span>
+                            </div>
+                            <span className="text-xs font-black font-mono bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded text-blue-700 dark:text-blue-400 border border-blue-200/50">
+                              {selectedVariant.sku}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* ATRIBUTOS SELECCIONADOS */}
+                        <div className="p-4 bg-muted/10">
+                          <span className="text-[10px] font-black uppercase text-muted-foreground block mb-3">
+                            Atributos Actuales
+                          </span>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(selectedAttributes).map(
+                              ([typeName, valueName]) => (
+                                <Badge
+                                  key={typeName}
+                                  variant="secondary"
+                                  className="px-2 py-1 gap-1.5 border-primary/10"
+                                >
+                                  <span className="text-[9px] uppercase opacity-50">
+                                    {typeName}:
+                                  </span>
+                                  <span className="text-[10px] font-black">
+                                    {valueName}
+                                  </span>
+                                </Badge>
+                              ),
+                            )}
+                            {!Object.keys(selectedAttributes).length && (
+                              <span className="text-[11px] text-muted-foreground italic">
+                                Sin variaciones seleccionadas
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* STOCK Y DISTRIBUCIÓN */}
+                        <div className="p-4 grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase text-muted-foreground block">
+                              Stock Local
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+                              <span className="text-sm font-black">
+                                {availability.local} unidades
+                              </span>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase text-muted-foreground block">
+                              Otras Sedes
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <Truck className="w-3.5 h-3.5 text-blue-500" />
+                              <span className="text-sm font-bold text-blue-600">
+                                {availability.remote} unidades
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>{" "}
+              </div>
 
               {/* Precios */}
               <div className="space-y-4">
-                {product.can_sell && selectedVariant?.priceSell && (
-                  <Card className={cn(
-                    "relative overflow-hidden transition-all",
-                    bestPromoSell?.promotion ? "border-amber-200 bg-amber-50/30" : ""
-                  )}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-sm font-medium text-muted-foreground uppercase">Venta</span>
-                        {bestPromoSell?.promotion && (
-                          <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-200">
-                            {bestPromoSell.promotion.name}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold">
-                          {formatCurrency(bestPromoSell?.discountedPrice || selectedVariant.priceSell)}
-                        </span>
-                        {bestPromoSell?.promotion && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            {formatCurrency(selectedVariant.priceSell)}
-                          </span>
-                        )}
-                      </div>
-                      <Button 
-                        className="w-full mt-4" 
-                        disabled={availability.sale === 0}
-                        onClick={() => handleAddToCart("venta")}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Añadir a Venta
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="shadow-lg border-2 border-primary/5">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground px-4 pt-4 tracking-wider">
+                    Detalles comerciales
+                  </p>
+                  <CardContent className="p-4 space-y-6">
+                    {/* Sección Venta */}
+                    {product.can_sell && selectedVariant?.priceSell && (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold uppercase text-muted-foreground">Venta</span>
+                          <div className="flex items-baseline gap-2">
+                             <span className="text-2xl font-black text-primary">
+                               {formatCurrency(bestPromoSell?.finalPrice || selectedVariant.priceSell)}
+                             </span>
+                             {bestPromoSell?.promotion && (
+                               <span className="text-sm text-muted-foreground line-through">
+                                 {formatCurrency(selectedVariant.priceSell)}
+                               </span>
+                             )}
+                          </div>
+                        </div>
 
-                {product.can_rent && selectedVariant?.priceRent && (
-                  <Card className={cn(
-                    "relative overflow-hidden transition-all",
-                    bestPromoRent?.promotion ? "border-violet-200 bg-violet-50/30" : ""
-                  )}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-sm font-medium text-muted-foreground uppercase">Alquiler</span>
-                        {bestPromoRent?.promotion && (
-                          <Badge variant="outline" className="bg-violet-100 text-violet-700 border-violet-200">
-                            {bestPromoRent.promotion.name}
-                          </Badge>
+                        {!product.is_serial && availability.sale > 0 && (
+                          <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Cantidad Venta</span>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 rounded-lg"
+                                onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
+                              >
+                                <Minus className="w-3 h-3" />
+                              </Button>
+                              <span className="w-6 text-center font-bold text-xs">{purchaseQuantity}</span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 rounded-lg"
+                                onClick={() => setPurchaseQuantity(Math.min(availability.sale, purchaseQuantity + 1))}
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
                         )}
+
+                        <Button
+                          className="w-full h-12 text-sm font-bold shadow-sm"
+                          disabled={availability.sale === 0}
+                          onClick={() => handleAddToCart("venta")}
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {availability.sale === 0
+                            ? availability.local > 0 
+                              ? "Disponible solo p/ alquiler" 
+                              : "Sin stock para venta"
+                            : `Añadir a Venta (${availability.sale} disp.)`}
+                        </Button>
                       </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold">
-                          {formatCurrency(bestPromoRent?.discountedPrice || selectedVariant.priceRent)}
-                        </span>
-                        <span className="text-xs text-muted-foreground ml-1">
-                          / {selectedVariant.rentUnit || "día"}
-                        </span>
+                    )}
+
+                    {product.can_sell && product.can_rent && <Separator className="bg-primary/5" />}
+
+                    {/* Sección Alquiler */}
+                    {product.can_rent && selectedVariant?.priceRent && (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold uppercase text-muted-foreground">Alquiler</span>
+                          <div className="flex items-baseline gap-2">
+                             <span className="text-2xl font-black text-violet-600">
+                               {formatCurrency(bestPromoRent?.finalPrice || selectedVariant.priceRent)}
+                             </span>
+                             <span className="text-xs text-muted-foreground">/ {selectedVariant.rentUnit || "día"}</span>
+                          </div>
+                        </div>
+
+                        {!product.is_serial && availability.rent > 0 && (
+                          <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
+                             <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Cantidad Alquiler</span>
+                             <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-lg"
+                                  onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </Button>
+                                <span className="w-6 text-center font-bold text-xs">{purchaseQuantity}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-lg"
+                                  onClick={() => setPurchaseQuantity(Math.min(availability.rent, purchaseQuantity + 1))}
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                             </div>
+                          </div>
+                        )}
+
+                        <Button
+                          variant="secondary"
+                          className="w-full h-12 text-sm font-bold bg-violet-600 text-white hover:bg-violet-700 shadow-sm"
+                          disabled={availability.rent === 0}
+                          onClick={() => handleAddToCart("alquiler")}
+                        >
+                          <CalendarClock className="w-4 h-4 mr-2" />
+                          {availability.rent === 0
+                            ? availability.local > 0
+                              ? "Disponible solo p/ venta"
+                              : "Sin stock para alquiler"
+                            : `Añadir a Alquiler (${availability.rent} disp.)`}
+                        </Button>
                       </div>
-                      <Button 
-                        variant="secondary" 
-                        className="w-full mt-4"
-                        disabled={availability.rent === 0}
-                        onClick={() => handleAddToCart("alquiler")}
-                      >
-                        <CalendarClock className="w-4 h-4 mr-2" />
-                        Añadir a Alquiler
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                    )}
+                  </CardContent>
+                </Card>        </div>
             </div>
 
-            {/* Selector de Prenda Específica (Stock) */}
-            {pd_allCalculatedEntries.length > 0 && (
-              <Card className="border-blue-100 bg-blue-50/30 overflow-hidden">
+            {/* Buscador de Prendas (Solo para productos serializados) */}
+            {product.is_serial && (
+              <Card className="border-blue-100 bg-blue-50/20">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center gap-2 text-blue-700">
                     <Barcode className="w-4 h-4" />
-                    <h3 className="font-semibold">Buscador y Selección de Prendas</h3>
+                    <h3 className="font-semibold">
+                      Selección de Unidades Específicas
+                    </h3>
                   </div>
-                  <p className="text-xs text-blue-600">
-                    Selecciona prendas específicas de la lista o escanea códigos para marcarlas.
+                  <p className="text-[11px] text-blue-600 leading-tight">
+                    Para productos con número de serie, puedes elegir unidades específicas antes de añadir al carrito.
                   </p>
-                  
+
+                  <div className="flex items-center justify-between mb-4 bg-muted/40 p-2 rounded-lg border border-dashed">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Unidades a asignar</span>
+                    <div className="flex items-center gap-2">
+                       <div className="flex items-center gap-1 bg-background rounded border p-0.5">
+                         <Button
+                           variant="ghost"
+                           size="icon"
+                           className="h-5 w-5"
+                           onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
+                         >
+                           <Minus className="w-2 h-2" />
+                         </Button>
+                         <span className="w-4 text-center text-[10px] font-black">{purchaseQuantity}</span>
+                         <Button
+                           variant="ghost"
+                           size="icon"
+                           className="h-5 w-5"
+                           onClick={() => setPurchaseQuantity(purchaseQuantity + 1)}
+                         >
+                           <Plus className="w-2 h-2" />
+                         </Button>
+                       </div>
+                    </div>
+                  </div>
+
                   <StockAssignmentWidget
                     productId={product.id}
                     variantId={selectedVariantId}
-                    quantity={1}
-                    operationType="venta"
+                    quantity={purchaseQuantity}
+                    operationType={availability.rent > 0 ? "alquiler" : "venta"}
                     dateRange={{ from: new Date(), to: new Date() }}
                     currentBranchId={currentBranchId}
                     isSerial={product.is_serial}
@@ -877,15 +1181,27 @@ export function ProductDetailsViewer({
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <h3 className="font-semibold">Disponibilidad en Sucursales</h3>
+                  <h3 className="font-semibold">
+                    Disponibilidad en Sucursales
+                  </h3>
                 </div>
                 <div className="space-y-3">
                   {branchRows.map((row) => (
-                    <div key={row.branchId} className="flex items-center justify-between p-2 rounded-lg border bg-background/50">
+                    <div
+                      key={row.branchId}
+                      className="flex items-center justify-between p-2 rounded-lg border bg-background/50"
+                    >
                       <div className="flex flex-col">
                         <span className="text-sm font-medium flex items-center gap-2">
                           {row.branchName}
-                          {row.isLocal && <Badge variant="secondary" className="text-[10px] h-4">Local</Badge>}
+                          {row.isLocal && (
+                            <Badge
+                              variant="secondary"
+                              className="text-[10px] h-4"
+                            >
+                              Local
+                            </Badge>
+                          )}
                         </span>
                         {!row.isLocal && row.qty > 0 && (
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -894,9 +1210,14 @@ export function ProductDetailsViewer({
                           </span>
                         )}
                       </div>
-                      <Badge variant={row.qty > 0 ? "default" : "outline"} className={cn(
-                        row.qty > 0 ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100" : "opacity-30"
-                      )}>
+                      <Badge
+                        variant={row.qty > 0 ? "default" : "outline"}
+                        className={cn(
+                          row.qty > 0
+                            ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
+                            : "opacity-30",
+                        )}
+                      >
                         {row.qty} unid.
                       </Badge>
                     </div>

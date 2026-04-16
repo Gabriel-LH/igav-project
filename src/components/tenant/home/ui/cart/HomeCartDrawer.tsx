@@ -10,7 +10,7 @@ import {
   DrawerClose,
 } from "@/components/drawer";
 import { Button } from "@/components/ui/button";
-import { Trash2, ShoppingCart, ShoppingBag, X } from "lucide-react";
+import { Trash2, ShoppingCart, ShoppingBag, X, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ interface HomeCartDrawerProps {
 }
 
 export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
-  const { items, getTotal, removeItem, clearCart, customerId } = useCartStore();
+  const { items, getTotal, removeItem, updateQuantity, clearCart, customerId } = useCartStore();
   const total = getTotal();
   const [isSaving, setIsSaving] = React.useState(false);
   const [presaleData, setPresaleData] = React.useState<{ id: string; referenceCode: string } | null>(null);
@@ -122,16 +122,47 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col items-end justify-between">
+                    <div className="flex flex-col items-end justify-between min-h-[80px]">
                       <p className="font-bold text-sm text-primary">{formatCurrency(item.subtotal)}</p>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeItem(item.cartId)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      
+                      <div className="flex items-center gap-2">
+                        {!item.product.is_serial && (
+                          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-0.5 border">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 text-muted-foreground"
+                              onClick={() => {
+                                if (item.quantity > 1) {
+                                  updateQuantity(item.cartId, item.quantity - 1);
+                                } else {
+                                  removeItem(item.cartId);
+                                }
+                              }}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </Button>
+                            <span className="w-6 text-center text-[10px] font-black">{item.quantity}</span>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 text-muted-foreground"
+                              onClick={() => updateQuantity(item.cartId, item.quantity + 1)}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                        
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeItem(item.cartId)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}

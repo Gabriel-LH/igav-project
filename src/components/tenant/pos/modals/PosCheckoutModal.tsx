@@ -61,7 +61,7 @@ import { PinAuthModal } from "./PinAuthModal";
 interface PosCheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedCustomer?: any | null;
+  selectedCustomer?: any | null; // Keep any for compatibility with store types for now
   onSelectedCustomerChange?: (client: any) => void;
   usePoints?: boolean;
   onUsePointsChange?: (value: boolean) => void;
@@ -160,10 +160,8 @@ export function PosCheckoutModal({
     [payableMethods, paymentMethodId],
   );
 
-  const isGeneral = selectedCustomer === null;
-  const noSelection = selectedCustomer === undefined;
-
   const isCashPayment = selectedPaymentMethod?.type === "cash";
+  const isCreditPayment = selectedPaymentMethod?.type === "credit";
 
   const [localUsePoints, setLocalUsePoints] = React.useState(false);
   const [localAppliedCoupon, setLocalAppliedCoupon] = useState<Coupon | null>(null);
@@ -228,8 +226,6 @@ export function PosCheckoutModal({
   // --- ESTADOS DE AUTORIZACIÓN PIN ---
   const [showPinModal, setShowPinModal] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [authorizedByName, setAuthorizedByName] = useState("");
-
   const requiresAuth = useMemo(() => {
     return items.some((item) => {
       if (item.requiresAdminAuth) return true;
@@ -577,6 +573,37 @@ export function PosCheckoutModal({
         return results;
       };
 
+      const allocateByBase = (
+        amount: number,
+        saleBase: number,
+        rentalBase: number,
+      ) => {
+        if (amount <= 0) {
+          return { saleAmount: 0, rentalAmount: 0 };
+        }
+
+        if (saleBase <= 0) {
+          return {
+            saleAmount: 0,
+            rentalAmount: Math.round(amount * 100) / 100,
+          };
+        }
+
+        if (rentalBase <= 0) {
+          return {
+            saleAmount: Math.round(amount * 100) / 100,
+            rentalAmount: 0,
+          };
+        }
+
+        const totalBase = saleBase + rentalBase;
+        const saleAmount =
+          Math.round((amount * saleBase / totalBase) * 100) / 100;
+        const rentalAmount = Math.round((amount - saleAmount) * 100) / 100;
+
+        return { saleAmount, rentalAmount };
+      };
+
       const saleShare =
         hasSales && hasRentals && subtotalConPromos > 0
           ? totalVentas / subtotalConPromos
@@ -599,13 +626,6 @@ export function PosCheckoutModal({
         guaranteeAmount;
 
       // Crédito split por proporción sale/rental
-      const saleCreditApplied = useAvailableCredit
-        ? Math.round(creditAppliedAmount * saleShare * 100) / 100
-        : 0;
-      const rentalCreditApplied = useAvailableCredit
-        ? Math.round(creditAppliedAmount * rentalShare * 100) / 100
-        : 0;
-
       let amountToProcess = parseReceivedAmount(receivedAmount);
       
       // FALLBACK DE SEGURIDAD: Si el monto es 0 pero el total es positivo y NO es una venta a crédito,
@@ -624,8 +644,37 @@ export function PosCheckoutModal({
       if (isCashPayment)
         remainingCash = Math.max(0, remainingCash - saleReceived);
 
-      const rentalReceived =
-        isCashPayment ? remainingCash : rentalTotalAmount;
+      const {
+        saleAmount: effectiveSaleCreditApplied,
+        rentalAmount: effectiveRentalCreditApplied,
+      } = allocateByBase(
+        creditAppliedAmount,
+        saleTotalAmount,
+        rentalTotalAmount,
+      );
+
+      const salePendingAfterCredit = Math.max(
+        saleTotalAmount - effectiveSaleCreditApplied,
+        0,
+      );
+      const rentalPendingAfterCredit = Math.max(
+        rentalTotalAmount - effectiveRentalCreditApplied,
+        0,
+      );
+
+      const directPaymentToRegister =
+        remainingAfterCredit > 0
+          ? Math.min(parseReceivedAmount(receivedAmount), remainingAfterCredit)
+          : 0;
+
+      const {
+        saleAmount: effectiveSaleReceived,
+        rentalAmount: effectiveRentalReceived,
+      } = allocateByBase(
+        directPaymentToRegister,
+        salePendingAfterCredit,
+        rentalPendingAfterCredit,
+      );
 
       // A. PROCESAR VENTA
       if (ventaItems.length > 0) {
@@ -648,8 +697,8 @@ export function PosCheckoutModal({
             totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * saleShare * 100) / 100,
             roundingDifference: Math.round(taxTotals.roundingDifference * saleShare * 100) / 100,
             keepAsCredit: false,
-            receivedAmount: saleReceived,
-            creditAppliedAmount: saleCreditApplied,
+            receivedAmount: effectiveSaleReceived,
+            creditAppliedAmount: effectiveSaleCreditApplied,
             paymentMethodId: remainingAfterCredit > 0 ? selectedPaymentMethod?.id : undefined,
             creditPaymentMethodId: useAvailableCredit ? creditPaymentMethod?.id : undefined,
             pointsDiscount: Math.round(pointsDiscount * saleShare * 100) / 100,
@@ -685,8 +734,8 @@ export function PosCheckoutModal({
             totalBeforeRounding: Math.round(taxTotals.totalBeforeRounding * rentalShare * 100) / 100,
             roundingDifference: Math.round(taxTotals.roundingDifference * rentalShare * 100) / 100,
             keepAsCredit: false,
-            receivedAmount: rentalReceived,
-            creditAppliedAmount: rentalCreditApplied,
+            receivedAmount: effectiveRentalReceived,
+            creditAppliedAmount: effectiveRentalCreditApplied,
             paymentMethodId: remainingAfterCredit > 0 ? selectedPaymentMethod?.id : undefined,
             creditPaymentMethodId: useAvailableCredit ? creditPaymentMethod?.id : undefined,
             pointsDiscount: Math.round(pointsDiscount * rentalShare * 100) / 100,
@@ -953,7 +1002,7 @@ export function PosCheckoutModal({
             <div className="bg-primary/5 p-3 rounded-lg border-l-2 border-primary">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-bold uppercase">
-                  Total Operación
+                  {isCreditPayment ? "Monto a Crédito" : "Total Operación"}
                 </span>
                 <span className="text-xl font-black text-primary">
                   {formatCurrency(totalBrutoConIGV)}
@@ -1064,6 +1113,19 @@ export function PosCheckoutModal({
                 setGuaranteeType={setGuaranteeType}
               />
             )}
+
+            <div className="space-y-1.5 pt-2 border-t">
+              <Label htmlFor="order-notes" className="text-[10px] uppercase font-black text-muted-foreground">
+                Notas / Observación interna
+              </Label>
+              <textarea
+                id="order-notes"
+                className="w-full min-h-[60px] p-2 text-xs rounded-lg border bg-background focus:ring-1 focus:ring-primary outline-hidden"
+                placeholder="Añade detalles adicionales sobre esta venta o alquiler..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="pt-4 border-t">
@@ -1102,7 +1164,6 @@ export function PosCheckoutModal({
         onOpenChange={setShowPinModal}
         onSuccess={(name) => {
           setIsAuthorized(true);
-          setAuthorizedByName(name);
           toast.info(`Operación autorizada por ${name}. Puedes confirmar el pago.`);
         }}
         title="Descuento Alto Detectado"

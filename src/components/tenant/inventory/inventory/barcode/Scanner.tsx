@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// BUMP: Clearing module evaluation cache for Radix UI factory stability.
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Camera, CameraOff, ScanLine, Loader2 } from "lucide-react";

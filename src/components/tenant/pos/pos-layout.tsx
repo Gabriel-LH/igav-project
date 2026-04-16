@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+// BUMP: Clearing module evaluation cache for Radix UI factory stability.
 import { useBarcodeScanner } from "@/src/hooks/useBarcodeScanner";
 import { useInventoryStore } from "@/src/store/useInventoryStore";
 import { GLOBAL_BRANCH_ID } from "@/src/store/useBranchStore";
@@ -10,8 +11,6 @@ import { findPresaleByCodeAction } from "@/src/app/(tenant)/tenant/actions/presa
 import { PosProductSection } from "./pos-product-section";
 import { PosCartSection } from "./pos-cart-section";
 import { BarcodeScanner } from "../inventory/inventory/barcode/Scanner";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +20,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/drawer";
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useInventorySync } from "@/src/hooks/inventory/useInventorySync";
 import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { useIsMobile } from "@/src/hooks/use-mobile";
@@ -39,9 +37,7 @@ export function PosLayout() {
   const getTotal = useCartStore((s) => s.getTotal);
   const ensureLoaded = useTenantConfigStore((s) => s.ensureLoaded);
 
-  const [preferredMode, setPreferredMode] = useState<"venta" | "alquiler">(
-    "alquiler",
-  );
+  // Deleted preferredMode state as we now use auto-detection 
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [scannerDrawerOpen, setScannerDrawerOpen] = useState(false);
 
@@ -55,7 +51,7 @@ export function PosLayout() {
   // The promotion calculation is now handled internally by the store actions
   // (addItem, removeItem, updateQuantity, etc.), so we remove the reactive effect.
 
-  const handleScannedCode = useState(() => async (code: string) => {
+  const handleScannedCode = useCallback(async (code: string) => {
     if (!selectedBranchId || selectedBranchId === GLOBAL_BRANCH_ID) {
       toast.error("Selecciona una sucursal para usar el POS.");
       return;
@@ -81,7 +77,7 @@ export function PosLayout() {
     const lotItem = stockLots.find((l) => l.variantId === code); // fallback to variantCode for now if used as SKU
 
     let productToAdd = null;
-    let operationMode: "venta" | "alquiler" = preferredMode;
+    let operationMode: "venta" | "alquiler" = "alquiler"; // Default fallback
     let specificCode = undefined;
     let scannedVariant = undefined;
     let maxStock = 0;
@@ -103,7 +99,10 @@ export function PosLayout() {
         operationMode = "venta";
       else if (!serialItem.isForSale && serialItem.isForRent)
         operationMode = "alquiler";
-      else operationMode = preferredMode;
+      else {
+        // Si tiene ambos (fallback), priorizamos Alquiler por negocio o lo que diga el item
+        operationMode = serialItem.isForRent ? "alquiler" : "venta";
+      }
 
       maxStock = inventoryItems.filter(
         (i) =>
@@ -126,7 +125,9 @@ export function PosLayout() {
       if (lotItem.isForSale && !lotItem.isForRent) operationMode = "venta";
       else if (!lotItem.isForSale && lotItem.isForRent)
         operationMode = "alquiler";
-      else operationMode = preferredMode;
+      else {
+        operationMode = lotItem.isForRent ? "alquiler" : "venta";
+      }
 
       maxStock = lotItem.quantity;
     } else {
@@ -137,7 +138,9 @@ export function PosLayout() {
           operationMode = "venta";
         else if (!productToAdd.can_sell && productToAdd.can_rent)
           operationMode = "alquiler";
-        else operationMode = preferredMode;
+        else {
+          operationMode = productToAdd.can_rent ? "alquiler" : "venta";
+        }
 
         // Stock genérico (sin variantes)
         if (productToAdd.is_serial) {
@@ -212,12 +215,8 @@ export function PosLayout() {
     );
 
     const modeLabel = operationMode === "venta" ? "VENTA" : "ALQUILER";
-    if (operationMode !== preferredMode) {
-      toast.info(`Agregado como ${modeLabel} (Restricción del ítem)`);
-    } else {
-      toast.success(`${productToAdd.name} agregado`);
-    }
-  })[0];
+    toast.success(`${productToAdd.name} agregado como ${modeLabel}`);
+  }, [selectedBranchId, inventoryItems, stockLots, products, addItem, items]);
 
   useBarcodeScanner({
     onScan: handleScannedCode,
@@ -262,50 +261,10 @@ export function PosLayout() {
             <span className="text-xs font-mono opacity-70">MODO ESCÁNER:</span>
             <Badge
               variant="outline"
-              className={`font-bold uppercase border-0 ${preferredMode === "venta" ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"}`}
+              className="font-bold uppercase border-0 bg-primary/10 text-primary"
             >
-              {preferredMode} (AUTO)
+              Detección Automática
             </Badge>
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 text-[10px] bg-white/5 hover:bg-white/10 text-white/70"
-                onClick={() => {
-                   const code = prompt("Ingrese código de Pre-venta (PV-...):");
-                   if (code) handleScannedCode(code);
-                }}
-            >
-                Importar Orden
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <FeatureGuard feature="rentals">
-              <Label
-                htmlFor="mode-switch"
-                className={`text-xs cursor-pointer ${preferredMode === "alquiler" ? "text-white font-bold" : "text-slate-400"}`}
-              >
-                Alquiler
-              </Label>
-            </FeatureGuard>
-            <FeatureGuard feature={["sales", "rentals"]} requireAll>
-              <Switch
-                id="mode-switch"
-                checked={preferredMode === "venta"}
-                onCheckedChange={(checked) =>
-                  setPreferredMode(checked ? "venta" : "alquiler")
-                }
-                className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-blue-600"
-              />
-            </FeatureGuard>
-            <FeatureGuard feature="sales">
-              <Label
-                htmlFor="mode-switch"
-                className={`text-xs cursor-pointer ${preferredMode === "venta" ? "text-white font-bold" : "text-slate-400"}`}
-              >
-                Venta
-              </Label>
-            </FeatureGuard>
           </div>
         </div>
       </div>
