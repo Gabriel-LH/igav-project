@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import React from "react";
 import type { Category } from "@/src/types/category/type.category";
 import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
@@ -32,7 +31,9 @@ import {
   ListChecks,
   Minus,
   Plus,
+  Camera,
 } from "lucide-react";
+import { ScannerModal } from "./ui/modals/ScannerModal";
 import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { formatCurrency } from "@/src/utils/currency-format";
@@ -107,7 +108,7 @@ export function ProductDetailsViewer({
   const pd_setRentalData = useRentalStore((s) => s.setRentalData);
   const { getModelById } = useAttributeStore();
   const { promotions, setPromotions } = usePromotionStore();
-  const addItem = useCartStore((s) => s.addItem);
+  const { addItem, isCollectorMode } = useCartStore();
 
   const [pd_products, pd_setProducts] = useState<Product[]>([]);
   const [pd_variants, pd_setVariants] = useState<ProductVariant[]>([]);
@@ -244,6 +245,7 @@ export function ProductDetailsViewer({
     Record<string, string>
   >({});
   const [purchaseQuantity, setPurchaseQuantity] = useState(1);
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState(false);
 
   // Memo for all possible attribute options grouped by their type
   const allAttributeOptions = useMemo(() => {
@@ -548,8 +550,10 @@ export function ProductDetailsViewer({
     }
   }, [preselectCode, pd_allCalculatedEntries, pd_selectedStockIds]);
 
-  useBarcodeScanner({
-    onScan: (code) => {
+  // --- 2.5 SCANNING LOGIC ---
+  const handleBarcodeScan = useCallback(
+    (code: string) => {
+      // 1. ¿Es una serie/lote ya presente en esta vista?
       const localFound = pd_allCalculatedEntries.find(
         (s) =>
           (s as any).serialCode === code ||
@@ -560,13 +564,45 @@ export function ProductDetailsViewer({
       if (localFound) {
         if (!pd_selectedStockIds.includes(localFound.id)) {
           pd_setSelectedStockIds((prev) => [...prev, localFound.id]);
-          toast.success(`Prenda añadida: ${code}`);
+          toast.success(`Prenda seleccionada: ${code}`);
         } else {
           toast.info("Esta prenda ya está seleccionada");
         }
         return;
       }
 
+      // 2. ¿Es el SKU del mismo producto o variante actual?
+      const isCurrentProductSKU = product?.baseSku === code;
+      const matchingVariant = availableVariants.find(
+        (v) => v.variantCode === code || v.barcode === code,
+      );
+
+      if (isCurrentProductSKU || matchingVariant) {
+        if (matchingVariant && matchingVariant.id !== selectedVariantId) {
+          setVariantOverrideId(matchingVariant.id);
+          toast.success(
+            `Variante cambiada: ${matchingVariant.variantCode || code}`,
+          );
+          return;
+        }
+
+        if (product?.is_serial) {
+          toast.info(
+            "Producto serializado: Escanee el código de barra de la etiqueta específica (serie).",
+          );
+        } else {
+          // Incrementar cantidad para lotes
+          setPurchaseQuantity((prev) => {
+            const max = availability.sale || availability.rent || 999;
+            const next = Math.min(max, prev + 1);
+            toast.success(`Cantidad incrementada: ${next}`);
+            return next;
+          });
+        }
+        return;
+      }
+
+      // 3. Resolución externa (Navegar o Añadir al carro)
       const res = resolveProductLookup({
         products: pd_products,
         productVariants: pd_variants,
@@ -576,6 +612,30 @@ export function ProductDetailsViewer({
       });
 
       if (res) {
+        if (res.productId === product?.id) {
+          if (res.variantId) setVariantOverrideId(res.variantId);
+          return;
+        }
+
+        // Si es collector mode, intentamos añadir directamente
+        if (isCollectorMode) {
+          const targetProduct = pd_products.find((p) => p.id === res.productId);
+          if (targetProduct) {
+            const type = targetProduct.can_rent ? "alquiler" : "venta";
+            const serialId = [
+              "serialCode",
+              "inventoryItemId",
+              "stockLotId",
+            ].includes(res.matchType)
+              ? res.itemId
+              : undefined;
+
+            addItem(targetProduct, type, serialId, 9999, res.variantId);
+            toast.success(`Añadido al carrito: ${targetProduct.name}`);
+            return;
+          }
+        }
+
         const isSpecific = [
           "serialCode",
           "inventoryItemId",
@@ -588,13 +648,57 @@ export function ProductDetailsViewer({
         const vQuery = res.variantId
           ? `?variantId=${encodeURIComponent(res.variantId)}`
           : "?v=1";
+
+        toast.info(`Navegando a: ${code}`);
         router.push(
-          `/product-details/${encodeURIComponent(code)}${vQuery}${preParam}`,
+          `/tenant/product-details/${encodeURIComponent(res.productId)}${vQuery}${preParam}`,
         );
       } else {
         toast.error(`Código no reconocido: ${code}`);
       }
     },
+    [
+      pd_allCalculatedEntries,
+      pd_selectedStockIds,
+      product,
+      availableVariants,
+      selectedVariantId,
+      availability,
+      pd_products,
+      pd_variants,
+      pd_inventoryItems,
+      pd_stockLots,
+      isCollectorMode,
+      router,
+      addItem,
+    ],
+  );
+
+  const handleScannerResult = useCallback(
+    (code: string) => {
+      // 1. ¿Es un serial de este producto/variante?
+      const foundSerial = serialEntries.find(
+        (s) => s.serial_number?.toLowerCase() === code.toLowerCase(),
+      );
+
+      if (foundSerial) {
+        if (!pd_selectedStockIds.includes(foundSerial.id)) {
+          pd_setSelectedStockIds((prev) => [...prev, foundSerial.id]);
+          toast.success(`Serie añadida: ${foundSerial.serial_number}`);
+        } else {
+          toast.info("Esta unidad ya ha sido seleccionada");
+        }
+        return;
+      }
+
+      // 2. ¿Es un SKU?
+      handleBarcodeScan(code);
+    },
+    [serialEntries, pd_selectedStockIds, handleBarcodeScan],
+  );
+
+  useBarcodeScanner({
+    onScan: handleBarcodeScan,
   });
 
   // --- 3. HANDLERS ---
@@ -1049,7 +1153,10 @@ export function ProductDetailsViewer({
                         )}
 
                         <Button
-                          className="w-full h-12 text-sm font-bold shadow-sm"
+                          className={cn(
+                            "w-full h-12 text-sm font-bold shadow-sm transition-all duration-300",
+                            pd_selectedStockIds.length > 0 && "ring-2 ring-primary ring-offset-2 animate-pulse-subtle"
+                          )}
                           disabled={availability.sale === 0}
                           onClick={() => handleAddToCart("venta")}
                         >
@@ -1058,7 +1165,9 @@ export function ProductDetailsViewer({
                             ? availability.local > 0 
                               ? "Disponible solo p/ alquiler" 
                               : "Sin stock para venta"
-                            : `Añadir a Venta (${availability.sale} disp.)`}
+                            : product.is_serial && pd_selectedStockIds.length > 0
+                              ? `Confirmar Venta (${pd_selectedStockIds.length} series)`
+                              : `Añadir a Venta (${purchaseQuantity} unidad${purchaseQuantity > 1 ? 'es' : ''})`}
                         </Button>
                       </div>
                     )}
@@ -1105,21 +1214,38 @@ export function ProductDetailsViewer({
 
                         <Button
                           variant="secondary"
-                          className="w-full h-12 text-sm font-bold bg-violet-600 text-white hover:bg-violet-700 shadow-sm"
+                          className={cn(
+                            "w-full h-12 text-sm font-bold border-2 transition-all duration-300",
+                            pd_selectedStockIds.length > 0 
+                              ? "border-violet-500 bg-violet-100 text-violet-800 ring-2 ring-violet-400 ring-offset-2 animate-pulse-subtle" 
+                              : "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                          )}
                           disabled={availability.rent === 0}
                           onClick={() => handleAddToCart("alquiler")}
                         >
                           <CalendarClock className="w-4 h-4 mr-2" />
                           {availability.rent === 0
-                            ? availability.local > 0
-                              ? "Disponible solo p/ venta"
-                              : "Sin stock para alquiler"
-                            : `Añadir a Alquiler (${availability.rent} disp.)`}
+                            ? "No disponible para alquiler"
+                            : product.is_serial && pd_selectedStockIds.length > 0
+                              ? `Confirmar Alquiler (${pd_selectedStockIds.length} series)`
+                              : `Añadir a Alquiler (${purchaseQuantity} unidad${purchaseQuantity > 1 ? 'es' : ''})`}
                         </Button>
                       </div>
                     )}
                   </CardContent>
-                </Card>        </div>
+                </Card>
+
+                {/* Botón de Cámara Flotante para Móvil */}
+                <div className="fixed bottom-24 right-6 z-40 sm:hidden">
+                  <Button
+                    size="icon"
+                    className="w-14 h-14 rounded-full shadow-2xl bg-violet-600 hover:bg-violet-700 text-white border-4 border-white dark:border-zinc-950"
+                    onClick={() => setIsScannerModalOpen(true)}
+                  >
+                    <Camera className="w-6 h-6" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Buscador de Prendas (Solo para productos serializados) */}
@@ -1228,6 +1354,12 @@ export function ProductDetailsViewer({
           </div>
         </div>
       </div>
+
+      <ScannerModal
+        open={isScannerModalOpen}
+        onOpenChange={setIsScannerModalOpen}
+        onScan={handleScannerResult}
+      />
     </div>
   );
 }

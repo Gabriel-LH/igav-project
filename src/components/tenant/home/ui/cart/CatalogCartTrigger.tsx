@@ -15,7 +15,9 @@ export function CatalogCartTrigger() {
   const cartItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Solo mostrar en el Home / Catálogo, no en el POS ni otros módulos administrativos
-  const isCatalog = pathname?.includes("/tenant/home") || pathname?.includes("/tenant/product-details");
+  const isCatalog =
+    pathname?.includes("/tenant/home") ||
+    pathname?.includes("/tenant/product-details");
 
   if (!isCatalog) return null;
 
@@ -27,7 +29,10 @@ export function CatalogCartTrigger() {
         className="relative w-10 h-10 shadow-sm hover:bg-primary/5 group transition-all"
         onClick={() => setOpen(true)}
       >
-        <ShoppingCart strokeWidth="2.5" className="w-7 h-7 text-primary group-hover:scale-110 transition-transform" />
+        <ShoppingCart
+          strokeWidth="2.5"
+          className="w-7 h-7 text-primary group-hover:scale-110 transition-transform"
+        />
         {cartItemsCount > 0 && (
           <Badge className="absolute top-1 right-1 h-3 w-3 flex items-center justify-center p-0 text-[10px] font-bold animate-in zoom-in">
             {cartItemsCount}

@@ -72,9 +72,12 @@ interface CartState {
   appliedCouponCode: string | null;
   manualPromotionId: string | null; // promo activada manualmente
   referralRewardAmount: number; // saldo tipo reward
+  isCollectorMode: boolean; // Modo recolección rápida
 
   setCouponCode: (code: string | null) => void;
   setReferralReward: (amount: number) => void;
+  setIsCollectorMode: (val: boolean) => void;
+
 
   addItem: (
     product: Product,
@@ -136,6 +139,8 @@ export const useCartStore = create<CartState>()(
       appliedCouponCode: null,
       manualPromotionId: null,
       referralRewardAmount: 0,
+      isCollectorMode: false,
+
 
       setCouponCode: (code) => {
         set({ appliedCouponCode: code });
@@ -148,6 +153,9 @@ export const useCartStore = create<CartState>()(
         const bid = useBranchStore.getState().selectedBranchId;
         if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
       },
+
+      setIsCollectorMode: (val) => set({ isCollectorMode: val }),
+
 
       syncCartWithServer: async () => {
         const { items, globalRentalDates } = get();

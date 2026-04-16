@@ -46,6 +46,10 @@ import type { Rental } from "@/src/types/rentals/type.rentals";
 import type { RentalItem } from "@/src/types/rentals/type.rentalsItem";
 import type { Operation } from "@/src/types/operation/type.operations";
 import type { Payment } from "@/src/types/payments/type.payments";
+import { useCartStore } from "@/src/store/useCartStore";
+import { ScannerModal } from "./ui/modals/ScannerModal";
+
+
 
 interface ProductGridProps {
   categories: Category[];
@@ -107,6 +111,9 @@ export function ProductGrid({
   const [activeTab, setActiveTab] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("catalog");
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState(false);
+  const { addItem, isCollectorMode } = useCartStore();
+
 
   // Track the last loaded branch to avoid redundant fetches
   const [lastLoadedBranchId, setLastLoadedBranchId] = useState<string | null>(
@@ -236,34 +243,60 @@ export function ProductGrid({
     }
   }, [selectedBranchId, lastLoadedBranchId, loadInventory]);
 
-  useBarcodeScanner({
-    onScan: (code) => {
-      const resolution = resolveProductLookup({
-        products,
-        productVariants,
-        inventoryItems,
-        stockLots,
-        lookup: code,
-      });
+  const handleScan = useCallback((code: string) => {
+    const resolution = resolveProductLookup({
+      products,
+      productVariants,
+      inventoryItems,
+      stockLots,
+      lookup: code,
+    });
 
-      if (!resolution) {
-        toast.error(`Código no encontrado: ${code}`);
-        return;
+    if (!resolution) {
+      toast.error(`Código no encontrado: ${code}`);
+      return;
+    }
+
+    // MODO RECOLECTOR: Añadir directamente al carrito
+    if (isCollectorMode) {
+      const product = products.find((p) => p.id === resolution.productId);
+      if (!product) return;
+
+      const opType = activeTab === "alquiler" ? "alquiler" : "venta";
+
+      if (opType === "venta" && !product.can_sell) {
+         toast.error(`${product.name} no está disponible para venta`);
+         return;
+      }
+      if (opType === "alquiler" && !product.can_rent) {
+         toast.error(`${product.name} no está disponible para alquiler`);
+         return;
       }
 
-      // Si es una serie o lote específico, pasamos el parámetro 'preselect'
       const isSpecificItem = ["serialCode", "inventoryItemId", "stockLotId", "stockLotBarcode"].includes(resolution.matchType);
-      const preselectParam = isSpecificItem ? `&preselect=${encodeURIComponent(code)}` : "";
+      const specificId = isSpecificItem ? code : undefined;
 
-      const variantQuery = resolution.variantId
-        ? `?variantId=${encodeURIComponent(resolution.variantId)}`
-        : "?v=1"; // fallback query
+      addItem(product, opType, specificId, undefined, resolution.variantId);
 
-      router.push(
-        `/product-details/${encodeURIComponent(code)}${variantQuery}${preselectParam}`,
-      );
-    },
-  });
+      toast.success(`Añadido al carrito (${opType.toUpperCase()})`, {
+        description: `${product.name} listo para procesar.`
+      });
+      return;
+    }
+
+    // MODO CATÁLOGO: Navegar a detalles
+    const isSpecificItem = ["serialCode", "inventoryItemId", "stockLotId", "stockLotBarcode"].includes(resolution.matchType);
+    const preselectParam = isSpecificItem ? `&preselect=${encodeURIComponent(code)}` : "";
+    const variantQuery = resolution.variantId
+      ? `?variantId=${encodeURIComponent(resolution.variantId)}`
+      : "?v=1";
+
+    router.push(`/tenant/product-details/${encodeURIComponent(resolution.productId)}${variantQuery}${preselectParam}`);
+  }, [products, productVariants, inventoryItems, stockLots, isCollectorMode, activeTab, addItem, router]);
+
+  useBarcodeScanner({
+    onScan: handleScan,
+  }, [handleScan]);
 
   // --- 1. LÓGICA DE CATÁLOGO ---
   const filteredCatalog = useMemo(() => {
@@ -368,7 +401,11 @@ export function ProductGrid({
         setSearchQuery={setSearchQuery}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        isCollectorMode={isCollectorMode}
+        setIsCollectorMode={useCartStore((s) => s.setIsCollectorMode)}
+        onCameraClick={() => setIsScannerModalOpen(true)}
       />
+
 
       {/* Grid Dinámico */}
       <div
@@ -475,6 +512,12 @@ export function ProductGrid({
           )}
         </div>
       )}
+      {/* Modales de Escaneo */}
+      <ScannerModal
+        open={isScannerModalOpen}
+        onOpenChange={setIsScannerModalOpen}
+        onScan={handleScan}
+      />
     </div>
   );
 }
