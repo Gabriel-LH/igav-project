@@ -117,11 +117,11 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
     <>
       <Drawer open={open} onOpenChange={onOpenChange} direction="right">
         <DrawerContent className="h-full ml-auto sm:max-w-md border-l shadow-2xl">
-          <DrawerHeader className="border-b bg-muted/30">
+          <DrawerHeader className="border-b pt-1 pb-1 bg-muted/30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-primary" />
-                <DrawerTitle className="text-xl font-bold">Resumen de Pedido</DrawerTitle>
+                <DrawerTitle className="text-xl font-bold">Resumen de Compra</DrawerTitle>
               </div>
               <DrawerClose asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -133,7 +133,7 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
 
           {/* Selector de Fechas Estilo POS (Solo si hay alquileres o carrito vacío) */}
           {(hasRentals || items.length === 0) && (
-            <div className="px-4 py-3 bg-violet-50/50 border-b space-y-3">
+            <div className="px-2 py-1 bg-violet-50/50 border-b">
               <div className="flex flex-col gap-2">
                 <p className="text-[10px] font-black uppercase text-violet-600 tracking-wider">
                   Periodo de Alquiler {days > 0 && `(${days} ${days === 1 ? 'día' : 'días'})`}
@@ -214,7 +214,7 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
             </div>
           )}
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto px-2 py-1 space-y-4">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-60">
                 <ShoppingBag className="w-16 h-16 stroke-1" />
@@ -241,7 +241,7 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
             ) : (
               <div className="space-y-3">
                 {items.map((item) => (
-                  <div key={item.cartId} className="flex gap-4 p-3 bg-card rounded-xl border shadow-sm group">
+                  <div key={item.cartId} className="flex gap-4 px-2 py-1 bg-card rounded-xl border shadow-sm group">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm truncate">{item.product.name}</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -320,21 +320,21 @@ export function HomeCartDrawer({ open, onOpenChange }: HomeCartDrawerProps) {
             )}
           </div>
 
-          <DrawerFooter className="border-t bg-muted/10 p-6">
-            <div className="flex justify-between items-center mb-4">
+          <DrawerFooter className="border-t pt-1 pb-1 bg-muted/10 px-6">
+            <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-medium">Subtotal Estimado</span>
               <span className="text-2xl font-black text-primary">{formatCurrency(total)}</span>
             </div>
             <div className="grid gap-2">
               <Button 
                 size="lg" 
-                className="w-full text-lg h-14 font-bold shadow-lg shadow-primary/20"
+                className="w-full text-lg h-10 font-bold shadow-lg shadow-primary/20"
                 disabled={items.length === 0 || isSaving}
                 onClick={handleGeneratePresale}
               >
                 {isSaving ? "Generando..." : "Generar Pre-venta"}
               </Button>
-              <DrawerClose asChild>
+              <DrawerClose asChild className="sr-only">
                 <Button variant="outline" className="w-full">Continuar Comprando</Button>
               </DrawerClose>
             </div>

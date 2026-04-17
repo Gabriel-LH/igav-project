@@ -16,6 +16,7 @@ export type ProductLookupMatchType =
 export interface ProductLookupResolution {
   productId: string;
   variantId?: string;
+  itemId?: string;
   matchType: ProductLookupMatchType;
   lookupValue: string;
 }
@@ -87,6 +88,7 @@ export function resolveProductLookup(
     return {
       productId: inventoryBySerial.productId,
       variantId: inventoryBySerial.variantId,
+      itemId: inventoryBySerial.id,
       matchType: "serialCode",
       lookupValue: input.lookup,
     };
@@ -99,6 +101,7 @@ export function resolveProductLookup(
     return {
       productId: inventoryById.productId,
       variantId: inventoryById.variantId,
+      itemId: inventoryById.id,
       matchType: "inventoryItemId",
       lookupValue: input.lookup,
     };
@@ -109,6 +112,7 @@ export function resolveProductLookup(
     return {
       productId: stockById.productId,
       variantId: stockById.variantId,
+      itemId: stockById.id,
       matchType: "stockLotId",
       lookupValue: input.lookup,
     };
@@ -121,6 +125,7 @@ export function resolveProductLookup(
     return {
       productId: stockByBarcode.productId,
       variantId: stockByBarcode.variantId,
+      itemId: stockByBarcode.id,
       matchType: "stockLotBarcode",
       lookupValue: input.lookup,
     };

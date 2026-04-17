@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -19,22 +19,20 @@ import type { Category } from "@/src/types/category/type.category";
 import type { AttributeType } from "@/src/types/attributes/type.attribute-type";
 import type { AttributeValue } from "@/src/types/attributes/type.attribute-value";
 import {
-  ArrowLeft,
   CalendarClock,
   ShoppingCart,
   MapPin,
   Truck,
   Box,
   Tag,
-  CheckCircle2,
   Barcode,
   ListChecks,
   Minus,
   Plus,
   Camera,
+  ArrowLeft,
 } from "lucide-react";
 import { ScannerModal } from "./ui/modals/ScannerModal";
-import { StockAssignmentWidget } from "./ui/widget/StockAssignmentWidget";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { getEstimatedTransferTime } from "@/src/utils/transfer/get-estimated-transfer-time";
@@ -56,6 +54,7 @@ import { toast } from "sonner";
 import { useReservationStore } from "@/src/store/useReservationStore";
 import { useRentalStore } from "@/src/store/useRentalStore";
 import { useAttributeStore } from "@/src/store/useAttributeStore";
+import { useTenantConfigStore } from "@/src/store/useTenantConfigStore";
 import { Promotion } from "@/src/types/promotion/type.promotion";
 
 export interface ProductDetailsViewerProps {
@@ -93,6 +92,7 @@ export function ProductDetailsViewer({
   attributeValues,
   initialPromotions = [],
 }: ProductDetailsViewerProps) {
+  const { items: cartItems } = useCartStore();
   const router = useRouter();
   const currentBranchId = useBranchStore((s) => s.selectedBranchId);
   const branches = useBranchStore((s) => s.branches);
@@ -109,6 +109,7 @@ export function ProductDetailsViewer({
   const { getModelById } = useAttributeStore();
   const { promotions, setPromotions } = usePromotionStore();
   const { addItem, isCollectorMode } = useCartStore();
+  const { policy } = useTenantConfigStore();
 
   const [pd_products, pd_setProducts] = useState<Product[]>([]);
   const [pd_variants, pd_setVariants] = useState<ProductVariant[]>([]);
@@ -391,9 +392,14 @@ export function ProductDetailsViewer({
     return Array.from(map.entries()).map(([branchId, qty]) => {
       const branch = branches.find((branchItem) => branchItem.id === branchId);
       const isLocal = branchId === currentBranchId;
-      const transferHours = !isLocal
-        ? getEstimatedTransferTime(branchId, currentBranchId, null)
-        : 0;
+      const transferHours =
+        !isLocal && policy
+          ? getEstimatedTransferTime(
+              branchId,
+              currentBranchId,
+              policy.transactions,
+            )
+          : 0;
 
       return {
         branchId,
@@ -403,7 +409,7 @@ export function ProductDetailsViewer({
         transferHours,
       };
     });
-  }, [currentBranchId, pd_allCalculatedEntries, branches]);
+  }, [currentBranchId, pd_allCalculatedEntries, branches, policy]);
 
   const activePromos = useMemo(() => {
     const now = new Date();
@@ -594,9 +600,7 @@ export function ProductDetailsViewer({
           // Incrementar cantidad para lotes
           setPurchaseQuantity((prev) => {
             const max = availability.sale || availability.rent || 999;
-            const next = Math.min(max, prev + 1);
-            toast.success(`Cantidad incrementada: ${next}`);
-            return next;
+            return Math.min(max, prev + 1);
           });
         }
         return;
@@ -621,7 +625,11 @@ export function ProductDetailsViewer({
         if (isCollectorMode) {
           const targetProduct = pd_products.find((p) => p.id === res.productId);
           if (targetProduct) {
-            const type = targetProduct.can_rent ? "alquiler" : "venta";
+            // Determinar tipo basado en carrito o capacidades
+            const cartMode = useCartStore.getState().items[0]?.operationType;
+            const type: "venta" | "alquiler" =
+              cartMode || (targetProduct.can_rent ? "alquiler" : "venta");
+
             const serialId = [
               "serialCode",
               "inventoryItemId",
@@ -631,7 +639,6 @@ export function ProductDetailsViewer({
               : undefined;
 
             addItem(targetProduct, type, serialId, 9999, res.variantId);
-            toast.success(`Añadido al carrito: ${targetProduct.name}`);
             return;
           }
         }
@@ -678,13 +685,13 @@ export function ProductDetailsViewer({
     (code: string) => {
       // 1. ¿Es un serial de este producto/variante?
       const foundSerial = serialEntries.find(
-        (s) => s.serial_number?.toLowerCase() === code.toLowerCase(),
+        (s) => s.serialCode?.toLowerCase() === code.toLowerCase(),
       );
 
       if (foundSerial) {
         if (!pd_selectedStockIds.includes(foundSerial.id)) {
           pd_setSelectedStockIds((prev) => [...prev, foundSerial.id]);
-          toast.success(`Serie añadida: ${foundSerial.serial_number}`);
+          toast.success(`Serie añadida: ${foundSerial.serialCode}`);
         } else {
           toast.info("Esta unidad ya ha sido seleccionada");
         }
@@ -699,6 +706,7 @@ export function ProductDetailsViewer({
 
   useBarcodeScanner({
     onScan: handleBarcodeScan,
+    enabled: !isScannerModalOpen,
   });
 
   // --- 3. HANDLERS ---
@@ -712,21 +720,10 @@ export function ProductDetailsViewer({
       pd_setSelectedStockIds([]);
     } else {
       const qtyToAdd = product.is_serial ? 1 : purchaseQuantity;
-      addItem(
-        product,
-        type,
-        undefined,
-        undefined,
-        selectedVariantId,
-        {
-          quantityOverride: qtyToAdd,
-        } as any
-      );
+      addItem(product, type, undefined, undefined, selectedVariantId, {
+        quantityOverride: qtyToAdd,
+      } as any);
     }
-
-    toast.success(`Producto añadido al carrito (${type.toUpperCase()})`, {
-      description: `${product.name} listo para procesar en caja.`,
-    });
   };
 
   if (!product || !resolution) {
@@ -770,34 +767,11 @@ export function ProductDetailsViewer({
     ? getModelById(product.modelId)?.name
     : "";
 
+  // Determinar modo activo basado en carrito
+  const cartMode = cartItems.length > 0 ? cartItems[0].operationType : null;
+
   return (
     <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <div className="sticky top-9 z-40 bg-background/55 backdrop-blur-md border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="gap-2 -ml-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Volver</span>
-          </Button>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-mono text-xs">
-              {resolution.matchType}
-            </Badge>
-            <Badge
-              variant={product.is_serial ? "default" : "secondary"}
-              className="text-xs"
-            >
-              {product.is_serial ? "Serializado" : "Lote"}
-            </Badge>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-12">
         <div className="grid gap-6 lg:grid-cols-[380px_1fr] xl:grid-cols-[440px_1fr]">
           {/* Columna izquierda - Imagen y datos básicos */}
@@ -899,13 +873,25 @@ export function ProductDetailsViewer({
 
           {/* Columna derecha - Info principal */}
           <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2">
-                {product.name}
-              </h1>
-              <p className="text-muted-foreground leading-relaxed max-w-2xl">
-                {product.description || "Sin descripción disponible."}
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight mb-2">
+                  {product.name}
+                </h1>
+                <p className="text-muted-foreground leading-relaxed max-w-2xl">
+                  {product.description || "Sin descripción disponible."}
+                </p>
+              </div>
+              {/* Botón de Cámara Flotante para Móvil */}
+              <div className="fixed right-4 pr-4 z-40">
+                <Button
+                  size="icon"
+                  className="w-14 h-14 rounded-full shadow-2xl"
+                  onClick={() => setIsScannerModalOpen(true)}
+                >
+                  <Camera strokeWidth={2} className="w-6 h-6" />
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -946,7 +932,7 @@ export function ProductDetailsViewer({
                                       ? "h-11 w-11 rounded-full border-2 p-0.5 shadow-sm"
                                       : "px-5 py-2.5 border rounded-xl text-sm font-semibold shadow-sm min-w-12",
                                     active
-                                      ? "border-primary ring-4 ring-primary/10 bg-primary/5 shadow-md"
+                                      ? "border-primary ring-4 ring-primary/10  bg-primary/5 shadow-md"
                                       : "border-muted/60 hover:border-primary/40 bg-background text-muted-foreground hover:text-foreground",
                                     !available &&
                                       "opacity-30 cursor-not-allowed grayscale",
@@ -963,7 +949,7 @@ export function ProductDetailsViewer({
                                     <span>{opt.name}</span>
                                   )}
 
-                                  {active && (
+                                  {/* {active && (
                                     <div
                                       className={cn(
                                         "absolute bg-primary text-primary-foreground rounded-full flex items-center justify-center border-2 border-background shadow-sm",
@@ -980,7 +966,7 @@ export function ProductDetailsViewer({
                                         }
                                       />
                                     </div>
-                                  )}
+                                  )} */}
                                 </button>
                               );
                             })}
@@ -1026,21 +1012,22 @@ export function ProductDetailsViewer({
                         </div>
 
                         {/* SKU VARIANTE (Si aplica y es distinto al base) */}
-                        {selectedVariant && selectedVariant.sku !== product.baseSku && (
-                          <div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/30">
-                            <div className="flex items-center gap-3">
-                              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/30">
-                                <ListChecks className="w-4 h-4 text-blue-600" />
+                        {selectedVariant &&
+                          selectedVariant.sku !== product.baseSku && (
+                            <div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/30">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/30">
+                                  <ListChecks className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <span className="text-xs font-bold text-muted-foreground uppercase">
+                                  SKU Variante
+                                </span>
                               </div>
-                              <span className="text-xs font-bold text-muted-foreground uppercase">
-                                SKU Variante
+                              <span className="text-xs font-black font-mono bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded text-blue-700 dark:text-blue-400 border border-blue-200/50">
+                                {selectedVariant.sku}
                               </span>
                             </div>
-                            <span className="text-xs font-black font-mono bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded text-blue-700 dark:text-blue-400 border border-blue-200/50">
-                              {selectedVariant.sku}
-                            </span>
-                          </div>
-                        )}
+                          )}
 
                         {/* ATRIBUTOS SELECCIONADOS */}
                         <div className="p-4 bg-muted/10">
@@ -1104,6 +1091,7 @@ export function ProductDetailsViewer({
               </div>
 
               {/* Precios */}
+
               <div className="space-y-4">
                 <Card className="shadow-lg border-2 border-primary/5">
                   <p className="text-[10px] font-black uppercase text-muted-foreground px-4 pt-4 tracking-wider">
@@ -1111,196 +1099,192 @@ export function ProductDetailsViewer({
                   </p>
                   <CardContent className="p-4 space-y-6">
                     {/* Sección Venta */}
-                    {product.can_sell && selectedVariant?.priceSell && (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold uppercase text-muted-foreground">Venta</span>
-                          <div className="flex items-baseline gap-2">
-                             <span className="text-2xl font-black text-primary">
-                               {formatCurrency(bestPromoSell?.finalPrice || selectedVariant.priceSell)}
-                             </span>
-                             {bestPromoSell?.promotion && (
-                               <span className="text-sm text-muted-foreground line-through">
-                                 {formatCurrency(selectedVariant.priceSell)}
-                               </span>
-                             )}
-                          </div>
-                        </div>
-
-                        {!product.is_serial && availability.sale > 0 && (
-                          <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Cantidad Venta</span>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 rounded-lg"
-                                onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
-                              >
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                              <span className="w-6 text-center font-bold text-xs">{purchaseQuantity}</span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 rounded-lg"
-                                onClick={() => setPurchaseQuantity(Math.min(availability.sale, purchaseQuantity + 1))}
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
+                    {product.can_sell &&
+                      (cartMode === "venta" || cartMode === null) &&
+                      selectedVariant?.priceSell &&
+                      availability.sale > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-bold uppercase text-muted-foreground">
+                              Venta
+                            </span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl font-black text-primary">
+                                {formatCurrency(
+                                  bestPromoSell?.finalPrice ||
+                                    selectedVariant.priceSell,
+                                )}
+                              </span>
+                              {bestPromoSell?.promotion && (
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {formatCurrency(selectedVariant.priceSell)}
+                                </span>
+                              )}
                             </div>
                           </div>
-                        )}
 
-                        <Button
-                          className={cn(
-                            "w-full h-12 text-sm font-bold shadow-sm transition-all duration-300",
-                            pd_selectedStockIds.length > 0 && "ring-2 ring-primary ring-offset-2 animate-pulse-subtle"
-                          )}
-                          disabled={availability.sale === 0}
-                          onClick={() => handleAddToCart("venta")}
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          {availability.sale === 0
-                            ? availability.local > 0 
-                              ? "Disponible solo p/ alquiler" 
-                              : "Sin stock para venta"
-                            : product.is_serial && pd_selectedStockIds.length > 0
-                              ? `Confirmar Venta (${pd_selectedStockIds.length} series)`
-                              : `Añadir a Venta (${purchaseQuantity} unidad${purchaseQuantity > 1 ? 'es' : ''})`}
-                        </Button>
-                      </div>
-                    )}
-
-                    {product.can_sell && product.can_rent && <Separator className="bg-primary/5" />}
-
-                    {/* Sección Alquiler */}
-                    {product.can_rent && selectedVariant?.priceRent && (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold uppercase text-muted-foreground">Alquiler</span>
-                          <div className="flex items-baseline gap-2">
-                             <span className="text-2xl font-black text-violet-600">
-                               {formatCurrency(bestPromoRent?.finalPrice || selectedVariant.priceRent)}
-                             </span>
-                             <span className="text-xs text-muted-foreground">/ {selectedVariant.rentUnit || "día"}</span>
-                          </div>
-                        </div>
-
-                        {!product.is_serial && availability.rent > 0 && (
-                          <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
-                             <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Cantidad Alquiler</span>
-                             <div className="flex items-center gap-1">
+                          {!product.is_serial && availability.sale > 1 && (
+                            <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">
+                                Cantidad Venta
+                              </span>
+                              <div className="flex items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   className="h-7 w-7 rounded-lg"
-                                  onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
+                                  onClick={() =>
+                                    setPurchaseQuantity(
+                                      Math.max(1, purchaseQuantity - 1),
+                                    )
+                                  }
                                 >
                                   <Minus className="w-3 h-3" />
                                 </Button>
-                                <span className="w-6 text-center font-bold text-xs">{purchaseQuantity}</span>
+                                <span className="w-6 text-center font-bold text-xs">
+                                  {purchaseQuantity}
+                                </span>
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   className="h-7 w-7 rounded-lg"
-                                  onClick={() => setPurchaseQuantity(Math.min(availability.rent, purchaseQuantity + 1))}
+                                  onClick={() =>
+                                    setPurchaseQuantity(
+                                      Math.min(
+                                        availability.sale,
+                                        purchaseQuantity + 1,
+                                      ),
+                                    )
+                                  }
                                 >
                                   <Plus className="w-3 h-3" />
                                 </Button>
-                             </div>
-                          </div>
-                        )}
-
-                        <Button
-                          variant="secondary"
-                          className={cn(
-                            "w-full h-12 text-sm font-bold border-2 transition-all duration-300",
-                            pd_selectedStockIds.length > 0 
-                              ? "border-violet-500 bg-violet-100 text-violet-800 ring-2 ring-violet-400 ring-offset-2 animate-pulse-subtle" 
-                              : "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                              </div>
+                            </div>
                           )}
-                          disabled={availability.rent === 0}
-                          onClick={() => handleAddToCart("alquiler")}
-                        >
-                          <CalendarClock className="w-4 h-4 mr-2" />
-                          {availability.rent === 0
-                            ? "No disponible para alquiler"
-                            : product.is_serial && pd_selectedStockIds.length > 0
+
+                          <Button
+                            className={cn(
+                              "w-full h-12 text-sm font-bold shadow-sm transition-all duration-300",
+                              pd_selectedStockIds.length > 0 &&
+                                "ring-2 ring-primary ring-offset-2 animate-pulse-subtle",
+                            )}
+                            onClick={() => handleAddToCart("venta")}
+                          >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            {product.is_serial && pd_selectedStockIds.length > 0
+                              ? `Confirmar Venta (${pd_selectedStockIds.length} series)`
+                              : `Añadir a Venta (${purchaseQuantity} unidad${purchaseQuantity > 1 ? "es" : ""})`}
+                          </Button>
+                        </div>
+                      )}
+
+                    {/* Sección Alquiler */}
+                    {product.can_rent &&
+                      (cartMode === "alquiler" || cartMode === null) &&
+                      selectedVariant?.priceRent &&
+                      availability.rent > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-bold uppercase text-muted-foreground">
+                              Alquiler
+                            </span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl font-black text-violet-600">
+                                {formatCurrency(
+                                  bestPromoRent?.finalPrice ||
+                                    selectedVariant.priceRent,
+                                )}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                / {selectedVariant.rentUnit || "día"}
+                              </span>
+                            </div>
+                          </div>
+
+                          {!product.is_serial && availability.rent > 1 && (
+                            <div className="flex items-center justify-between p-2 bg-muted/40 rounded-xl border border-dashed">
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">
+                                Cantidad Alquiler
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-lg"
+                                  onClick={() =>
+                                    setPurchaseQuantity(
+                                      Math.max(1, purchaseQuantity - 1),
+                                    )
+                                  }
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </Button>
+                                <span className="w-6 text-center font-bold text-xs">
+                                  {purchaseQuantity}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-lg"
+                                  onClick={() =>
+                                    setPurchaseQuantity(
+                                      Math.min(
+                                        availability.rent,
+                                        purchaseQuantity + 1,
+                                      ),
+                                    )
+                                  }
+                                >
+                                  <Plus className="w-2 h-2" />
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          <Button
+                            variant="secondary"
+                            className={cn(
+                              "w-full h-12 text-sm font-bold border-2 transition-all duration-300",
+                              pd_selectedStockIds.length > 0
+                                ? "border-violet-500  bg-blue-500 hover:bg-blue-700 ring-offset-2 animate-pulse-subtle"
+                                : "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100",
+                            )}
+                            onClick={() => handleAddToCart("alquiler")}
+                          >
+                            <CalendarClock className="w-4 h-4 mr-2" />
+                            {product.is_serial && pd_selectedStockIds.length > 0
                               ? `Confirmar Alquiler (${pd_selectedStockIds.length} series)`
-                              : `Añadir a Alquiler (${purchaseQuantity} unidad${purchaseQuantity > 1 ? 'es' : ''})`}
-                        </Button>
-                      </div>
-                    )}
+                              : `Añadir a Alquiler (${purchaseQuantity} unidad${purchaseQuantity > 1 ? "es" : ""})`}
+                          </Button>
+                        </div>
+                      )}
+
+                    {/* Si el modo es incompatible con lo que hay en el carro */}
+                    {cartMode === "alquiler" &&
+                      product.can_sell &&
+                      !product.can_rent && (
+                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
+                          <p className="text-xs text-orange-700 font-bold">
+                            Este producto solo es para venta, pero tienes
+                            alquileres en tu compra.
+                          </p>
+                        </div>
+                      )}
+                    {cartMode === "venta" &&
+                      product.can_rent &&
+                      !product.can_sell && (
+                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
+                          <p className="text-xs text-orange-700 font-bold">
+                            Este producto solo es para alquiler, pero tienes
+                            ventas en tu compra.
+                          </p>
+                        </div>
+                      )}
                   </CardContent>
                 </Card>
-
-                {/* Botón de Cámara Flotante para Móvil */}
-                <div className="fixed bottom-24 right-6 z-40 sm:hidden">
-                  <Button
-                    size="icon"
-                    className="w-14 h-14 rounded-full shadow-2xl bg-violet-600 hover:bg-violet-700 text-white border-4 border-white dark:border-zinc-950"
-                    onClick={() => setIsScannerModalOpen(true)}
-                  >
-                    <Camera className="w-6 h-6" />
-                  </Button>
-                </div>
               </div>
             </div>
-
-            {/* Buscador de Prendas (Solo para productos serializados) */}
-            {product.is_serial && (
-              <Card className="border-blue-100 bg-blue-50/20">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <Barcode className="w-4 h-4" />
-                    <h3 className="font-semibold">
-                      Selección de Unidades Específicas
-                    </h3>
-                  </div>
-                  <p className="text-[11px] text-blue-600 leading-tight">
-                    Para productos con número de serie, puedes elegir unidades específicas antes de añadir al carrito.
-                  </p>
-
-                  <div className="flex items-center justify-between mb-4 bg-muted/40 p-2 rounded-lg border border-dashed">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Unidades a asignar</span>
-                    <div className="flex items-center gap-2">
-                       <div className="flex items-center gap-1 bg-background rounded border p-0.5">
-                         <Button
-                           variant="ghost"
-                           size="icon"
-                           className="h-5 w-5"
-                           onClick={() => setPurchaseQuantity(Math.max(1, purchaseQuantity - 1))}
-                         >
-                           <Minus className="w-2 h-2" />
-                         </Button>
-                         <span className="w-4 text-center text-[10px] font-black">{purchaseQuantity}</span>
-                         <Button
-                           variant="ghost"
-                           size="icon"
-                           className="h-5 w-5"
-                           onClick={() => setPurchaseQuantity(purchaseQuantity + 1)}
-                         >
-                           <Plus className="w-2 h-2" />
-                         </Button>
-                       </div>
-                    </div>
-                  </div>
-
-                  <StockAssignmentWidget
-                    productId={product.id}
-                    variantId={selectedVariantId}
-                    quantity={purchaseQuantity}
-                    operationType={availability.rent > 0 ? "alquiler" : "venta"}
-                    dateRange={{ from: new Date(), to: new Date() }}
-                    currentBranchId={currentBranchId}
-                    isSerial={product.is_serial}
-                    onAssignmentChange={pd_setSelectedStockIds}
-                    initialSelections={pd_selectedStockIds}
-                  />
-                </CardContent>
-              </Card>
-            )}
 
             {/* Disponibilidad por Sucursal */}
             <Card>

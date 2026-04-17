@@ -18,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FeatureGuard } from "@/src/components/tenant/guards/FeatureGuard";
 import { useRouter } from "next/navigation";
 import { useBranchStore } from "@/src/store/useBranchStore";
 import { z } from "zod";
@@ -344,20 +343,20 @@ export function PosProductCard({
             />
           )}
 
-          <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
-            {product.can_sell && (
-              <Badge className="bg-emerald-600/90 text-white text-xs shadow-md backdrop-blur-sm font-bold">
-                {formatCurrency(
-                  productVariants.length > 0
-                    ? Math.min(
-                        ...productVariants.map((v) => v.priceSell || Infinity),
-                      )
-                    : 0,
-                )}
+          <div className="pointer-events-none absolute top-2 right-2 z-20 flex gap-1">
+            {product.can_rent && stockForRent > 0 ? (
+              <Badge className="bg-amber-100/90 border-amber-200 text-[9px] font-bold text-amber-800 backdrop-blur-sm">
+                Alquiler
               </Badge>
-            )}
+            ) : product.can_sell && stockForSale > 0 ? (
+              <Badge className="bg-slate-900/80 border-none text-[9px] font-bold text-white backdrop-blur-sm">
+                Venta
+              </Badge>
+            ) : null}
+          </div>
 
-            {product.can_rent && (
+          <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
+            {product.can_rent ? (
               <Badge className="bg-blue-600/90 text-white text-xs shadow-md backdrop-blur-sm font-bold">
                 {formatCurrency(
                   productVariants.length > 0
@@ -369,7 +368,17 @@ export function PosProductCard({
                 {productVariants[0]?.rentUnit === "día" && " /día"}
                 {productVariants[0]?.rentUnit === "evento" && " /evento"}
               </Badge>
-            )}
+            ) : product.can_sell ? (
+              <Badge className="bg-emerald-600/90 text-white text-xs shadow-md backdrop-blur-sm font-bold">
+                {formatCurrency(
+                  productVariants.length > 0
+                    ? Math.min(
+                        ...productVariants.map((v) => v.priceSell || Infinity),
+                      )
+                    : 0,
+                )}
+              </Badge>
+            ) : null}
 
             {maxDiscountPercent > 0 && (
               <Badge className="bg-rose-600 text-white text-[10px] shadow-lg backdrop-blur-md font-black border-none animate-pulse">
@@ -432,78 +441,64 @@ export function PosProductCard({
               </p>
             </div>
           </div>
-          <div className="grid -mt-3 gap-3">
-            <FeatureGuard feature="sales">
-              {product.can_sell ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={remainingForSale <= 0}
-                  className={cn(
-                    "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-emerald-50/50 hover:bg-emerald-100/60 hover:scale-105 transition-transform relative overflow-hidden",
-                    remainingForSale <= 0 &&
-                      "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
-                  )}
-                  onClick={() => handleClick("venta")}
-                >
-                  {inCartSale > 0 && stockForSale > 0 && (
-                    <div
-                      className="absolute bottom-0 left-0 h-1 bg-emerald-400/50 transition-all duration-300"
-                      style={{ width: `${(inCartSale / stockForSale) * 100}%` }}
-                    />
-                  )}
-                  <div className="flex justify-between w-full text-xs font-semibold text-emerald-600 items-center">
-                    <span>Vender</span>
-                    <Badge
-                      variant="outline"
-                      className="text-[9px] h-4 px-1 bg-white/80 text-emerald-900"
-                    >
-                      {remainingForSale} disp.
-                    </Badge>
-                  </div>
-                </Button>
-              ) : (
-                <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
-                  NO VENTA
+          <div className="flex flex-col mt-auto gap-2">
+            {product.can_rent ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={remainingForRent <= 0}
+                className={cn(
+                  "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-blue-50/50 hover:bg-blue-100/60 hover:scale-105 transition-transform relative overflow-hidden",
+                  remainingForRent <= 0 &&
+                    "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
+                )}
+                onClick={() => handleClick("alquiler")}
+              >
+                {inCartRent > 0 && stockForRent > 0 && (
+                  <div
+                    className="absolute bottom-0 left-0 h-1 bg-blue-400/50 transition-all duration-300"
+                    style={{ width: `${(inCartRent / stockForRent) * 100}%` }}
+                  />
+                )}
+                <div className="flex justify-between w-full text-xs font-semibold text-blue-600 items-center">
+                  <span>Alquilar</span>
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] h-4 px-1 bg-white/80 text-blue-700"
+                  >
+                    {remainingForRent} disp.
+                  </Badge>
                 </div>
-              )}
-            </FeatureGuard>
-
-            <FeatureGuard feature="rentals">
-              {product.can_rent ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={remainingForRent <= 0}
-                  className={cn(
-                    "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-blue-50/50 hover:bg-blue-100/60 hover:scale-105 transition-transform relative overflow-hidden",
-                    remainingForRent <= 0 &&
-                      "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
-                  )}
-                  onClick={() => handleClick("alquiler")}
-                >
-                  {inCartRent > 0 && stockForRent > 0 && (
-                    <div
-                      className="absolute bottom-0 left-0 h-1 bg-blue-400/50 transition-all duration-300"
-                      style={{ width: `${(inCartRent / stockForRent) * 100}%` }}
-                    />
-                  )}
-                  <div className="flex justify-between w-full text-xs font-semibold text-blue-600 items-center">
-                    <span>Alquilar</span>
-                    <Badge
-                      variant="outline"
-                      className="text-[9px] h-4 px-1 bg-white/80 text-blue-700"
-                    >
-                      {remainingForRent} disp.
-                    </Badge>
-                  </div>
-                </Button>
-              ) : (
-                <div className="rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-[10px] font-bold py-2">
-                  NO RENTA
+              </Button>
+            ) : product.can_sell ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={remainingForSale <= 0}
+                className={cn(
+                  "flex flex-col items-center justify-between py-2 px-2 gap-1 rounded-lg shadow-sm bg-emerald-50/50 hover:bg-emerald-100/60 hover:scale-105 transition-transform relative overflow-hidden",
+                  remainingForSale <= 0 &&
+                    "opacity-50 grayscale cursor-not-allowed bg-gray-100 border-gray-200",
+                )}
+                onClick={() => handleClick("venta")}
+              >
+                {inCartSale > 0 && stockForSale > 0 && (
+                  <div
+                    className="absolute bottom-0 left-0 h-1 bg-emerald-400/50 transition-all duration-300"
+                    style={{ width: `${(inCartSale / stockForSale) * 100}%` }}
+                  />
+                )}
+                <div className="flex justify-between w-full text-xs font-semibold text-emerald-600 items-center">
+                  <span>Vender</span>
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] h-4 px-1 bg-white/80 text-emerald-900"
+                  >
+                    {remainingForSale} disp.
+                  </Badge>
                 </div>
-              )}
-            </FeatureGuard>
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>

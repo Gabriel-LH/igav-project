@@ -262,25 +262,28 @@ export function ProductGrid({
       const product = products.find((p) => p.id === resolution.productId);
       if (!product) return;
 
-      const opType = activeTab === "alquiler" ? "alquiler" : "venta";
+      const cartMode = useCartStore.getState().items[0]?.operationType;
 
-      if (opType === "venta" && !product.can_sell) {
-         toast.error(`${product.name} no está disponible para venta`);
-         return;
-      }
-      if (opType === "alquiler" && !product.can_rent) {
-         toast.error(`${product.name} no está disponible para alquiler`);
-         return;
-      }
+      // Determinar tipo de operación: Priorizar modo del carrito o tab activo
+      const opType: "venta" | "alquiler" =
+        cartMode ||
+        (activeTab === "alquiler"
+          ? "alquiler"
+          : activeTab === "venta"
+            ? "venta"
+            : product.can_rent
+              ? "alquiler"
+              : "venta");
 
-      const isSpecificItem = ["serialCode", "inventoryItemId", "stockLotId", "stockLotBarcode"].includes(resolution.matchType);
+      const isSpecificItem = [
+        "serialCode",
+        "inventoryItemId",
+        "stockLotId",
+        "stockLotBarcode",
+      ].includes(resolution.matchType);
       const specificId = isSpecificItem ? code : undefined;
 
       addItem(product, opType, specificId, undefined, resolution.variantId);
-
-      toast.success(`Añadido al carrito (${opType.toUpperCase()})`, {
-        description: `${product.name} listo para procesar.`
-      });
       return;
     }
 
@@ -296,7 +299,8 @@ export function ProductGrid({
 
   useBarcodeScanner({
     onScan: handleScan,
-  }, [handleScan]);
+    enabled: !isScannerModalOpen,
+  }, [handleScan, isScannerModalOpen]);
 
   // --- 1. LÓGICA DE CATÁLOGO ---
   const filteredCatalog = useMemo(() => {

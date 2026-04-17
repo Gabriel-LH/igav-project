@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, ListChecks, AlertCircle, ClipboardCopy, Check, Save } from "lucide-react";
+import { Trash2, ListChecks, AlertCircle } from "lucide-react";
 import { useCartStore } from "@/src/store/useCartStore";
 import { formatCurrency } from "@/src/utils/currency-format";
 import { PosCartItem } from "./pos-cart-item";
@@ -28,15 +28,6 @@ import { useCustomerStore } from "@/src/store/useCustomerStore";
 import { getTenantConfigAction } from "@/src/app/(tenant)/tenant/actions/settings.actions";
 import { DEFAULT_TENANT_CONFIG } from "@/src/lib/tenant-defaults";
 import { calculateTaxTotals } from "@/src/utils/pricing/tax-calculation";
-import { savePresaleAction } from "@/src/app/(tenant)/tenant/actions/presale.actions";
-import { useBranchStore } from "@/src/store/useBranchStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 export function PosCartSection() {
   const { productVariants } = useInventoryStore();
@@ -51,17 +42,9 @@ export function PosCartSection() {
     clearBundleAssignments,
   } = useCartStore();
 
-  const total = getTotal();
-
-  const currentBranchId = useBranchStore((s) => s.selectedBranchId) || "";
-
   // ─── MODALES ───
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [reservationOpen, setReservationOpen] = React.useState(false);
-  const [presaleResultOpen, setPresaleResultOpen] = React.useState(false);
-  const [presaleCode, setPresaleCode] = React.useState("");
-  const [presaleSaving, setPresaleSaving] = React.useState(false);
-  const [codeCopied, setCodeCopied] = React.useState(false);
 
   const [tenantConfig, setTenantConfig] = React.useState(DEFAULT_TENANT_CONFIG);
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(undefined);
@@ -467,7 +450,7 @@ export function PosCartSection() {
         </div>
 
         {/* --- BOTONES DE ACCIÓN --- */}
-        <div className="grid px-2 grid-cols-2 gap-2 h-10">
+        <div className="grid px-2 grid-cols-2 gap-2 h-10 mb-4">
           <FeatureGuard feature={["reservations", "sales", "rentals"]}>
             <Button
               className="col-span-1 h-8 bg-orange-500 text-white hover:bg-orange-600 flex flex-col gap-0.5"
@@ -506,65 +489,6 @@ export function PosCartSection() {
             </FeatureGuard>
           )}
         </div>
-
-        {/* PRE-VENTA */}
-        {items.length > 0 && (
-          <div className="px-2 pt-1.5 pb-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full h-8 text-[11px] font-bold text-violet-700 border-violet-300 hover:bg-violet-50 dark:border-violet-800 dark:text-violet-300 dark:hover:bg-violet-950/30 gap-1.5"
-              disabled={presaleSaving}
-              onClick={async () => {
-                if (items.length === 0) return;
-                setPresaleSaving(true);
-                try {
-                  // Build a simple DTO from current cart items
-                  const alquilerItems = items.filter((i) => i.operationType === "alquiler");
-                  const type = alquilerItems.length > 0 ? "alquiler" : "venta";
-                  const subtotal = items.reduce((acc, i) => acc + i.subtotal, 0);
-
-                  const dto = {
-                    type,
-                    branchId: currentBranchId,
-                    customerId: selectedCustomer?.id || null,
-                    customerMode: selectedCustomer ? "registered" : "general",
-                    financials: {
-                      subtotal,
-                      totalDiscount: 0,
-                      taxAmount: taxTotals.taxAmount,
-                      totalAmount: taxTotals.total,
-                    },
-                    items: items.map((i) => ({
-                      productId: i.product.id,
-                      variantId: i.variantId || "",
-                      stockId: i.selectedCodes[0] || null,
-                      inventoryItemId: i.selectedCodes[0] || null,
-                      quantity: i.quantity,
-                      priceAtMoment: i.unitPrice,
-                      subtotal: i.subtotal,
-                    })),
-                  };
-
-                  const res = await savePresaleAction(dto);
-                  if (res.success && res.data) {
-                    setPresaleCode(res.data.referenceCode);
-                    setPresaleResultOpen(true);
-                  } else {
-                    toast.error(res.error || "Error al guardar la pre-venta");
-                  }
-                } catch {
-                  toast.error("Error inesperado al guardar la pre-venta");
-                } finally {
-                  setPresaleSaving(false);
-                }
-              }}
-            >
-              <Save className="w-3.5 h-3.5" />
-              {presaleSaving ? "Guardando..." : "Guardar Pre-venta"}
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* ─── MODALES ─── */}
@@ -586,47 +510,6 @@ export function PosCartSection() {
         cartCustomer={selectedCustomer}
         onCartCustomerChange={setSelectedCustomer}
       />
-
-      {/* ─── MODAL RESULTADO PRE-VENTA ─── */}
-      <Dialog open={presaleResultOpen} onOpenChange={setPresaleResultOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-violet-700">
-              <Save className="w-5 h-5" />
-              Pre-venta guardada
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Lleva este código a caja para recuperar el carrito al escanearlo o ingresarlo manualmente.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Código de pre-venta</p>
-              <code className="text-3xl font-black tracking-widest text-violet-700 bg-violet-50 dark:bg-violet-950/30 px-4 py-2 rounded-lg border border-violet-200 dark:border-violet-800 block">
-                {presaleCode}
-              </code>
-            </div>
-
-            <Button
-              variant="outline"
-              className="gap-2 border-violet-300 text-violet-700 hover:bg-violet-50"
-              onClick={() => {
-                navigator.clipboard.writeText(presaleCode);
-                setCodeCopied(true);
-                setTimeout(() => setCodeCopied(false), 2000);
-              }}
-            >
-              {codeCopied ? <Check className="w-4 h-4" /> : <ClipboardCopy className="w-4 h-4" />}
-              {codeCopied ? "¡Copiado!" : "Copiar código"}
-            </Button>
-
-            <p className="text-[11px] text-center text-muted-foreground">
-              En el POS, haz clic en <strong>Importar Orden</strong> o escanea el código de barras del comprobante para cargar los productos.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -11,7 +11,6 @@ import { findPresaleByCodeAction } from "@/src/app/(tenant)/tenant/actions/presa
 import { PosProductSection } from "./pos-product-section";
 import { PosCartSection } from "./pos-cart-section";
 import { BarcodeScanner } from "../inventory/inventory/barcode/Scanner";
-import { Badge } from "@/components/badge";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -103,14 +102,6 @@ export function PosLayout() {
         // Si tiene ambos (fallback), priorizamos Alquiler por negocio o lo que diga el item
         operationMode = serialItem.isForRent ? "alquiler" : "venta";
       }
-
-      maxStock = inventoryItems.filter(
-        (i) =>
-          i.productId === serialItem.productId &&
-          i.variantId === serialItem.variantId &&
-          i.status === "disponible" &&
-          (operationMode === "venta" ? i.isForSale : i.isForRent),
-      ).length;
     } else if (lotItem) {
       // --- CASO 2: LOTE ---
       if (lotItem.status !== "disponible" || lotItem.quantity <= 0) {
@@ -128,8 +119,6 @@ export function PosLayout() {
       else {
         operationMode = lotItem.isForRent ? "alquiler" : "venta";
       }
-
-      maxStock = lotItem.quantity;
     } else {
       // --- CASO 3: SKU GENÉRICO DE PRODUCTO ---
       productToAdd = products.find((p) => p.baseSku === code);
@@ -142,24 +131,6 @@ export function PosLayout() {
           operationMode = productToAdd.can_rent ? "alquiler" : "venta";
         }
 
-        // Stock genérico (sin variantes)
-        if (productToAdd.is_serial) {
-          maxStock = inventoryItems.filter(
-            (i) =>
-              i.productId === productToAdd!.id &&
-              i.status === "disponible" &&
-              (operationMode === "venta" ? i.isForSale : i.isForRent),
-          ).length;
-        } else {
-          maxStock = stockLots
-            .filter(
-              (l) =>
-                l.productId === productToAdd!.id &&
-                l.status === "disponible" &&
-                (operationMode === "venta" ? l.isForSale : l.isForRent),
-            )
-            .reduce((acc, curr) => acc + curr.quantity, 0);
-        }
       }
     }
 
@@ -176,6 +147,26 @@ export function PosLayout() {
     if (operationMode === "alquiler" && !productToAdd.can_rent) {
       toast.warning(`El producto ${productToAdd.name} no permite ALQUILER`);
       return;
+    }
+
+    // 3. CALCULAR STOCK DISPONIBLE (REAL)
+    maxStock = 0;
+    if (productToAdd.is_serial) {
+      maxStock = inventoryItems.filter(
+        (i) =>
+          i.productId === productToAdd!.id &&
+          i.status === "disponible" &&
+          (operationMode === "venta" ? i.isForSale : i.isForRent),
+      ).length;
+    } else {
+      maxStock = stockLots
+        .filter(
+          (l) =>
+            l.productId === productToAdd!.id &&
+            l.status === "disponible" &&
+            (operationMode === "venta" ? l.isForSale : l.isForRent),
+        )
+        .reduce((acc: number, curr: any) => acc + (curr.quantity || 0), 0);
     }
 
     // 4. VALIDAR CARRITO ACTUAL
@@ -213,9 +204,6 @@ export function PosLayout() {
       maxStock,
       scannedVariant?.variantId,
     );
-
-    const modeLabel = operationMode === "venta" ? "VENTA" : "ALQUILER";
-    toast.success(`${productToAdd.name} agregado como ${modeLabel}`);
   }, [selectedBranchId, inventoryItems, stockLots, products, addItem, items]);
 
   useBarcodeScanner({
@@ -255,21 +243,7 @@ export function PosLayout() {
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden gap-2">
-      <div className="px-2 py-2 bg-slate-800 text-white rounded-lg mt-2 shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono opacity-70">MODO ESCÁNER:</span>
-            <Badge
-              variant="outline"
-              className="font-bold uppercase border-0 bg-primary/10 text-primary"
-            >
-              Detección Automática
-            </Badge>
-          </div>
-        </div>
-      </div>
-
-      {isMobile && <div className="flex gap-2">{mobileActionButtons}</div>}
+      {isMobile && <div className="flex gap-2 mt-2 px-2">{mobileActionButtons}</div>}
 
       <div className="flex flex-1 gap-2 min-h-0  pb-4 items-stretch">
         <div className="flex-1 flex flex-col overflow-hidden">

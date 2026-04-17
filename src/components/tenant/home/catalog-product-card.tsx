@@ -270,16 +270,15 @@ export function CatalogProductCard({
     <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border shadow-lg transition-all duration-300 hover:shadow-2xl">
       <div className="bg-muted relative overflow-hidden rounded-t-2xl group">
         <div className="pointer-events-none absolute top-2 right-2 z-20 flex gap-1">
-          {product.can_sell && hasSaleStock && (
-            <Badge className="bg-slate-900/80 border-none text-[9px] font-bold text-white backdrop-blur-sm">
-              Venta
-            </Badge>
-          )}
-          {product.can_rent && hasRentalStock && (
+          {product.can_rent && hasRentalStock ? (
             <Badge className="bg-amber-100/90 border-amber-200 text-[9px] font-bold text-amber-800 backdrop-blur-sm">
               Alquiler
             </Badge>
-          )}
+          ) : product.can_sell && hasSaleStock ? (
+            <Badge className="bg-slate-900/80 border-none text-[9px] font-bold text-white backdrop-blur-sm">
+              Venta
+            </Badge>
+          ) : null}
         </div>
 
         <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
@@ -407,7 +406,7 @@ export function CatalogProductCard({
           </div>
 
           <div className="mt-2 flex flex-col gap-0.5">
-            {product.can_rent && (
+            {product.can_rent ? (
               <div
                 className={`flex items-center justify-between text-[13px] ${
                   bestPromoRent && bestPromoRent.discount > 0
@@ -443,9 +442,7 @@ export function CatalogProductCard({
                   </span>
                 </div>
               </div>
-            )}
-
-            {product.can_sell && (
+            ) : product.can_sell ? (
               <div
                 className={`flex items-center justify-between text-[13px] ${
                   bestPromoSell && bestPromoSell.discount > 0
@@ -480,7 +477,7 @@ export function CatalogProductCard({
                   </span>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 

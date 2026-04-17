@@ -92,6 +92,8 @@ interface CartState {
       bundleId?: string;
       appliedPromotionId?: string;
       priceAtMoment?: number;
+      manualDiscountAmount?: number;
+      manualDiscountReason?: string;
     },
   ) => void;
   addBundleToCart: (promotionId: string) => void;
@@ -214,18 +216,35 @@ export const useCartStore = create<CartState>()(
         variantId,
         customData,
       ) => {
+        let status:
+          | "added"
+          | "updated"
+          | "incompatible"
+          | "no-stock"
+          | "unsupported-product"
+          | null = null;
+        let finalQty = 0;
+
         set((state) => {
           const incomingTenantId = product.tenantId;
-          
+
           // 🛑 RESTRICCIÓN: No mezclar Ventas y Alquileres
           if (state.items.length > 0) {
             const currentType = state.items[0].operationType;
             if (currentType !== type) {
-              toast.error("Tipo de operación incompatible", {
-                description: `No puedes mezclar ${currentType === "venta" ? "ventas" : "alquileres"} con ${type === "venta" ? "ventas" : "alquileres"} en la misma orden.`,
-              });
+              status = "incompatible";
               return state;
             }
+          }
+
+          // 🛑 VALIDACIÓN: ¿El producto soporta este tipo de operación?
+          if (type === "venta" && !product.can_sell) {
+            status = "unsupported-product";
+            return state;
+          }
+          if (type === "alquiler" && !product.can_rent) {
+            status = "unsupported-product";
+            return state;
           }
 
           if (
@@ -295,7 +314,7 @@ export const useCartStore = create<CartState>()(
             const item = updatedItems[existingIndex];
 
             if (item.quantity >= maxQuantity) {
-              // Opcional: toast.warning("Stock máximo alcanzado")
+              status = "no-stock";
               return state;
             }
 
@@ -326,11 +345,13 @@ export const useCartStore = create<CartState>()(
                 type,
               ),
             };
+            status = "updated";
+            finalQty = newQuantity;
             return { items: updatedItems };
           }
 
           // B. SI NO EXISTE -> CREAR NUEVO
-          if (maxQuantity < 1) return state; // Validación de seguridad
+          if (maxQuantity < 1) return state;
 
           const newItem: CartItem = {
             cartId: crypto.randomUUID(),
@@ -360,12 +381,34 @@ export const useCartStore = create<CartState>()(
             manualDiscountReason: customData?.manualDiscountReason,
           };
 
+          status = "added";
           return {
             items: [...state.items, newItem],
             activeTenantId: state.activeTenantId ?? incomingTenantId,
           };
         });
-        
+
+        // Toasts fuera del set para evitar duplicados por re-ejecución del callback
+        if (status === "added") {
+          toast.success(`Añadido al carrito: ${product.name}`, {
+            description: `Se añadió para ${type.toUpperCase()}.`,
+          });
+        } else if (status === "updated") {
+          toast.success(`Cantidad actualizada: ${product.name}`, {
+            description: `Ahora tienes ${finalQty} unidades en el carrito.`,
+          });
+        } else if (status === "incompatible") {
+          toast.error("Tipo de operación incompatible", {
+            description: `No puedes mezclar ventas con alquileres en la misma orden.`,
+          });
+        } else if (status === "unsupported-product") {
+          toast.error(`Producto no compatible`, {
+            description: `Este producto no está habilitado para ${type.toUpperCase()}.`,
+          });
+        } else if (status === "no-stock") {
+          toast.warning("Stock máximo alcanzado");
+        }
+
         const bid = useBranchStore.getState().selectedBranchId;
         if (bid && bid !== GLOBAL_BRANCH_ID) get().applyPromotions(bid);
         get().syncCartWithServer();
